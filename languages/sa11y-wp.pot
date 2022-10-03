@@ -1,0 +1,273 @@
+# Copyright (C) 2022 Editoria11y
+# This file is distributed under the same license as the Editoria11y package.
+msgid ""
+msgstr ""
+"Project-Id-Version: Editoria11y 1.0.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/ed11y\n"
+"POT-Creation-Date: 2022-04-28 20:53:59+00:00\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2022-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Adam Chaboryk <adam.chaboryk@ryerson.ca>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+
+#: admin/admin.php:20 admin/admin.php:636
+msgid "Editoria11y - Advanced Settings"
+msgstr ""
+
+#: admin/admin.php:21 admin/admin.php:705
+msgid "Editoria11y"
+msgstr ""
+
+#: admin/admin.php:76
+msgid "Readability"
+msgstr ""
+
+#: admin/admin.php:84
+msgid "Exclusions"
+msgstr ""
+
+#: admin/admin.php:92
+msgid "Embedded content"
+msgstr ""
+
+#: admin/admin.php:100
+msgid "Advanced"
+msgstr ""
+
+#: admin/admin.php:110
+msgid "Enable Editoria11y"
+msgstr ""
+
+#: admin/admin.php:129
+msgid "Target area to check"
+msgstr ""
+
+#: admin/admin.php:139
+msgid "Show Contrast toggle"
+msgstr ""
+
+#: admin/admin.php:149
+msgid "Show Form Labels toggle"
+msgstr ""
+
+#: admin/admin.php:159
+msgid "Show Links (Advanced) toggle"
+msgstr ""
+
+#: admin/admin.php:169
+msgid "Show Readability toggle"
+msgstr ""
+
+#: admin/admin.php:179
+msgid "Readability scan area"
+msgstr ""
+
+#: admin/admin.php:189
+msgid "Readability exclusions"
+msgstr ""
+
+#: admin/admin.php:199
+msgid "Regions to ignore"
+msgstr ""
+
+#: admin/admin.php:209
+msgid "Exclude from contrast check"
+msgstr ""
+
+#: admin/admin.php:219
+msgid "Exclude headings from outline"
+msgstr ""
+
+#: admin/admin.php:229
+msgid "Exclude headings"
+msgstr ""
+
+#: admin/admin.php:239
+msgid "Exclude images"
+msgstr ""
+
+#: admin/admin.php:249
+msgid "Exclude links"
+msgstr ""
+
+#: admin/admin.php:259
+msgid "Ignore elements within links"
+msgstr ""
+
+#: admin/admin.php:269
+msgid "Flag links as an error"
+msgstr ""
+
+#: admin/admin.php:279
+msgid "Video sources"
+msgstr ""
+
+#: admin/admin.php:288
+msgid "Audio sources"
+msgstr ""
+
+#: admin/admin.php:297
+msgid "Data visualization sources"
+msgstr ""
+
+#: admin/admin.php:307
+msgid "Turn off Editoria11y if these elements exist"
+msgstr ""
+
+#: admin/admin.php:317
+msgid "Add extra props"
+msgstr ""
+
+#: admin/admin.php:618
+msgid "https://ed11y.netlify.app/developers/props/"
+msgstr ""
+
+#: admin/admin.php:620
+msgid "documentation."
+msgstr ""
+
+#: admin/admin.php:624 admin/admin.php:655
+msgid "%1$s"
+msgstr ""
+
+#: admin/admin.php:648
+msgid "Editoria11y is your accessibility quality assurance assistant. Geared towards content authors, Editoria11y straightforwardly identifies content related issues at the source. Editoria11y works out-of-the-box, although you can use this settings page to customize the experience for website authors. Please note, Editoria11y is not a comprehensive code analysis tool. You should make sure you are using an accessible theme."
+msgstr ""
+
+#: admin/admin.php:651
+msgid "To learn more about Editoria11y, please visit the "
+msgstr ""
+
+#: admin/admin.php:652
+msgid "https://ed11y.netlify.app/"
+msgstr ""
+
+#: admin/admin.php:653
+msgid "project website."
+msgstr ""
+
+#: admin/admin.php:662
+msgid "Save Settings"
+msgstr ""
+
+#: admin/admin.php:668
+msgid "More"
+msgstr ""
+
+#: admin/admin.php:670
+msgid "Administrator guide"
+msgstr ""
+
+#: admin/admin.php:672
+msgid "Specify the target area to check. Only check content your authors can edit."
+msgstr ""
+
+#: admin/admin.php:673
+msgid "Turn off checks or features that are not relevant, including issues that cannot be fixed by content authors."
+msgstr ""
+
+#: admin/admin.php:675
+msgid "CSS selectors reference."
+msgstr ""
+
+#: admin/admin.php:676
+msgid "https://www.w3schools.com/cssref/css_selectors.asp"
+msgstr ""
+
+#: admin/admin.php:678
+msgid "Create exclusions or ignore repetitive elements using CSS selectors. Use a comma to seperate multiple selectors. View %1$s"
+msgstr ""
+
+#: admin/admin.php:682
+msgid "Contribute"
+msgstr ""
+
+#: admin/admin.php:686
+msgid "Report a bug or leave feedback"
+msgstr ""
+
+#: admin/admin.php:687
+msgid "https://forms.gle/sjzK9XykETaoqZv99"
+msgstr ""
+
+#: admin/admin.php:689 admin/admin.php:697
+msgctxt "ed11y-wp"
+msgid "%1$s"
+msgstr ""
+
+#: admin/admin.php:694
+msgid "Help translate or improve"
+msgstr ""
+
+#: admin/admin.php:695
+msgid "https://github.com/ryersondmp/ed11y/blob/master/CONTRIBUTING.md"
+msgstr ""
+
+#: admin/admin.php:702
+msgid "Version"
+msgstr ""
+
+#: admin/admin.php:709
+msgid "Plugin"
+msgstr ""
+
+#: admin/admin.php:715
+msgid "Acknowledgements"
+msgstr ""
+
+#: admin/admin.php:717
+msgid "all acknowledgements."
+msgstr ""
+
+#: admin/admin.php:718
+msgid "https://ed11y.netlify.app/acknowledgements/"
+msgstr ""
+
+#: admin/admin.php:720
+msgid "Development led by Adam Chaboryk at Toronto Metropolitan University. View %1$s"
+msgstr ""
+
+#: admin/admin.php:723
+msgid "© 2022 Toronto Metropolitan University."
+msgstr ""
+
+#: inc/functions.php:22
+msgid "en"
+msgstr ""
+
+#: inc/functions.php:32
+msgid "#comments"
+msgstr ""
+
+#: inc/functions.php:37
+msgid "nav *, [role=\"navigation\"] *"
+msgstr ""
+
+#: inc/functions.php:41
+msgid "youtube.com, vimeo.com, yuja.com, panopto.com"
+msgstr ""
+
+#: inc/functions.php:42
+msgid "soundcloud.com, simplecast.com, podbean.com, buzzsprout.com, blubrry.com, transistor.fm, fusebox.fm, libsyn.com"
+msgstr ""
+
+#: inc/functions.php:43
+msgid "datastudio.google.com, tableau"
+msgstr ""
+#. Plugin Name of the plugin/theme
+msgid "Editoria11y"
+msgstr ""
+
+#. Plugin URI of the plugin/theme
+msgid "https://itmaybejj.github.io/editoria11y/"
+msgstr ""
+
+#. Description of the plugin/theme
+msgid "Editoria11y is your accessibility quality assurance assistant. Geared towards content authors, Editoria11y straightforwardly identifies accessibility issues at the source."
+msgstr ""
+
+#. Author of the plugin/theme
+msgid "Adam Chaboryk, Toronto Metropolitan University"
+msgstr ""
