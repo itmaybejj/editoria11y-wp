@@ -1,0 +1,18 @@
+{
+    "phpsab.executablePathCBF": "/Users/jjameson/Sites/tooling/wpcs/vendor/bin/phpcbf",
+    "phpsab.executablePathCS": "/Users/jjameson/Sites/tooling/wpcs/vendor/bin/phpcs",
+    "phpcbf.standard": "WordPress",
+    "phpsab.standard": "WordPress",
+    "phpsab.allowedAutoRulesets": [
+        ".phpcs.xml",
+        ".phpcs.xml.dist",
+        "phpcs.xml",
+        "phpcs.xml.dist",
+        "phpcs.ruleset.xml",
+        "ruleset.xml"
+    ],
+    "editor.tabSize": 4,
+    "editor.insertSpaces": false,
+    "editor.detectIndentation": false,
+	"files.eol": "\n"
+}
