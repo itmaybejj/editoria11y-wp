@@ -29,7 +29,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Calls Editoria11y library with site config.
  */
-class Ed11y_WP {
+class Ed11y {
 	const ED11Y_VERSION = '2.0.01';
 	const WP_VERSION    = '1.0.01';
 
@@ -99,4 +99,4 @@ class Ed11y_WP {
 
 }
 
-new Editoria11y_WP();
+new Ed11y();
