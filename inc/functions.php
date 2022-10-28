@@ -209,7 +209,22 @@ function ed11y_admin() {
 				admin: true,
                 ' . $extra_props . '
             }
-		</script>';
+		</script>
+		<style>
+			a.ed11y-warning {
+				background-color: #fad859;
+				color: #000b;
+			}
+			a.ed11y-alert {
+				color: #b80519;
+				box-shadow: inset 0 0 0 1px #b80519, inset 0 0 0 2px #fefefe, inset 0 0 0 6px #b80519, 1px 1px 5px 0 rgba(0,0,0,.5);
+				background: #fefefe;
+			}
+			ed11y-element-panel {
+				display: none !important;
+			}
+			
+		</style>';
 	}
 }
 add_action( 'admin_footer', 'ed11y_admin' );

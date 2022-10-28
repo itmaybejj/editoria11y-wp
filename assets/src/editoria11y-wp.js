@@ -13,6 +13,9 @@ function ed11yReady(fn) {
 ed11yReady(
 	function() {
 		if (ed11yOptions && ed11yOptions.admin === false) {
+			if (window.location.href.indexOf("ed11y=show") > -1) {
+				ed11yOptions['alertMode'] = 'assertive';
+			}
 			const ed11y = new Ed11y(ed11yOptions);
 		} else {
 			ed11yFindTarget();
@@ -20,17 +23,35 @@ ed11yReady(
 	}
 );
 
+let alertLink = document.createElement('a');
+let ed11yUpdateCount = function(alertLink) {
+	alertLink.textContent = Ed11y.totalCount + " issues";
+	if (Ed11y.errorCount > 0) {
+		alertLink.classList.remove('ed11y-warning', 'hidden');
+		alertLink.classList.add('ed11y-errors');
+	} else if (Ed11y.warningCount > 0) {
+		alertLink.classList.remove('ed11y-error', 'hidden');
+		alertLink.classList.add('ed11y-warning');
+	} else {
+		alertLink.classList.add('hidden');
+	}
+}
+
 let ed11yRunning = false;
 let ed11yAdminInit = function() {
 	ed11yRunning = true;
 	let insertionPoint = document.querySelector('.interface-pinned-items');
 	let previewLink = document.querySelector('a[href*="?preview"]');
 	if (insertionPoint && previewLink) {
+		ed11yOptions['ignoreByKey'] = {img : ''};
 		const ed11y = new Ed11y(ed11yOptions);
-		let alertLink = document.createElement('a');
 		alertLink.setAttribute('target', '_blank');
-		alertLink.setAttribute('href', previewLink.getAttribute('href'));
+		alertLink.classList.add('components-button');
+		alertLink.setAttribute('href', previewLink.getAttribute('href') + '&ed11y=show');
 		alertLink.textContent = "checkmark";
+		document.addEventListener('ed11yResults', function () {
+			ed11yUpdateCount(alertLink);
+		});
 		insertionPoint.prepend(alertLink);
 		const ed11yTargetNode = document.querySelector('.editor-styles-wrapper');
 		// Options for the observer (which mutations to observe)
