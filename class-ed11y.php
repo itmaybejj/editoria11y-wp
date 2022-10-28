@@ -30,8 +30,8 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Calls Editoria11y library with site config.
  */
 class Ed11y {
-	const ED11Y_VERSION = '2.0.01';
-	const WP_VERSION    = '1.0.01';
+	const ED11Y_VERSION = '2.0.011';
+	const WP_VERSION    = '1.0.011';
 
 	/**
 	 * PHP5 constructor method.
@@ -93,6 +93,7 @@ class Ed11y {
 	 */
 	public function admin() {
 		if ( is_admin() ) {
+			require_once ED11Y_INCLUDES . 'functions.php';
 			require_once ED11Y_ADMIN . 'admin.php';
 		}
 	}
