@@ -49,6 +49,7 @@ class Ed11y {
 
 		// Load the admin files.
 		add_action( 'plugins_loaded', array( &$this, 'admin' ), 4 );
+
 	}
 
 	/**
