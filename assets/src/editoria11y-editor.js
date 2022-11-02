@@ -35,6 +35,53 @@ let ed11yUpdateCount = function() {
 		Ed11y.wpIssueLink.classList.add('hidden');
 	}
 	// todo: aria-live announcements.
+	if (Ed11y.results.length > 0) {
+		let ed11yStyles = '';
+		Ed11y.results.forEach(result => {
+			let ed11yContainerId = result[0].closest('.wp-block').getAttribute('id');
+			let ed11yRingColor = !result[4] ? Ed11y.color.alert : Ed11y.color.warning;
+			let ed11yFontColor = !result[4] ? '#fff' : '#111';
+			ed11yStyles += `
+				#${ed11yContainerId}:not(.is-selected)::before { 
+					position: absolute;
+					font-size: 13px;
+					background: ${ed11yRingColor};
+					color: ${ed11yFontColor};
+					display: inline-block;
+					padding: 2px 4px 0;
+					content: '${Ed11y.M[result[1]]['title']}';
+					z-index: 1;
+					font-family: sans-serif;
+					font-weight: 500;
+					line-height: 15px;
+				}
+				#${ed11yContainerId}:not(.is-selected) { 
+					box-shadow: 0 0 0 1px #fff, inset 0 0 0 2px ${ed11yRingColor}, 0 0 0 3px ${ed11yRingColor}, 0 0 1px 3px;
+					outline: 2px solid ${ed11yRingColor};
+					outline-offset: 1px; 
+				}
+			`;
+		})
+		let newStyles = document.querySelector('#ed11y-live-highlighter');
+		if (!newStyles) {
+			newStyles = document.createElement('div');
+			newStyles.setAttribute('hidden', '');
+			newStyles.setAttribute('id', 'ed11y-live-highlighter');
+			document.querySelector('body').append(newStyles);
+		}
+		newStyles.innerHTML = `
+		<style>${ed11yStyles}</style>
+		`;
+	}
+
+}
+
+let ed11yFindNewBlocks = function() {
+	ed11yOptions['ignoreElements'] = ed11yOptions['originalIgnore'];
+	let ed11yActiveBlock = document.querySelector('.wp-block.is-selected')?.getAttribute('id');
+	if (ed11yActiveBlock !== 'undefined' && !Ed11y.WPBlocks.includes(ed11yActiveBlock)) {
+		ed11yOptions['ignoreElements'] += `, #${ed11yActiveBlock}, #${ed11yActiveBlock} *`;
+	}
 }
 
 // Initiate Editoria11y create alert link, initiate content change watcher.
@@ -42,10 +89,18 @@ let ed11yAdminInit = function(ed11yTarget) {
 	ed11yRunning = true;
 		
 	// Initiate Ed11y with admin options.
-	console.log(ed11yTarget);
 	// Todo: pick checkRoot dynamically based on ed11yTarget.
 	ed11yOptions['checkRoots'] = '.editor-styles-wrapper';
 	ed11yOptions['ignoreByKey'] = {img : ''};
+	ed11yOptions['originalIgnore'] = ed11yOptions['ignoreElements'];
+	ed11yInitialBlocks = document.querySelectorAll('.wp-block');
+	Ed11y.WPBlocks = [];
+	if (ed11yInitialBlocks.length !== null) {
+		ed11yInitialBlocks.forEach(block => {
+			Ed11y.WPBlocks.push(block.getAttribute('id'));
+		})
+	}
+	ed11yFindNewBlocks();
 	const ed11y = new Ed11y(ed11yOptions);
 	document.addEventListener('ed11yResults', function () {
 		ed11yUpdateCount();
@@ -58,6 +113,7 @@ let ed11yAdminInit = function(ed11yTarget) {
 	Ed11y.wpIssueLink.setAttribute('id', 'ed11y-issue-link');
 	Ed11y.wpIssueLink.setAttribute('title', 'Open preview with issues highlighted');
 	Ed11y.wpIssueLink.textContent = "0";
+	// Todo: add event listener to transfer click to preview link. It appears to have additional functions attached.
 	ed11yInsertAt.prepend(Ed11y.wpIssueLink);
 	let ed11yStyle = document.createElement('div');
 	ed11yStyle.setAttribute('hidden','');
@@ -111,7 +167,6 @@ let ed11yFindCompatibleEditor = function() {
 	ed11yInsertAt = ed11yInsertAt ? ed11yInsertAt : document.querySelector('.interface-pinned-items');
 	ed11yPreviewLink = ed11yPreviewLink ? ed11yPreviewLink : document.querySelector('a[href*="?preview=true"], a[href*="&preview=true"]');
 	if (!!ed11yTarget & !!ed11yInsertAt & !!ed11yPreviewLink) {
-		console.log('init');
 		ed11yAdminInit(ed11yTarget);
 	} else if (ed11yReadyCount < 10) {
 		window.setTimeout(function() {
@@ -131,6 +186,8 @@ function ed11yMutationTimeoutWatch() {
 	ed11yMutationTimeout = setTimeout(function () {
 		// Wishlist todo: check active block on enter and exit and increment count.
 		// This would prevent premature alerts on just-added headings and tables.
+		ed11yFindNewBlocks();
+		Ed11y.options.ignoreElements = ed11yOptions['ignoreElements'];
 		Ed11y.checkAll(false,false);
 	  }, 500);
   }
