@@ -164,7 +164,8 @@ add_action( 'wp_footer', 'ed11y_init' );
 // Load live checker when editor is present.
 
 function editor_init() {
-	add_action( 'admin_enqueue_scripts', 'ed11y_load_admin_scripts' );
+	// add_action( 'admin_enqueue_scripts', 'ed11y_load_admin_scripts' );
+	add_action( 'enqueue_block_editor_assets', 'ed11y_load_admin_scripts' );
 	add_action( 'admin_footer', 'ed11y_init' );
 }
 add_action( 'wp_enqueue_editor', 'editor_init' );

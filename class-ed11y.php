@@ -30,8 +30,8 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Calls Editoria11y library with site config.
  */
 class Ed11y {
-	const ED11Y_VERSION = '2.0.011';
-	const WP_VERSION    = '1.0.011';
+	const ED11Y_VERSION = '2.0.012';
+	const WP_VERSION    = '1.0.012';
 
 	/**
 	 * PHP5 constructor method.
