@@ -1,5 +1,6 @@
 // TODO: localStorage or WP use preference for open/shut notifications.
 // TODO: share dismissal API with preview page.
+// TODO: create aria-live region. Populate it with the issues for the is-active block. It will only change when the block changes.
 // Create callback to see if document is ready.
 function ed11yReady(fn) {
 	if (document.readyState != 'loading'){
@@ -23,17 +24,18 @@ ed11yReady(
 
 // Get issue count from Ed11y object and apply to alert link.
 let ed11yUpdateCount = function() {
-	Ed11y.wpIssueLink.textContent = Ed11y.totalCount;
+	Ed11y.wpIssueToggle.textContent = Ed11y.totalCount;
+	Ed11y.wpIssueToggle.setAttribute('aria-label', Ed11y.totalCount + ' accessibility issues')
 	// We update the href to make sure we have the right nonce.
-	// Ed11y.wpIssueLink.setAttribute('href', ed11yPreviewLink.getAttribute('href') + '&ed11y=show');
+	// Ed11y.wpIssueToggle.setAttribute('href', ed11yPreviewLink.getAttribute('href') + '&ed11y=show');
 	if (Ed11y.errorCount > 0) {
-		Ed11y.wpIssueLink.classList.remove('ed11y-warning', 'hidden');
-		Ed11y.wpIssueLink.classList.add('ed11y-alert');
+		Ed11y.wpIssueToggle.classList.remove('ed11y-warning', 'hidden');
+		Ed11y.wpIssueToggle.classList.add('ed11y-alert');
 	} else if (Ed11y.warningCount > 0) {
-		Ed11y.wpIssueLink.classList.remove('ed11y-alert', 'hidden');
-		Ed11y.wpIssueLink.classList.add('ed11y-warning');
+		Ed11y.wpIssueToggle.classList.remove('ed11y-alert', 'hidden');
+		Ed11y.wpIssueToggle.classList.add('ed11y-warning');
 	} else {
-		Ed11y.wpIssueLink.classList.add('hidden');
+		Ed11y.wpIssueToggle.classList.add('hidden');
 	}
 	// todo: aria-live announcements.
 	if (Ed11y.results.length > 0 && ed11yOptions['showResults'] === true) {
@@ -82,7 +84,7 @@ let ed11yUpdateCount = function() {
 					background: ${value.ring};
 					color: ${value.font};
 					display: inline-block;
-					padding: 2px 4px 0;
+					padding: 3px 5px 2px;
 					content: '${value.title.replace('?,', ',')}';
 					z-index: -1;
 					opacity: 0;
@@ -93,7 +95,7 @@ let ed11yUpdateCount = function() {
 					right: 0;
 				}
 				#${key}:not(.is-selected)::after { 
-					opacity: .9;
+					opacity: 1;
 					z-index: 1;
 				}
 				#${key}:not(.is-selected) { 
@@ -155,31 +157,38 @@ let ed11yAdminInit = function(ed11yTarget) {
 	});
 	
 	// Set up issue counter link.
-	Ed11y.wpIssueLink = document.createElement('button');
-	Ed11y.wpIssueLink.classList.add('components-button', 'is-secondary', 'hidden');
-	Ed11y.wpIssueLink.setAttribute('id', 'ed11y-issue-link');
-	Ed11y.wpIssueLink.setAttribute('title', 'Showing issues');
-	Ed11y.wpIssueLink.setAttribute('aria-pressed', 'true');
-	Ed11y.wpIssueLink.addEventListener('click', function() {
-		if (Ed11y.wpIssueLink.getAttribute('aria-pressed') === 'true') {
-			Ed11y.wpIssueLink.setAttribute('aria-pressed','false');
-			Ed11y.wpIssueLink.setAttribute('title', 'Show issues');
+	ed11yButtonDescription = document.createElement('span');
+	ed11yButtonDescription.setAttribute('hidden','');
+	ed11yButtonDescription.setAttribute('id', 'ed11y-button-description');
+	ed11yButtonDescription.textContent = 'Screen reader accessible issue descriptions have been added to the preview page.';
+	Ed11y.wpIssueToggle = document.createElement('button');
+	Ed11y.wpIssueToggle.classList.add('components-button', 'is-secondary', 'hidden');
+	Ed11y.wpIssueToggle.setAttribute('id', 'ed11y-issue-link');
+	Ed11y.wpIssueToggle.setAttribute('title', 'Showing accessibility issues.');
+	Ed11y.wpIssueToggle.setAttribute('aria-pressed', 'true');
+	Ed11y.wpIssueToggle.setAttribute('aria-describedby', 'ed11y-button-description');
+	Ed11y.wpIssueToggle.addEventListener('click', function() {
+		if (Ed11y.wpIssueToggle.getAttribute('aria-pressed') === 'true') {
+			Ed11y.wpIssueToggle.setAttribute('aria-pressed','false');
+			Ed11y.wpIssueToggle.setAttribute('title', 'Show accessibility issues');
 			let newStyles = document.querySelector('#ed11y-live-highlighter');
 			if (newStyles) {
 				newStyles.innerHTML = '';
 			}
 			ed11yOptions['showResults'] = false;
 		} else {
-			Ed11y.wpIssueLink.setAttribute('aria-pressed','true');
-			Ed11y.wpIssueLink.setAttribute('title', 'Showing issues');
+			Ed11y.wpIssueToggle.setAttribute('aria-pressed','true');
+			Ed11y.wpIssueToggle.setAttribute('title', 'Showing accessibility issues');
 			ed11yOptions['showResults'] = true;
 			ed11yUpdateCount();
 		}
 	});
-	Ed11y.wpIssueLink.textContent = "0";
-	Ed11y.wpIssueLink.setAttribute('aria-live', 'polite');
+	Ed11y.wpIssueToggle.textContent = "0";
+	Ed11y.wpIssueToggle.setAttribute('aria-live', 'polite');
 	// Todo: add event listener to transfer click to preview link. It appears to have additional functions attached.
-	ed11yPreviewLink.parentElement.insertAdjacentElement('afterend', Ed11y.wpIssueLink);
+	ed11yPreviewLink.parentElement.insertAdjacentElement('afterend', Ed11y.wpIssueToggle);
+	Ed11y.wpIssueToggle.insertAdjacentElement('afterend', ed11yButtonDescription);
+
 	let ed11yStyle = document.createElement('div');
 	ed11yStyle.setAttribute('hidden','');
 	ed11yStyle.innerHTML = `
@@ -198,7 +207,7 @@ let ed11yAdminInit = function(ed11yTarget) {
 		}
 		ed11y-element-panel { display: none !important; }
 	</style>`;
-	Ed11y.wpIssueLink.insertAdjacentElement('afterend', ed11yStyle);
+	Ed11y.wpIssueToggle.insertAdjacentElement('afterend', ed11yStyle);
 
 	// Set up change observer.
 	// Todo: set class dynamically based on target.
@@ -254,4 +263,3 @@ function ed11yMutationTimeoutWatch() {
 	  }, 500);
   }
 }
-

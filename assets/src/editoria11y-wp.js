@@ -15,11 +15,10 @@ function ed11yReady(fn) {
 // Call callback, init Editoria11y.
 ed11yReady(
 	function() {
-		if (ed11yOptions) {
+		if (!!ed11yOptions && window.location.href.indexOf('elementor-preview') === -1) {
 			// When triggered by the in-editor "issues" link, force assertive.
-			if (window.location.href.indexOf("ed11y=show") > -1) {
-				ed11yOptions['alertMode'] = 'assertive';
-				ed11yOptions['doNotRun'] = !!ed11yOptions['doNotRun'] ? ed11yOptions['doNotRun'] + ', .elementor-editor-active' : '.elementor-editor-active'; 
+			if (window.location.href.indexOf("preview=true") > -1) {
+				ed11yOptions['alertMode'] = 'assertive'; 
 			}
 			const ed11y = new Ed11y(ed11yOptions);
 		} 
