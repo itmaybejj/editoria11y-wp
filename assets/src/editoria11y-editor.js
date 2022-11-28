@@ -26,8 +26,6 @@ ed11yReady(
 let ed11yUpdateCount = function() {
 	Ed11y.wpIssueToggle.textContent = Ed11y.totalCount;
 	Ed11y.wpIssueToggle.setAttribute('aria-label', Ed11y.totalCount + ' accessibility issues')
-	// We update the href to make sure we have the right nonce.
-	// Ed11y.wpIssueToggle.setAttribute('href', ed11yPreviewLink.getAttribute('href') + '&ed11y=show');
 	if (Ed11y.errorCount > 0) {
 		Ed11y.wpIssueToggle.classList.remove('ed11y-warning', 'hidden');
 		Ed11y.wpIssueToggle.classList.add('ed11y-alert');
@@ -84,24 +82,25 @@ let ed11yUpdateCount = function() {
 					background: ${value.ring};
 					color: ${value.font};
 					display: inline-block;
-					padding: 3px 5px 2px;
+					padding: 4px 4px 2px 6px;
 					content: '${value.title.replace('?,', ',')}';
 					z-index: -1;
 					opacity: 0;
-					font-family: sans-serif;
+					font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
 					font-weight: 500;
 					line-height: 15px;
 					bottom: 0;
 					right: 0;
+					border-radius: 2px 0 0 0;
 				}
 				#${key}:not(.is-selected)::after { 
 					opacity: 1;
 					z-index: 1;
 				}
 				#${key}:not(.is-selected) { 
-					box-shadow: 0 0 0 1px #fff, inset 0 0 0 2px ${value.ring}, 0 0 0 3px ${value.ring}, 0 0 1px 3px;
-					outline: 2px solid ${value.ring};
-					outline-offset: 1px; 
+					box-shadow: 0 0 0 2px ${value.ring};
+					outline: 1px solid ${value.ring};
+					border-radius: 2px;
 				}
 			`;
 		  }
@@ -164,7 +163,7 @@ let ed11yAdminInit = function(ed11yTarget) {
 	Ed11y.wpIssueToggle = document.createElement('button');
 	Ed11y.wpIssueToggle.classList.add('components-button', 'is-secondary', 'hidden');
 	Ed11y.wpIssueToggle.setAttribute('id', 'ed11y-issue-link');
-	Ed11y.wpIssueToggle.setAttribute('title', 'Showing accessibility issues.');
+	Ed11y.wpIssueToggle.setAttribute('title', 'Hide accessibility issues.');
 	Ed11y.wpIssueToggle.setAttribute('aria-pressed', 'true');
 	Ed11y.wpIssueToggle.setAttribute('aria-describedby', 'ed11y-button-description');
 	Ed11y.wpIssueToggle.addEventListener('click', function() {
@@ -178,7 +177,7 @@ let ed11yAdminInit = function(ed11yTarget) {
 			ed11yOptions['showResults'] = false;
 		} else {
 			Ed11y.wpIssueToggle.setAttribute('aria-pressed','true');
-			Ed11y.wpIssueToggle.setAttribute('title', 'Showing accessibility issues');
+			Ed11y.wpIssueToggle.setAttribute('title', 'Hide accessibility issues');
 			ed11yOptions['showResults'] = true;
 			ed11yUpdateCount();
 		}
