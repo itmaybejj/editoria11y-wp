@@ -254,7 +254,7 @@ let ed11yFindCompatibleEditor = function() {
 let ed11yMutationTimeout;
 function ed11yMutationTimeoutWatch() {
   clearTimeout(ed11yMutationTimeout);
-  if (Ed11y.panel.classList.contains('active') === false) {
+  if (Ed11y.panel && Ed11y.panel.classList.contains('active') === false) {
 	ed11yMutationTimeout = setTimeout(function () {
 		ed11yFindNewBlocks();
 		Ed11y.options.ignoreElements = ed11yOptions['ignoreElements'];
