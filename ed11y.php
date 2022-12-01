@@ -4,7 +4,7 @@
  *
  * Plugin Name:       Editoria11y
  * Plugin URI:        https://itmaybejj.github.io/editoria11y/
- * Version:           1.0.0
+ * Version:           0.0.1
  * Requires at least: 5.6
  * Requires PHP:      7.2
  * Author:            John Jameson, Princeton University
@@ -26,6 +26,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+// Trigger class
+// https://wordpress.stackexchange.com/questions/25910/uninstall-activate-deactivate-a-plugin-typical-features-how-to/25979#25979
+register_activation_hook( __FILE__, array( 'Ed11y', 'activation' ) );
+
+// TODO: remove tables on deactivation
+//register_deactivation_hook( __FILE__, array( 'WCM_Setup_Demo_Class', 'on_deactivation' ) );
+//register_uninstall_hook(    __FILE__, array( 'WCM_Setup_Demo_Class', 'on_uninstall' ) );
+
 /**
  * Calls Editoria11y library with site config.
  */
@@ -33,8 +41,15 @@ class Ed11y {
 	const ED11Y_VERSION = '2.0.012';
 	const WP_VERSION    = '1.0.012';
 
+	protected static $instance;
+
+    public static function init() {
+        is_null( self::$instance ) AND self::$instance = new self;
+        return self::$instance;
+    }
+	
 	/**
-	 * PHP5 constructor method.
+	 * Attachs functions to loop.
 	 */
 	public function __construct() {
 
@@ -50,7 +65,10 @@ class Ed11y {
 		// Load the admin files.
 		add_action( 'plugins_loaded', array( &$this, 'admin' ), 4 );
 
-		/* Todo remove
+		//add_action( 'plugins_loaded', array( &$this, 'ed11y_install' ) );
+		
+
+		/* Todo: remove these old meta definitions kept for sample code
 		add_action(
 			'rest_api_init',
 			function () {
@@ -175,7 +193,7 @@ class Ed11y {
 	}
 
 	/**
-	 * Defines constants used by the plugin.
+	 * Defines file locations.
 	 */
 	public function constants() {
 
@@ -198,7 +216,7 @@ class Ed11y {
 	}
 
 	/**
-	 * Loads the translation files.
+	 * Loads translation files.
 	 */
 	public function i18n() {
 		load_plugin_textdomain( 'ed11y-wp', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
@@ -212,7 +230,7 @@ class Ed11y {
 	}
 
 	/**
-	 * Loads the admin functions and files.
+	 * Loads admin-only functions.
 	 */
 	public function admin() {
 		if ( is_admin() ) {
@@ -220,33 +238,44 @@ class Ed11y {
 			require_once ED11Y_ADMIN . 'admin.php';
 		}
 	}
-
+	
 	/**
-	 * Installs DB tables
+	 * Provides DB table schema.
 	 */
-	public function ed11y_install() {
+	public static function activation() {
+		if ( ! current_user_can( 'activate_plugins' ) ) {
+			return;
+		}
+        $plugin = isset( $_REQUEST['plugin'] ) ? $_REQUEST['plugin'] : '';
+        check_admin_referer( "activate-plugin_{$plugin}" );
+
 		global $wpdb;
+		$message = '<strong>hi</strong> ';
 
-		$charset_collate = $wpdb->get_charset_collate();
+		$charset_collate  = $wpdb->get_charset_collate();
 
-		$sql = "CREATE TABLE $ed11y_results (
-		id int(9) NOT NULL UNSIGNED AUTO_INCREMENT,
-		result_name varchar(255) NOT NULL,
-		result_name_count smallint(4) UNSIGNED NOT NULL,
-		entity_type varchar(255) NOT NULL,
-		page_url varchar(1024) NOT NULL,
-		page_title varchar(1024) NOT NULL,
-		page_result_count smallint(4) UNSIGNED NOT NULL,
-		created datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
-		updated datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
-		PRIMARY KEY  (id),
-		KEY page_url (page_url),
-		KEY result_name (result_name),
-		KEY entity_type (entity_type)
-		) $charset_collate;
+		$table_results    = $wpdb->prefix . 'ed11y_results';
+		$table_dismissals = $wpdb->prefix . 'ed11y_dismissals';
 
-		CREATE TABLE $ed11y_dismissals (
-			id int(9) NOT NULL UNSIGNED AUTO_INCREMENT,
+		$sql = "
+		CREATE TABLE $table_results (
+			id int(9) AUTO_INCREMENT NOT NULL,
+			result_name varchar(255) NOT NULL,
+			result_name_count smallint(4) NOT NULL,
+			entity_type varchar(255) NOT NULL,
+			page_url varchar(1024) NOT NULL,
+			page_title varchar(1024) NOT NULL,
+			page_result_count smallint(4) NOT NULL,
+			created datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
+			updated datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
+			PRIMARY KEY  (id),
+			KEY page_url (page_url),
+			KEY result_name (result_name),
+			KEY entity_type (entity_type)
+			) $charset_collate;
+		
+		CREATE TABLE $table_dismissals (
+			id int(9) AUTO_INCREMENT NOT NULL,
 			result_name varchar(255) NOT NULL,
 			entity_type varchar(255) NOT NULL,
 			page_url varchar(1024) NOT NULL,
@@ -254,23 +283,20 @@ class Ed11y {
 			created datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
 			updated datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
 			user smallint(6) NOT NULL,
-			element_id varchar(2048) UNSIGNED NOT NULL,
+			element_id varchar(2048)  NOT NULL,
 			result_key varchar(255) NOT NULL,
 			dismissal_status varchar(64) NOT NULL,
 			stale tinyint(1) NOT NULL default '0',
 			PRIMARY KEY  (id),
 			KEY page_url (page_url),
-			KEY result_name (result_name),
-			KEY element_id (element_id),
 			KEY dismissal_status (dismissal_status),
-			KEY user (user),
-			KEY entity_type (entity_type)
-			) $charset_collate;";
+			KEY user (user)
+			) $charset_collate;
+		";
 
-		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 		dbDelta( $sql );
-		add_option( 'ed11y_db_version', '0.1' );
-		register_activation_hook( 'ed11y_install' );
+		add_option( 'ed11y_db_version', '0.2' );
 	}
 
 }
