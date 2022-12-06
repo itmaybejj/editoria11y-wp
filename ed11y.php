@@ -213,6 +213,10 @@ class Ed11y {
 
 		// Set the constant path to the assets directory.
 		define( 'ED11Y_ASSETS', ED11Y_URI . trailingslashit( 'assets' ) );
+
+		require_once ED11Y_DIR . 'src/controller/class-ed11y-api-result.php';
+		$Ed11y_Api_Result = new Ed11y_Api_Result();
+		$Ed11y_Api_Result->init();
 	}
 
 	/**
@@ -223,14 +227,14 @@ class Ed11y {
 	}
 
 	/**
-	 * Loads the initial files needed by the plugin.
+	 * Loads page functions.
 	 */
 	public function includes() {
 		require_once ED11Y_INCLUDES . 'functions.php';
 	}
 
 	/**
-	 * Loads admin-only functions.
+	 * Loads admin functions.
 	 */
 	public function admin() {
 		if ( is_admin() ) {
@@ -254,43 +258,43 @@ class Ed11y {
 
 		$charset_collate  = $wpdb->get_charset_collate();
 
+		$table_urls = $wpdb->prefix . 'ed11y_urls';
 		$table_results    = $wpdb->prefix . 'ed11y_results';
 		$table_dismissals = $wpdb->prefix . 'ed11y_dismissals';
 
 		$sql = "
-		CREATE TABLE $table_results (
-			id int(9) AUTO_INCREMENT NOT NULL,
-			result_name varchar(255) NOT NULL,
-			result_name_count smallint(4) NOT NULL,
+		CREATE TABLE $table_urls (
+			page_url varchar(255) NOT NULL,
 			entity_type varchar(255) NOT NULL,
-			page_url varchar(1024) NOT NULL,
 			page_title varchar(1024) NOT NULL,
-			page_result_count smallint(4) NOT NULL,
+			page_total smallint(4) unsigned NOT NULL,
 			created datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
 			updated datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
-			PRIMARY KEY  (id),
-			KEY page_url (page_url),
-			KEY result_name (result_name),
-			KEY entity_type (entity_type)
+			PRIMARY KEY page_url (page_url)
+			) $charset_collate;
+
+		CREATE TABLE $table_results (
+			page_url varchar(255) NOT NULL,
+			result_key varchar(32) NOT NULL,
+			result_count smallint(4) NOT NULL,
+			PRIMARY KEY result (page_url, result_key),
+			FOREIGN KEY (page_url) REFERENCES $table_urls(page_url) ON DELETE CASCADE
 			) $charset_collate;
 		
 		CREATE TABLE $table_dismissals (
-			id int(9) AUTO_INCREMENT NOT NULL,
-			result_name varchar(255) NOT NULL,
-			entity_type varchar(255) NOT NULL,
-			page_url varchar(1024) NOT NULL,
-			page_title varchar(1024) NOT NULL,
+			id int(9) unsigned AUTO_INCREMENT NOT NULL,
+			page_url varchar(255) NOT NULL,
+			result_key varchar(32) NOT NULL,
 			created datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
 			updated datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
-			user smallint(6) NOT NULL,
+			user smallint(6) unsigned NOT NULL,
 			element_id varchar(2048)  NOT NULL,
-			result_key varchar(255) NOT NULL,
 			dismissal_status varchar(64) NOT NULL,
 			stale tinyint(1) NOT NULL default '0',
-			PRIMARY KEY  (id),
+			PRIMARY KEY (id),
 			KEY page_url (page_url),
-			KEY dismissal_status (dismissal_status),
-			KEY user (user)
+			KEY updated (updated),
+			FOREIGN KEY (page_url) REFERENCES $table_urls(page_url) ON DELETE CASCADE
 			) $charset_collate;
 		";
 
