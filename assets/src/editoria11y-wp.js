@@ -56,7 +56,6 @@ function ed11ySync() {
 			if (result[5] !== "ok") {
 				// log all items not marked as OK
 				let testName = result[1];
-				testName = Ed11y.M[testName].title;
 				if (results[testName]) {
 					results[testName] = parseInt(results[testName]) + 1;
 					total++;
@@ -67,7 +66,8 @@ function ed11ySync() {
 			}
 			if (result[5] === "ok") {
 				if (!results[result[1]]) {
-					oks[result[1]] = Ed11y.M[result[1]].title;
+					// wait what is this?
+					oks[result[1]] = true;
 				}
 			}
 		})
@@ -88,7 +88,6 @@ function ed11ySync() {
 				page_url: url,
 				created: 0,
 			};
-			console.log(data);
 			postData('result', data);
 		  // Short timeout to let execution queue clear.
 		}, 100)
@@ -96,55 +95,34 @@ function ed11ySync() {
 
 	let firstRun = true;
 	
-	//if (drupalSettings.editoria11y.dismissals) {
-		document.addEventListener('ed11yResults', function () {
-			if (firstRun) {
-				sendResults();
-				firstRun = false;
-			}
-		});
-	//}
-	/*
+	document.addEventListener('ed11yResults', function () {
+		if (firstRun) {
+			sendResults();
+			firstRun = false;
+		}
+	});
 
 	let sendDismissal = function (detail) {
+		console.log('dismissal event');
 		if (!!detail) {
-			let data = {};
-			if (detail.dismissAction === 'reset') {
-				data = {
-					page_path: drupalSettings.editoria11y.page_path,
-					language: drupalSettings.editoria11y.lang,
-					route_name: drupalSettings.editoria11y.route_name,
-					dismissal_status: 'reset', // ok, ignore or reset
-				};
-				window.setTimeout(function() {
-					sendResults();
-				},100);
-			} else {
-				data = {
-					page_title: drupalSettings.editoria11y.page_title,
-					page_path: drupalSettings.editoria11y.page_path,
-					language: drupalSettings.editoria11y.lang,
-					entity_type: drupalSettings.editoria11y.entity_type, // node or false
-					route_name: drupalSettings.editoria11y.route_name, // e.g., entity.node.canonical or view.frontpage.page_1
-					result_name: Ed11y.M[detail.dismissTest].title, // which test is sending a result
+			let data = {
+					page_url: Ed11y.options.currentPage,
 					result_key: detail.dismissTest, // which test is sending a result
 					element_id: detail.dismissKey, // some recognizable attribute of the item marked
 					dismissal_status: detail.dismissAction, // ok, ignore or reset
 				};
-				if (detail.dismissAction === 'ok') {
-					window.setTimeout(function() {
-						sendResults();
-					},100);
-				}
+			console.log(data);
+			postData('dismiss', data);
+			if (detail.dismissAction !== 'hide') {
+				window.setTimeout(function() {
+					sendResults();
+				},100);
 			}
-			postData('dismiss/' + detail.dismissAction, data);
 		}
 	}
-	if (drupalSettings.editoria11y.dismissals) {
-		document.addEventListener('ed11yDismissalUpdate', function (e) {
-			sendDismissal(e.detail)}, false);
-	}
-	*/
+	document.addEventListener('ed11yDismissalUpdate', function (e) {
+		sendDismissal(e.detail)}, false);
+	
 }
 
 
@@ -152,12 +130,17 @@ function ed11ySync() {
 ed11yReady(
 	function() {
 		if (!!ed11yOptions && window.location.href.indexOf('elementor-preview') === -1) {
+			Array.from(ed11yOptions.syncedDismissals).forEach(function() {
+
+			})
+			
 			// When triggered by the in-editor "issues" link, force assertive.
 			if (window.location.href.indexOf("preview=true") > -1) {
 				ed11yOptions['alertMode'] = 'assertive'; 
 			}
 			const ed11y = new Ed11y(ed11yOptions);
 			ed11ySync();
+			console.log(ed11yOptions.syncedDismissals );
 		} 
 	}
 );

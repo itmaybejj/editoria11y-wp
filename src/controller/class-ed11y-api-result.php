@@ -8,15 +8,15 @@
  */
 class Ed11y_Api_Result extends WP_REST_Controller {
 
-    /**
-     * Register routes
-    */
-    public function init() {
-        add_action(
-            'rest_api_init',
-            array( $this, 'register_routes' ),
-        );
-    }
+	/**
+	 * Register routes
+	 */
+	public function init() {
+		add_action(
+			'rest_api_init',
+			array( $this, 'register_routes' ),
+		);
+	}
 
 	/**
 	 * Register the routes for the objects of the controller.
@@ -29,11 +29,12 @@ class Ed11y_Api_Result extends WP_REST_Controller {
 			$namespace,
 			'/' . $base,
 			array(
-                'methods'             => 'PUT',
-                'callback'            => array( $this, 'update_item' ),
-                'permission_callback' => array( $this, 'update_item_permissions_check' ),
-                'args'                => $this->get_endpoint_args_for_item_schema( true ),
-				/*array(
+				'methods'             => 'PUT',
+				'callback'            => array( $this, 'update_item' ),
+				'permission_callback' => array( $this, 'update_item_permissions_check' ),
+				'args'                => $this->get_endpoint_args_for_item_schema( true ),
+				/*
+				array(
 					// Report results for a URL.
 					'methods'             => WP_REST_Server::EDITABLE,
 					'callback'            => array( $this, 'update_item' ),
@@ -181,13 +182,12 @@ class Ed11y_Api_Result extends WP_REST_Controller {
 	public function send_results( $request ) {
 		// not yet valid code
 		// see https://developer.wordpress.org/reference/classes/wpdb/ for escaping. %s string %d digits
-		$params = $request->get_params();
-        $results = $params['data'];
-		$now    = date('Y-m-d H:i:s');
-        error_log( $now );
-        $rows = 0;
-        $return = array();
-        global $wpdb;
+		$params  = $request->get_params();
+		$results = $params['data'];
+		$now     = gmdate( 'Y-m-d H:i:s' );
+		$rows   = 0;
+		$return = array();
+		global $wpdb;
 
 		if ( $results['page_count'] > 0 ) {
 			// Upsert any result rows, included a new Now in updated.
@@ -200,50 +200,56 @@ class Ed11y_Api_Result extends WP_REST_Controller {
                             (page_url,
                             entity_type,
                             page_title,
-                            page_total,
-                            created,
-                            updated)
-                        VALUES (%s, %s, %s, %s, %s, %s)
+                            page_total)
+                        VALUES (%s, %s, %s, %d)
                         ON DUPLICATE KEY UPDATE
-                            page_total = %s,
-                            updated = %s
+                            entity_type = %s,
+                            page_title = %s,
+                            page_total = %d
                         ;",
 						array(
 							$results['page_url'],
 							$results['entity_type'],
 							$results['page_title'],
 							$results['page_count'],
-							//$results['created'],
-							$now,
-                            $now,
-                            $results['page_count'],
-                            $now,
+							$results['entity_type'],
+							$results['page_title'],
+							$results['page_count'],
 						)
 					)
 				);
 
-                $rows += $response ? $response : 0;
-                $return[] = $response; 
+				$rows    += $response ? $response : 0;
+				$return[] = $response;
 
 				// Update results table.
 				$response = $wpdb->query(
 					$wpdb->prepare(
 						"INSERT INTO {$wpdb->prefix}ed11y_results 
-                            page_url,
+                            (page_url,
                             result_key,
-                            result_count
-                        VALUES %s, %s, %s 
-                        ON DUPLICATE KEY UPDATE;",
+                            result_count,
+                            created,
+                            updated)
+                        VALUES (%s, %s, %d, %s, %s) 
+                        ON DUPLICATE KEY UPDATE
+                            result_count = %d,
+                            updated = %s
+                            ;",
 						array(
 							$results['page_url'],
 							$key,
 							$value,
+                            $now,
+                            $now,
+                            $value,
+                            $now,
 						)
 					)
 				);
 
-                $rows += $response ? $response : 0;
-                $return[] = $response;
+				$rows    += $response ? $response : 0;
+				$return[] = $response;
 
 				// Update dismissal table.
 				$response = $wpdb->query(
@@ -259,55 +265,55 @@ class Ed11y_Api_Result extends WP_REST_Controller {
 					)
 				);
 
-                $rows += $response ? $response : 0;
-                $return[] = $response;
+				$rows    += $response ? $response : 0;
+				$return[] = $response;
 			}
 		} else {
-            // Delete URL if total is 0, record if it never existed.
-            $response = $wpdb->query( 
-                $wpdb->prepare(
-                    "DELETE FROM {$wpdb->prefix}ed11y_urls WHERE page_url = %s AND updated != %s;",
-                    array(
-                        $results['page_url'],
-                        $now,
-                    )
-                )
-            );
+			// Delete URL if total is 0, record if it never existed.
+			$response = $wpdb->query(
+				$wpdb->prepare(
+					"DELETE FROM {$wpdb->prefix}ed11y_urls WHERE page_url = %s AND updated != %s;",
+					array(
+						$results['page_url'],
+						$now,
+					)
+				)
+			);
 
-            $rows += $response ? $response : 0;
-            $return[] = $response;
-        }
+			$rows    += $response ? $response : 0;
+			$return[] = $response;
+		}
 
-        // Clear old values if there is any chance they exist.
-        if ( 0 !== $rows ) {
-            // Remove any old results.
-            $response = $wpdb->query( 
-                $wpdb->prepare(
-                    "DELETE FROM {$wpdb->prefix}ed11y_results WHERE page_url = %s AND updated != %s;",
-                    array(
-                        $results['page_url'],
-                        $now,
-                    )
-                )
-            );
-            $rows += $response ? $response : 0;
-            $return[] = $response;
+		// Clear old values if there is any chance they exist.
+		if ( 0 !== $rows ) {
+			// Remove any old results.
+			$response = $wpdb->query(
+				$wpdb->prepare(
+					"DELETE FROM {$wpdb->prefix}ed11y_results WHERE page_url = %s AND updated != %s;",
+					array(
+						$results['page_url'],
+						$now,
+					)
+				)
+			);
+			$rows    += $response ? $response : 0;
+			$return[] = $response;
 
-            // Mark any out-of-date dismissals as stale.
-            $response = $wpdb->query(
-                $wpdb->prepare(
-                    "UPDATE {$wpdb->prefix}ed11y_dismissals 
+			// Mark any out-of-date dismissals as stale.
+			$response = $wpdb->query(
+				$wpdb->prepare(
+					"UPDATE {$wpdb->prefix}ed11y_dismissals 
                     SET stale = 1
                     WHERE page_url = %s AND updated != %s;",
-                    array(
-                        $results['page_url'],
-                        $now,
-                    )
-                )
-            );
-            $rows += $response ? $response : 0;
-            $return[] = $response;
-        }
+					array(
+						$results['page_url'],
+						$now,
+					)
+				)
+			);
+			$rows    += $response ? $response : 0;
+			$return[] = $response;
+		}
 
 		return $return;
 	}

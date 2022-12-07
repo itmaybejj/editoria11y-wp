@@ -140,6 +140,22 @@ function ed11y_init() {
 			$ed11y_page = home_url( $wp->request );
 		}
 
+        global $wpdb;
+        $dismissals_on_page = $wpdb->get_results(
+			"SELECT * FROM {$wpdb->prefix}ed11y_dismissals;"
+		);
+        error_log ( wp_json_encode( $dismissals_on_page ));
+        $synced_dismissals = array();
+        foreach ( $dismissals_on_page as $key => $value ) {
+            $synced_dismissals[ $value->result_key ][ $value->element_id ] = $value->dismissal_status;
+            
+        }
+        error_log( wp_json_encode( $synced_dismissals ) );
+        
+        
+
+
+
 		// Allowed characters before echoing.
 		$r = array(
 			'&gt;'   => '>',
@@ -162,6 +178,7 @@ function ed11y_init() {
                 preventCheckingIfPresent: \'' . $ed11y_no_run . '\',
 				currentPage : \'' . $ed11y_page . '\',
 				admin: false,
+                syncedDismissals: ' . wp_json_encode( $synced_dismissals ) . ',
                 title : \'' . $debugtitle . '\',
                 ' . $extra_props . '
             };

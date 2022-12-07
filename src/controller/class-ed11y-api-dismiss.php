@@ -1,37 +1,64 @@
 <?php
 /**
  * Stores tests results
+ * Reference https://developer.wordpress.org/rest-api/extending-the-rest-api/controller-classes/
+ * POST v PUT in https://developer.wordpress.org/reference/classes/wp_rest_server/
  *
- * @package Editoria11y
+ * @package         Editoria11y
  */
-
 class Ed11y_Api_Dismiss extends WP_REST_Controller {
+
+	/**
+	 * Register routes
+	 */
+	public function init() {
+		add_action(
+			'rest_api_init',
+			array( $this, 'register_routes' ),
+		);
+	}
 
 	/**
 	 * Register the routes for the objects of the controller.
 	 */
 	public function register_routes() {
 		$version   = '1';
-		$namespace = 'vendor/v' . $version;
-		$base      = 'route';
+		$namespace = 'ed11y/v' . $version;
+		$base      = 'dismiss';
+		// Set up single-page routes
 		register_rest_route(
 			$namespace,
 			'/' . $base,
 			array(
 				array(
+					// Report results for a URL.
 					'methods'             => WP_REST_Server::READABLE,
-					'callback'            => array( $this, 'get_items' ),
-					'permission_callback' => array( $this, 'get_items_permissions_check' ),
-					'args'                => array(),
-				),
-				array(
-					'methods'             => WP_REST_Server::CREATABLE,
-					'callback'            => array( $this, 'create_item' ),
-					'permission_callback' => array( $this, 'create_item_permissions_check' ),
+					'callback'            => array( $this, 'get_item' ),
+					'permission_callback' => array( $this, 'update_item_permissions_check' ),
 					'args'                => $this->get_endpoint_args_for_item_schema( true ),
 				),
+				array(
+					// Report results for a URL.
+					'methods'             => WP_REST_Server::EDITABLE,
+					'callback'            => array( $this, 'update_item' ),
+					'permission_callback' => array( $this, 'update_item_permissions_check' ),
+					'args'                => $this->get_endpoint_args_for_item_schema( true ),
+				),
+				/*
+				array(
+					// Purge results for a URL.
+					'methods'             => WP_REST_Server::DELETABLE,
+					'callback'            => array( $this, 'delete_item' ),
+					'permission_callback' => array( $this, 'delete_item_permissions_check' ),
+					'args'                => array(
+						'force' => array(
+							'default' => false,
+						),
+					),
+				),*/
 			)
 		);
+		/*
 		register_rest_route(
 			$namespace,
 			'/' . $base . '/(?P<id>[\d]+)',
@@ -71,7 +98,7 @@ class Ed11y_Api_Dismiss extends WP_REST_Controller {
 				'methods'  => WP_REST_Server::READABLE,
 				'callback' => array( $this, 'get_public_item_schema' ),
 			)
-		);
+		);*/
 	}
 
 	/**
@@ -80,6 +107,7 @@ class Ed11y_Api_Dismiss extends WP_REST_Controller {
 	 * @param WP_REST_Request $request Full data about the request.
 	 * @return WP_Error|WP_REST_Response
 	 */
+	/*
 	public function get_items( $request ) {
 		$items = array(); // do a query, call another class, etc
 		$data  = array();
@@ -89,7 +117,7 @@ class Ed11y_Api_Dismiss extends WP_REST_Controller {
 		}
 
 		return new WP_REST_Response( $data, 200 );
-	}
+	}*/
 
 	/**
 	 * Get one item from the collection
@@ -98,46 +126,55 @@ class Ed11y_Api_Dismiss extends WP_REST_Controller {
 	 * @return WP_Error|WP_REST_Response
 	 */
 	public function get_item( $request ) {
-		// get parameters from request
-		$params = $request->get_params();
-		$item   = array();// do a query, call another class, etc
-		$data   = $this->prepare_item_for_response( $item, $request );
-
-		// return a response or error based on some conditional
-		if ( 1 == 1 ) {
+		// get parameters from request.
+		$data = $this->get_dismissals_for_user( $request );
+		if ( is_array( $data ) ) {
 			return new WP_REST_Response( $data, 200 );
-		} else {
-			return new WP_Error( 'code', __( 'message', 'text-domain' ) );
 		}
+
+		return new WP_Error( 'cant-update', __( 'Results not recorded', 'editoria11y' ), array( 'status' => 500 ) );
 	}
 
 	/**
-	 * Create one item from the collection
+	 * Pulls any dismissals relevant to a user for a given route.
+	 */
+	public function get_dismissals_for_user( $request ) {
+		$params  = $request->get_params();
+		$results = $params['data'];
+		global $wpdb;
+		$user       = wp_get_current_user();
+		$dismissals = $wpdb->query(
+			$wpdb->prepare(
+				"SELECT FROM {$wpdb->prefix}ed11y_dismissals 
+				WHERE page_url = %s 
+				AND (
+					dismissal_status = 'ok'
+					OR
+					(
+						dismissal_status = 'hide'
+						AND
+						user = %d
+					)
+				);",
+				array(
+					$results['page_url'],
+					wp_get_current_user(),
+				),
+			)
+		);
+		return $dismissals;
+	}
+
+
+	/**
+	 * Edit one item from the collection
 	 *
 	 * @param WP_REST_Request $request Full data about the request.
 	 * @return WP_Error|WP_REST_Response
 	 */
+	/*
 	public function create_item( $request ) {
-		$item = $this->prepare_item_for_database( $request );
-
-		if ( function_exists( 'slug_some_function_to_create_item' ) ) {
-			$data = slug_some_function_to_create_item( $item );
-			if ( is_array( $data ) ) {
-				return new WP_REST_Response( $data, 200 );
-			}
-		}
-
-		return new WP_Error( 'cant-create', __( 'message', 'text-domain' ), array( 'status' => 500 ) );
-	}
-
-	/**
-	 * Update one item from the collection
-	 *
-	 * @param WP_REST_Request $request Full data about the request.
-	 * @return WP_Error|WP_REST_Response
-	 */
-	public function update_item( $request ) {
-		$item = $this->prepare_item_for_database( $request );
+		$item = $this->prepare_results( $request );
 
 		if ( function_exists( 'slug_some_function_to_update_item' ) ) {
 			$data = slug_some_function_to_update_item( $item );
@@ -146,8 +183,97 @@ class Ed11y_Api_Dismiss extends WP_REST_Controller {
 			}
 		}
 
-		return new WP_Error( 'cant-update', __( 'message', 'text-domain' ), array( 'status' => 500 ) );
+		return new WP_Error( 'cant-create', __( 'message', 'text-domain' ), array( 'status' => 500 ) );
+	}*/
+
+	/**
+	 * Update one item from the collection
+	 *
+	 * @param WP_REST_Request $request Full data about the request.
+	 * @return WP_Error|WP_REST_Response
+	 */
+	public function update_item( $request ) {
+
+		$data = $this->send_results( $request );
+		if ( is_numeric( $data ) ) {
+			return new WP_REST_Response( $data, 200 );
+		}
+
+		return new WP_Error( 'cant-update', __( 'Results not recorded', 'editoria11y' ), array( 'status' => 500 ) );
 	}
+
+	/**
+	 *
+	 * Attempts to send item to DB
+	 *
+	 * @param WP_REST_Request $request Full data about the request.
+	 */
+	public function send_results( $request ) {
+		// not yet valid code
+		// see https://developer.wordpress.org/reference/classes/wpdb/ for escaping. %s string %d digits
+		$params  = $request->get_params();
+		$results = $params['data'];
+		$now     = gmdate( 'Y-m-d H:i:s' );
+		global $wpdb;
+
+		if ( 'reset' === $results['dismissal_status'] ) {
+
+			// Delete URL if total is 0, record if it never existed.
+			$response = $wpdb->query(
+				$wpdb->prepare(
+					"DELETE FROM {$wpdb->prefix}ed11y_dismissals 
+					WHERE page_url = %s 
+					AND (
+						dismissal_status = 'ok'
+						OR
+						(
+							dismissal_status = 'hide'
+							AND
+							user = %d
+						)
+					);",
+					array(
+						$results['page_url'],
+						wp_get_current_user(),
+					)
+				)
+			);
+
+			return $response;
+
+		} else {
+
+			$response = $wpdb->query(
+				$wpdb->prepare(
+					"INSERT INTO {$wpdb->prefix}ed11y_dismissals 
+						(page_url,
+						result_key,
+						user,
+						element_id,
+						dismissal_status,
+						created,
+						updated,
+						stale)
+					VALUES (%s, %s, %d, %s, %s, %s, %s, %d) 
+						;",
+					array(
+						$results['page_url'],
+						$results['result_key'],
+						wp_get_current_user(),
+						$results['element_id'],
+						$results['dismissal_status'],
+						$now,
+						$now,
+						0,
+					)
+				)
+			);
+
+			return $response;
+		}
+
+	}
+
 
 	/**
 	 * Delete one item from the collection
@@ -156,10 +282,12 @@ class Ed11y_Api_Dismiss extends WP_REST_Controller {
 	 * @return WP_Error|WP_REST_Response
 	 */
 	public function delete_item( $request ) {
-		$item = $this->prepare_item_for_database( $request );
+		$item = $this->prepare_results( $request );
 
 		if ( function_exists( 'slug_some_function_to_delete_item' ) ) {
 			$deleted = slug_some_function_to_delete_item( $item );
+			// like $wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->comments} WHERE comment_id IN ( " . $format_string . " )", $comment_ids ) );
+
 			if ( $deleted ) {
 				return new WP_REST_Response( true, 200 );
 			}
@@ -174,10 +302,11 @@ class Ed11y_Api_Dismiss extends WP_REST_Controller {
 	 * @param WP_REST_Request $request Full data about the request.
 	 * @return WP_Error|bool
 	 */
+	/*
 	public function get_items_permissions_check( $request ) {
 		// return true; <--use to make readable by all
 		return current_user_can( 'edit_something' );
-	}
+	}*/
 
 	/**
 	 * Check if a given request has access to get a specific item
@@ -185,9 +314,10 @@ class Ed11y_Api_Dismiss extends WP_REST_Controller {
 	 * @param WP_REST_Request $request Full data about the request.
 	 * @return WP_Error|bool
 	 */
+	/*
 	public function get_item_permissions_check( $request ) {
 		return $this->get_items_permissions_check( $request );
-	}
+	}*/
 
 	/**
 	 * Check if a given request has access to create items
@@ -195,9 +325,10 @@ class Ed11y_Api_Dismiss extends WP_REST_Controller {
 	 * @param WP_REST_Request $request Full data about the request.
 	 * @return WP_Error|bool
 	 */
+	/*
 	public function create_item_permissions_check( $request ) {
 		return current_user_can( 'edit_something' );
-	}
+	}*/
 
 	/**
 	 * Check if a given request has access to update a specific item
@@ -206,7 +337,7 @@ class Ed11y_Api_Dismiss extends WP_REST_Controller {
 	 * @return WP_Error|bool
 	 */
 	public function update_item_permissions_check( $request ) {
-		return $this->create_item_permissions_check( $request );
+		return current_user_can( 'edit_posts' );
 	}
 
 	/**
@@ -216,7 +347,7 @@ class Ed11y_Api_Dismiss extends WP_REST_Controller {
 	 * @return WP_Error|bool
 	 */
 	public function delete_item_permissions_check( $request ) {
-		return $this->create_item_permissions_check( $request );
+		return current_user_can( 'edit_others_posts' );
 	}
 
 	/**
@@ -225,8 +356,28 @@ class Ed11y_Api_Dismiss extends WP_REST_Controller {
 	 * @param WP_REST_Request $request Request object
 	 * @return WP_Error|object $prepared_item
 	 */
-	protected function prepare_item_for_database( $request ) {
-		return array();
+	protected function prepare_results( $request ) {
+		$params = $request->get_params();
+		$now    = time();
+		$item   = (object) array();
+		foreach ( $params['results'] as $key => $value ) {
+			if ( $results['page_count'] > 0 ) {
+				$item[] = array(
+					'page_title'        => $results['page_title'],
+					'page_path'         => $results['page_path'],
+					'page_url'          => $results['page_url'],
+					'page_language'     => $results['language'],
+					'page_result_count' => $results['page_count'],
+					'entity_type'       => $results['entity_type'],
+					'route_name'        => $results['route_name'],
+					'result_name'       => $key,
+					'result_name_count' => $value,
+					'updated'           => $now,
+					'created'           => $now,
+				);
+			}
+		}
+		return $item;
 	}
 
 	/**
@@ -245,6 +396,7 @@ class Ed11y_Api_Dismiss extends WP_REST_Controller {
 	 *
 	 * @return array
 	 */
+	/*
 	public function get_collection_params() {
 		return array(
 			'page'     => array(
@@ -265,5 +417,5 @@ class Ed11y_Api_Dismiss extends WP_REST_Controller {
 				'sanitize_callback' => 'sanitize_text_field',
 			),
 		);
-	}
+	}*/
 }
