@@ -8,9 +8,9 @@ mkdir -p tmp/
 cd tmp/
 git clone git@github.com:itmaybejj/editoria11y.git .
 git checkout $GIT_REF
-rm ../assets/src/editoria11y.min.js
-rm ../assets/src/editoria11y.min.js.map
-mv dist/editoria11y.min.js ../assets/src/
-mv dist/editoria11y.min.js.map ../assets/src/
+rm ../assets/lib/editoria11y.min.js
+rm ../assets/lib/editoria11y.min.js.map
+mv dist/editoria11y.min.js ../assets/lib/
+mv dist/editoria11y.min.js.map ../assets/lib/
 cd ../
 rm -rf tmp

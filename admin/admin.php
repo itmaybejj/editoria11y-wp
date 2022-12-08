@@ -109,15 +109,6 @@ function ed11y_setting_sections_fields() {
 
 	/* Fields */
 
-	// Add enable/disable checkbox setting field.
-	add_settings_field(
-		'ed11y_enable',
-		esc_html__( 'Enable Editoria11y', 'ed11y-wp' ),
-		'ed11y_enable_field',
-		'ed11y',
-		'ed11y_general_settings',
-		array( 'label_for' => 'ed11y_enable' )
-	);
 
 	// Add 'Check Roots' input setting field.
 	add_settings_field(
@@ -198,22 +189,6 @@ function ed11y_setting_sections_fields() {
 	);
 }
 add_action( 'admin_init', 'ed11y_setting_sections_fields' );
-
-/**
- * Enable/disable field
- */
-function ed11y_enable_field() {
-	$settings = ed11y_get_plugin_settings( 'ed11y_enable' );
-	?>
-	<input id="ed11y_enable" type="checkbox" name="ed11y_plugin_settings[ed11y_enable]" aria-describedby="enable_description" value="1" <?php checked( 1, $settings ); ?> />
-	<p id="enable_description">
-		<?php
-			$string = 'Enable for all administrators, editors, authors, contributors, and anyone who has permissions to edit posts and pages.';
-			echo wp_kses( __( $string, 'ed11y-wp' ), ed11y_get_allowed_html() );
-		?>
-	</p>
-	<?php
-}
 
 /**
  * Target field
@@ -471,11 +446,6 @@ function ed11y_plugin_settings_validate( $settings ) {
 	);
 	$target_remove = array_merge( $remove, $remove_extra );
 
-	/* Basic settings */
-	$settings['ed11y_enable'] = ( isset(
-		$settings['ed11y_enable']
-	) && 1 === $settings['ed11y_enable'] ? 1 : 0 );
-
 	$settings['ed11y_checkRoots'] = strtr(
 		sanitize_text_field( $settings['ed11y_checkRoots'] ),
 		$target_remove
@@ -538,3 +508,28 @@ function ed11y_plugin_settings_validate( $settings ) {
 
 	return $settings;
 }
+
+
+
+/**
+ * Render the plugin settings page.
+ */
+function editoria11y_dashboard() {
+	//require_once ED11Y_ADMIN . 'dashboard.php';
+		//$ed11y_api_dismiss = new Ed11y_Api_Dismiss();
+		//$ed11y_api_dismiss->init();
+	//require_once ED11Y_ADMIN . 'dashboard.php';
+	//$ed11y_dashboard = new Ed11y_Dashboard();
+	wp_enqueue_script( 'ed11y-wp-js', trailingslashit( ED11Y_ASSETS ) . 'js/editoria11y-dashboard.js', array( 'wp-api' ), true, Ed11y::ED11Y_VERSION, false );
+	echo '<div id="ed1"><h1>Editoria11y Dashboard</h1></div>';
+
+	//echo $ed11y_dashboard->dashboard(); // HTML strings are escaped in class.
+
+}
+
+add_action( 'admin_menu', 'ed11y_dashboard_menu' );
+function ed11y_dashboard_menu() {
+	add_menu_page( esc_html__( 'Editoria11y', 'ed11y-wp' ), esc_html__( 'Editoria11y', 'ed11y-wp' ), 'manage_options', ED11Y_ADMIN . 'admin.php', 'editoria11y_dashboard', false, 90 );
+};
+
+

@@ -40,38 +40,41 @@ let ed11yUpdateCount = function() {
 		let ed11yStyles = '';
 		let ed11yKnownContainers = {};
 		Ed11y.results.forEach(result => {
-			let ed11yContainerId = result[0].closest('.wp-block').getAttribute('id');
-			let ed11yRingColor = !result[4] ? Ed11y.color.alert : Ed11y.color.warning;
-			let ed11yFontColor = !result[4] ? '#fff' : '#111';
-			// Concatenate results when multiple hits in same black.
-			if (!ed11yKnownContainers[ed11yContainerId]) {
-				// First alert in block.
-				ed11yKnownContainers[ed11yContainerId] = {
-					title : Ed11y.M[result[1]]['title'],
-					ring : ed11yRingColor,
-					font : ed11yFontColor,
-				};
-			} else {
-				if (ed11yKnownContainers[ed11yContainerId]['title'].indexOf(Ed11y.M[result[1]]['title']) === -1) {
-					// First alert of this type in block.
-					if (ed11yKnownContainers[ed11yContainerId]['ring'] !== ed11yRingColor) {
-						// If one is red, red wins.
-						ed11yRingColor = Ed11y.color.alert;
-					}
-					// Put question marks at end.
-					let ed11yNewTitle = '';
-					if (Ed11y.M[result[1]]['title'].indexOf('?') === -1) {
-						ed11yNewTitle =  Ed11y.M[result[1]]['title'] + ', ' + ed11yKnownContainers[ed11yContainerId]['title']
-					} else {
-						ed11yNewTitle = ed11yKnownContainers[ed11yContainerId]['title'] + ', ' + Ed11y.M[result[1]]['title']
-					}
+			if (result[5] === false) {
+				let ed11yContainerId = result[0].closest('.wp-block').getAttribute('id');
+				let ed11yRingColor = !result[4] ? Ed11y.color.alert : Ed11y.color.warning;
+				let ed11yFontColor = !result[4] ? '#fff' : '#111';
+				// Concatenate results when multiple hits in same black.
+				if (!ed11yKnownContainers[ed11yContainerId]) {
+					// First alert in block.
 					ed11yKnownContainers[ed11yContainerId] = {
-						title : ed11yNewTitle,
+						title : Ed11y.M[result[1]]['title'],
 						ring : ed11yRingColor,
 						font : ed11yFontColor,
 					};
-				} 
+				} else {
+					if (ed11yKnownContainers[ed11yContainerId]['title'].indexOf(Ed11y.M[result[1]]['title']) === -1) {
+						// First alert of this type in block.
+						if (ed11yKnownContainers[ed11yContainerId]['ring'] !== ed11yRingColor) {
+							// If one is red, red wins.
+							ed11yRingColor = Ed11y.color.alert;
+						}
+						// Put question marks at end.
+						let ed11yNewTitle = '';
+						if (Ed11y.M[result[1]]['title'].indexOf('?') === -1) {
+							ed11yNewTitle =  Ed11y.M[result[1]]['title'] + ', ' + ed11yKnownContainers[ed11yContainerId]['title']
+						} else {
+							ed11yNewTitle = ed11yKnownContainers[ed11yContainerId]['title'] + ', ' + Ed11y.M[result[1]]['title']
+						}
+						ed11yKnownContainers[ed11yContainerId] = {
+							title : ed11yNewTitle,
+							ring : ed11yRingColor,
+							font : ed11yFontColor,
+						};
+					} 
+				}
 			}
+			
 		})
 
 		for (const [key, value] of Object.entries(ed11yKnownContainers)) {

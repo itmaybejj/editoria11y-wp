@@ -27,12 +27,12 @@ function ed11ySync() {
 		}).then(function(response){
 			return response.json();
 		}).then(function(post){
-			console.log(post);
+			//console.log(post);
 		});
 	}
 
 	// Purge changed aliases & deleted pages.
-	/* Purge isn't ready yet.
+	/* todo: Purge isn't ready yet.
 	let urlParams = new URLSearchParams(window.location.search);
 	if (urlParams.has('ed1ref') && urlParams.get('ed1ref') !== ed11yOptions.currentPage) {
 		let data = {
@@ -103,7 +103,6 @@ function ed11ySync() {
 	});
 
 	let sendDismissal = function (detail) {
-		console.log('dismissal event');
 		if (!!detail) {
 			let data = {
 					page_url: Ed11y.options.currentPage,
@@ -111,7 +110,6 @@ function ed11ySync() {
 					element_id: detail.dismissKey, // some recognizable attribute of the item marked
 					dismissal_status: detail.dismissAction, // ok, ignore or reset
 				};
-			console.log(data);
 			postData('dismiss', data);
 			if (detail.dismissAction !== 'hide') {
 				window.setTimeout(function() {
@@ -130,17 +128,15 @@ function ed11ySync() {
 ed11yReady(
 	function() {
 		if (!!ed11yOptions && window.location.href.indexOf('elementor-preview') === -1) {
-			Array.from(ed11yOptions.syncedDismissals).forEach(function() {
-
-			})
-			
+			if (ed11yOptions.title.length < 3) {
+				ed11yOptions.title = document.title;
+			}			
 			// When triggered by the in-editor "issues" link, force assertive.
 			if (window.location.href.indexOf("preview=true") > -1) {
 				ed11yOptions['alertMode'] = 'assertive'; 
 			}
 			const ed11y = new Ed11y(ed11yOptions);
 			ed11ySync();
-			console.log(ed11yOptions.syncedDismissals );
 		} 
 	}
 );

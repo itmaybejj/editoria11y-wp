@@ -194,9 +194,9 @@ class Ed11y_Api_Dismiss extends WP_REST_Controller {
 	 */
 	public function update_item( $request ) {
 
-		$data = $this->send_results( $request );
+		$data = $this->send_dismissal( $request );
 		if ( is_numeric( $data ) ) {
-			return new WP_REST_Response( $data, 200 );
+			return new WP_REST_Response( 'Success', 200 );
 		}
 
 		return new WP_Error( 'cant-update', __( 'Results not recorded', 'editoria11y' ), array( 'status' => 500 ) );
@@ -208,7 +208,7 @@ class Ed11y_Api_Dismiss extends WP_REST_Controller {
 	 *
 	 * @param WP_REST_Request $request Full data about the request.
 	 */
-	public function send_results( $request ) {
+	public function send_dismissal( $request ) {
 		// not yet valid code
 		// see https://developer.wordpress.org/reference/classes/wpdb/ for escaping. %s string %d digits
 		$params  = $request->get_params();
@@ -356,7 +356,7 @@ class Ed11y_Api_Dismiss extends WP_REST_Controller {
 	 * @param WP_REST_Request $request Request object
 	 * @return WP_Error|object $prepared_item
 	 */
-	protected function prepare_results( $request ) {
+	/*protected function prepare_results( $request ) {
 		$params = $request->get_params();
 		$now    = time();
 		$item   = (object) array();
@@ -378,7 +378,7 @@ class Ed11y_Api_Dismiss extends WP_REST_Controller {
 			}
 		}
 		return $item;
-	}
+	}*/
 
 	/**
 	 * Prepare the item for the REST response

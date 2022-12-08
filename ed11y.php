@@ -4,7 +4,7 @@
  *
  * Plugin Name:       Editoria11y
  * Plugin URI:        https://itmaybejj.github.io/editoria11y/
- * Version:           0.0.1
+ * Version:           0.0.2
  * Requires at least: 5.6
  * Requires PHP:      7.2
  * Author:            John Jameson, Princeton University
@@ -38,8 +38,8 @@ register_uninstall_hook(    __FILE__, array( 'Ed11y', 'uninstall' ) );
  * Calls Editoria11y library with site config.
  */
 class Ed11y {
-	const ED11Y_VERSION = '2.0.012';
-	const WP_VERSION    = '1.0.012';
+	const ED11Y_VERSION = '2.0.013';
+	const WP_VERSION    = '1.0.013';
 
 	protected static $instance;
 

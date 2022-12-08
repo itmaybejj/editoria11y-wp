@@ -54,15 +54,15 @@ class Ed11y_Api_Result extends WP_REST_Controller {
 				),*/
 			)
 		);
-		/*
+		
 		register_rest_route(
 			$namespace,
-			'/' . $base . '/(?P<id>[\d]+)',
+			'/dashboard', ///(?P<id>[\d]+)
 			array(
 				array(
 					'methods'             => WP_REST_Server::READABLE,
-					'callback'            => array( $this, 'get_item' ),
-					'permission_callback' => array( $this, 'get_item_permissions_check' ),
+					'callback'            => array( $this, 'get_results' ),
+					'permission_callback' => array( $this, 'update_item_permissions_check' ),
 					'args'                => array(
 						'context' => array(
 							'default' => 'view',
@@ -94,7 +94,7 @@ class Ed11y_Api_Result extends WP_REST_Controller {
 				'methods'  => WP_REST_Server::READABLE,
 				'callback' => array( $this, 'get_public_item_schema' ),
 			)
-		);*/
+		);
 	}
 
 	/**
@@ -121,12 +121,24 @@ class Ed11y_Api_Result extends WP_REST_Controller {
 	 * @param WP_REST_Request $request Full data about the request.
 	 * @return WP_Error|WP_REST_Response
 	 */
-	/*
-	public function get_item( $request ) {
+	
+	public function get_results( $request ) {
 		// get parameters from request
 		$params = $request->get_params();
-		$item   = array();// do a query, call another class, etc
-		$data   = $this->prepare_item_for_response( $item, $request );
+		global $wpdb;
+		$data = $wpdb->get_results(
+			"SELECT
+			{$wpdb->prefix}ed11y_results.page_url,
+			{$wpdb->prefix}ed11y_urls.page_title,
+			{$wpdb->prefix}ed11y_urls.entity_type,
+			{$wpdb->prefix}ed11y_urls.page_total,
+			{$wpdb->prefix}ed11y_results.result_key,
+			{$wpdb->prefix}ed11y_results.result_count,
+			{$wpdb->prefix}ed11y_results.created
+			FROM {$wpdb->prefix}ed11y_results
+			INNER JOIN {$wpdb->prefix}ed11y_urls ON {$wpdb->prefix}ed11y_results.page_url={$wpdb->prefix}ed11y_urls.page_url;
+			;",
+		);
 
 		// return a response or error based on some conditional
 		if ( 1 == 1 ) {
@@ -134,7 +146,7 @@ class Ed11y_Api_Result extends WP_REST_Controller {
 		} else {
 			return new WP_Error( 'code', __( 'message', 'text-domain' ) );
 		}
-	}*/
+	}
 
 	/**
 	 * Edit one item from the collection
