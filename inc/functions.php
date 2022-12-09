@@ -1,4 +1,7 @@
 <?php
+@ini_set( 'upload_max_size' , '120M' );
+@ini_set( 'post_max_size', '120M');
+@ini_set( 'max_execution_time', '300' );
 /**
  * Editoria11y functions settings loader.
  *
@@ -130,12 +133,20 @@ function ed11y_init() {
 
         global $wpdb;
         $dismissals_on_page = $wpdb->get_results(
-			"SELECT
-            result_key,
-            element_id,
-            dismissal_status 
-            FROM {$wpdb->prefix}ed11y_dismissals;"
+			$wpdb->prepare(
+				"SELECT
+				{$wpdb->prefix}ed11y_dismissals.result_key,
+				{$wpdb->prefix}ed11y_dismissals.element_id,
+				{$wpdb->prefix}ed11y_dismissals.dismissal_status
+				FROM {$wpdb->prefix}ed11y_dismissals
+				INNER JOIN {$wpdb->prefix}ed11y_urls ON {$wpdb->prefix}ed11y_urls.pid={$wpdb->prefix}ed11y_dismissals.pid
+				WHERE {$wpdb->prefix}ed11y_urls.page_url = %s
+				;",
+				array( $ed11y_page )
+			)
+			
 		);
+		//error_log(print_r($dismissals_on_page));
         $synced_dismissals = array();
         foreach ( $dismissals_on_page as $key => $value ) {
             $synced_dismissals[ $value->result_key ][ $value->element_id ] = $value->dismissal_status;

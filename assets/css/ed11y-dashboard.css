@@ -1,0 +1,49 @@
+#ed1 {
+    width: 98%;
+}
+
+#ed1 table {
+    border-spacing: 0;
+    width: 100%;
+    margin: 2em 0;
+}
+#ed1 td, #ed1 th {
+    padding: .5em;
+    text-align: left;
+    border: 0;
+}
+
+#ed1 a, #ed1 td button {
+    color: #2271b1;
+    text-decoration: underline;
+    font-weight: 500;
+}
+#ed1 a:hover, #ed1 td button:hover {
+    color: #111;
+}
+
+#ed1 th {background-color: rgb(210, 210, 238);}
+#ed1 tr {background-color: #fefefe;}
+#ed1 tr:nth-child(2n + 1) {background-color: rgb(244, 244, 248);}
+
+#ed1 .ascending::after, #ed1 .descending::after {
+    content: "^";
+    display: inline-block;
+    padding: 0 .25rem;
+}
+#ed1 .descending::after {
+    transform: rotate(180deg);
+} 
+
+#ed1 button {
+    border: transparent;
+    background: transparent;
+    padding: .25em 0;
+    display: block;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+}
+#ed1 button:hover, #ed1 button:focus-visible {
+    text-decoration: underline;
+}

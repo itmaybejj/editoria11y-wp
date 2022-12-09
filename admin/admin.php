@@ -520,7 +520,8 @@ function editoria11y_dashboard() {
 		//$ed11y_api_dismiss->init();
 	//require_once ED11Y_ADMIN . 'dashboard.php';
 	//$ed11y_dashboard = new Ed11y_Dashboard();
-	wp_enqueue_script( 'ed11y-wp-js', trailingslashit( ED11Y_ASSETS ) . 'js/editoria11y-dashboard.js', array( 'wp-api' ), true, Ed11y::ED11Y_VERSION, false );
+	wp_enqueue_script( 'ed11y-wp-js', trailingslashit( ED11Y_ASSETS ) . 'js/ed11y-dashboard.js', array( 'wp-api' ), true, Ed11y::ED11Y_VERSION, false );
+	wp_enqueue_style( 'ed11y-wp-css', trailingslashit( ED11Y_ASSETS ) . 'css/ed11y-dashboard.css', null );
 	echo '<div id="ed1"><h1>Editoria11y Dashboard</h1></div>';
 
 	//echo $ed11y_dashboard->dashboard(); // HTML strings are escaped in class.

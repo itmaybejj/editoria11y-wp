@@ -30,13 +30,13 @@ class Ed11y_Api_Dismiss extends WP_REST_Controller {
 			$namespace,
 			'/' . $base,
 			array(
-				array(
+				/*array(
 					// Report results for a URL.
 					'methods'             => WP_REST_Server::READABLE,
 					'callback'            => array( $this, 'get_item' ),
 					'permission_callback' => array( $this, 'update_item_permissions_check' ),
 					'args'                => $this->get_endpoint_args_for_item_schema( true ),
-				),
+				),*/
 				array(
 					// Report results for a URL.
 					'methods'             => WP_REST_Server::EDITABLE,
@@ -125,7 +125,7 @@ class Ed11y_Api_Dismiss extends WP_REST_Controller {
 	 * @param WP_REST_Request $request Full data about the request.
 	 * @return WP_Error|WP_REST_Response
 	 */
-	public function get_item( $request ) {
+	/*public function get_item( $request ) {
 		// get parameters from request.
 		$data = $this->get_dismissals_for_user( $request );
 		if ( is_array( $data ) ) {
@@ -133,12 +133,12 @@ class Ed11y_Api_Dismiss extends WP_REST_Controller {
 		}
 
 		return new WP_Error( 'cant-update', __( 'Results not recorded', 'editoria11y' ), array( 'status' => 500 ) );
-	}
+	}*/
 
 	/**
 	 * Pulls any dismissals relevant to a user for a given route.
 	 */
-	public function get_dismissals_for_user( $request ) {
+	/*public function get_dismissals_for_user( $request ) {
 		$params  = $request->get_params();
 		$results = $params['data'];
 		global $wpdb;
@@ -163,7 +163,7 @@ class Ed11y_Api_Dismiss extends WP_REST_Controller {
 			)
 		);
 		return $dismissals;
-	}
+	}*/
 
 
 	/**
@@ -209,12 +209,19 @@ class Ed11y_Api_Dismiss extends WP_REST_Controller {
 	 * @param WP_REST_Request $request Full data about the request.
 	 */
 	public function send_dismissal( $request ) {
-		// not yet valid code
-		// see https://developer.wordpress.org/reference/classes/wpdb/ for escaping. %s string %d digits
 		$params  = $request->get_params();
 		$results = $params['data'];
 		$now     = gmdate( 'Y-m-d H:i:s' );
 		global $wpdb;
+		$pid = $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT pid FROM {$wpdb->prefix}ed11y_urls
+				WHERE page_url=%s;",
+				array(
+					$results['page_url'],
+				)
+				)
+		 );
 
 		if ( 'reset' === $results['dismissal_status'] ) {
 
@@ -222,7 +229,7 @@ class Ed11y_Api_Dismiss extends WP_REST_Controller {
 			$response = $wpdb->query(
 				$wpdb->prepare(
 					"DELETE FROM {$wpdb->prefix}ed11y_dismissals 
-					WHERE page_url = %s 
+					WHERE pid = %d 
 					AND (
 						dismissal_status = 'ok'
 						OR
@@ -233,7 +240,7 @@ class Ed11y_Api_Dismiss extends WP_REST_Controller {
 						)
 					);",
 					array(
-						$results['page_url'],
+						$pid,
 						wp_get_current_user(),
 					)
 				)
@@ -246,7 +253,7 @@ class Ed11y_Api_Dismiss extends WP_REST_Controller {
 			$response = $wpdb->query(
 				$wpdb->prepare(
 					"INSERT INTO {$wpdb->prefix}ed11y_dismissals 
-						(page_url,
+						(pid,
 						result_key,
 						user,
 						element_id,
@@ -257,7 +264,7 @@ class Ed11y_Api_Dismiss extends WP_REST_Controller {
 					VALUES (%s, %s, %d, %s, %s, %s, %s, %d) 
 						;",
 					array(
-						$results['page_url'],
+						$pid,
 						$results['result_key'],
 						wp_get_current_user(),
 						$results['element_id'],
@@ -281,7 +288,7 @@ class Ed11y_Api_Dismiss extends WP_REST_Controller {
 	 * @param WP_REST_Request $request Full data about the request.
 	 * @return WP_Error|WP_REST_Response
 	 */
-	public function delete_item( $request ) {
+	/*public function delete_item( $request ) {
 		$item = $this->prepare_results( $request );
 
 		if ( function_exists( 'slug_some_function_to_delete_item' ) ) {
@@ -294,7 +301,7 @@ class Ed11y_Api_Dismiss extends WP_REST_Controller {
 		}
 
 		return new WP_Error( 'cant-delete', __( 'message', 'text-domain' ), array( 'status' => 500 ) );
-	}
+	}*/
 
 	/**
 	 * Check if a given request has access to get items

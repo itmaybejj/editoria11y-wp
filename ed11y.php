@@ -277,26 +277,28 @@ class Ed11y {
 
 		$sql = "
 		CREATE TABLE $table_urls (
+			pid int(9) unsigned AUTO_INCREMENT NOT NULL,
 			page_url varchar(255) NOT NULL,
 			entity_type varchar(255) NOT NULL,
 			page_title varchar(1024) NOT NULL,
 			page_total smallint(4) unsigned NOT NULL,
-			PRIMARY KEY page_url (page_url)
+			PRIMARY KEY page_url (page_url),
+			KEY pid (pid)
 			) $charset_collate;
 
 		CREATE TABLE $table_results (
-			page_url varchar(255) NOT NULL,
+			pid int(9) unsigned NOT NULL,
 			result_key varchar(32) NOT NULL,
 			result_count smallint(4) NOT NULL,
 			created datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
 			updated datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
-			CONSTRAINT result PRIMARY KEY (page_url, result_key),
-			FOREIGN KEY (page_url) REFERENCES $table_urls(page_url) ON DELETE CASCADE
+			CONSTRAINT result PRIMARY KEY (pid, result_key),
+			FOREIGN KEY (pid) REFERENCES $table_urls(pid) ON DELETE CASCADE
 			) $charset_collate;
 		
 		CREATE TABLE $table_dismissals (
 			id int(9) unsigned AUTO_INCREMENT NOT NULL,
-			page_url varchar(255) NOT NULL,
+			pid int(9) unsigned NOT NULL,
 			result_key varchar(32) NOT NULL,
 			user smallint(6) unsigned NOT NULL,
 			element_id varchar(2048)  NOT NULL,
@@ -305,9 +307,10 @@ class Ed11y {
 			updated datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
 			stale tinyint(1) NOT NULL default '0',
 			PRIMARY KEY (id),
-			KEY page_url (page_url),
-			KEY updated (updated),
-			FOREIGN KEY (page_url) REFERENCES $table_urls(page_url) ON DELETE CASCADE
+			KEY page_url (pid),
+			KEY user (user),
+			KEY dismissal_status (dismissal_status),
+			FOREIGN KEY (pid) REFERENCES $table_urls(pid) ON DELETE CASCADE
 			) $charset_collate;
 		";
 

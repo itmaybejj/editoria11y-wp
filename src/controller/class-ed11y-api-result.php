@@ -54,10 +54,10 @@ class Ed11y_Api_Result extends WP_REST_Controller {
 				),*/
 			)
 		);
-		
+
 		register_rest_route(
 			$namespace,
-			'/dashboard', ///(?P<id>[\d]+)
+			'/dashboard', // (?P<id>[\d]+)
 			array(
 				array(
 					'methods'             => WP_REST_Server::READABLE,
@@ -87,6 +87,7 @@ class Ed11y_Api_Result extends WP_REST_Controller {
 				),
 			)
 		);
+		/*
 		register_rest_route(
 			$namespace,
 			'/' . $base . '/schema',
@@ -94,7 +95,7 @@ class Ed11y_Api_Result extends WP_REST_Controller {
 				'methods'  => WP_REST_Server::READABLE,
 				'callback' => array( $this, 'get_public_item_schema' ),
 			)
-		);
+		);*/
 	}
 
 	/**
@@ -121,28 +122,83 @@ class Ed11y_Api_Result extends WP_REST_Controller {
 	 * @param WP_REST_Request $request Full data about the request.
 	 * @return WP_Error|WP_REST_Response
 	 */
-	
+
 	public function get_results( $request ) {
 		// get parameters from request
 		$params = $request->get_params();
+		$group  = '';
 		global $wpdb;
-		$data = $wpdb->get_results(
-			"SELECT
-			{$wpdb->prefix}ed11y_results.page_url,
-			{$wpdb->prefix}ed11y_urls.page_title,
-			{$wpdb->prefix}ed11y_urls.entity_type,
-			{$wpdb->prefix}ed11y_urls.page_total,
-			{$wpdb->prefix}ed11y_results.result_key,
-			{$wpdb->prefix}ed11y_results.result_count,
-			{$wpdb->prefix}ed11y_results.created
-			FROM {$wpdb->prefix}ed11y_results
-			INNER JOIN {$wpdb->prefix}ed11y_urls ON {$wpdb->prefix}ed11y_results.page_url={$wpdb->prefix}ed11y_urls.page_url;
-			;",
+		$count  = intval( $params['count'] );
+		$offset = intval( $params['offset'] );
+		$order_by = $params['sort'];
+		$direction = 'ASC' === $params['direction'] ? 'ASC' : 'DESC';
+
+		$valid_sorts = array(
+			'pid',
+			'page_url',
+			'page_title',
+			'entity_type',
+			'page_total',
+			'result_key',
+			'result_count',
+			'created',
 		);
+
+		// validate order_by using an allow list
+		if ( ! in_array( $order_by, $valid_sorts )) {
+			$order_by = false;
+		};
+
+		// Get top pages.
+		if ( 'pages' == $params['view'] ) {
+
+			$order_by = $order_by ? $order_by : 'page_total';
+
+			$rowcount = $wpdb->get_var(
+				"SELECT COUNT(pid) 
+				FROM {$wpdb->prefix}ed11y_urls;"
+			);
+			$data = $wpdb->get_results(
+				"SELECT
+					pid,
+					page_url,
+					page_title,
+					entity_type,
+					page_total
+				FROM {$wpdb->prefix}ed11y_urls
+				ORDER BY {$order_by} {$direction}
+				LIMIT {$count}
+				OFFSET {$offset}
+				;"
+			);
+			
+		} elseif ( 'keys' == $params['view'] ) {
+			$rowcount = $wpdb->get_var(
+				"SELECT COUNT(DISTINCT result_key) 
+				FROM {$wpdb->prefix}ed11y_results;"
+			);
+			if ( 'count' === $order_by || false === $order_by ) {
+				$order_by = 'SUM(' . $wpdb->prefix . 'ed11y_results.result_count)';
+			}
+
+			$data = $wpdb->get_results(
+					"SELECT
+					SUM({$wpdb->prefix}ed11y_results.result_count) AS count,
+					{$wpdb->prefix}ed11y_results.result_key
+					FROM {$wpdb->prefix}ed11y_results
+					INNER JOIN {$wpdb->prefix}ed11y_urls ON {$wpdb->prefix}ed11y_results.pid={$wpdb->prefix}ed11y_urls.pid
+					GROUP BY {$wpdb->prefix}ed11y_results.result_key
+					ORDER BY {$order_by} {$direction}
+					LIMIT {$count}
+					OFFSET {$offset}
+					;"
+			);
+			
+		}
 
 		// return a response or error based on some conditional
 		if ( 1 == 1 ) {
-			return new WP_REST_Response( $data, 200 );
+			return new WP_REST_Response( array( $data, $rowcount ), 200 );
 		} else {
 			return new WP_Error( 'code', __( 'message', 'text-domain' ) );
 		}
@@ -181,8 +237,28 @@ class Ed11y_Api_Result extends WP_REST_Controller {
 		if ( ! ( in_array( false, $data, true ) ) ) {
 			return new WP_REST_Response( $data, 200 );
 		}
+		return new WP_REST_Response( $data, 500 );
+		// return new WP_Error( 'cant-update', __( 'Results not recorded', 'editoria11y' ), array( 'status' => 500 ) );
+	}
 
-		return new WP_Error( 'cant-update', __( 'Results not recorded', 'editoria11y' ), array( 'status' => 500 ) );
+	/**
+	 * Returns the pid from the URL table.
+	 *
+	 * @param string $url to find.
+	 */
+	public function get_pid( $url ) {
+		// Get Page ID so we can avoid complex joins in subsequent queries.
+		global $wpdb;
+		$pid = $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT pid FROM {$wpdb->prefix}ed11y_urls
+				WHERE page_url=%s;",
+				array(
+					$url,
+				)
+			)
+		);
+		return $pid;
 	}
 
 	/**
@@ -197,48 +273,50 @@ class Ed11y_Api_Result extends WP_REST_Controller {
 		$params  = $request->get_params();
 		$results = $params['data'];
 		$now     = gmdate( 'Y-m-d H:i:s' );
-		$rows   = 0;
-		$return = array();
+		$rows    = 0; // If 0 at end, delete URL.
+		$pid     = false;
+		$return  = array();
 		global $wpdb;
 
-		if ( $results['page_count'] > 0 ) {
-			// Upsert any result rows, included a new Now in updated.
-			foreach ( $results['results'] as $key => $value ) {
+		// Check if any results exist.
+		if ( $results['page_count'] > 0 || count( $results['dismissals'] ) > 0 ) {
 
-				// Update URLs table with totals and date.
-				$response = $wpdb->query(
-					$wpdb->prepare(
-						"INSERT INTO {$wpdb->prefix}ed11y_urls
-                            (page_url,
-                            entity_type,
-                            page_title,
-                            page_total)
-                        VALUES (%s, %s, %s, %d)
-                        ON DUPLICATE KEY UPDATE
-                            entity_type = %s,
-                            page_title = %s,
-                            page_total = %d
-                        ;",
-						array(
-							$results['page_url'],
-							$results['entity_type'],
-							$results['page_title'],
-							$results['page_count'],
-							$results['entity_type'],
-							$results['page_title'],
-							$results['page_count'],
-						)
+			// Upsert page URL.
+			$response = $wpdb->query(
+				$wpdb->prepare(
+					"INSERT INTO {$wpdb->prefix}ed11y_urls
+						(page_url,
+						entity_type,
+						page_title,
+						page_total)
+					VALUES (%s, %s, %s, %d)
+					ON DUPLICATE KEY UPDATE
+						entity_type = %s,
+						page_title = %s,
+						page_total = %d
+					;",
+					array(
+						$results['page_url'],
+						$results['entity_type'],
+						$results['page_title'],
+						$results['page_count'],
+						$results['entity_type'],
+						$results['page_title'],
+						$results['page_count'],
 					)
-				);
+				)
+			);
+			$return[] = $response;
 
-				$rows    += $response ? $response : 0;
-				$return[] = $response;
+			// Get Page ID so we can avoid complex joins in subsequent queries.
+			$pid = $this->get_pid( $results['page_url'] );
 
-				// Update results table.
+			foreach ( $results['results'] as $key => $value ) {
+				// Upsert results.
 				$response = $wpdb->query(
 					$wpdb->prepare(
 						"INSERT INTO {$wpdb->prefix}ed11y_results 
-                            (page_url,
+                            (pid,
                             result_key,
                             result_count,
                             created,
@@ -249,74 +327,71 @@ class Ed11y_Api_Result extends WP_REST_Controller {
                             updated = %s
                             ;",
 						array(
-							$results['page_url'],
+							$pid,
 							$key,
 							$value,
-                            $now,
-                            $now,
-                            $value,
-                            $now,
+							$now,
+							$now,
+							$value,
+							$now,
 						)
 					)
 				);
-
 				$rows    += $response ? $response : 0;
 				$return[] = $response;
 
-				// Update dismissal table.
+			}
+
+			foreach ( $results['dismissals'] as $key => $value ) {
+				// Update last-seen date on dismissals.
 				$response = $wpdb->query(
 					$wpdb->prepare(
 						"UPDATE {$wpdb->prefix}ed11y_dismissals 
                         SET updated = %s, stale = 0
-                        WHERE page_url = %s AND result_key = %s;",
+                        WHERE pid = %s AND result_key = %s AND element_id = %s;",
+						// todo include element_id
 						array(
 							$now,
-							$results['page_url'],
-							$key,
+							$pid,
+							$value[0],
+							$value[1],
 						)
 					)
 				);
-
 				$rows    += $response ? $response : 0;
 				$return[] = $response;
 			}
-		} else {
-			// Delete URL if total is 0, record if it never existed.
-			$response = $wpdb->query(
-				$wpdb->prepare(
-					"DELETE FROM {$wpdb->prefix}ed11y_urls WHERE page_url = %s AND updated != %s;",
-					array(
-						$results['page_url'],
-						$now,
-					)
-				)
-			);
-
-			$rows    += $response ? $response : 0;
-			$return[] = $response;
 		}
 
-		// Clear old values if there is any chance they exist.
-		if ( 0 !== $rows ) {
+		if ( ! is_numeric( $pid ) ) {
+			// Resultless pages missed the foreach.
+			$pid = $this->get_pid( $results['page_url'] );
+			// For pages with no issues, this is the only query.
+		}
+
+		if ( 0 < $pid ) {
+			// If page is in urls table, updates are in order.
+
 			// Remove any old results.
 			$response = $wpdb->query(
 				$wpdb->prepare(
-					"DELETE FROM {$wpdb->prefix}ed11y_results WHERE page_url = %s AND updated != %s;",
+					"DELETE FROM {$wpdb->prefix}ed11y_results
+					WHERE pid = %d AND updated != %s ;",
 					array(
-						$results['page_url'],
+						$pid,
 						$now,
 					)
 				)
 			);
-			$rows    += $response ? $response : 0;
+			// Do not increment row count on deletions.
 			$return[] = $response;
 
 			// Mark any out-of-date dismissals as stale.
 			$response = $wpdb->query(
 				$wpdb->prepare(
 					"UPDATE {$wpdb->prefix}ed11y_dismissals 
-                    SET stale = 1
-                    WHERE page_url = %s AND updated != %s;",
+					SET stale = 1
+					WHERE pid = %d AND updated != %s ;",
 					array(
 						$results['page_url'],
 						$now,
@@ -325,6 +400,18 @@ class Ed11y_Api_Result extends WP_REST_Controller {
 			);
 			$rows    += $response ? $response : 0;
 			$return[] = $response;
+
+			if ( 0 === $rows ) {
+				// No records for this route.
+				$response = $wpdb->query(
+					$wpdb->prepare(
+						"DELETE FROM {$wpdb->prefix}ed11y_urls WHERE pid = %d;",
+						array(
+							$pid,
+						)
+					)
+				);
+			}
 		}
 
 		return $return;

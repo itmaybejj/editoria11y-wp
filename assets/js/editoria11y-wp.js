@@ -45,17 +45,18 @@ function ed11ySync() {
 	*/
 	// TODO: SEND A MESSAGE?
 
-	let results = {};
-	let oks = {};
-	let total = 0;
 	let extractResults = function () {
 		results = {};
-		oks = {};
+		dismissals = [];
 		total = 0;
 		Ed11y.results.forEach(result => {
-			if (result[5] !== "ok") {
+			/* let test = Ed11y.results[i][1];
+          		let dismissKey = Ed11y.results[i][4]; */
+			let testName = result[1];
+			let dismissStatus = result[5];
+			let dismissKey = result[4];
+			if (dismissStatus !== "ok") {
 				// log all items not marked as OK
-				let testName = result[1];
 				if (results[testName]) {
 					results[testName] = parseInt(results[testName]) + 1;
 					total++;
@@ -64,30 +65,33 @@ function ed11ySync() {
 					total++;
 				}
 			}
-			if (result[5] === "ok") {
-				if (!results[result[1]]) {
-					// wait what is this?
-					oks[result[1]] = true;
-				}
+			if (dismissStatus !== "false") {
+				let insert = {};
+				insert = [testName, dismissKey];
+				dismissals.push(
+					insert
+				)
 			}
 		})
+		return [results, dismissals, total];
 	}
 
 	let sendResults = function () {
 		window.setTimeout(function () {
 			total = 0;
-			extractResults();
+			let results = extractResults();
 			let url = Ed11y.options.currentPage;
 			url = url.length > 250 ? url.substring(0, 250) : url;
 			let data = {
 				page_title: ed11yOptions.title,
-				page_count: total,
+				page_count: results[2],
 				entity_type: 'todo', // node or false
-				results: results,
-				oks: oks,
+				results: results[0],
+				dismissals: results[1],
 				page_url: url,
 				created: 0,
 			};
+			console.log(data);
 			postData('result', data);
 		  // Short timeout to let execution queue clear.
 		}, 100)
