@@ -5,45 +5,114 @@
 #ed1 table {
     border-spacing: 0;
     width: 100%;
-    margin: 2em 0;
+    margin: 2em 0 .5em;
 }
-#ed1 td, #ed1 th {
+
+#ed1 td,
+#ed1 th {
     padding: .5em;
     text-align: left;
     border: 0;
 }
 
-#ed1 a, #ed1 td button {
+#ed1 td:first-child, #ed1 td:last-child {
+    min-width: 33%;
+}
+
+#ed1 a,
+#ed1 td button {
     color: #2271b1;
     text-decoration: underline;
     font-weight: 500;
-}
-#ed1 a:hover, #ed1 td button:hover {
-    color: #111;
-}
-
-#ed1 th {background-color: rgb(210, 210, 238);}
-#ed1 tr {background-color: #fefefe;}
-#ed1 tr:nth-child(2n + 1) {background-color: rgb(244, 244, 248);}
-
-#ed1 .ascending::after, #ed1 .descending::after {
-    content: "^";
-    display: inline-block;
-    padding: 0 .25rem;
-}
-#ed1 .descending::after {
-    transform: rotate(180deg);
-} 
-
-#ed1 button {
-    border: transparent;
-    background: transparent;
+    display: block;
     padding: .25em 0;
     display: block;
     width: 100%;
     text-align: left;
+}
+#ed1 th button {
+    color: #fff;
+}
+
+#ed1 a:hover,
+#ed1 td button:hover {
+    color: #111;
+}
+
+#ed1 caption {
+    text-align: left;
+    font-weight: 300;
+    font-size: 1.125rem;
+    padding: .55rem;
+}
+
+#ed1 th {
+    background-color: #2271b1;
+    color: #fff;
+}
+
+#ed1 tr {
+    background-color: #fefefe;
+}
+
+#ed1 tr:nth-child(2n + 1) {
+    background-color: rgb(244, 244, 248);
+}
+
+#ed1 .ascending::after,
+#ed1 .descending::after {
+    content: "^";
+    display: inline-block;
+    padding: 0 .25rem;
+}
+#ed1 .ascending::after {
+    transform: translateY(.125em);
+}
+#ed1 .descending::after {
+    transform: rotate(180deg);
+}
+
+#ed1 button {
+    border: transparent;
+    background: transparent;
     cursor: pointer;
 }
-#ed1 button:hover, #ed1 button:focus-visible {
+
+#ed1 button:hover,
+#ed1 button:focus-visible {
     text-decoration: underline;
+}
+
+#ed1 nav {
+    display: flex;
+    justify-content: right;
+    align-items: flex-end;
+}
+
+#ed1 nav button {
+    display: inline-block;
+    margin: 0.25rem 0.25rem;
+    padding: .5rem 1rem;
+    border-radius: .2rem;
+    text-align: center;
+}
+
+#ed1 nav button:hover, #ed1 nav button:focus-visible {
+    background: #fff;
+    box-shadow: inset 0 0 0 1px #ccc;
+}
+
+#ed1 .pagination-number[aria-current='page'] {
+    color: #fff;
+    background: #2271b1;
+}
+
+#ed1 .visually-hidden {
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  height: 1px;
+  overflow: hidden;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
 }

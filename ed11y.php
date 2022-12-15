@@ -32,7 +32,7 @@ register_activation_hook( __FILE__, array( 'Ed11y', 'activation' ) );
 
 // TODO: remove tables on deactivation
 register_deactivation_hook( __FILE__, array( 'Ed11y', 'uninstall' ) );
-register_uninstall_hook(    __FILE__, array( 'Ed11y', 'uninstall' ) );
+register_uninstall_hook( __FILE__, array( 'Ed11y', 'uninstall' ) );
 
 /**
  * Calls Editoria11y library with site config.
@@ -43,11 +43,11 @@ class Ed11y {
 
 	protected static $instance;
 
-    public static function init() {
-        is_null( self::$instance ) AND self::$instance = new self;
-        return self::$instance;
-    }
-	
+	public static function init() {
+		is_null( self::$instance ) and self::$instance = new self();
+		return self::$instance;
+	}
+
 	/**
 	 * Attachs functions to loop.
 	 */
@@ -66,19 +66,18 @@ class Ed11y {
 		add_action( 'plugins_loaded', array( &$this, 'admin' ), 4 );
 
 		// Load the API
-		add_action( 'plugins_loaded', array( &$this, 'api'), 5 );
-		
+		add_action( 'plugins_loaded', array( &$this, 'api' ), 5 );
 
-		//add_action( 'plugins_loaded', array( &$this, 'ed11y_install' ) );
-		
+		// add_action( 'plugins_loaded', array( &$this, 'ed11y_install' ) );
 
-		/* Todo: remove these old meta definitions kept for sample code
+		/*
+		 Todo: remove these old meta definitions kept for sample code
 		add_action(
 			'rest_api_init',
 			function () {
-				
+
 				// see https://developer.wordpress.org/reference/functions/register_meta/
-				
+
 				$ed11y_types = ['post', 'page', 'category', 'media', 'tag', 'user'];
 				$ed11y_rules = [
 					'altMissing',
@@ -151,7 +150,7 @@ class Ed11y {
 						),
 					),
 				);
-				
+
 				foreach ($ed11y_types as &$type) {
 					foreach ($ed11y_rules as &$rule) {
 						register_meta( $type, 'ed11y_r_' . $rule, $ed11y_count_args );
@@ -218,6 +217,44 @@ class Ed11y {
 		// Set the constant path to the assets directory.
 		define( 'ED11Y_ASSETS', ED11Y_URI . trailingslashit( 'assets' ) );
 
+		define(
+			'ED11Y_RULES',
+			array(
+				'headingLevelSkipped',
+				'headingEmpty',
+				'headingIsLong',
+				'blockQuoteIsShort',
+				'altMissing',
+				'altNull',
+				'altURL',
+				'alURLLinked',
+				'altImageOf',
+				'altImageOfLinked',
+				'altDeadspace',
+				'altDeadspaceLinked',
+				'altEmptyLinked',
+				'altLong',
+				'altLongLinked',
+				'altPartOfLinkWithText',
+				'linkNoText',
+				'linkTextIsUrl',
+				'linkTextIsGeneric',
+				'linkDocument',
+				'linkNewWindow',
+				'tableNoHeaderCells',
+				'tableContainsContentHeading',
+				'tableEmptyHeaderCell',
+				'textPossibleList',
+				'textPossibleHeading',
+				'textUppercase',
+				'embedVideo',
+				'embedAudio',
+				'embedVisualization',
+				'embedTwitter',
+				'embedCustom',
+			)
+		);
+
 	}
 
 	/**
@@ -256,7 +293,7 @@ class Ed11y {
 		$ed11y_api_dismiss = new Ed11y_Api_Dismiss();
 		$ed11y_api_dismiss->init();
 	}
-	
+
 	/**
 	 * Provides DB table schema.
 	 */
@@ -264,14 +301,14 @@ class Ed11y {
 		if ( ! current_user_can( 'activate_plugins' ) ) {
 			return;
 		}
-        $plugin = isset( $_REQUEST['plugin'] ) ? $_REQUEST['plugin'] : '';
-        check_admin_referer( "activate-plugin_{$plugin}" );
+		$plugin = isset( $_REQUEST['plugin'] ) ? $_REQUEST['plugin'] : '';
+		check_admin_referer( "activate-plugin_{$plugin}" );
 
 		global $wpdb;
 
-		$charset_collate  = $wpdb->get_charset_collate();
+		$charset_collate = $wpdb->get_charset_collate();
 
-		$table_urls = $wpdb->prefix . 'ed11y_urls';
+		$table_urls       = $wpdb->prefix . 'ed11y_urls';
 		$table_results    = $wpdb->prefix . 'ed11y_results';
 		$table_dismissals = $wpdb->prefix . 'ed11y_dismissals';
 
@@ -326,12 +363,12 @@ class Ed11y {
 		if ( ! current_user_can( 'activate_plugins' ) ) {
 			return;
 		}
-        $plugin = isset( $_REQUEST['plugin'] ) ? $_REQUEST['plugin'] : '';
-        check_admin_referer( "activate-plugin_{$plugin}" );
+		$plugin = isset( $_REQUEST['plugin'] ) ? $_REQUEST['plugin'] : '';
+		check_admin_referer( "activate-plugin_{$plugin}" );
 
 		global $wpdb;
 
-		$table_urls = $wpdb->prefix . 'ed11y_urls';
+		$table_urls       = $wpdb->prefix . 'ed11y_urls';
 		$table_results    = $wpdb->prefix . 'ed11y_results';
 		$table_dismissals = $wpdb->prefix . 'ed11y_dismissals';
 

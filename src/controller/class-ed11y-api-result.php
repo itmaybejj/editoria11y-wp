@@ -128,9 +128,9 @@ class Ed11y_Api_Result extends WP_REST_Controller {
 		$params = $request->get_params();
 		$group  = '';
 		global $wpdb;
-		$count  = intval( $params['count'] );
-		$offset = intval( $params['offset'] );
-		$order_by = $params['sort'];
+		$count     = intval( $params['count'] );
+		$offset    = intval( $params['offset'] );
+		$order_by  = $params['sort'];
 		$direction = 'ASC' === $params['direction'] ? 'ASC' : 'DESC';
 
 		$valid_sorts = array(
@@ -145,34 +145,66 @@ class Ed11y_Api_Result extends WP_REST_Controller {
 		);
 
 		// validate order_by using an allow list
-		if ( ! in_array( $order_by, $valid_sorts )) {
+		if ( ! in_array( $order_by, $valid_sorts ) ) {
 			$order_by = false;
-		};
+		}
 
 		// Get top pages.
-		if ( 'pages' == $params['view'] ) {
-
+		if ( 'pages' === $params['view'] ) {
 			$order_by = $order_by ? $order_by : 'page_total';
 
-			$rowcount = $wpdb->get_var(
-				"SELECT COUNT(pid) 
-				FROM {$wpdb->prefix}ed11y_urls;"
-			);
-			$data = $wpdb->get_results(
-				"SELECT
-					pid,
-					page_url,
-					page_title,
-					entity_type,
-					page_total
-				FROM {$wpdb->prefix}ed11y_urls
-				ORDER BY {$order_by} {$direction}
-				LIMIT {$count}
-				OFFSET {$offset}
-				;"
-			);
-			
+			// Explicitly validate filter string against defined rule names.
+			if ( ! empty( $params['result_key'] ) && true === in_array( $params['result_key'], ED11Y_RULES ) ) {
+				$where    = "WHERE {$wpdb->prefix}ed11y_results.result_key = '{$params['result_key']}'";
+				$order_by = "{$wpdb->prefix}ed11y_urls.{$order_by}";
+
+				$data = $wpdb->get_results(
+					"SELECT
+							{$wpdb->prefix}ed11y_urls.pid,
+							{$wpdb->prefix}ed11y_urls.page_url,
+							{$wpdb->prefix}ed11y_urls.page_title,
+							{$wpdb->prefix}ed11y_urls.entity_type,
+							{$wpdb->prefix}ed11y_urls.page_total
+							FROM {$wpdb->prefix}ed11y_results
+							INNER JOIN {$wpdb->prefix}ed11y_urls ON {$wpdb->prefix}ed11y_results.pid={$wpdb->prefix}ed11y_urls.pid
+							{$where}
+							ORDER BY {$order_by} {$direction}
+							LIMIT {$count}
+							OFFSET {$offset}
+							;"
+				);
+
+				$rowcount = $wpdb->get_var(
+					"SELECT COUNT({$wpdb->prefix}ed11y_urls.pid) 
+					FROM {$wpdb->prefix}ed11y_results
+					INNER JOIN {$wpdb->prefix}ed11y_urls ON {$wpdb->prefix}ed11y_results.pid={$wpdb->prefix}ed11y_urls.pid
+					{$where};"
+				);
+
+			} else {
+				$where = '';
+
+				$data = $wpdb->get_results(
+					"SELECT
+						pid,
+						page_url,
+						page_title,
+						entity_type,
+						page_total
+					FROM {$wpdb->prefix}ed11y_urls
+					ORDER BY {$order_by} {$direction}
+					LIMIT {$count}
+					OFFSET {$offset}
+					;"
+				);
+
+				$rowcount = $wpdb->get_var(
+					"SELECT COUNT(pid) 
+					FROM {$wpdb->prefix}ed11y_urls;"
+				);
+			}
 		} elseif ( 'keys' == $params['view'] ) {
+
 			$rowcount = $wpdb->get_var(
 				"SELECT COUNT(DISTINCT result_key) 
 				FROM {$wpdb->prefix}ed11y_results;"
@@ -182,7 +214,7 @@ class Ed11y_Api_Result extends WP_REST_Controller {
 			}
 
 			$data = $wpdb->get_results(
-					"SELECT
+				"SELECT
 					SUM({$wpdb->prefix}ed11y_results.result_count) AS count,
 					{$wpdb->prefix}ed11y_results.result_key
 					FROM {$wpdb->prefix}ed11y_results
@@ -193,7 +225,7 @@ class Ed11y_Api_Result extends WP_REST_Controller {
 					OFFSET {$offset}
 					;"
 			);
-			
+
 		}
 
 		// return a response or error based on some conditional
