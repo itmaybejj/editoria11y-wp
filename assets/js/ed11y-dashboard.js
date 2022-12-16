@@ -4,11 +4,11 @@ class Ed1 {
         Ed1.defaults = function () {
             let queryString = window.location.search;
             let urlParams = new URLSearchParams(queryString);
-
             Ed1.url = '//' + window.location.host + window.location.pathname + '?';
             if (urlParams.get('page')) {
                 Ed1.url += 'page=' + urlParams.get('page') + '&';
             }
+            // Todo build a function to append dynamically applicable values so we can multifilter.
 
             let resultOffset = urlParams.get('roff');
             resultOffset = !isNaN(resultOffset) ? +resultOffset : 0;
@@ -25,29 +25,32 @@ class Ed1 {
             pageSort = !!pageSort ? pageSort : 'page_total';
             let pageDir = urlParams.get('pdir');
             pageDir = pageDir === 'DESC' || pageDir === 'ASC' ? pageDir : 'DESC';
+            Ed1.type = urlParams.get('type');
 
             Ed1.requests['ed1result'] = {
                 base: 'dashboard',
                 view: 'keys',
-                count: 2,
+                count: 50,
                 offset: resultOffset,
                 sort: resultSort,
                 direction: resultDir,
                 result_key: Ed1.resultKey,
+                entity_type: Ed1.type,
             }
             Ed1.requests['ed1page'] = {
                 base: 'dashboard',
                 view: 'pages',
-                count: 2,
+                count: 50,
                 offset: pageOffset,
                 sort: pageSort,
                 direction: pageDir,
                 result_key: Ed1.resultKey,
+                entity_type: Ed1.type,
             }
         }
         Ed1.buildRequest = function (request) {
             let q = Ed1.requests[request];
-            let req = `${q.base}?view=${q.view}&count=${q.count}&offset=${q.offset}&sort=${q.sort}&direction=${q.direction}&result_key=${q.result_key}`;
+            let req = `${q.base}?view=${q.view}&count=${q.count}&offset=${q.offset}&sort=${q.sort}&direction=${q.direction}&result_key=${q.result_key}&entity_type=${q.entity_type}`;
             console.log(req);
             return req;
         }
@@ -59,9 +62,11 @@ class Ed1 {
             Ed1.wrapPage = document.getElementById('ed1-page-wrapper');
             Ed1.wrapResults = document.getElementById('ed1-results-wrapper');
             Ed1.get.ed1page(Ed1.buildRequest('ed1page'), false);
-            if ( !!Ed1.resultKey ) {
+            if ( !!Ed1.resultKey || !!Ed1.type ) {
                 let h1 = document.querySelector('#ed1 h1');
-                h1.textContent = `Pages with ${Ed1.resultKey} issues`;
+                let filters = Ed1.resultKey ? ' with ' + Ed1.resultKey + ' issues' : false;
+                filters = Ed1.type ? filters ? filters + ' of type ' + Ed1.type : 'of type ' + Ed1.type : filters;
+                h1.textContent = `Pages ${filters}`;
                 let reset = Ed1.render.a('View all pages', false, Ed1.url);
                 h1.insertAdjacentElement('afterend', reset);
             } else {
@@ -73,7 +78,7 @@ class Ed1 {
                 Ed1.liveRegion = document.createElement('div');
                 Ed1.liveRegion.setAttribute('class', 'visually-hidden');
                 Ed1.liveRegion.setAttribute('aria-live', 'polite');
-                document.getElementById('ed1').insertAdjacentElement('afterend', Ed1.liveRegion);
+                document.getElementById('ed1').insertAdjacentElement('beforeend', Ed1.liveRegion);
             }
             Ed1.liveRegion.textContent = '';
             window.setTimeout(function() {
@@ -137,6 +142,15 @@ class Ed1 {
                 cell.setAttribute('class', cls);
             }
             return cell;
+        }
+        Ed1.render.details = function (text, id) {
+            let details = document.createElement('details');
+            details.setAttribute('open', '');
+            let summary = document.createElement('summary');
+            summary.textContent = text;
+            summary.setAttribute('id', id);
+            details.append(summary);
+            return details;
         }
         /**
          * Hat tip to https://webdesign.tutsplus.com/tutorials/pagination-with-vanilla-javascript--cms-41896
@@ -207,20 +221,17 @@ class Ed1 {
          * @param {*} count 
          */
         Ed1.render.ed1result = function (post, count, announce) {
-            console.log('rendering results');
 
             if (!Ed1.tables['ed1result']) {
                 Ed1.tables['ed1result'] = document.createElement('table');
-                let caption = document.createElement('caption');
-                caption.setAttribute('id', 'ed1result-title');
-                caption.textContent = "Issues by Type";
-                Ed1.tables['ed1result'].insertAdjacentElement('beforeend', caption);
                 Ed1.tables['ed1result'].setAttribute('id', 'ed1result');
                 let head = document.createElement('tr');
                 head.insertAdjacentElement('beforeend', Ed1.render.th('Issue', 'result_key'));
-                head.insertAdjacentElement('beforeend', Ed1.render.th('Issues found', 'count', 'DESC'));
+                head.insertAdjacentElement('beforeend', Ed1.render.th('Pages', 'count', 'DESC'));
                 Ed1.tables['ed1result'].insertAdjacentElement('beforeend', head);
-                Ed1.wrapResults.insertAdjacentElement('beforeEnd', Ed1.tables['ed1result']);
+                let tableDetails = Ed1.render.details('Issues by Type', 'ed1result-title')
+                Ed1.wrapResults.append(tableDetails);
+                tableDetails.append(Ed1.tables['ed1result']);
                 Ed1.tables['ed1result'].querySelectorAll('th button').forEach((el) => {
                     el.addEventListener('click', function () {
                         Ed1.reSort();
@@ -228,7 +239,7 @@ class Ed1 {
                     });
                 });
                 //count
-                Ed1.render.pagination('ed1result', count, 2, 0, 'ed1result-title');
+                Ed1.render.pagination('ed1result', count, 50, 0, 'ed1result-title');
             } else {
                 Ed1.tables['ed1result'].querySelectorAll('tr + tr').forEach(el => {
                     el.remove();
@@ -263,25 +274,23 @@ class Ed1 {
 
             if (!Ed1.tables['ed1page']) {
                 Ed1.tables['ed1page'] = document.createElement('table');
-                let caption = document.createElement('caption');
-                caption.textContent = "Pages with issues";
-                caption.setAttribute('id', 'ed1page-title');
-                Ed1.tables['ed1page'].insertAdjacentElement('beforeend', caption);
                 Ed1.tables['ed1page'].setAttribute('id', 'ed1page');
                 let head = document.createElement('tr');
                 head.insertAdjacentElement('beforeend', Ed1.render.th('Page', 'page_title'));
-                head.insertAdjacentElement('beforeend', Ed1.render.th('Issues found', 'page_total', 'DESC'));
+                head.insertAdjacentElement('beforeend', Ed1.render.th('Issues on page', 'page_total', 'DESC'));
                 head.insertAdjacentElement('beforeend', Ed1.render.th('type', 'entity_type'));
                 head.insertAdjacentElement('beforeend', Ed1.render.th('Path', 'page_url'));
                 Ed1.tables['ed1page'].insertAdjacentElement('beforeend', head);
-                Ed1.wrapPage.insertAdjacentElement('beforeEnd', Ed1.tables['ed1page']);
+                let tableDetails = Ed1.render.details('Pages with issues', 'ed1page-title')
+                Ed1.wrapPage.append(tableDetails);
+                tableDetails.append(Ed1.tables['ed1page']);
                 Ed1.tables['ed1page'].querySelectorAll('button').forEach((el) => {
                     el.addEventListener('click', function () {
                         Ed1.reSort();
                         Ed1.get.ed1page(Ed1.buildRequest('ed1page'));
                     });
                 });
-                Ed1.render.pagination('ed1page', count, 2, 0, 'ed1page-title');
+                Ed1.render.pagination('ed1page', count, 50, 0, 'ed1page-title');
 
             } else {
                 Ed1.tables['ed1page'].querySelectorAll('tr + tr').forEach(el => {
@@ -299,7 +308,7 @@ class Ed1 {
                     let pageCount = Ed1.render.td(result['page_total']);
                     row.insertAdjacentElement('beforeend', pageCount);
 
-                    let type = Ed1.render.td(result['entity_type']);
+                    let type = Ed1.render.td(result['entity_type'], false, `${Ed1.url}type=${encodeURIComponent(result['entity_type'])}`);
                     row.insertAdjacentElement('beforeend', type);
 
                     let path = result['page_url'].replace(window.location.protocol + '//' + window.location.host, '');
@@ -336,7 +345,6 @@ class Ed1 {
                 if (post?.data?.status === 500) {
                     console.error(post.data.status + ': ' + post.message);
                 } else {
-                    console.log(post);
                     Ed1.render.ed1page(post[0], post[1], announce);
                 }
             });
@@ -349,7 +357,6 @@ class Ed1 {
                 if (post?.data?.status === 500) {
                     console.error(post.data.status + ': ' + post.message);
                 } else {
-                    console.log(post);
                     Ed1.render.ed1result(post[0], post[1], announce);
                 }
             });

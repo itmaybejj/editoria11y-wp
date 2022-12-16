@@ -524,8 +524,8 @@ function editoria11y_dashboard() {
 	wp_enqueue_style( 'ed11y-wp-css', trailingslashit( ED11Y_ASSETS ) . 'css/ed11y-dashboard.css', null );
 	echo '<div id="ed1">
 			<h1>Editoria11y Dashboard</h1>
-			<div id="ed1-page-wrapper"></div>
 			<div id="ed1-results-wrapper"></div>
+			<div id="ed1-page-wrapper"></div>
 			<div id="ed1-dismissals-wrapper"></div>
 		</div>';
 

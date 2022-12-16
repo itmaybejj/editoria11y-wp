@@ -154,8 +154,23 @@ class Ed11y_Api_Result extends WP_REST_Controller {
 			$order_by = $order_by ? $order_by : 'page_total';
 
 			// Explicitly validate filter string against defined rule names.
+			$where = '';
 			if ( ! empty( $params['result_key'] ) && true === in_array( $params['result_key'], ED11Y_RULES ) ) {
-				$where    = "WHERE {$wpdb->prefix}ed11y_results.result_key = '{$params['result_key']}'";
+				// Result key is in array of valid keys and now a trusted string.
+				$where = "WHERE {$wpdb->prefix}ed11y_results.result_key = '{$params['result_key']}'";
+			}
+
+			if ( ! empty( $params['entity_type'] ) && $this->validate_type( $params['entity_type'] ) ) {
+				// Entity type is in array of valid types and now a trusted string.
+				if ( empty( $where ) ) {
+					$where = "WHERE {$wpdb->prefix}ed11y_urls.entity_type = '{$params['entity_type']}'";
+				} else {
+					$where = $where . "
+					AND {$wpdb->prefix}ed11y_urls.entity_type = '{$params['entity_type']}'";
+				}
+			}
+
+			if ( ! empty( $where ) )  {
 				$order_by = "{$wpdb->prefix}ed11y_urls.{$order_by}";
 
 				$data = $wpdb->get_results(
@@ -168,6 +183,11 @@ class Ed11y_Api_Result extends WP_REST_Controller {
 							FROM {$wpdb->prefix}ed11y_results
 							INNER JOIN {$wpdb->prefix}ed11y_urls ON {$wpdb->prefix}ed11y_results.pid={$wpdb->prefix}ed11y_urls.pid
 							{$where}
+							GROUP BY {$wpdb->prefix}ed11y_urls.pid,
+							{$wpdb->prefix}ed11y_urls.page_url,
+							{$wpdb->prefix}ed11y_urls.page_title,
+							{$wpdb->prefix}ed11y_urls.entity_type,
+							{$wpdb->prefix}ed11y_urls.page_total
 							ORDER BY {$order_by} {$direction}
 							LIMIT {$count}
 							OFFSET {$offset}
@@ -469,6 +489,28 @@ class Ed11y_Api_Result extends WP_REST_Controller {
 		}
 
 		return new WP_Error( 'cant-delete', __( 'message', 'text-domain' ), array( 'status' => 500 ) );
+	}
+
+	/**
+	 * Validate entity types.
+	 * 
+	 */
+	public function validate_type( $type ) {
+		$types = array(
+			'Front',
+			'Page',
+			'Home',
+			'Attachment',
+			'Post',
+			'Category',
+			'Tag',
+			'Taxonomy',
+			'Author',
+			'Archive',
+			'Search',
+			'404',
+		);
+		return in_array( $type, $types, true );
 	}
 
 	/**

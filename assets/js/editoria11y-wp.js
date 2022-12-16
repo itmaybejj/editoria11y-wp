@@ -85,7 +85,7 @@ function ed11ySync() {
 			let data = {
 				page_title: ed11yOptions.title,
 				page_count: results[2],
-				entity_type: 'todo', // node or false
+				entity_type: ed11yOptions.entity_type, // node or false
 				results: results[0],
 				dismissals: results[1],
 				page_url: url,

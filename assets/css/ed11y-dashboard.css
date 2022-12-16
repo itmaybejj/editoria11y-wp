@@ -2,10 +2,17 @@
     width: 98%;
 }
 
+#ed1 summary {
+    font-size: 1.5em;
+    padding: 1rem 0;
+    color: #2271b1;
+    cursor: pointer;
+  }
+
 #ed1 table {
     border-spacing: 0;
     width: 100%;
-    margin: 2em 0 .5em;
+    padding: 0 0 .5rem;
 }
 
 #ed1 td,

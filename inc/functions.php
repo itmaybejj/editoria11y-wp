@@ -143,10 +143,8 @@ function ed11y_init() {
 				WHERE {$wpdb->prefix}ed11y_urls.page_url = %s
 				;",
 				array( $ed11y_page )
-			)
-			
+			)	
 		);
-		//error_log(print_r($dismissals_on_page));
         $synced_dismissals = array();
         foreach ( $dismissals_on_page as $key => $value ) {
             $synced_dismissals[ $value->result_key ][ $value->element_id ] = $value->dismissal_status;
@@ -159,7 +157,33 @@ function ed11y_init() {
 			'&#039;' => '"',
 		);
 
-		$debugtitle = wp_filter_nohtml_kses( trim( wp_title( '', false, 'right' ) ) );
+		$ed11y_title = wp_filter_nohtml_kses( trim( wp_title( '', false, 'right' ) ) );
+
+		$ed11y_type = 'other';
+		// https://wordpress.stackexchange.com/questions/83887/return-current-page-type
+		if ( is_page() ) {
+			$ed11y_type = is_front_page() ? 'Front' : 'Page';
+		} elseif ( is_home() ) {
+			$ed11y_type = 'Home';
+		} elseif ( is_single() ) {
+			$ed11y_type = ( is_attachment() ) ? 'Attachment' : 'Post';
+		} elseif ( is_category() ) {
+			$ed11y_type = 'Category';
+		} elseif ( is_tag() ) {
+			$ed11y_type = 'Tag';
+		} elseif ( is_tax() ) {
+			$ed11y_type = 'Taxonomy';
+		} elseif ( is_archive() ) {
+			if ( is_author() ) {
+				$ed11y_type = 'Author';
+			} else {
+				$ed11y_type = 'Archive';
+			}
+		} elseif ( is_search() ) {
+			$ed11y_type = 'Search';
+		} elseif ( is_404() ) {
+			$ed11y_type = '404';
+		}
 
 		// ed11yReady hat tip https://youmightnotneedjquery.com/#ready.
 		echo '
@@ -172,14 +196,15 @@ function ed11y_init() {
                 videoContent: \'' . $video_content . '\',
                 audioContent: \'' . $audio_content . '\',
                 preventCheckingIfPresent: \'' . $ed11y_no_run . '\',
-				currentPage : \'' . $ed11y_page . '\',
+				entity_type: \'' . $ed11y_type . '\',
+				currentPage: \'' . $ed11y_page . '\',
 				admin: false,
                 syncedDismissals: ' . wp_json_encode( $synced_dismissals ) . ',
-                title : \'' . $debugtitle . '\',
+                title : \'' . $ed11y_title . '\',
                 ' . $extra_props . '
             };
 			console.log(\'' . $ed11y_page . '\');
-			console.log(\'Title: ' . $debugtitle . '\');
+			console.log(\'Title: ' . $ed11y_title . '\');
 		</script>';
 	}
 }
