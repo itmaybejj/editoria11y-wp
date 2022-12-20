@@ -106,16 +106,16 @@ class Ed1 {
             return header;
         }
         Ed1.render.button = function (text, hash, sorted = false) {
-            let sorter = document.createElement('button');
-            sorter.textContent = text;
-            sorter.setAttribute('data-ed1-action', hash);
+            let button = document.createElement('button');
+            button.textContent = text;
+            button.setAttribute('data-ed1-action', hash);
             if (sorted) {
-                sorter.setAttribute('aria-pressed', 'true');
+                button.setAttribute('aria-pressed', 'true');
                 let direction = 'DESC' === sorted ? 'descending' : 'ascending';
-                sorter.setAttribute('title', direction);
-                sorter.setAttribute('class', direction);
+                button.setAttribute('title', direction);
+                button.setAttribute('class', direction);
             }
-            return sorter;
+            return button;
         }
         Ed1.render.a = function (text, hash = false, url = false, pid = false) {
             let link = document.createElement('a');

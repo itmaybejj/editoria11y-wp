@@ -199,6 +199,7 @@ class Ed11y {
 	 * Defines file locations.
 	 */
 	public function constants() {
+		global $wpdb;
 
 		define( 'ED11Y_BASE', plugin_basename( __FILE__ ) );
 
@@ -216,44 +217,6 @@ class Ed11y {
 
 		// Set the constant path to the assets directory.
 		define( 'ED11Y_ASSETS', ED11Y_URI . trailingslashit( 'assets' ) );
-
-		define(
-			'ED11Y_RULES',
-			array(
-				'headingLevelSkipped',
-				'headingEmpty',
-				'headingIsLong',
-				'blockQuoteIsShort',
-				'altMissing',
-				'altNull',
-				'altURL',
-				'alURLLinked',
-				'altImageOf',
-				'altImageOfLinked',
-				'altDeadspace',
-				'altDeadspaceLinked',
-				'altEmptyLinked',
-				'altLong',
-				'altLongLinked',
-				'altPartOfLinkWithText',
-				'linkNoText',
-				'linkTextIsUrl',
-				'linkTextIsGeneric',
-				'linkDocument',
-				'linkNewWindow',
-				'tableNoHeaderCells',
-				'tableContainsContentHeading',
-				'tableEmptyHeaderCell',
-				'textPossibleList',
-				'textPossibleHeading',
-				'textUppercase',
-				'embedVideo',
-				'embedAudio',
-				'embedVisualization',
-				'embedTwitter',
-				'embedCustom',
-			)
-		);
 
 	}
 
@@ -286,12 +249,12 @@ class Ed11y {
 	 */
 	public function api() {
 		// Load the API.
-		require_once ED11Y_DIR . 'src/controller/class-ed11y-api-result.php';
-		$ed11y_api_result = new Ed11y_Api_Result();
-		$ed11y_api_result->init();
-		require_once ED11Y_DIR . 'src/controller/class-ed11y-api-dismiss.php';
-		$ed11y_api_dismiss = new Ed11y_Api_Dismiss();
-		$ed11y_api_dismiss->init();
+		require_once ED11Y_DIR . 'src/controller/class-ed11y-api-results.php';
+		$ed11y_api_results = new Ed11y_Api_Results();
+		$ed11y_api_results->init();
+		require_once ED11Y_DIR . 'src/controller/class-ed11y-api-dismissals.php';
+		$ed11y_api_dismissals = new Ed11y_Api_Dismissals();
+		$ed11y_api_dismissals->init();
 	}
 
 	/**

@@ -6,7 +6,7 @@
  *
  * @package         Editoria11y
  */
-class Ed11y_Api_Result extends WP_REST_Controller {
+class Ed11y_Api_Results extends WP_REST_Controller {
 
 	/**
 	 * Register routes
@@ -22,39 +22,23 @@ class Ed11y_Api_Result extends WP_REST_Controller {
 	 * Register the routes for the objects of the controller.
 	 */
 	public function register_routes() {
+
 		$version   = '1';
 		$namespace = 'ed11y/v' . $version;
-		$base      = 'result';
+
+		// Report results from scan.
 		register_rest_route(
 			$namespace,
-			'/' . $base,
+			'/result',
 			array(
 				'methods'             => 'PUT',
 				'callback'            => array( $this, 'update_item' ),
 				'permission_callback' => array( $this, 'update_item_permissions_check' ),
 				'args'                => $this->get_endpoint_args_for_item_schema( true ),
-				/*
-				array(
-					// Report results for a URL.
-					'methods'             => WP_REST_Server::EDITABLE,
-					'callback'            => array( $this, 'update_item' ),
-					'permission_callback' => array( $this, 'update_item_permissions_check' ),
-					'args'                => $this->get_endpoint_args_for_item_schema( true ),
-				),
-				array(
-					// Purge results for a URL.
-					'methods'             => WP_REST_Server::DELETABLE,
-					'callback'            => array( $this, 'delete_item' ),
-					'permission_callback' => array( $this, 'delete_item_permissions_check' ),
-					'args'                => array(
-						'force' => array(
-							'default' => false,
-						),
-					),
-				),*/
 			)
 		);
 
+		// Return sitewide data.
 		register_rest_route(
 			$namespace,
 			'/dashboard', // (?P<id>[\d]+)
@@ -69,125 +53,69 @@ class Ed11y_Api_Result extends WP_REST_Controller {
 						),
 					),
 				),
-				array(
-					'methods'             => WP_REST_Server::EDITABLE,
-					'callback'            => array( $this, 'update_item' ),
-					'permission_callback' => array( $this, 'update_item_permissions_check' ),
-					'args'                => $this->get_endpoint_args_for_item_schema( false ),
-				),
-				array(
-					'methods'             => WP_REST_Server::DELETABLE,
-					'callback'            => array( $this, 'delete_item' ),
-					'permission_callback' => array( $this, 'delete_item_permissions_check' ),
-					'args'                => array(
-						'force' => array(
-							'default' => false,
-						),
-					),
-				),
+
 			)
 		);
-		/*
-		register_rest_route(
-			$namespace,
-			'/' . $base . '/schema',
-			array(
-				'methods'  => WP_REST_Server::READABLE,
-				'callback' => array( $this, 'get_public_item_schema' ),
-			)
-		);*/
 	}
 
 	/**
-	 * Get a collection of items
+	 * Get dashboard table data.
 	 *
 	 * @param WP_REST_Request $request Full data about the request.
 	 * @return WP_Error|WP_REST_Response
 	 */
-	/*
-	public function get_items( $request ) {
-		$items = array(); // do a query, call another class, etc
-		$data  = array();
-		foreach ( $items as $item ) {
-			$itemdata = $this->prepare_item_for_response( $item, $request );
-			$data[]   = $this->prepare_response_for_collection( $itemdata );
-		}
-
-		return new WP_REST_Response( $data, 200 );
-	}*/
-
-	/**
-	 * Get one item from the collection
-	 *
-	 * @param WP_REST_Request $request Full data about the request.
-	 * @return WP_Error|WP_REST_Response
-	 */
-
 	public function get_results( $request ) {
-		// get parameters from request
-		$params = $request->get_params();
-		$group  = '';
 		global $wpdb;
-		$count     = intval( $params['count'] );
-		$offset    = intval( $params['offset'] );
-		$order_by  = $params['sort'];
-		$direction = 'ASC' === $params['direction'] ? 'ASC' : 'DESC';
+		require_once ED11Y_DIR . 'src/class-ed11y-validate.php';
+		$validate = new Ed11y_Validate();
 
-		$valid_sorts = array(
-			'pid',
-			'page_url',
-			'page_title',
-			'entity_type',
-			'page_total',
-			'result_key',
-			'result_count',
-			'created',
-		);
+		// Sanitize all params before use:
+		$params      = $request->get_params();
+		$count       = intval( $params['count'] );
+		$offset      = intval( $params['offset'] );
+		$direction   = 'ASC' === $params['direction'] ? 'ASC' : 'DESC';
+		$order_by    = ! empty( $params['sort'] ) && $validate->sort( $params['sort'] ) ? $params['sort'] : false;
+		$entity_type = ! empty( $params['entity_type'] ) && $validate->entity_type( $params['entity_type'] ) ? $params['entity_type'] : false;
+		$result_key  = ! empty( $params['result_key'] ) && true === $validate->test_name( $params['result_key'] ) ? $params['result_key'] : false;
+		$utable      = $wpdb->prefix . 'ed11y_urls';
+		$rtable      = $wpdb->prefix . 'ed11y_results';
 
-		// validate order_by using an allow list
-		if ( ! in_array( $order_by, $valid_sorts ) ) {
-			$order_by = false;
-		}
-
-		// Get top pages.
 		if ( 'pages' === $params['view'] ) {
+			// Get top pages.
+
+			// Sort by sanitized param; page total is default.
 			$order_by = $order_by ? $order_by : 'page_total';
 
-			// Explicitly validate filter string against defined rule names.
+			// Build where clause based on sanitized params.
 			$where = '';
-			if ( ! empty( $params['result_key'] ) && true === in_array( $params['result_key'], ED11Y_RULES ) ) {
-				// Result key is in array of valid keys and now a trusted string.
-				$where = "WHERE {$wpdb->prefix}ed11y_results.result_key = '{$params['result_key']}'";
+			if ( $result_key ) {
+				// Filtering by test name.
+				$where = "WHERE {$rtable}.result_key = '{$result_key}'";
+			}
+			if ( $entity_type ) {
+				// Filtering by entity type.
+				$where = empty( $where ) ? 'WHERE ' : $where . 'AND ';
+				$where = $where . "{$utable}.entity_type = '{$entity_type}'";
 			}
 
-			if ( ! empty( $params['entity_type'] ) && $this->validate_type( $params['entity_type'] ) ) {
-				// Entity type is in array of valid types and now a trusted string.
-				if ( empty( $where ) ) {
-					$where = "WHERE {$wpdb->prefix}ed11y_urls.entity_type = '{$params['entity_type']}'";
-				} else {
-					$where = $where . "
-					AND {$wpdb->prefix}ed11y_urls.entity_type = '{$params['entity_type']}'";
-				}
-			}
-
-			if ( ! empty( $where ) )  {
-				$order_by = "{$wpdb->prefix}ed11y_urls.{$order_by}";
+			if ( ! empty( $where ) ) {
+				$order_by = "{$utable}.{$order_by}";
 
 				$data = $wpdb->get_results(
 					"SELECT
-							{$wpdb->prefix}ed11y_urls.pid,
-							{$wpdb->prefix}ed11y_urls.page_url,
-							{$wpdb->prefix}ed11y_urls.page_title,
-							{$wpdb->prefix}ed11y_urls.entity_type,
-							{$wpdb->prefix}ed11y_urls.page_total
-							FROM {$wpdb->prefix}ed11y_results
-							INNER JOIN {$wpdb->prefix}ed11y_urls ON {$wpdb->prefix}ed11y_results.pid={$wpdb->prefix}ed11y_urls.pid
+							{$utable}.pid,
+							{$utable}.page_url,
+							{$utable}.page_title,
+							{$utable}.entity_type,
+							{$utable}.page_total
+							FROM {$rtable}
+							INNER JOIN {$utable} ON {$rtable}.pid={$utable}.pid
 							{$where}
-							GROUP BY {$wpdb->prefix}ed11y_urls.pid,
-							{$wpdb->prefix}ed11y_urls.page_url,
-							{$wpdb->prefix}ed11y_urls.page_title,
-							{$wpdb->prefix}ed11y_urls.entity_type,
-							{$wpdb->prefix}ed11y_urls.page_total
+							GROUP BY {$utable}.pid,
+							{$utable}.page_url,
+							{$utable}.page_title,
+							{$utable}.entity_type,
+							{$utable}.page_total
 							ORDER BY {$order_by} {$direction}
 							LIMIT {$count}
 							OFFSET {$offset}
@@ -195,9 +123,9 @@ class Ed11y_Api_Result extends WP_REST_Controller {
 				);
 
 				$rowcount = $wpdb->get_var(
-					"SELECT COUNT({$wpdb->prefix}ed11y_urls.pid) 
-					FROM {$wpdb->prefix}ed11y_results
-					INNER JOIN {$wpdb->prefix}ed11y_urls ON {$wpdb->prefix}ed11y_results.pid={$wpdb->prefix}ed11y_urls.pid
+					"SELECT COUNT({$utable}.pid) 
+					FROM {$rtable}
+					INNER JOIN {$utable} ON {$rtable}.pid={$utable}.pid
 					{$where};"
 				);
 
@@ -211,7 +139,7 @@ class Ed11y_Api_Result extends WP_REST_Controller {
 						page_title,
 						entity_type,
 						page_total
-					FROM {$wpdb->prefix}ed11y_urls
+					FROM {$utable}
 					ORDER BY {$order_by} {$direction}
 					LIMIT {$count}
 					OFFSET {$offset}
@@ -220,26 +148,27 @@ class Ed11y_Api_Result extends WP_REST_Controller {
 
 				$rowcount = $wpdb->get_var(
 					"SELECT COUNT(pid) 
-					FROM {$wpdb->prefix}ed11y_urls;"
+					FROM {$utable};"
 				);
 			}
 		} elseif ( 'keys' == $params['view'] ) {
 
-			$rowcount = $wpdb->get_var(
-				"SELECT COUNT(DISTINCT result_key) 
-				FROM {$wpdb->prefix}ed11y_results;"
-			);
-			if ( 'count' === $order_by || false === $order_by ) {
+			if ( false === $order_by || 'count' === $order_by ) {
 				$order_by = 'SUM(' . $wpdb->prefix . 'ed11y_results.result_count)';
 			}
 
+			$rowcount = $wpdb->get_var(
+				"SELECT COUNT(DISTINCT result_key) 
+				FROM {$rtable};"
+			);
+
 			$data = $wpdb->get_results(
 				"SELECT
-					SUM({$wpdb->prefix}ed11y_results.result_count) AS count,
-					{$wpdb->prefix}ed11y_results.result_key
-					FROM {$wpdb->prefix}ed11y_results
-					INNER JOIN {$wpdb->prefix}ed11y_urls ON {$wpdb->prefix}ed11y_results.pid={$wpdb->prefix}ed11y_urls.pid
-					GROUP BY {$wpdb->prefix}ed11y_results.result_key
+					SUM({$rtable}.result_count) AS count,
+					{$rtable}.result_key
+					FROM {$rtable}
+					INNER JOIN {$utable} ON {$rtable}.pid={$utable}.pid
+					GROUP BY {$rtable}.result_key
 					ORDER BY {$order_by} {$direction}
 					LIMIT {$count}
 					OFFSET {$offset}
@@ -256,25 +185,6 @@ class Ed11y_Api_Result extends WP_REST_Controller {
 		}
 	}
 
-	/**
-	 * Edit one item from the collection
-	 *
-	 * @param WP_REST_Request $request Full data about the request.
-	 * @return WP_Error|WP_REST_Response
-	 */
-	/*
-	public function create_item( $request ) {
-		$item = $this->prepare_results( $request );
-
-		if ( function_exists( 'slug_some_function_to_update_item' ) ) {
-			$data = slug_some_function_to_update_item( $item );
-			if ( is_array( $data ) ) {
-				return new WP_REST_Response( $data, 200 );
-			}
-		}
-
-		return new WP_Error( 'cant-create', __( 'message', 'text-domain' ), array( 'status' => 500 ) );
-	}*/
 
 	/**
 	 * Update one item from the collection
@@ -283,7 +193,6 @@ class Ed11y_Api_Result extends WP_REST_Controller {
 	 * @return WP_Error|WP_REST_Response
 	 */
 	public function update_item( $request ) {
-		// $item = $this->prepare_results( $request );
 
 		$data = $this->send_results( $request );
 		if ( ! ( in_array( false, $data, true ) ) ) {
@@ -303,7 +212,7 @@ class Ed11y_Api_Result extends WP_REST_Controller {
 		global $wpdb;
 		$pid = $wpdb->get_var(
 			$wpdb->prepare(
-				"SELECT pid FROM {$wpdb->prefix}ed11y_urls
+				"SELECT pid FROM {$wpdb->prefix}ed11y_results
 				WHERE page_url=%s;",
 				array(
 					$url,
@@ -320,6 +229,7 @@ class Ed11y_Api_Result extends WP_REST_Controller {
 	 * @param WP_REST_Request $request Full data about the request.
 	 */
 	public function send_results( $request ) {
+
 		// not yet valid code
 		// see https://developer.wordpress.org/reference/classes/wpdb/ for escaping. %s string %d digits
 		$params  = $request->get_params();
@@ -367,7 +277,7 @@ class Ed11y_Api_Result extends WP_REST_Controller {
 				// Upsert results.
 				$response = $wpdb->query(
 					$wpdb->prepare(
-						"INSERT INTO {$wpdb->prefix}ed11y_results 
+						"INSERT INTO {$wpdb->prefix}ed11y_results
                             (pid,
                             result_key,
                             result_count,
@@ -491,61 +401,6 @@ class Ed11y_Api_Result extends WP_REST_Controller {
 		return new WP_Error( 'cant-delete', __( 'message', 'text-domain' ), array( 'status' => 500 ) );
 	}
 
-	/**
-	 * Validate entity types.
-	 * 
-	 */
-	public function validate_type( $type ) {
-		$types = array(
-			'Front',
-			'Page',
-			'Home',
-			'Attachment',
-			'Post',
-			'Category',
-			'Tag',
-			'Taxonomy',
-			'Author',
-			'Archive',
-			'Search',
-			'404',
-		);
-		return in_array( $type, $types, true );
-	}
-
-	/**
-	 * Check if a given request has access to get items
-	 *
-	 * @param WP_REST_Request $request Full data about the request.
-	 * @return WP_Error|bool
-	 */
-	/*
-	public function get_items_permissions_check( $request ) {
-		// return true; <--use to make readable by all
-		return current_user_can( 'edit_something' );
-	}*/
-
-	/**
-	 * Check if a given request has access to get a specific item
-	 *
-	 * @param WP_REST_Request $request Full data about the request.
-	 * @return WP_Error|bool
-	 */
-	/*
-	public function get_item_permissions_check( $request ) {
-		return $this->get_items_permissions_check( $request );
-	}*/
-
-	/**
-	 * Check if a given request has access to create items
-	 *
-	 * @param WP_REST_Request $request Full data about the request.
-	 * @return WP_Error|bool
-	 */
-	/*
-	public function create_item_permissions_check( $request ) {
-		return current_user_can( 'edit_something' );
-	}*/
 
 	/**
 	 * Check if a given request has access to update a specific item
@@ -608,31 +463,4 @@ class Ed11y_Api_Result extends WP_REST_Controller {
 		return array();
 	}
 
-	/**
-	 * Get the query params for collections
-	 *
-	 * @return array
-	 */
-	/*
-	public function get_collection_params() {
-		return array(
-			'page'     => array(
-				'description'       => 'Current page of the collection.',
-				'type'              => 'integer',
-				'default'           => 1,
-				'sanitize_callback' => 'absint',
-			),
-			'per_page' => array(
-				'description'       => 'Maximum number of items to be returned in result set.',
-				'type'              => 'integer',
-				'default'           => 10,
-				'sanitize_callback' => 'absint',
-			),
-			'search'   => array(
-				'description'       => 'Limit results to those matching a string.',
-				'type'              => 'string',
-				'sanitize_callback' => 'sanitize_text_field',
-			),
-		);
-	}*/
 }
