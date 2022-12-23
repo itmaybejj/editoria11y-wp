@@ -29,6 +29,10 @@
     border: 0;
 }
 
+#ed1 td[colspan] {
+    font-style: italic;
+}
+
 #ed1 td:first-child, #ed1 td:last-child {
     min-width: 33%;
 }

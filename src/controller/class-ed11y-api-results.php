@@ -212,7 +212,7 @@ class Ed11y_Api_Results extends WP_REST_Controller {
 		global $wpdb;
 		$pid = $wpdb->get_var(
 			$wpdb->prepare(
-				"SELECT pid FROM {$wpdb->prefix}ed11y_results
+				"SELECT pid FROM {$wpdb->prefix}ed11y_urls
 				WHERE page_url=%s;",
 				array(
 					$url,
@@ -301,7 +301,6 @@ class Ed11y_Api_Results extends WP_REST_Controller {
 				);
 				$rows    += $response ? $response : 0;
 				$return[] = $response;
-
 			}
 
 			foreach ( $results['dismissals'] as $key => $value ) {
@@ -375,7 +374,6 @@ class Ed11y_Api_Results extends WP_REST_Controller {
 				);
 			}
 		}
-
 		return $return;
 	}
 

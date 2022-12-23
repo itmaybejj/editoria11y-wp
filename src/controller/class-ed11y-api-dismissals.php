@@ -200,16 +200,6 @@ class Ed11y_Api_Dismissals extends WP_REST_Controller {
 					FROM {$dtable}
 					INNER JOIN {$utable} ON {$dtable}.pid={$utable}.pid
 					{$where}
-					GROUP BY {$utable}.pid,
-					{$utable}.page_url,
-					{$utable}.page_title,
-					{$utable}.entity_type,
-					{$dtable}.user,
-					{$dtable}.result_key,
-					{$dtable}.dismissal_status,
-					{$dtable}.created,
-					{$dtable}.updated,
-					{$dtable}.stale
 					ORDER BY {$order_by} {$direction}
 					LIMIT {$count}
 					OFFSET {$offset}

@@ -9,7 +9,7 @@ class Ed1 {
         Ed1.params = function () {
             let queryString = window.location.search;
             let urlParams = new URLSearchParams(queryString);
-            Ed1.url = '//' + window.location.host + window.location.pathname + '?';
+            Ed1.url = 'https://' + window.location.host + window.location.pathname + '?';
             if (urlParams.get('page')) {
                 Ed1.url += 'page=' + urlParams.get('page') + '&';
             }
@@ -82,7 +82,6 @@ class Ed1 {
         Ed1.buildRequest = function (request) {
             let q = Ed1.requests[request];
             let req = `${q.base}?view=${q.view}&count=${q.count}&offset=${q.offset}&sort=${q.sort}&direction=${q.direction}&result_key=${q.result_key}&entity_type=${q.entity_type}`;
-            console.log(req);
             return req;
         }
 
@@ -99,8 +98,6 @@ class Ed1 {
             Ed1.wrapResults = Ed1.wrapper.querySelector('#ed1-results-wrapper');
             Ed1.wrapDismiss = Ed1.wrapper.querySelector('#ed1-dismissals-wrapper');
             Ed1.render.tableHeaders();
-
-            console.log('key: ' + !!Ed1.resultKey);
 
             // Only build result table if there is no result or type filter.
             if ( !!Ed1.resultKey || !!Ed1.type ) {
@@ -125,6 +122,12 @@ class Ed1 {
             window.setTimeout( function() {
                 Ed1.show();
             }, 1000)
+            window.setTimeout( function() {
+                let neverLoaded = document.querySelectorAll('#ed1 .loading');
+                Array.from(neverLoaded).forEach((el) => {
+                    el.textContent = 'API error.'
+                })
+            }, 3000)
         }
 
         Ed1.show = function() {
@@ -175,6 +178,8 @@ class Ed1 {
             }
             return button;
         }
+
+        // Render a link with url sanitized and html encoded.
         Ed1.render.a = function (text, hash = false, url = false, pid = false) {
             let link = document.createElement('a');
             link.textContent = text;
@@ -187,6 +192,7 @@ class Ed1 {
             link.setAttribute('href', href);
             return link;
         }
+
         Ed1.render.td = function (text, hash = false, url = false, pid = false, cls = false) {
             let cell = document.createElement('td');
             if (url) {
@@ -209,6 +215,13 @@ class Ed1 {
             summary.setAttribute('id', id);
             details.append(summary);
             return details;
+        }
+        Ed1.render.noResults = function (text, colspan) {
+            let row = document.createElement('tr');
+            let td = Ed1.render.td(text);
+            td.setAttribute('colspan', colspan);
+            row.append(td);
+            return row;
         }
         /**
          * Hat tip to https://webdesign.tutsplus.com/tutorials/pagination-with-vanilla-javascript--cms-41896
@@ -283,9 +296,8 @@ class Ed1 {
             let tableDetails = Ed1.render.details('Issues by Type', 'ed1result-title')
             Ed1.wrapResults.append(tableDetails);
             let loadWrap = document.createElement('tr');
-            let loading = document.createElement('td');
-            loading.setAttribute('colspan', '4');
-            loading.textContent = "loading...";
+            let loading = Ed1.render.td('loading...', false, false, false, 'loading');
+            loading.setAttribute('colspan', '6');
             loadWrap.append(loading);
             Ed1.tables['ed1result'].append(loadWrap);
             tableDetails.append(Ed1.tables['ed1result']);
@@ -357,7 +369,9 @@ class Ed1 {
                 post.forEach((result) => {
                     let row = document.createElement('tr');
 
-                    let key = Ed1.render.td(result['result_key'], false, Ed1.url + 'rkey=' + encodeURIComponent(result['result_key']), false, 'rkey');
+                    let keyName = ed11yLang.en[result['result_key']].title;
+                    // URL sanitized on build...
+                    let key = Ed1.render.td(keyName, false, Ed1.url + 'rkey=' + result['result_key'], false, 'rkey');
                     row.insertAdjacentElement('beforeend', key);
 
                     let pageCount = Ed1.render.td(result['count']);
@@ -400,7 +414,7 @@ class Ed1 {
                     let pageCount = Ed1.render.td(result['page_total']);
                     row.insertAdjacentElement('beforeend', pageCount);
 
-                    let type = Ed1.render.td(result['entity_type'], false, `${Ed1.url}type=${encodeURIComponent(result['entity_type'])}`);
+                    let type = Ed1.render.td(result['entity_type'], false, `${Ed1.url}type=${result['entity_type']}`);
                     row.insertAdjacentElement('beforeend', type);
 
                     let path = result['page_url'].replace(window.location.protocol + '//' + window.location.host, '');
@@ -425,7 +439,6 @@ class Ed1 {
          * @param {*} count 
          */
         Ed1.render.ed1dismiss = function (post, count, announce) {
-            console.log(post);
 
             Ed1.tables['ed1dismiss'].querySelectorAll('tr + tr').forEach(el => {
                 el.remove();
@@ -436,45 +449,53 @@ class Ed1 {
                     Ed1.render.pagination('ed1dismiss', count, 50, 0, 'ed1dismiss-title');
                 }
 
-                post.forEach((result) => {
-                    /**
-                     * created: "2022-12-09 15:27:45"
-                        dismissal_status: "hide"
-                        entity_type: "Post"
-                        page_title: "Hello world!"
-                        page_url: "https://editoria11y-wp.ddev.site/2022/10/03/hello-world/"
-                        pid: "16"
-                        result_key: "linkTextIsGeneric"
-                        stale: "0"
-                        updated: "2022-12-16 22:18:38"
-                        user: "0"
-                     */
-                    let row = document.createElement('tr');
+                if (post.length === 0) {
+                    let notFound = Ed1.render.noResults('No alerts have been dismissed.', '6');
+                    Ed1.tables['ed1dismiss'].insertAdjacentElement('beforeend', notFound);
+                } else {
+                    post.forEach((result) => {
+                        /**
+                         * created: "2022-12-09 15:27:45"
+                            dismissal_status: "hide"
+                            entity_type: "Post"
+                            page_title: "Hello world!"
+                            page_url: "https://editoria11y-wp.ddev.site/2022/10/03/hello-world/"
+                            pid: "16"
+                            result_key: "linkTextIsGeneric"
+                            stale: "0"
+                            updated: "2022-12-16 22:18:38"
+                            user: "0"
+                         */
+                        let row = document.createElement('tr');
+    
+                        let pageLink = Ed1.render.td(result['page_title'], false, result['page_url'], result['pid']);
+                        row.insertAdjacentElement('beforeend', pageLink);
+                        // need to sanitize URL in response
+                        let keyName = ed11yLang.en[result['result_key']].title;
+                        let key = Ed1.render.td(keyName, false, Ed1.url + 'rkey=' + result['result_key'], false, 'rkey');
+                        row.insertAdjacentElement('beforeend', key);
+    
+                        let marked = Ed1.render.td( result['dismissal_status'] );
+                        row.insertAdjacentElement('beforeend', marked);
+                        
+                        let by = Ed1.render.td( result['user'] );
+                        row.insertAdjacentElement('beforeend', by);
+    
+                        // todo: need to change this to created!!!
+                        let on = Ed1.render.td( result['updated'] );
+                        row.insertAdjacentElement('beforeend', on);
+    
+                        // old 
+                        let stale = Ed1.render.td( !result['stale'] ? "No" : "Yes" );
+                        row.insertAdjacentElement('beforeend', stale);
+    
+                        Ed1.tables['ed1dismiss'].insertAdjacentElement('beforeend', row);
+                    })
+                }
 
-                    let pageLink = Ed1.render.td(result['page_title'], false, result['page_url'], result['pid']);
-                    row.insertAdjacentElement('beforeend', pageLink);
-                    // need to sanitize URL in response
-
-                    let key = Ed1.render.td(result['result_key'], false, Ed1.url + 'rkey=' + encodeURIComponent(result['result_key']), false, 'rkey');
-                    row.insertAdjacentElement('beforeend', key);
-
-                    let marked = Ed1.render.td( result['dismissal_status'] );
-                    row.insertAdjacentElement('beforeend', marked);
-                    
-                    let by = Ed1.render.td( result['user'] );
-                    row.insertAdjacentElement('beforeend', by);
-
-                    // todo: need to change this to created!!!
-                    let on = Ed1.render.td( result['updated'] );
-                    row.insertAdjacentElement('beforeend', on);
-
-                    // old 
-                    let stale = Ed1.render.td( !result['stale'] ? "No" : "Yes" );
-                    row.insertAdjacentElement('beforeend', stale);
-
-                    Ed1.tables['ed1dismiss'].insertAdjacentElement('beforeend', row);
-                })
-            } // todo "no results found"
+                
+            }
+                
 
             if (announce) {
                 Ed1.announce(post.length + " results");
