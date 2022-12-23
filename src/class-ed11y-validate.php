@@ -82,7 +82,7 @@ class Ed11y_Validate {
 			'embedTwitter',
 			'embedCustom',
 		);
-		return in_array( $string, $array, true );
+		return in_array( $string, $valid, true );
 	}
 
 }

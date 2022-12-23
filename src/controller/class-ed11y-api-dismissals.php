@@ -164,106 +164,66 @@ class Ed11y_Api_Dismissals extends WP_REST_Controller {
 		$entity_type = ! empty( $params['entity_type'] ) && $validate->entity_type( $params['entity_type'] ) ? $params['entity_type'] : false;
 		$result_key  = ! empty( $params['result_key'] ) && true === $validate->test_name( $params['result_key'] ) ? $params['result_key'] : false;
 		$utable      = $wpdb->prefix . 'ed11y_urls';
-		$rtable      = $wpdb->prefix . 'ed11y_results';
+		$dtable      = $wpdb->prefix . 'ed11y_dismissals';
+
+		// Get top pages.
+
+		// Sort by sanitized param; page total is default.
+		$order_by = $order_by ? $order_by : 'page_total';
+
+		// Build where clause based on sanitized params.
+		$where = '';
+		if ( $result_key ) {
+			// Filtering by test name.
+			$where = "WHERE {$dtable}.result_key = '{$result_key}'";
+		}
+		if ( $entity_type ) {
+			// Filtering by entity type.
+			$where = empty( $where ) ? 'WHERE ' : $where . 'AND ';
+			$where = $where . "{$utable}.entity_type = '{$entity_type}'";
+		}
+
+		$order_by = "{$utable}.{$order_by}";
+
+		$data = $wpdb->get_results(
+			"SELECT
+					{$utable}.pid,
+					{$utable}.page_url,
+					{$utable}.page_title,
+					{$utable}.entity_type,
+					{$dtable}.user,
+					{$dtable}.result_key,
+					{$dtable}.dismissal_status,
+					{$dtable}.created,
+					{$dtable}.updated,
+					{$dtable}.stale
+					FROM {$dtable}
+					INNER JOIN {$utable} ON {$dtable}.pid={$utable}.pid
+					{$where}
+					GROUP BY {$utable}.pid,
+					{$utable}.page_url,
+					{$utable}.page_title,
+					{$utable}.entity_type,
+					{$dtable}.user,
+					{$dtable}.result_key,
+					{$dtable}.dismissal_status,
+					{$dtable}.created,
+					{$dtable}.updated,
+					{$dtable}.stale
+					ORDER BY {$order_by} {$direction}
+					LIMIT {$count}
+					OFFSET {$offset}
+					;"
+		);
+
+		$rowcount = $wpdb->get_var(
+			"SELECT COUNT({$utable}.pid) 
+			FROM {$dtable}
+			INNER JOIN {$utable} ON {$dtable}.pid={$utable}.pid
+			{$where};"
+		);
 
 		
-
-		if ( 'pages' === $params['view'] ) {
-			// Get top pages.
-
-			// Sort by sanitized param; page total is default.
-			$order_by = $order_by ? $order_by : 'page_total';
-
-			// Build where clause based on sanitized params.
-			$where = '';
-			if ( $result_key ) {
-				// Filtering by test name.
-				$where = "WHERE {$rtable}.result_key = '{$result_key}'";
-			}
-			if ( $entity_type ) {
-				// Filtering by entity type.
-				$where = empty( $where ) ? 'WHERE ' : $where . 'AND ';
-				$where = $where . "{$utable}.entity_type = '{$entity_type}'";
-			}
-
-			if ( ! empty( $where ) ) {
-				$order_by = "{$utable}.{$order_by}";
-
-				$data = $wpdb->get_results(
-					"SELECT
-							{$utable}.pid,
-							{$utable}.page_url,
-							{$utable}.page_title,
-							{$utable}.entity_type,
-							{$utable}.page_total
-							FROM {$rtable}
-							INNER JOIN {$utable} ON {$rtable}.pid={$utable}.pid
-							{$where}
-							GROUP BY {$utable}.pid,
-							{$utable}.page_url,
-							{$utable}.page_title,
-							{$utable}.entity_type,
-							{$utable}.page_total
-							ORDER BY {$order_by} {$direction}
-							LIMIT {$count}
-							OFFSET {$offset}
-							;"
-				);
-
-				$rowcount = $wpdb->get_var(
-					"SELECT COUNT({$utable}.pid) 
-					FROM {$rtable}
-					INNER JOIN {$utable} ON {$rtable}.pid={$utable}.pid
-					{$where};"
-				);
-
-			} else {
-				$where = '';
-
-				$data = $wpdb->get_results(
-					"SELECT
-						pid,
-						page_url,
-						page_title,
-						entity_type,
-						page_total
-					FROM {$utable}
-					ORDER BY {$order_by} {$direction}
-					LIMIT {$count}
-					OFFSET {$offset}
-					;"
-				);
-
-				$rowcount = $wpdb->get_var(
-					"SELECT COUNT(pid) 
-					FROM {$utable};"
-				);
-			}
-		} elseif ( 'keys' == $params['view'] ) {
-
-			if ( false === $order_by || 'count' === $order_by ) {
-				$order_by = 'SUM(' . $wpdb->prefix . 'ed11y_results.result_count)';
-			}
-
-			$rowcount = $wpdb->get_var(
-				"SELECT COUNT(DISTINCT result_key) 
-				FROM {$rtable};"
-			);
-
-			$data = $wpdb->get_results(
-				"SELECT
-					SUM({$rtable}.result_count) AS count,
-					{$rtable}.result_key
-					FROM {$rtable}
-					INNER JOIN {$utable} ON {$rtable}.pid={$utable}.pid
-					GROUP BY {$rtable}.result_key
-					ORDER BY {$order_by} {$direction}
-					LIMIT {$count}
-					OFFSET {$offset}
-					;"
-			);
-
-		}
 
 		// return a response or error based on some conditional
 		if ( 1 == 1 ) {

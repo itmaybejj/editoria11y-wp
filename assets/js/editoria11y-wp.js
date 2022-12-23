@@ -1,3 +1,5 @@
+// Todo refactoring broke putting results
+
 // Create callback to see if document is ready.
 function ed11yReady(fn) {
 	if (document.readyState != 'loading'){
