@@ -38,7 +38,6 @@ function ed11y_get_default_options() {
 		'ed11y_embeddedContent'     => 'datastudio.google.com, tableau',
 
 		'ed11y_no_run'              => '',
-		'ed11y_extra_props'         => '',
 	);
 
 	// Allow dev to filter the default settings.
@@ -105,7 +104,7 @@ function ed11y_init() {
 		$ed1vals                      = array();
 		$ed1vals['checkRoots']        = ed11y_get_plugin_settings( 'ed11y_checkRoots' );
 		$ed1vals['ignoreElements']    = ed11y_get_plugin_settings( 'ed11y_ignore_elements' );
-		$ed1vals['ignoreElements']    = empty( $ed1vals['ignore_elements'] ) ? '.wp-block-post-comments *, #wpadminbar *' : '.wp-block-post-comments *, #wpadminbar *, ' . $ignore_elements;
+		$ed1vals['ignoreElements']    = empty( $ed1vals['ignoreElements'] ) ? '.wp-block-post-comments *, #wpadminbar *' : '.wp-block-post-comments *, #wpadminbar *, ' . $ed1vals['ignoreElements'];
 		$ed1vals['linkIgnoreStrings'] = ed11y_get_plugin_settings( 'ed11y_link_ignore_strings' );
 		$ed1vals['embeddedContent']   = ed11y_get_plugin_settings( 'ed11y_link_ignore_strings' );
 
@@ -116,7 +115,6 @@ function ed11y_init() {
 
 		// Advanced settings.
 		$ed1vals['preventCheckingIfPresent'] = ed11y_get_plugin_settings( 'ed11y_no_run' );
-		$ed1vals['extra_props']              = ed11y_get_plugin_settings( 'ed11y_extra_props' );
 
 		// Use permalink as sync URL if available.
 		$ed1vals['currentPage'] = get_permalink( get_the_ID() );

@@ -1,4 +1,4 @@
-// Todo refactoring broke putting results
+let ed11yOptions = {};
 
 // Create callback to see if document is ready.
 function ed11yReady(fn) {
@@ -129,16 +129,14 @@ function ed11ySync() {
 	
 }
 
-
-  // Call callback, init Editoria11y.
+// Call callback, init Editoria11y.
 ed11yReady(
 	function() {
 		let ed11yOpts = document.getElementById("ed11y-wp-init");
-		console.log(ed11yOpts);
 		if (!!ed11yOpts && window.location.href.indexOf('elementor-preview') === -1) {
 			ed11yOptions = JSON.parse(ed11yOpts.innerHTML);
-			console.log(ed11yOptions);
-			console.log(ed11yOptions['title']);
+			
+			ed11yOptions.linkIgnoreStrings = ed11yOptions.linkIgnoreStrings ? new RegExp(ed11yOptions.linkIgnoreStrings, 'g') : false;
 			if (ed11yOptions.title.length < 3) {
 				ed11yOptions.title = document.title;
 			}			

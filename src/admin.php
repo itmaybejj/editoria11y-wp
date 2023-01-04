@@ -5,18 +5,12 @@
  *  @package         Editoria11y
  */
 
-/* Allowed HTML for all translatable text strings */
-$allowed_html = array(
-	'em'     => array(),
-	'strong' => array(),
-	'code'   => array(),
-);
-
-function ed11y_get_allowed_html() {
+function ed11y_allowed_html() {
 	$allowed_html = array(
 		'em'     => array(),
 		'strong' => array(),
 		'code'   => array(),
+		'br'      => array(),
 	);
 	return $allowed_html;
 }
@@ -178,15 +172,6 @@ function ed11y_setting_sections_fields() {
 		array( 'label_for' => 'ed11y_no_run' )
 	);
 
-	// Add 'Extra Props' textarea setting field.
-	add_settings_field(
-		'ed11y_extra_props',
-		esc_html__( 'Add extra props', 'ed11y-wp' ),
-		'ed11y_extra_props_field',
-		'ed11y',
-		'ed11y_advanced_settings',
-		array( 'label_for' => 'ed11y_extra_props' )
-	);
 }
 add_action( 'admin_init', 'ed11y_setting_sections_fields' );
 
@@ -196,11 +181,11 @@ add_action( 'admin_init', 'ed11y_setting_sections_fields' );
 function ed11y_check_roots_field() {
 	$settings = ed11y_get_plugin_settings( 'ed11y_checkRoots' );
 	?>
-	<input autocomplete="off" name="ed11y_plugin_settings[ed11y_checkRoots]" type="text" id="ed11y_checkRoots" value="<?php echo esc_attr( $settings ); ?>" aria-describedby="target_description" pattern="[^<>\\\x27;|@&\s]+"/>
+	<input autocomplete="off" name="ed11y_plugin_settings[ed11y_checkRoots]" type="text" id="ed11y_checkRoots" value="<?php echo esc_attr( $settings ); ?>" aria-describedby="target_description" />
 	<p id="target_description">
 		<?php
-			$string = 'Input a <strong>single selector</strong> to target a specific region of your website. For example, use <code>main</code> to scan the main content region only.';
-			echo wp_kses( __( $string, 'ed11y-wp' ), ed11y_get_allowed_html() );
+			$string = 'Restrict checker to editable parts of the page, e.g.:<br><code>main, footer</code>';
+			echo wp_kses( __( $string, 'ed11y-wp' ), ed11y_allowed_html() );
 		?>
 	</p>
 	<?php
@@ -216,8 +201,8 @@ function ed11y_ignore_elements_field() {
 	<input autocomplete="off" class="regular-text" id="ed11y_ignore_elements" aria-describedby="exclusions_description" type="text" name="ed11y_plugin_settings[ed11y_ignore_elements]" value="<?php echo esc_attr( $settings ); ?>" pattern="[^<\\\x27;|@&]+"/>
 	<p id="exclusions_description">
 		<?php
-			$string = 'Ignore entire regions of a page. For example, <code>#comments</code> to ignore the Comments section on all pages.';
-			echo wp_kses( __( $string, 'ed11y-wp' ), ed11y_get_allowed_html() );
+			$string = 'Provide CSS selectors, e.g.:<br><code>#comments *, a[href*="/handbook.pdf"]</code>';
+			echo wp_kses( __( $string, 'ed11y-wp' ), ed11y_allowed_html() );
 		?>
 	</p>
 	<?php
@@ -231,11 +216,11 @@ function ed11y_link_ignore_strings_field() {
 	$settings = ed11y_get_plugin_settings( 'ed11y_link_ignore_strings' );
 	?>
 	   
-	<input autocomplete="off" class="regular-text" id="ed11y_link_ignore_strings" aria-describedby="link_description" type="text" name="ed11y_plugin_settings[ed11y_link_ignore_strings]" value="<?php echo esc_attr( $settings ); ?>" pattern="[^<\\\x27;|@&]+"/>
+	<input autocomplete="off" class="regular-text" id="ed11y_link_ignore_strings" aria-describedby="link_description" type="text" name="ed11y_plugin_settings[ed11y_link_ignore_strings]" value="<?php echo esc_attr( $settings ); ?>"/>
 	<p id="link_span_description">
 		<?php
-			$string = 'Ignore elements within a link to improve accuracy of link checks. For example: <code>&lt;a href=&#34;#&#34;&gt;learn more <strong>&lt;span class=&#34;sr-only&#34;&gt;external link&lt;/span&gt;</strong>&lt;/a&gt;</code>';
-			echo wp_kses( __( $string, 'ed11y-wp' ), ed11y_get_allowed_html() );
+			$string = 'Some themes inject hidden text for screen readers to explain external link icons. Provide a RegEx to exclude this theme-injected text from tests, e.g.:<br> <code>(Link opens in new window)|(External link)</code>';
+			echo wp_kses( __( $string, 'ed11y-wp' ), ed11y_allowed_html() );
 		?>
 	</p>
 	<?php
@@ -248,7 +233,7 @@ function ed11y_link_ignore_strings_field() {
 function ed11y_video_content_field() {
 	$settings = ed11y_get_plugin_settings( 'ed11y_videoContent' );
 	?>
-	<textarea required id="ed11y_videoContent" name="ed11y_plugin_settings[ed11y_videoContent]" cols="45" rows="3"><?php echo esc_html( $settings ); ?></textarea> 
+	<textarea id="ed11y_videoContent" name="ed11y_plugin_settings[ed11y_videoContent]" cols="45" rows="3"><?php echo esc_html( $settings ); ?></textarea> 
 	<?php
 }
 
@@ -258,7 +243,7 @@ function ed11y_video_content_field() {
 function ed11y_audio_content_field() {
 	$settings = ed11y_get_plugin_settings( 'ed11y_audioContent' );
 	?>
-	<textarea required id="ed11y_audioContent" name="ed11y_plugin_settings[ed11y_audioContent]" cols="45" rows="3"><?php echo esc_html( $settings ); ?></textarea>  
+	<textarea id="ed11y_audioContent" name="ed11y_plugin_settings[ed11y_audioContent]" cols="45" rows="3"><?php echo esc_html( $settings ); ?></textarea>  
 	<?php
 }
 
@@ -268,7 +253,7 @@ function ed11y_audio_content_field() {
 function ed11y_embedded_content_field() {
 	$settings = ed11y_get_plugin_settings( 'ed11y_embeddedContent' );
 	?>
-	<textarea required id="ed11y_embeddedContent" name="ed11y_plugin_settings[ed11y_embeddedContent]" cols="45" rows="3"><?php echo esc_html( $settings ); ?></textarea>  
+	<textarea id="ed11y_embeddedContent" name="ed11y_plugin_settings[ed11y_embeddedContent]" cols="45" rows="3"><?php echo esc_html( $settings ); ?></textarea>  
 	<?php
 }
 
@@ -282,31 +267,10 @@ function ed11y_no_run_field() {
 	<p id="ed11y_no_run_description">
 		<?php
 			$string = 'Provide a list of selectors that are <strong>unique to pages</strong>. If any of the elements exist on the page, Editoria11y will not scan or appear.';
-			echo wp_kses( __( $string, 'ed11y-wp' ), ed11y_get_allowed_html() );
+			echo wp_kses( __( $string, 'ed11y-wp' ), ed11y_allowed_html() );
 		?>
 	</p>
 
-	<?php
-}
-
-/**
- * Extra props
- */
-function ed11y_extra_props_field() {
-	$settings = ed11y_get_plugin_settings( 'ed11y_extra_props' );
-	?>
-	<textarea name="ed11y_plugin_settings[ed11y_extra_props]" aria-describedby="extra_props_description" id="ed11y_extra_props" cols="45" rows="3"><?php echo esc_html( $settings ); ?></textarea>
-	<p id="extra_props_description">
-		<?php
-			$domain = esc_url( __( 'https://ed11y.netlify.app/developers/props/', 'ed11y-wp' ) );
-			$string = 'Pass additional (boolean) properties to customize. Refer to ';
-			$anchor = esc_html__( 'documentation.', 'ed11y-wp' );
-			echo wp_kses( __( $string, 'ed11y-wp' ), ed11y_get_allowed_html() );
-
-			$link = sprintf( '<a href="%s">%s</a>', $domain, $anchor );
-			echo sprintf( esc_html( '%1$s', 'ed11y-wp' ), $link );
-		?>
-	</p> 
 	<?php
 }
 
@@ -497,13 +461,6 @@ function ed11y_plugin_settings_validate( $settings ) {
 	$settings['ed11y_no_run'] = strtr(
 		sanitize_text_field( $settings['ed11y_no_run'] ),
 		$target_remove
-	);
-
-	/* Advanced props */
-	$settings['ed11y_extra_props'] = preg_replace(
-		$special_chars,
-		'',
-		sanitize_text_field( $settings['ed11y_extra_props'] )
 	);
 
 	return $settings;

@@ -1,3 +1,5 @@
+let ed11yOptions = false;
+
 // TODO: localStorage or WP use preference for open/shut notifications.
 // TODO: share dismissal API with preview page.
 // TODO: create aria-live region. Populate it with the issues for the is-active block. It will only change when the block changes.
@@ -138,6 +140,9 @@ const ed11yLiveToggle = `
 // Initiate Editoria11y create alert link, initiate content change watcher.
 let ed11yAdminInit = function(ed11yTarget) {
 	ed11yRunning = true;
+	
+	ed11yOptions = JSON.parse(ed11yOptions.innerHTML);
+	ed11yOptions.linkIgnoreStrings = ed11yOptions.linkIgnoreStrings ? new RegExp(ed11yOptions.linkIgnoreStrings, 'g') : false;
 		
 	// Initiate Ed11y with admin options.
 	// Todo: pick checkRoot dynamically based on ed11yTarget.
@@ -241,7 +246,8 @@ let ed11yPreviewLink = false;
 let ed11yFindCompatibleEditor = function() {
 	ed11yTarget = ed11yTarget ? ed11yTarget : document.querySelector('.editor-styles-wrapper');
 	ed11yPreviewLink = ed11yPreviewLink ? ed11yPreviewLink : document.querySelector('button[class*="preview"]');
-	if (!!ed11yTarget & !!ed11yPreviewLink) {
+	ed11yOptions = ed11yOptions ? ed11yOptions : document.getElementById("ed11y-wp-init");
+	if (!!ed11yTarget & !!ed11yPreviewLink && !!ed11yOptions) {
 		ed11yAdminInit(ed11yTarget);
 	} else if (ed11yReadyCount < 10) {
 		window.setTimeout(function() {
