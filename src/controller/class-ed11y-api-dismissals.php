@@ -169,7 +169,7 @@ class Ed11y_Api_Dismissals extends WP_REST_Controller {
 		// Get top pages.
 
 		// Sort by sanitized param; page total is default.
-		$order_by = $order_by ? $order_by : 'page_total';
+		$order_by = $order_by ? $order_by : 'created';
 
 		// Build where clause based on sanitized params.
 		$where = '';
@@ -183,7 +183,13 @@ class Ed11y_Api_Dismissals extends WP_REST_Controller {
 			$where = $where . "{$utable}.entity_type = '{$entity_type}'";
 		}
 
-		$order_by = "{$utable}.{$order_by}";
+		if ( 'page_title' === $order_by ) {
+			$order_by = "{$utable}.{$order_by}";
+		} else if ( 'display_name' === $order_by ) {
+			$order_by = "{$wpdb->users}.{$order_by}";
+		} else {
+			$order_by = "{$dtable}.{$order_by}";
+		}
 
 		$data = $wpdb->get_results(
 			"SELECT
@@ -191,14 +197,15 @@ class Ed11y_Api_Dismissals extends WP_REST_Controller {
 					{$utable}.page_url,
 					{$utable}.page_title,
 					{$utable}.entity_type,
-					{$dtable}.user,
+					{$wpdb->users}.display_name,
 					{$dtable}.result_key,
 					{$dtable}.dismissal_status,
 					{$dtable}.created,
 					{$dtable}.updated,
 					{$dtable}.stale
 					FROM {$dtable}
-					INNER JOIN {$utable} ON {$dtable}.pid={$utable}.pid
+					INNER JOIN {$utable} ON ({$dtable}.pid={$utable}.pid)
+					LEFT JOIN {$wpdb->users} ON ({$wpdb->users}.ID={$dtable}.user)
 					{$where}
 					ORDER BY {$order_by} {$direction}
 					LIMIT {$count}

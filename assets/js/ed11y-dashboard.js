@@ -26,12 +26,16 @@ class Ed1 {
             resultSort = !!resultSort ? resultSort : 'count';
             let pageSort = urlParams.get('psort');
             pageSort = !!pageSort ? pageSort : 'page_total';
+            let dismissSort = urlParams.get('dsort');
+            dismissSort = !!dismissSort ? dismissSort : 'created';
 
             // Validate sort direction
             let resultDir = urlParams.get('rdir');
             resultDir = resultDir === 'DESC' || resultDir === 'ASC' ? resultDir : 'DESC';
             let pageDir = urlParams.get('pdir');
             pageDir = pageDir === 'DESC' || pageDir === 'ASC' ? pageDir : 'DESC';
+            let dismissDir = urlParams.get('ddir');
+            dismissDir = dismissDir === 'DESC' || dismissDir === 'ASC' ? dismissDir : 'DESC';
             
             // Test name to filter by; will be validated.
             Ed1.resultKey = urlParams.get('rkey');
@@ -67,8 +71,8 @@ class Ed1 {
                 view: '',
                 count: 50,
                 offset: pageOffset,
-                sort: pageSort,
-                direction: pageDir,
+                sort: dismissSort,
+                direction: dismissDir,
                 result_key: Ed1.resultKey,
                 entity_type: Ed1.type,
             }
@@ -82,6 +86,7 @@ class Ed1 {
         Ed1.buildRequest = function (request) {
             let q = Ed1.requests[request];
             let req = `${q.base}?view=${q.view}&count=${q.count}&offset=${q.offset}&sort=${q.sort}&direction=${q.direction}&result_key=${q.result_key}&entity_type=${q.entity_type}`;
+            console.log(req);
             return req;
         }
 
@@ -102,10 +107,19 @@ class Ed1 {
             // Only build result table if there is no result or type filter.
             if ( !!Ed1.resultKey || !!Ed1.type ) {
                 let h1 = document.querySelector('#ed1 h1');
-                let filters = Ed1.resultKey ? ' with ' + Ed1.resultKey + ' issues' : false;
-                filters = Ed1.type ? filters ? filters + ' of type ' + Ed1.type : 'of type ' + Ed1.type : filters;
-                h1.textContent = `Pages ${filters}`;
-                let reset = Ed1.render.a('View all pages', false, Ed1.url);
+                let resetType = 'View all issues';
+                if (!!Ed1.resultKey) {
+                    h1.textContent = 'Issue report: "' + ed11yLang.en[Ed1.resultKey].title + '"';
+                } else {
+                    h1.textContent = 'Issues on pages of type "' + Ed1.type + '"';
+                    resetType = 'View issues on all pages';
+                }
+                let reset = Ed1.render.a(resetType, false, Ed1.url);
+                reset.classList.add('reset');
+                let leftArrow = document.createElement('span');
+                leftArrow.textContent = '< ';
+                leftArrow.setAttribute('aria-hidden', 'true');
+                reset.insertAdjacentElement('afterbegin', leftArrow);
                 h1.insertAdjacentElement('afterend', reset);
                 Ed1.wrapResults.style.display = 'none';
             } else {
@@ -287,13 +301,15 @@ class Ed1 {
         }
 
         Ed1.render.tableHeaders = function () {
+
+            // Results table
             Ed1.tables['ed1result'] = document.createElement('table');
             Ed1.tables['ed1result'].setAttribute('id', 'ed1result');
             let head = document.createElement('tr');
-            head.insertAdjacentElement('beforeend', Ed1.render.th('Issue', 'result_key'));
             head.insertAdjacentElement('beforeend', Ed1.render.th('Pages', 'count', 'DESC'));
+            head.insertAdjacentElement('beforeend', Ed1.render.th('Issue', 'result_key'));
             Ed1.tables['ed1result'].insertAdjacentElement('beforeend', head);
-            let tableDetails = Ed1.render.details('Issues by Type', 'ed1result-title')
+            let tableDetails = Ed1.render.details('Accessibility issues', 'ed1result-title')
             Ed1.wrapResults.append(tableDetails);
             let loadWrap = document.createElement('tr');
             let loading = Ed1.render.td('loading...', false, false, false, 'loading');
@@ -308,16 +324,17 @@ class Ed1 {
                 });
             });
 
+            // Pages table
             Ed1.tables['ed1page'] = document.createElement('table');
             Ed1.tables['ed1page'].setAttribute('id', 'ed1page');
             head = document.createElement('tr');
+            head.insertAdjacentElement('beforeend', Ed1.render.th('Issues', 'page_total', 'DESC'));
             head.insertAdjacentElement('beforeend', Ed1.render.th('Page', 'page_title'));
-            head.insertAdjacentElement('beforeend', Ed1.render.th('Issues on page', 'page_total', 'DESC'));
-            head.insertAdjacentElement('beforeend', Ed1.render.th('type', 'entity_type'));
             head.insertAdjacentElement('beforeend', Ed1.render.th('Path', 'page_url'));
+            head.insertAdjacentElement('beforeend', Ed1.render.th('Page type', 'entity_type'));
             Ed1.tables['ed1page'].insertAdjacentElement('beforeend', head);
             Ed1.tables['ed1page'].append(loadWrap.cloneNode('deep'));
-            tableDetails = Ed1.render.details('Pages with issues', 'ed1page-title')
+            tableDetails = Ed1.render.details('Issues by page', 'ed1page-title')
             Ed1.wrapPage.append(tableDetails);
             tableDetails.append(Ed1.tables['ed1page']);
             Ed1.tables['ed1page'].querySelectorAll('button').forEach((el) => {
@@ -327,15 +344,16 @@ class Ed1 {
                 });
             });
 
+            // Dismissals table
             Ed1.tables['ed1dismiss'] = document.createElement('table');
             Ed1.tables['ed1dismiss'].setAttribute('id', 'ed1dismiss');
             head = document.createElement('tr');
-            head.insertAdjacentElement('beforeend', Ed1.render.th('Pages', 'page_title', 'DESC'));
-            head.insertAdjacentElement('beforeend', Ed1.render.th('Issue', 'result_key'));
             head.insertAdjacentElement('beforeend', Ed1.render.th('Marked', 'dismissal_status'));
-            head.insertAdjacentElement('beforeend', Ed1.render.th('By', 'user'));
-            head.insertAdjacentElement('beforeend', Ed1.render.th('On', 'created'));
-            head.insertAdjacentElement('beforeend', Ed1.render.th('Still on page', 'stale'));
+            head.insertAdjacentElement('beforeend', Ed1.render.th('Issue', 'result_key'));
+            head.insertAdjacentElement('beforeend', Ed1.render.th('Pages', 'page_title'));
+            head.insertAdjacentElement('beforeend', Ed1.render.th('By', 'display_name'));
+            head.insertAdjacentElement('beforeend', Ed1.render.th('On', 'created', 'DESC'));
+            head.insertAdjacentElement('beforeend', Ed1.render.th('Current', 'stale'));
             Ed1.tables['ed1dismiss'].insertAdjacentElement('beforeend', head);
             Ed1.tables['ed1dismiss'].append(loadWrap.cloneNode('deep'));
             tableDetails = Ed1.render.details('Dismissals', 'ed1dismiss-title')
@@ -369,13 +387,13 @@ class Ed1 {
                 post.forEach((result) => {
                     let row = document.createElement('tr');
 
+                    let pageCount = Ed1.render.td(result['count']);
+                    row.insertAdjacentElement('beforeend', pageCount);
+
                     let keyName = ed11yLang.en[result['result_key']].title;
                     // URL sanitized on build...
                     let key = Ed1.render.td(keyName, false, Ed1.url + 'rkey=' + result['result_key'], false, 'rkey');
                     row.insertAdjacentElement('beforeend', key);
-
-                    let pageCount = Ed1.render.td(result['count']);
-                    row.insertAdjacentElement('beforeend', pageCount);
 
                     Ed1.tables['ed1result'].insertAdjacentElement('beforeend', row);
                 })
@@ -408,18 +426,18 @@ class Ed1 {
                 post.forEach((result) => {
                     let row = document.createElement('tr');
 
-                    let pageLink = Ed1.render.td(result['page_title'], false, result['page_url'], result['pid']);
-                    row.insertAdjacentElement('beforeend', pageLink);
-
                     let pageCount = Ed1.render.td(result['page_total']);
                     row.insertAdjacentElement('beforeend', pageCount);
 
-                    let type = Ed1.render.td(result['entity_type'], false, `${Ed1.url}type=${result['entity_type']}`);
-                    row.insertAdjacentElement('beforeend', type);
+                    let pageLink = Ed1.render.td(result['page_title'], false, result['page_url'], result['pid']);
+                    row.insertAdjacentElement('beforeend', pageLink);
 
                     let path = result['page_url'].replace(window.location.protocol + '//' + window.location.host, '');
                     path = Ed1.render.td(path);
                     row.insertAdjacentElement('beforeend', path);
+
+                    let type = Ed1.render.td(result['entity_type'], false, `${Ed1.url}type=${result['entity_type']}`);
+                    row.insertAdjacentElement('beforeend', type);
 
                     Ed1.tables['ed1page'].insertAdjacentElement('beforeend', row);
                 })
@@ -467,22 +485,23 @@ class Ed1 {
                             user: "0"
                          */
                         let row = document.createElement('tr');
-    
-                        let pageLink = Ed1.render.td(result['page_title'], false, result['page_url'], result['pid']);
-                        row.insertAdjacentElement('beforeend', pageLink);
-                        // need to sanitize URL in response
+
+                        let marked = Ed1.render.td( result['dismissal_status'] );
+                        row.insertAdjacentElement('beforeend', marked);
+
+                        // need to sanitize URL in response?
                         let keyName = ed11yLang.en[result['result_key']].title;
                         let key = Ed1.render.td(keyName, false, Ed1.url + 'rkey=' + result['result_key'], false, 'rkey');
                         row.insertAdjacentElement('beforeend', key);
     
-                        let marked = Ed1.render.td( result['dismissal_status'] );
-                        row.insertAdjacentElement('beforeend', marked);
+                        let pageLink = Ed1.render.td(result['page_title'], false, result['page_url'], result['pid']);
+                        row.insertAdjacentElement('beforeend', pageLink);
                         
-                        let by = Ed1.render.td( result['user'] );
+                        let by = Ed1.render.td( result['display_name'] );
                         row.insertAdjacentElement('beforeend', by);
     
                         // todo: need to change this to created!!!
-                        let on = Ed1.render.td( result['updated'] );
+                        let on = Ed1.render.td( result['created'] );
                         row.insertAdjacentElement('beforeend', on);
     
                         // old 

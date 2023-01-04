@@ -1,30 +1,52 @@
 #ed1 {
     width: 98%;
 }
+
 #ed1 details {
     opacity: 0;
+    font-size: .875rem;
+    padding: 1em 0 1em .25em;
     transition: opacity .2s ease-in;
+    box-shadow: 0 2px #2271b133;
 }
+
 #ed1.show details {
     opacity: 1;
 }
 
 #ed1 summary {
-    font-size: 1.5em;
-    padding: 1rem 0;
-    color: #2271b1;
+    font-size: 1.125rem;
+    padding: .5rem;
+    margin: .5rem 0 .5rem -.5rem;
     cursor: pointer;
+    width: fit-content;
   }
+
+#ed1 summary:hover {
+    box-shadow: 0 0 0 1px #2271b177;
+    border-radius: .5em;
+}
 
 #ed1 table {
     border-spacing: 0;
-    width: 100%;
-    padding: 0 0 .5rem;
+    width: 99%;
+    padding: 0 0 3px;
+    margin: 1rem 0 1rem 1%;
+    box-shadow: inset 0 0 0 3px white;
 }
 
-#ed1 td,
-#ed1 th {
+#ed1 td {
     padding: .5em;
+    text-align: left;
+    border: 0;
+}
+
+#ed1 td:first-child, #ed1 th:first-child {
+    padding-left: .75em;
+}
+
+#ed1 th {
+    padding: 0 .5em;
     text-align: left;
     border: 0;
 }
@@ -33,8 +55,25 @@
     font-style: italic;
 }
 
-#ed1 td:first-child, #ed1 td:last-child {
+
+#ed1page td:nth-child(2) {
     min-width: 33%;
+}
+#ed1dismiss td:last-child {
+    min-width: 0;
+    width: 5em;
+}
+#ed1 td:first-child {
+    min-width: 0;
+    text-align: right;
+    width: 3em;
+    padding-right: 2em;
+    padding-left: .5em;
+}
+#ed1dismiss td:first-child {
+    text-align: left;
+    padding-left: 1em;
+    padding-right: 1em;
 }
 
 #ed1 a,
@@ -48,13 +87,32 @@
     width: 100%;
     text-align: left;
 }
+
 #ed1 th button {
     color: #fff;
+    padding: .5em 1em .5em 0;
 }
 
 #ed1 a:hover,
 #ed1 td button:hover {
     color: #111;
+}
+
+#ed1 .reset {
+    text-decoration: none;
+    font-size: .9em;
+    display: inline-block;
+    padding: 3px 10px 4px 8px;
+    width: auto;
+    border-radius: 1em;
+    background: #2271b1;
+    color: white;
+    margin-bottom: .5em;
+}
+#ed1 .reset:hover, #ed1 .reset:focus-visible {
+    color: #2271b1;
+    background-color: white;
+    box-shadow: inset 0 0 0 1px #2271b1
 }
 
 #ed1 caption {
@@ -74,7 +132,7 @@
 }
 
 #ed1 tr:nth-child(2n + 1) {
-    background-color: rgb(244, 244, 248);
+    background-color: transparent;
 }
 
 #ed1 .ascending::after,
@@ -82,6 +140,7 @@
     content: "^";
     display: inline-block;
     padding: 0 .25rem;
+    position: absolute;
 }
 #ed1 .ascending::after {
     transform: translateY(.125em);

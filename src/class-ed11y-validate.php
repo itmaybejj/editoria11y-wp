@@ -40,6 +40,8 @@ class Ed11y_Validate {
 			'result_key',
 			'result_count',
 			'created',
+			'display_name',
+			'dismissal_status',
 		);
 		return in_array( $string, $valid, true );
 	}
