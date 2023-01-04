@@ -66,7 +66,7 @@ class Ed11y_Api_Results extends WP_REST_Controller {
 	 */
 	public function get_results( $request ) {
 		global $wpdb;
-		require_once ED11Y_DIR . 'src/class-ed11y-validate.php';
+		require_once ED11Y_SRC . 'class-ed11y-validate.php';
 		$validate = new Ed11y_Validate();
 
 		// Sanitize all params before use:

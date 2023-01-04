@@ -1,7 +1,5 @@
 <?php
-@ini_set( 'upload_max_size' , '120M' );
-@ini_set( 'post_max_size', '120M');
-@ini_set( 'max_execution_time', '300' );
+
 /**
  * Editoria11y functions settings loader.
  *
@@ -86,7 +84,6 @@ function ed11y_load_block_editor_scripts() {
 	// Todo: only load on edit pages.
 	wp_enqueue_script( 'ed11y-wp-js', trailingslashit( ED11Y_ASSETS ) . 'lib/editoria11y.min.js', null, true, Ed11y::ED11Y_VERSION, false );
 	wp_enqueue_script( 'ed11y-wp-editor', trailingslashit( ED11Y_ASSETS ) . 'js/editoria11y-editor.js', null, true, Ed11y::ED11Y_VERSION, false );
-	
 }
 
 /**
@@ -103,52 +100,64 @@ function ed11y_init() {
 	if ( is_user_logged_in()
 		&& ( $allowed_user_roles || current_user_can( 'edit_posts' ) || current_user_can( 'edit_pages' ) )
 	) {
-		// Get the plugin settings value.
-		$check_roots         = esc_html( ed11y_get_plugin_settings( 'ed11y_checkRoots' ) );
-		$ignore_elements     = esc_html( ed11y_get_plugin_settings( 'ed11y_ignore_elements' ) );
-		$ignore_elements     = empty( $ignore_elements ) ? '.wp-block-post-comments *, #wpadminbar *' : '.wp-block-post-comments *, #wpadminbar *, ' . $ignore_elements;
-		$link_ignore_strings = esc_html( ed11y_get_plugin_settings( 'ed11y_link_ignore_strings' ) );
+		// Prepare settings array.
+
+		$ed1vals                      = array();
+		$ed1vals['checkRoots']        = ed11y_get_plugin_settings( 'ed11y_checkRoots' );
+		$ed1vals['ignoreElements']    = ed11y_get_plugin_settings( 'ed11y_ignore_elements' );
+		$ed1vals['ignoreElements']    = empty( $ed1vals['ignore_elements'] ) ? '.wp-block-post-comments *, #wpadminbar *' : '.wp-block-post-comments *, #wpadminbar *, ' . $ignore_elements;
+		$ed1vals['linkIgnoreStrings'] = ed11y_get_plugin_settings( 'ed11y_link_ignore_strings' );
+		$ed1vals['embeddedContent']   = ed11y_get_plugin_settings( 'ed11y_link_ignore_strings' );
 
 		// Embedded content.
-		$video_content    = wp_filter_nohtml_kses( ed11y_get_plugin_settings( 'ed11y_videoContent' ) );
-		$audio_content    = wp_filter_nohtml_kses( ed11y_get_plugin_settings( 'ed11y_audioContent' ) );
-		$embedded_content = wp_filter_nohtml_kses( ed11y_get_plugin_settings( 'ed11y_embeddedContent' ) );
+		$ed1vals['videoContent']    = ed11y_get_plugin_settings( 'ed11y_videoContent' );
+		$ed1vals['audioContent']    = ed11y_get_plugin_settings( 'ed11y_audioContent' );
+		$ed1vals['embeddedContent'] = ed11y_get_plugin_settings( 'ed11y_embeddedContent' );
 
 		// Advanced settings.
-		$ed11y_no_run = esc_html( ed11y_get_plugin_settings( 'ed11y_no_run' ) );
-		$extra_props  = wp_filter_nohtml_kses( ed11y_get_plugin_settings( 'ed11y_extra_props' ) );
+		$ed1vals['preventCheckingIfPresent'] = ed11y_get_plugin_settings( 'ed11y_no_run' );
+		$ed1vals['extra_props']              = ed11y_get_plugin_settings( 'ed11y_extra_props' );
 
-		// Target areaget_page_lang()
-		if ( empty( $target ) ) {
-			$target = false;
-		}
-
-		// Use permalink as sync URL if available
-		$ed11y_page = get_permalink( get_the_ID() );
+		// Use permalink as sync URL if available.
+		$ed1vals['currentPage'] = get_permalink( get_the_ID() );
 		// Otherwise use query path
-		if ( empty( $ed11y_page ) || is_archive() || is_home() || is_front_page() ) {
+		if ( empty( $ed1vals['currentPage'] ) || is_archive() || is_home() || is_front_page() ) {
 			global $wp;
-			$ed11y_page = home_url( $wp->request );
+			$ed1vals['currentPage'] = home_url( $wp->request );
 		}
 
-        global $wpdb;
-        $dismissals_on_page = $wpdb->get_results(
+		global $wpdb;
+		$utable                      = $wpdb->prefix . 'ed11y_urls';
+		$dtable                      = $wpdb->prefix . 'ed11y_dismissals';
+		$dismissals_on_page          = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT
-				{$wpdb->prefix}ed11y_dismissals.result_key,
-				{$wpdb->prefix}ed11y_dismissals.element_id,
-				{$wpdb->prefix}ed11y_dismissals.dismissal_status
-				FROM {$wpdb->prefix}ed11y_dismissals
-				INNER JOIN {$wpdb->prefix}ed11y_urls ON {$wpdb->prefix}ed11y_urls.pid={$wpdb->prefix}ed11y_dismissals.pid
-				WHERE {$wpdb->prefix}ed11y_urls.page_url = %s
+				{$dtable}.result_key,
+				{$dtable}.element_id,
+				{$dtable}.dismissal_status
+				FROM {$dtable}
+				INNER JOIN {$utable} ON {$utable}.pid={$dtable}.pid
+				WHERE {$utable}.page_url = %s
+				AND (
+					{$dtable}.dismissal_status = 'ok'
+						OR
+						(
+							{$dtable}.dismissal_status = 'hide'
+							AND
+							{$dtable}.user = %d
+						)
+					)
 				;",
-				array( $ed11y_page )
-			)	
+				array(
+					$ed1vals['currentPage'],
+					$user->ID,
+				)
+			)
 		);
-        $synced_dismissals = array();
-        foreach ( $dismissals_on_page as $key => $value ) {
-            $synced_dismissals[ $value->result_key ][ $value->element_id ] = $value->dismissal_status;
-        }
+		$ed1vals['syncedDismissals'] = array();
+		foreach ( $dismissals_on_page as $key => $value ) {
+			$ed1vals['syncedDismissals'][ $value->result_key ][ $value->element_id ] = $value->dismissal_status;
+		}
 
 		// Allowed characters before echoing.
 		$r = array(
@@ -157,55 +166,40 @@ function ed11y_init() {
 			'&#039;' => '"',
 		);
 
-		$ed11y_title = wp_filter_nohtml_kses( trim( wp_title( '', false, 'right' ) ) );
+		$ed1vals['title'] = trim( wp_title( '', false, 'right' ) );
 
-		$ed11y_type = 'other';
+		$ed1vals['entity_type'] = 'other';
 		// https://wordpress.stackexchange.com/questions/83887/return-current-page-type
 		if ( is_page() ) {
-			$ed11y_type = is_front_page() ? 'Front' : 'Page';
+			$ed1vals['entity_type'] = is_front_page() ? 'Front' : 'Page';
 		} elseif ( is_home() ) {
-			$ed11y_type = 'Home';
+			$ed1vals['entity_type'] = 'Home';
 		} elseif ( is_single() ) {
-			$ed11y_type = ( is_attachment() ) ? 'Attachment' : 'Post';
+			$ed1vals['entity_type'] = ( is_attachment() ) ? 'Attachment' : 'Post';
 		} elseif ( is_category() ) {
-			$ed11y_type = 'Category';
+			$ed1vals['entity_type'] = 'Category';
 		} elseif ( is_tag() ) {
-			$ed11y_type = 'Tag';
+			$ed1vals['entity_type'] = 'Tag';
 		} elseif ( is_tax() ) {
-			$ed11y_type = 'Taxonomy';
+			$ed1vals['entity_type'] = 'Taxonomy';
 		} elseif ( is_archive() ) {
 			if ( is_author() ) {
-				$ed11y_type = 'Author';
+				$ed1vals['entity_type'] = 'Author';
 			} else {
-				$ed11y_type = 'Archive';
+				$ed1vals['entity_type'] = 'Archive';
 			}
 		} elseif ( is_search() ) {
-			$ed11y_type = 'Search';
+			$ed1vals['entity_type'] = 'Search';
 		} elseif ( is_404() ) {
-			$ed11y_type = '404';
+			$ed1vals['entity_type'] = '404';
 		}
 
-		// ed11yReady hat tip https://youmightnotneedjquery.com/#ready.
+		// At the moment, PHP escapes HTML breakouts. This would not be safe in other languages.
 		echo '
-		<script id="ed11y-wp-init">
-            let ed11yOptions = {
-                checkRoots:  \'' . strtr( $check_roots, $r ) . '\',
-                ignoreElements: \'' . strtr( $ignore_elements, $r ) . '\',
-                linkIgnoreStrings: \'' . strtr( $link_ignore_strings, $r ) . '\',
-                embeddedContent: \'' . $embedded_content . '\',
-                videoContent: \'' . $video_content . '\',
-                audioContent: \'' . $audio_content . '\',
-                preventCheckingIfPresent: \'' . $ed11y_no_run . '\',
-				entity_type: \'' . $ed11y_type . '\',
-				currentPage: \'' . $ed11y_page . '\',
-				admin: false,
-                syncedDismissals: ' . wp_json_encode( $synced_dismissals ) . ',
-                title : \'' . $ed11y_title . '\',
-                ' . $extra_props . '
-            };
-			console.log(\'' . $ed11y_page . '\');
-			console.log(\'Title: ' . $ed11y_title . '\');
-		</script>';
+		<script id="ed11y-wp-init" type="application/json">
+			' . wp_json_encode( $ed1vals ) . '
+		</script>
+		';
 	}
 }
 add_action( 'wp_footer', 'ed11y_init' );

@@ -515,11 +515,7 @@ function ed11y_plugin_settings_validate( $settings ) {
  * Render the plugin settings page.
  */
 function editoria11y_dashboard() {
-	//require_once ED11Y_ADMIN . 'dashboard.php';
-		//$ed11y_api_dismiss = new Ed11y_Api_Dismiss();
-		//$ed11y_api_dismiss->init();
-	//require_once ED11Y_ADMIN . 'dashboard.php';
-	//$ed11y_dashboard = new Ed11y_Dashboard();
+
 	wp_enqueue_script( 'ed11y-wp-js', trailingslashit( ED11Y_ASSETS ) . 'lib/editoria11y.min.js', array( 'wp-api' ), true, Ed11y::ED11Y_VERSION, false );
 	wp_enqueue_script( 'ed11y-wp-js-dash', trailingslashit( ED11Y_ASSETS ) . 'js/ed11y-dashboard.js', array( 'wp-api' ), true, Ed11y::ED11Y_VERSION, false );
 	wp_enqueue_style( 'ed11y-wp-css', trailingslashit( ED11Y_ASSETS ) . 'css/ed11y-dashboard.css', null );
@@ -530,13 +526,11 @@ function editoria11y_dashboard() {
 			<div id="ed1-dismissals-wrapper"></div>
 		</div>';
 
-	//echo $ed11y_dashboard->dashboard(); // HTML strings are escaped in class.
-
 }
 
 add_action( 'admin_menu', 'ed11y_dashboard_menu' );
 function ed11y_dashboard_menu() {
-	add_menu_page( esc_html__( 'Editoria11y', 'ed11y-wp' ), esc_html__( 'Editoria11y', 'ed11y-wp' ), 'manage_options', ED11Y_ADMIN . 'admin.php', 'editoria11y_dashboard', 'dashicons-chart-bar', 90 );
+	add_menu_page( esc_html__( 'Editoria11y', 'ed11y-wp' ), esc_html__( 'Editoria11y', 'ed11y-wp' ), 'manage_options', ED11Y_SRC . 'admin.php', 'editoria11y_dashboard', 'dashicons-chart-bar', 90 );
 };
 
 

@@ -204,19 +204,10 @@ class Ed11y {
 		define( 'ED11Y_BASE', plugin_basename( __FILE__ ) );
 
 		// Set constant path to the plugin directory.
-		define( 'ED11Y_DIR', trailingslashit( plugin_dir_path( __FILE__ ) ) );
-
-		// Set the constant path to the plugin directory URI.
-		define( 'ED11Y_URI', trailingslashit( plugin_dir_url( __FILE__ ) ) );
-
-		// Set the constant path to the inc directory.
-		define( 'ED11Y_INCLUDES', ED11Y_DIR . trailingslashit( 'inc' ) );
-
-		// Set the constant path to the admin directory.
-		define( 'ED11Y_ADMIN', ED11Y_DIR . trailingslashit( 'admin' ) );
+		define( 'ED11Y_SRC', trailingslashit( plugin_dir_path( __FILE__ ) . 'src/' ) );
 
 		// Set the constant path to the assets directory.
-		define( 'ED11Y_ASSETS', ED11Y_URI . trailingslashit( 'assets' ) );
+		define( 'ED11Y_ASSETS', trailingslashit( plugin_dir_url( __FILE__ ) . 'assets/' ) );
 
 	}
 
@@ -231,7 +222,7 @@ class Ed11y {
 	 * Loads page functions.
 	 */
 	public function includes() {
-		require_once ED11Y_INCLUDES . 'functions.php';
+		require_once ED11Y_SRC . 'functions.php';
 	}
 
 	/**
@@ -239,8 +230,8 @@ class Ed11y {
 	 */
 	public function admin() {
 		if ( is_admin() ) {
-			require_once ED11Y_INCLUDES . 'functions.php';
-			require_once ED11Y_ADMIN . 'admin.php';
+			require_once ED11Y_SRC . 'functions.php';
+			require_once ED11Y_SRC . 'admin.php';
 		}
 	}
 
@@ -249,10 +240,10 @@ class Ed11y {
 	 */
 	public function api() {
 		// Load the API.
-		require_once ED11Y_DIR . 'src/controller/class-ed11y-api-results.php';
+		require_once ED11Y_SRC . 'controller/class-ed11y-api-results.php';
 		$ed11y_api_results = new Ed11y_Api_Results();
 		$ed11y_api_results->init();
-		require_once ED11Y_DIR . 'src/controller/class-ed11y-api-dismissals.php';
+		require_once ED11Y_SRC . 'controller/class-ed11y-api-dismissals.php';
 		$ed11y_api_dismissals = new Ed11y_Api_Dismissals();
 		$ed11y_api_dismissals->init();
 	}

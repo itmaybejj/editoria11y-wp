@@ -133,7 +133,12 @@ function ed11ySync() {
   // Call callback, init Editoria11y.
 ed11yReady(
 	function() {
-		if (!!ed11yOptions && window.location.href.indexOf('elementor-preview') === -1) {
+		let ed11yOpts = document.getElementById("ed11y-wp-init");
+		console.log(ed11yOpts);
+		if (!!ed11yOpts && window.location.href.indexOf('elementor-preview') === -1) {
+			ed11yOptions = JSON.parse(ed11yOpts.innerHTML);
+			console.log(ed11yOptions);
+			console.log(ed11yOptions['title']);
 			if (ed11yOptions.title.length < 3) {
 				ed11yOptions.title = document.title;
 			}			

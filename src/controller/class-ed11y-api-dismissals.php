@@ -105,7 +105,7 @@ class Ed11y_Api_Dismissals extends WP_REST_Controller {
 					);",
 					array(
 						$pid,
-						wp_get_current_user(),
+						wp_get_current_user()->ID,
 					)
 				)
 			);
@@ -130,7 +130,7 @@ class Ed11y_Api_Dismissals extends WP_REST_Controller {
 					array(
 						$pid,
 						$results['result_key'],
-						wp_get_current_user(),
+						wp_get_current_user()->ID,
 						$results['element_id'],
 						$results['dismissal_status'],
 						$now,
@@ -152,7 +152,7 @@ class Ed11y_Api_Dismissals extends WP_REST_Controller {
 	 */
 	public function get_dismissals( $request ) {
 		global $wpdb;
-		require_once ED11Y_DIR . 'src/class-ed11y-validate.php';
+		require_once ED11Y_SRC . 'class-ed11y-validate.php';
 		$validate = new Ed11y_Validate();
 
 		// Sanitize all params before use:
