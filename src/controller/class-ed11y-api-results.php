@@ -107,7 +107,8 @@ class Ed11y_Api_Results extends WP_REST_Controller {
 							{$utable}.page_url,
 							{$utable}.page_title,
 							{$utable}.entity_type,
-							{$utable}.page_total
+							{$utable}.page_total,
+							{$rtable}.created
 							FROM {$rtable}
 							INNER JOIN {$utable} ON {$rtable}.pid={$utable}.pid
 							{$where}
@@ -115,7 +116,8 @@ class Ed11y_Api_Results extends WP_REST_Controller {
 							{$utable}.page_url,
 							{$utable}.page_title,
 							{$utable}.entity_type,
-							{$utable}.page_total
+							{$utable}.page_total,
+							{$rtable}.created
 							ORDER BY {$order_by} {$direction}
 							LIMIT {$count}
 							OFFSET {$offset}
@@ -134,12 +136,20 @@ class Ed11y_Api_Results extends WP_REST_Controller {
 
 				$data = $wpdb->get_results(
 					"SELECT
-						pid,
-						page_url,
-						page_title,
-						entity_type,
-						page_total
+						{$utable}.pid,
+						{$utable}.page_url,
+						{$utable}.page_title,
+						{$utable}.entity_type,
+						{$utable}.page_total,
+						{$rtable}.created
 					FROM {$utable}
+					INNER JOIN {$rtable} ON {$utable}.pid={$rtable}.pid
+					GROUP BY {$utable}.pid,
+							{$utable}.page_url,
+							{$utable}.page_title,
+							{$utable}.entity_type,
+							{$utable}.page_total,
+							{$rtable}.created
 					ORDER BY {$order_by} {$direction}
 					LIMIT {$count}
 					OFFSET {$offset}
@@ -240,9 +250,25 @@ class Ed11y_Api_Results extends WP_REST_Controller {
 		$return  = array();
 		global $wpdb;
 
+		// Handle clicks from dashboard to changed URLS first to prevent URL collisions.
+		if ( $results['pid'] > -1 ) {
+			$response = $wpdb->query(
+				$wpdb->prepare(
+					"DELETE FROM {$wpdb->prefix}ed11y_urls
+					WHERE
+						(pid = %d AND page_url != %s)
+					;",
+					array(
+						$results['pid'],
+						$results['page_url'],
+					)
+				)
+			);
+		}
+
 		// Check if any results exist.
 		if ( $results['page_count'] > 0 || count( $results['dismissals'] ) > 0 ) {
-
+			
 			// Upsert page URL.
 			$response = $wpdb->query(
 				$wpdb->prepare(

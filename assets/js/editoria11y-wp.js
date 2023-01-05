@@ -93,6 +93,10 @@ function ed11ySync() {
 				page_url: url,
 				created: 0,
 			};
+			let queryString = window.location.search;
+            let urlParams = new URLSearchParams(queryString);
+			let pid = urlParams.get('ed1ref');
+			data['pid'] = !!pid ? parseInt(pid) : -1;
 			console.log(data);
 			postData('result', data);
 		  // Short timeout to let execution queue clear.

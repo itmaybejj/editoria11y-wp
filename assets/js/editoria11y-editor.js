@@ -124,11 +124,12 @@ let ed11yUpdateCount = function() {
 	}
 }
 
-
 let ed11yFindNewBlocks = function() {
 	ed11yOptions['ignoreElements'] = ed11yOptions['originalIgnore'];
 	let ed11yActiveBlock = document.querySelector('.wp-block.is-selected')?.getAttribute('id');
+	// Ignoring a new block until it is edited.
 	if (ed11yActiveBlock !== 'undefined' && !Ed11y.WPBlocks.includes(ed11yActiveBlock)) {
+		Ed11y.WPBlocks.push(ed11yActiveBlock);
 		ed11yOptions['ignoreElements'] += `, #${ed11yActiveBlock}, #${ed11yActiveBlock} *`;
 	}
 }
@@ -148,7 +149,11 @@ let ed11yAdminInit = function(ed11yTarget) {
 	// Todo: pick checkRoot dynamically based on ed11yTarget.
 	ed11yOptions['checkRoots'] = '.editor-styles-wrapper';
 	ed11yOptions['ignoreByKey'] = {img : ''};
+	ed11yOptions['ignoreByKey']['h'] = '.wp-block-post-title';
+
+	// Wordpress does not render empty post titles so we don't need to flag them.
 	ed11yOptions['originalIgnore'] = ed11yOptions['ignoreElements'];
+	
 	ed11yOptions['showResults'] = true;
 	ed11yInitialBlocks = document.querySelectorAll('.wp-block');
 	Ed11y.WPBlocks = [];

@@ -41,7 +41,7 @@ add_action( 'admin_menu', 'ed11y_admin_menu' );
  */
 function ed11y_styles_scripts() {
 	// Load plugin admin style.
-	wp_enqueue_style( 'ed11y-wp-css', trailingslashit( ED11Y_ASSETS ) . 'css/ed11y-wp-admin.css', null );
+	wp_enqueue_style( 'editoria11y-wp-css', trailingslashit( ED11Y_ASSETS ) . 'css/editoria11y-wp-admin.css', null, Ed11y::ED11Y_VERSION );
 }
 
 /**
@@ -474,8 +474,8 @@ function ed11y_plugin_settings_validate( $settings ) {
 function editoria11y_dashboard() {
 
 	wp_enqueue_script( 'ed11y-wp-js', trailingslashit( ED11Y_ASSETS ) . 'lib/editoria11y.min.js', array( 'wp-api' ), true, Ed11y::ED11Y_VERSION, false );
-	wp_enqueue_script( 'ed11y-wp-js-dash', trailingslashit( ED11Y_ASSETS ) . 'js/ed11y-dashboard.js', array( 'wp-api' ), true, Ed11y::ED11Y_VERSION, false );
-	wp_enqueue_style( 'ed11y-wp-css', trailingslashit( ED11Y_ASSETS ) . 'css/ed11y-dashboard.css', null );
+	wp_enqueue_script( 'ed11y-wp-js-dash', trailingslashit( ED11Y_ASSETS ) . 'js/editoria11y-dashboard.js', array( 'wp-api' ), true, Ed11y::ED11Y_VERSION, false );
+	wp_enqueue_style( 'ed11y-wp-css', trailingslashit( ED11Y_ASSETS ) . 'css/editoria11y-dashboard.css', null, Ed11y::ED11Y_VERSION );
 	echo '<div id="ed1">
 			<h1>Editoria11y accessibility checker</h1>
 			<div id="ed1-results-wrapper"></div>

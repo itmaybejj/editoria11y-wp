@@ -49,7 +49,7 @@ class Ed1 {
             Ed1.requests['ed1result'] = {
                 base: 'dashboard',
                 view: 'keys',
-                count: 50,
+                count: 5,
                 offset: resultOffset,
                 sort: resultSort,
                 direction: resultDir,
@@ -69,7 +69,7 @@ class Ed1 {
             Ed1.requests['ed1dismiss'] = {
                 base: 'dismiss',
                 view: '',
-                count: 50,
+                count: 5,
                 offset: pageOffset,
                 sort: dismissSort,
                 direction: dismissDir,
@@ -198,11 +198,12 @@ class Ed1 {
             let link = document.createElement('a');
             link.textContent = text;
             let href;
-            if (!hash) {
+            if ( url ) {
                 let sep = url.indexOf('?') === -1 ? '?' : '&';
-                href = url + sep + 'ed1ref=' + parseInt(pid);
+                href = encodeURI( url ) + sep + 'ed1ref=' + parseInt(pid);
+            } else {
+                href = '#' + encodeURIComponent(hash)
             }
-            href = hash ? '#' + encodeURIComponent(hash) : encodeURI(url);
             link.setAttribute('href', href);
             return link;
         }
@@ -247,7 +248,7 @@ class Ed1 {
          * @returns 
          */
         Ed1.render.pagination = function (after, rows, perPage, offset, labelId = false) {
-            if (rows < perPage) {
+            if (rows <= perPage) {
                 return false;
             }
 
@@ -332,6 +333,7 @@ class Ed1 {
             head.insertAdjacentElement('beforeend', Ed1.render.th('Page', 'page_title'));
             head.insertAdjacentElement('beforeend', Ed1.render.th('Path', 'page_url'));
             head.insertAdjacentElement('beforeend', Ed1.render.th('Page type', 'entity_type'));
+            head.insertAdjacentElement('beforeend', Ed1.render.th('Detected', 'created'));
             Ed1.tables['ed1page'].insertAdjacentElement('beforeend', head);
             Ed1.tables['ed1page'].append(loadWrap.cloneNode('deep'));
             tableDetails = Ed1.render.details('Issues by page', 'ed1page-title')
@@ -349,14 +351,14 @@ class Ed1 {
             Ed1.tables['ed1dismiss'].setAttribute('id', 'ed1dismiss');
             head = document.createElement('tr');
             head.insertAdjacentElement('beforeend', Ed1.render.th('Marked', 'dismissal_status'));
-            head.insertAdjacentElement('beforeend', Ed1.render.th('Issue', 'result_key'));
-            head.insertAdjacentElement('beforeend', Ed1.render.th('Pages', 'page_title'));
+            head.insertAdjacentElement('beforeend', Ed1.render.th('Page', 'page_title'));
+            head.insertAdjacentElement('beforeend', Ed1.render.th('Dismissed alert', 'result_key'));
             head.insertAdjacentElement('beforeend', Ed1.render.th('By', 'display_name'));
             head.insertAdjacentElement('beforeend', Ed1.render.th('On', 'created', 'DESC'));
             head.insertAdjacentElement('beforeend', Ed1.render.th('Current', 'stale'));
             Ed1.tables['ed1dismiss'].insertAdjacentElement('beforeend', head);
             Ed1.tables['ed1dismiss'].append(loadWrap.cloneNode('deep'));
-            tableDetails = Ed1.render.details('Dismissals', 'ed1dismiss-title')
+            tableDetails = Ed1.render.details('Recent dismissals', 'ed1dismiss-title')
             Ed1.wrapDismiss.append(tableDetails);
             tableDetails.append(Ed1.tables['ed1dismiss']);
             Ed1.tables['ed1dismiss'].querySelectorAll('th button').forEach((el) => {
@@ -370,6 +372,7 @@ class Ed1 {
 
         /**
          * Renderer for viewing results by test name.
+         * 
          * @param {*} post 
          * @param {*} count 
          */
@@ -381,7 +384,7 @@ class Ed1 {
 
             if (!!post) {
                 if ( !Ed1.wrapResults.querySelector('nav') ) {
-                    Ed1.render.pagination('ed1result', count, 50, 0, 'ed1result-title');
+                    Ed1.render.pagination('ed1result', count, 5, 0, 'ed1result-title');
                 }
 
                 post.forEach((result) => {
@@ -409,6 +412,7 @@ class Ed1 {
 
         /**
          * Renderer for viewing results by page.
+         * 
          * @param {*} post 
          * @param {*} count 
          */
@@ -439,6 +443,11 @@ class Ed1 {
                     let type = Ed1.render.td(result['entity_type'], false, `${Ed1.url}type=${result['entity_type']}`);
                     row.insertAdjacentElement('beforeend', type);
 
+                    let cleanDate = result['created'].split(' ')[0].replace(/[^\-0-9]/g, '');
+
+                    let date = Ed1.render.td(cleanDate, false, '');
+                    row.insertAdjacentElement('beforeend', date);
+
                     Ed1.tables['ed1page'].insertAdjacentElement('beforeend', row);
                 })
             }
@@ -452,7 +461,7 @@ class Ed1 {
         }
 
         /**
-         * Renderer for viewing results by test name.
+         * Renderer for viewing dismissed alerts.
          * @param {*} post 
          * @param {*} count 
          */
@@ -464,7 +473,7 @@ class Ed1 {
 
             if (!!post) {
                 if ( !Ed1.wrapDismiss.querySelector('nav') ) {
-                    Ed1.render.pagination('ed1dismiss', count, 50, 0, 'ed1dismiss-title');
+                    Ed1.render.pagination('ed1dismiss', count, 5, 0, 'ed1dismiss-title');
                 }
 
                 if (post.length === 0) {
@@ -489,19 +498,21 @@ class Ed1 {
                         let marked = Ed1.render.td( result['dismissal_status'] );
                         row.insertAdjacentElement('beforeend', marked);
 
+                        let pageLink = Ed1.render.td(result['page_title'], false, result['page_url'], result['pid']);
+                        row.insertAdjacentElement('beforeend', pageLink);
+
                         // need to sanitize URL in response?
                         let keyName = ed11yLang.en[result['result_key']].title;
                         let key = Ed1.render.td(keyName, false, Ed1.url + 'rkey=' + result['result_key'], false, 'rkey');
                         row.insertAdjacentElement('beforeend', key);
     
-                        let pageLink = Ed1.render.td(result['page_title'], false, result['page_url'], result['pid']);
-                        row.insertAdjacentElement('beforeend', pageLink);
-                        
                         let by = Ed1.render.td( result['display_name'] );
                         row.insertAdjacentElement('beforeend', by);
+
+                        let cleanDate = result['created'].split(' ')[0].replace(/[^\-0-9]/g, '');
     
                         // todo: need to change this to created!!!
-                        let on = Ed1.render.td( result['created'] );
+                        let on = Ed1.render.td( cleanDate );
                         row.insertAdjacentElement('beforeend', on);
     
                         // old 
