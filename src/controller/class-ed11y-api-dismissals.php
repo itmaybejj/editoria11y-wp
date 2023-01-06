@@ -200,27 +200,43 @@ class Ed11y_Api_Dismissals extends WP_REST_Controller {
 					{$wpdb->users}.display_name,
 					{$dtable}.result_key,
 					{$dtable}.dismissal_status,
-					{$dtable}.created,
-					{$dtable}.updated,
+					MAX({$dtable}.created) AS created,
 					{$dtable}.stale
 					FROM {$dtable}
 					INNER JOIN {$utable} ON ({$dtable}.pid={$utable}.pid)
 					LEFT JOIN {$wpdb->users} ON ({$wpdb->users}.ID={$dtable}.user)
 					{$where}
+					GROUP BY
+					{$utable}.pid,
+					{$utable}.page_url,
+					{$utable}.page_title,
+					{$utable}.entity_type,
+					{$wpdb->users}.display_name,
+					{$dtable}.result_key,
+					{$dtable}.dismissal_status,
+					{$dtable}.stale
 					ORDER BY {$order_by} {$direction}
 					LIMIT {$count}
 					OFFSET {$offset}
 					;"
 		);
 
-		$rowcount = $wpdb->get_var(
-			"SELECT COUNT({$utable}.pid) 
-			FROM {$dtable}
-			INNER JOIN {$utable} ON {$dtable}.pid={$utable}.pid
-			{$where};"
-		);
-
-		
+		// Get_var with COUNT(*) would be more performant, but I can't figure out how to work it with join+group+aggregation.
+		$rowcounter = $wpdb->get_results(
+			"SELECT
+					MAX({$dtable}.created) AS created
+					FROM {$dtable}
+					INNER JOIN {$utable} ON ({$dtable}.pid={$utable}.pid)
+					{$where}
+					GROUP BY
+					{$utable}.pid,
+					{$dtable}.user,
+					{$dtable}.result_key,
+					{$dtable}.dismissal_status,
+					{$dtable}.stale
+					;"
+				);
+		$rowcount = $wpdb->num_rows;
 
 		// return a response or error based on some conditional
 		if ( 1 == 1 ) {

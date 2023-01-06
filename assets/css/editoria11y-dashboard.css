@@ -10,6 +10,10 @@
     box-shadow: 0 2px #2271b133;
 }
 
+details[open] {
+    min-height: 22rem;
+}
+
 #ed1.show details {
     opacity: 1;
     overflow: auto;
@@ -18,7 +22,7 @@
 #ed1 summary {
     font-size: 1.125rem;
     padding: .5rem;
-    margin: .5rem 0 .5rem -.5rem;
+    margin: .5rem 0;
     cursor: pointer;
     width: fit-content;
   }

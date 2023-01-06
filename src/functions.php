@@ -22,26 +22,34 @@ function add_action_links( $links ) {
 /**
  * Return the default plugin settings.
  */
-function ed11y_get_default_options() {
+function ed11y_get_default_options( $option = false ) {
 	$default_options = array(
-		'ed11y_lang'                => esc_html__( 'en' ),
-		'ed11y_checkRoots'          => esc_html__( 'body' ),
-		'ed11y_contrast'            => absint( 1 ),
-		'ed11y_forms'               => absint( 1 ),
-		'ed11y_links_advanced'      => absint( 1 ),
+		// Todo
+		// Color scheme
+		// Web components
+		// JS unfold theme handler
+		// Disable sync
+		//'ed11y_lang'                => 'en',
+		'ed11y_theme'				=> 'lightTheme',
+		'ed11y_checkRoots'          => false,
+		'ed11y_livecheck'		    => 'all',
 
-		'ed11y_ignore_elements'     => '',
-		'ed11y_link_ignore_strings' => '',
+		'ed11y_ignore_elements'     => '#comments *, .wp-block-post-comments *',
+		'ed11y_link_ignore_strings' => false,
 
 		'ed11y_videoContent'        => 'youtube.com, vimeo.com, yuja.com, panopto.com',
 		'ed11y_audioContent'        => 'soundcloud.com, simplecast.com, podbean.com, buzzsprout.com, blubrry.com, transistor.fm, fusebox.fm, libsyn.com',
-		'ed11y_embeddedContent'     => 'datastudio.google.com, tableau',
+		'ed11y_documentContent'     => 'a[href$=".pdf"], a[href*=".pdf?"], a[href$=".doc"], a[href$=".docx"], a[href*=".doc?"], a[href*=".docx?"], a[href$=".ppt"], a[href$=".pptx"], a[href*=".ppt?"], a[href*=".pptx?"], a[href^="https://docs.google"]',
+		'ed11y_datavizContent'      => 'datastudio.google.com, tableau',
 
-		'ed11y_no_run'              => '',
+		'ed11y_no_run'              => false,
 	);
 
 	// Allow dev to filter the default settings.
-	return apply_filters( 'ed11y_default_options', $default_options );
+	$filtered = apply_filters( 'ed11y_default_options', $default_options );
+
+	return $option ? $filtered[ $option ] : $filtered;
+
 }
 
 /**
@@ -50,9 +58,27 @@ function ed11y_get_default_options() {
  *
  * @param mixed $option Option name.
  */
-function ed11y_get_plugin_settings( $option = '' ) {
-	$settings = get_option( 'ed11y_plugin_settings', ed11y_get_default_options() );
-	return $settings[ $option ];
+function ed11y_get_plugin_settings( $option = false, $include_defaults = false ) {
+	$settings = get_option( 'ed11y_plugin_settings', array() );
+	$defaults = $include_defaults ? ed11y_get_default_options() : false;
+	if ( $option ) {
+		// Return plugin settings for a single option.
+		if ( $include_defaults && array_key_exists( $option, $defaults ) ) {
+			// Include fallback (for placeholders and library use).
+			return ! array_key_exists( $option, $settings ) || empty( $settings[ $option ] ) ? $defaults[ $option ] : '';
+		} else {
+			// Return actual stored value (for field value use).
+			return array_key_exists( $option, $settings ) ? $settings[ $option ] : '';
+		}
+	} else {
+		// Return full array of values.
+		if ( $include_defaults ) {
+			foreach ( $defaults as $key => $value ) {
+				$settings[ $key ] = ! array_key_exists( $key, $settings ) || empty( $settings[ $key ] ) ? $defaults[ $key ] : $settings[ $key ];
+			}
+		}
+		return $settings;
+	}
 }
 
 
@@ -99,31 +125,30 @@ function ed11y_init() {
 	if ( is_user_logged_in()
 		&& ( $allowed_user_roles || current_user_can( 'edit_posts' ) || current_user_can( 'edit_pages' ) )
 	) {
+		$settings = ed11y_get_plugin_settings( false, true );
 		// Prepare settings array.
+		// TODO: this could be cached sitewide.
+		$ed1vals                             = array();
+		$ed1vals['theme']               	 = $settings['ed11y_theme'];
+		$ed1vals['checkRoots']               = $settings['ed11y_checkRoots'];
+		$ed1vals['ignoreElements']           = '#wpadminbar *,' . $settings['ed11y_ignore_elements'];
+		$ed1vals['linkIgnoreStrings']        = $settings['ed11y_link_ignore_strings'];
+		$ed1vals['videoContent']             = $settings['ed11y_videoContent'];
+		$ed1vals['audioContent']             = $settings['ed11y_audioContent'];
+		$ed1vals['documentLinks']            = $settings['ed11y_documentContent'];
+		$ed1vals['dataVizContent']           = $settings['ed11y_datavizContent'];
+		$ed1vals['preventCheckingIfPresent'] = $settings['ed11y_no_run'];
+		$ed1vals['liveCheck'] = $settings['ed11y_livecheck'];
 
-		$ed1vals                      = array();
-		$ed1vals['checkRoots']        = ed11y_get_plugin_settings( 'ed11y_checkRoots' );
-		$ed1vals['ignoreElements']    = ed11y_get_plugin_settings( 'ed11y_ignore_elements' );
-		$ed1vals['ignoreElements']    = empty( $ed1vals['ignoreElements'] ) ? '.wp-block-post-comments *, #wpadminbar *' : '.wp-block-post-comments *, #wpadminbar *, ' . $ed1vals['ignoreElements'];
-		$ed1vals['linkIgnoreStrings'] = ed11y_get_plugin_settings( 'ed11y_link_ignore_strings' );
-		$ed1vals['embeddedContent']   = ed11y_get_plugin_settings( 'ed11y_link_ignore_strings' );
-
-		// Embedded content.
-		$ed1vals['videoContent']    = ed11y_get_plugin_settings( 'ed11y_videoContent' );
-		$ed1vals['audioContent']    = ed11y_get_plugin_settings( 'ed11y_audioContent' );
-		$ed1vals['embeddedContent'] = ed11y_get_plugin_settings( 'ed11y_embeddedContent' );
-
-		// Advanced settings.
-		$ed1vals['preventCheckingIfPresent'] = ed11y_get_plugin_settings( 'ed11y_no_run' );
-
-		// Use permalink as sync URL if available.
+		// Use permalink as sync URL if available, otherwise use query path.
 		$ed1vals['currentPage'] = get_permalink( get_the_ID() );
-		// Otherwise use query path
 		if ( empty( $ed1vals['currentPage'] ) || is_archive() || is_home() || is_front_page() ) {
 			global $wp;
 			$ed1vals['currentPage'] = home_url( $wp->request );
 		}
 
+		// Get dismissals for route.
+		// Todo: move to JSON delivery?
 		global $wpdb;
 		$utable                      = $wpdb->prefix . 'ed11y_urls';
 		$dtable                      = $wpdb->prefix . 'ed11y_dismissals';
@@ -157,13 +182,6 @@ function ed11y_init() {
 			$ed1vals['syncedDismissals'][ $value->result_key ][ $value->element_id ] = $value->dismissal_status;
 		}
 
-		// Allowed characters before echoing.
-		$r = array(
-			'&gt;'   => '>',
-			'&quot;' => '"',
-			'&#039;' => '"',
-		);
-
 		$ed1vals['title'] = trim( wp_title( '', false, 'right' ) );
 
 		$ed1vals['entity_type'] = 'other';
@@ -192,6 +210,14 @@ function ed11y_init() {
 			$ed1vals['entity_type'] = '404';
 		}
 
+		/*
+		// Allowed characters before echoing.
+		$r = array(
+			'&gt;'   => '>',
+			'&quot;' => '"',
+			'&#039;' => '"',
+		);*/
+
 		// At the moment, PHP escapes HTML breakouts. This would not be safe in other languages.
 		echo '
 		<script id="ed11y-wp-init" type="application/json">
@@ -201,13 +227,15 @@ function ed11y_init() {
 	}
 }
 add_action( 'wp_footer', 'ed11y_init' );
-// Load live checker when editor is present.
 
-function editor_init() {
-	// add_action( 'admin_enqueue_scripts', 'ed11y_load_block_editor_scripts' );
-	add_action( 'enqueue_block_editor_assets', 'ed11y_load_block_editor_scripts' );
-	add_action( 'admin_footer', 'ed11y_init' );
+// Load live checker when editor is present.
+function ed11y_editor_init() {
+	if ( 'none' !== ed11y_get_plugin_settings( 'ed11y_livecheck', false )) {
+		// add_action( 'admin_enqueue_scripts', 'ed11y_load_block_editor_scripts' );
+		add_action( 'enqueue_block_editor_assets', 'ed11y_load_block_editor_scripts' );
+		add_action( 'admin_footer', 'ed11y_init' );
+	};	
 }
-add_action( 'wp_enqueue_editor', 'editor_init' );
+add_action( 'wp_enqueue_editor', 'ed11y_editor_init' );
 // This would enqueue on the site editor page, which lacks a preview target:
 // add_action( 'enqueue_block_editor_assets', 'editor_init' );

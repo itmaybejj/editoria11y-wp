@@ -25,7 +25,7 @@ class Ed11y_Api_Results extends WP_REST_Controller {
 
 		$version   = '1';
 		$namespace = 'ed11y/v' . $version;
-
+		
 		// Report results from scan.
 		register_rest_route(
 			$namespace,
@@ -108,7 +108,7 @@ class Ed11y_Api_Results extends WP_REST_Controller {
 							{$utable}.page_title,
 							{$utable}.entity_type,
 							{$utable}.page_total,
-							{$rtable}.created
+							MAX({$rtable}.created) as created
 							FROM {$rtable}
 							INNER JOIN {$utable} ON {$rtable}.pid={$utable}.pid
 							{$where}
@@ -141,15 +141,14 @@ class Ed11y_Api_Results extends WP_REST_Controller {
 						{$utable}.page_title,
 						{$utable}.entity_type,
 						{$utable}.page_total,
-						{$rtable}.created
+						MAX({$rtable}.created) AS created
 					FROM {$utable}
 					INNER JOIN {$rtable} ON {$utable}.pid={$rtable}.pid
 					GROUP BY {$utable}.pid,
 							{$utable}.page_url,
 							{$utable}.page_title,
 							{$utable}.entity_type,
-							{$utable}.page_total,
-							{$rtable}.created
+							{$utable}.page_total
 					ORDER BY {$order_by} {$direction}
 					LIMIT {$count}
 					OFFSET {$offset}

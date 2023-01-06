@@ -26,12 +26,14 @@ ed11yReady(
 
 // Get issue count from Ed11y object and apply to alert link.
 let ed11yUpdateCount = function() {
-	Ed11y.wpIssueToggle.textContent = Ed11y.totalCount;
-	Ed11y.wpIssueToggle.setAttribute('aria-label', Ed11y.totalCount + ' accessibility issues')
+	let count = ed11yOptions['liveCheck'] === 'errors' ? Ed11y.errorCount : Ed11y.totalCount;
+	count = parseInt(count);
+	Ed11y.wpIssueToggle.textContent = count;
+	Ed11y.wpIssueToggle.setAttribute('aria-label', count + ' accessibility issues')
 	if (Ed11y.errorCount > 0) {
 		Ed11y.wpIssueToggle.classList.remove('ed11y-warning', 'hidden');
 		Ed11y.wpIssueToggle.classList.add('ed11y-alert');
-	} else if (Ed11y.warningCount > 0) {
+	} else if (Ed11y.warningCount > 0 && ed11yOptions['liveCheck'] !== 'errors') {
 		Ed11y.wpIssueToggle.classList.remove('ed11y-alert', 'hidden');
 		Ed11y.wpIssueToggle.classList.add('ed11y-warning');
 	} else {
@@ -42,7 +44,8 @@ let ed11yUpdateCount = function() {
 		let ed11yStyles = '';
 		let ed11yKnownContainers = {};
 		Ed11y.results.forEach(result => {
-			if (result[5] === false) {
+			// Skip dismissed items, and only show warnings if they have not been suppressed in plugin settings.
+			if (result[5] === false && !(ed11yOptions['liveCheck'] === 'errors' && result[4])) {
 				let ed11yContainerId = result[0].closest('.wp-block').getAttribute('id');
 				let ed11yRingColor = !result[4] ? Ed11y.color.alert : Ed11y.color.warning;
 				let ed11yFontColor = !result[4] ? '#fff' : '#111';
@@ -224,15 +227,11 @@ let ed11yAdminInit = function(ed11yTarget) {
 	// Set up change observer.
 	// Todo: set class dynamically based on target.
 	const ed11yTargetNode = document.querySelector('.editor-styles-wrapper');
-	// Options for the observer (which mutations to observe)
-	const ed11yObserverConfig = { attributes: true, childList: true, subtree: true };
-	// Callback function to execute when mutations are observed
-	const ed11yMutationCallback = (mutationList, observer) => {
-	for (const mutation of mutationList) {
-		if (mutation.type === 'childList') {
-			ed11yMutationTimeoutWatch();
-		} 
-	}
+	// Only watch for changes to Block classes, not just typing.
+	const ed11yObserverConfig = { attributeFilter: ['class'], subtree: true };
+	// Callback function to execute when mutations are observed.
+	const ed11yMutationCallback = () => {
+		ed11yMutationTimeoutWatch();
 	};
 
 	// Create an observer instance linked to the callback function
@@ -270,6 +269,7 @@ function ed11yMutationTimeoutWatch() {
   clearTimeout(ed11yMutationTimeout);
   if (Ed11y.panel && Ed11y.panel.classList.contains('active') === false) {
 	ed11yMutationTimeout = setTimeout(function () {
+		console.log('go');
 		ed11yFindNewBlocks();
 		Ed11y.options.ignoreElements = ed11yOptions['ignoreElements'];
 		Ed11y.checkAll(false,false);

@@ -49,7 +49,7 @@ class Ed1 {
             Ed1.requests['ed1result'] = {
                 base: 'dashboard',
                 view: 'keys',
-                count: 5,
+                count: 25,
                 offset: resultOffset,
                 sort: resultSort,
                 direction: resultDir,
@@ -59,7 +59,7 @@ class Ed1 {
             Ed1.requests['ed1page'] = {
                 base: 'dashboard',
                 view: 'pages',
-                count: 50,
+                count: 25,
                 offset: pageOffset,
                 sort: pageSort,
                 direction: pageDir,
@@ -69,7 +69,7 @@ class Ed1 {
             Ed1.requests['ed1dismiss'] = {
                 base: 'dismiss',
                 view: '',
-                count: 5,
+                count: 25,
                 offset: pageOffset,
                 sort: dismissSort,
                 direction: dismissDir,
@@ -86,7 +86,6 @@ class Ed1 {
         Ed1.buildRequest = function (request) {
             let q = Ed1.requests[request];
             let req = `${q.base}?view=${q.view}&count=${q.count}&offset=${q.offset}&sort=${q.sort}&direction=${q.direction}&result_key=${q.result_key}&entity_type=${q.entity_type}`;
-            console.log(req);
             return req;
         }
 
@@ -123,19 +122,18 @@ class Ed1 {
                 h1.insertAdjacentElement('afterend', reset);
                 Ed1.wrapResults.style.display = 'none';
             } else {
-               Ed1.get.ed1result(Ed1.buildRequest('ed1result'), false);
+                // TODO: we could wait until the Details is open to do this.
+               window.setTimeout( function() {Ed1.get.ed1result(Ed1.buildRequest('ed1result'), false)}, 500);
             }
             
-            // Always build page and dismissal tables.
+            // Always build page table.
             Ed1.get.ed1page(Ed1.buildRequest('ed1page'), false);
 
-            window.setTimeout( function() {
-                // Lazyload last table and reveal results.
-                Ed1.get.ed1dismiss(Ed1.buildRequest('ed1dismiss'), false);
-            }, 50 );
-            window.setTimeout( function() {
-                Ed1.show();
-            }, 1000)
+            // TODO: we could wait until the Details is open to do this.
+            window.setTimeout( function() {Ed1.get.ed1dismiss(Ed1.buildRequest('ed1dismiss'), false);}, 500 );
+            
+            // Show whatever is drawn after one second.
+            window.setTimeout( function() {Ed1.show();}, 1000)
             window.setTimeout( function() {
                 let neverLoaded = document.querySelectorAll('#ed1 .loading');
                 Array.from(neverLoaded).forEach((el) => {
@@ -170,6 +168,7 @@ class Ed1 {
          * @returns th
          */
         Ed1.render = {};
+
         Ed1.render.th = function (text, hash = false, sorted = false) {
             let header = document.createElement('th');
             if (!hash) {
@@ -180,6 +179,7 @@ class Ed1 {
             }
             return header;
         }
+
         Ed1.render.button = function (text, hash, sorted = false) {
             let button = document.createElement('button');
             button.textContent = text;
@@ -222,9 +222,12 @@ class Ed1 {
             }
             return cell;
         }
-        Ed1.render.details = function (text, id) {
+
+        Ed1.render.details = function (text, id, open = false) {
             let details = document.createElement('details');
-            details.setAttribute('open', '');
+            if ( open ) {
+                details.setAttribute('open', '');
+            }
             let summary = document.createElement('summary');
             summary.textContent = text;
             summary.setAttribute('id', id);
@@ -303,31 +306,15 @@ class Ed1 {
 
         Ed1.render.tableHeaders = function () {
 
-            // Results table
-            Ed1.tables['ed1result'] = document.createElement('table');
-            Ed1.tables['ed1result'].setAttribute('id', 'ed1result');
-            let head = document.createElement('tr');
-            head.insertAdjacentElement('beforeend', Ed1.render.th('Pages', 'count', 'DESC'));
-            head.insertAdjacentElement('beforeend', Ed1.render.th('Issue', 'result_key'));
-            Ed1.tables['ed1result'].insertAdjacentElement('beforeend', head);
-            let tableDetails = Ed1.render.details('Accessibility issues', 'ed1result-title')
-            Ed1.wrapResults.append(tableDetails);
+            let head = false;
             let loadWrap = document.createElement('tr');
             let loading = Ed1.render.td('loading...', false, false, false, 'loading');
-            loading.setAttribute('colspan', '6');
             loadWrap.append(loading);
-            Ed1.tables['ed1result'].append(loadWrap);
-            tableDetails.append(Ed1.tables['ed1result']);
-            Ed1.tables['ed1result'].querySelectorAll('th button').forEach((el) => {
-                el.addEventListener('click', function () {
-                    Ed1.reSort();
-                    Ed1.get.ed1result(Ed1.buildRequest('ed1result'));
-                });
-            });
 
             // Pages table
             Ed1.tables['ed1page'] = document.createElement('table');
             Ed1.tables['ed1page'].setAttribute('id', 'ed1page');
+
             head = document.createElement('tr');
             head.insertAdjacentElement('beforeend', Ed1.render.th('Issues', 'page_total', 'DESC'));
             head.insertAdjacentElement('beforeend', Ed1.render.th('Page', 'page_title'));
@@ -335,14 +322,37 @@ class Ed1 {
             head.insertAdjacentElement('beforeend', Ed1.render.th('Page type', 'entity_type'));
             head.insertAdjacentElement('beforeend', Ed1.render.th('Detected', 'created'));
             Ed1.tables['ed1page'].insertAdjacentElement('beforeend', head);
+
+            loading.setAttribute('colspan', '6');
             Ed1.tables['ed1page'].append(loadWrap.cloneNode('deep'));
-            tableDetails = Ed1.render.details('Issues by page', 'ed1page-title')
-            Ed1.wrapPage.append(tableDetails);
-            tableDetails.append(Ed1.tables['ed1page']);
+            let pageDetails = Ed1.render.details('Issues by page', 'ed1page-title', true)
+            Ed1.wrapPage.append(pageDetails);
+            pageDetails.append(Ed1.tables['ed1page']);
             Ed1.tables['ed1page'].querySelectorAll('button').forEach((el) => {
                 el.addEventListener('click', function () {
                     Ed1.reSort();
                     Ed1.get.ed1page(Ed1.buildRequest('ed1page'));
+                });
+            });
+
+            // Results table
+            Ed1.tables['ed1result'] = document.createElement('table');
+            Ed1.tables['ed1result'].setAttribute('id', 'ed1result');
+            head = document.createElement('tr');
+            head.insertAdjacentElement('beforeend', Ed1.render.th('Pages', 'count', 'DESC'));
+            head.insertAdjacentElement('beforeend', Ed1.render.th('Issue', 'result_key'));
+            Ed1.tables['ed1result'].insertAdjacentElement('beforeend', head);
+
+            let resultDetails = Ed1.render.details('Issue types', 'ed1result-title');
+            Ed1.wrapResults.append(resultDetails);
+            loading.setAttribute('colspan', '2');
+            Ed1.tables['ed1result'].append(loadWrap.cloneNode('deep'));
+            resultDetails.append(Ed1.tables['ed1result']);
+            
+            Ed1.tables['ed1result'].querySelectorAll('th button').forEach((el) => {
+                el.addEventListener('click', function () {
+                    Ed1.reSort();
+                    Ed1.get.ed1result(Ed1.buildRequest('ed1result'));
                 });
             });
 
@@ -357,10 +367,13 @@ class Ed1 {
             head.insertAdjacentElement('beforeend', Ed1.render.th('On', 'created', 'DESC'));
             head.insertAdjacentElement('beforeend', Ed1.render.th('Current', 'stale'));
             Ed1.tables['ed1dismiss'].insertAdjacentElement('beforeend', head);
+
+            loading.setAttribute('colspan', '6');
             Ed1.tables['ed1dismiss'].append(loadWrap.cloneNode('deep'));
-            tableDetails = Ed1.render.details('Recent dismissals', 'ed1dismiss-title')
-            Ed1.wrapDismiss.append(tableDetails);
-            tableDetails.append(Ed1.tables['ed1dismiss']);
+            
+            let dismissDetails = Ed1.render.details('Recent dismissals', 'ed1dismiss-title')
+            Ed1.wrapDismiss.append(dismissDetails);
+            dismissDetails.append(Ed1.tables['ed1dismiss']);
             Ed1.tables['ed1dismiss'].querySelectorAll('th button').forEach((el) => {
                 el.addEventListener('click', function () {
                     Ed1.reSort();
@@ -384,7 +397,7 @@ class Ed1 {
 
             if (!!post) {
                 if ( !Ed1.wrapResults.querySelector('nav') ) {
-                    Ed1.render.pagination('ed1result', count, 5, 0, 'ed1result-title');
+                    Ed1.render.pagination('ed1result', count, 25, 0, 'ed1result-title');
                 }
 
                 post.forEach((result) => {
@@ -424,7 +437,7 @@ class Ed1 {
 
             if (!!post) {
                 if ( !Ed1.wrapPage.querySelector('nav') ) {
-                    Ed1.render.pagination('ed1page', count, 50, 0, 'ed1page-title');
+                    Ed1.render.pagination('ed1page', count, 25, 0, 'ed1page-title');
                 }
 
                 post.forEach((result) => {
@@ -473,7 +486,7 @@ class Ed1 {
 
             if (!!post) {
                 if ( !Ed1.wrapDismiss.querySelector('nav') ) {
-                    Ed1.render.pagination('ed1dismiss', count, 5, 0, 'ed1dismiss-title');
+                    Ed1.render.pagination('ed1dismiss', count, 25, 0, 'ed1dismiss-title');
                 }
 
                 if (post.length === 0) {

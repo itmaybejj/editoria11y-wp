@@ -28,24 +28,8 @@ function ed11ySync() {
 			})
 		}).then(function(response){
 			return response.json();
-		}).then(function(post){
-			//console.log(post);
 		});
 	}
-
-	// Purge changed aliases & deleted pages.
-	/* todo: Purge isn't ready yet.
-	let urlParams = new URLSearchParams(window.location.search);
-	if (urlParams.has('ed1ref') && urlParams.get('ed1ref') !== ed11yOptions.currentPage) {
-		let data = {
-			page_path: urlParams.get('ed1ref'),
-		};
-		window.setTimeout(function() {
-			postData('purge/page', data);
-		},0,data);
-	}
-	*/
-	// TODO: SEND A MESSAGE?
 
 	let extractResults = function () {
 		results = {};
