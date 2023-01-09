@@ -5,13 +5,15 @@
 #ed1 details {
     opacity: 0;
     font-size: .875rem;
-    padding: 1em 0 1em .25em;
+    padding: 0 0 0 .25em;
     transition: opacity .2s ease-in;
-    box-shadow: 0 2px #2271b133;
 }
 
-details[open] {
+#ed1 details[open] {
     min-height: 22rem;
+    box-shadow: 0 2px #2271b133;
+    padding: 0 0 1em .25em;
+    margin-bottom: 1em;
 }
 
 #ed1.show details {
@@ -22,7 +24,7 @@ details[open] {
 #ed1 summary {
     font-size: 1.125rem;
     padding: .5rem;
-    margin: .5rem 0;
+    margin: .5rem 0 .5rem 1px;
     cursor: pointer;
     width: fit-content;
   }
@@ -83,6 +85,9 @@ details[open] {
     text-align: left;
     padding-left: 1em;
     padding-right: 1em;
+}
+#ed1dismiss td:last-child {
+    text-align: center;
 }
 
 #ed1 a,

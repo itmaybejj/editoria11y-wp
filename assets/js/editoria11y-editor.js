@@ -39,6 +39,15 @@ let ed11yUpdateCount = function() {
 	} else {
 		Ed11y.wpIssueToggle.classList.add('hidden');
 	}
+
+	let newStyles = document.querySelector('#ed11y-live-highlighter');
+	if (!newStyles) {
+		newStyles = document.createElement('div');
+		newStyles.setAttribute('hidden', '');
+		newStyles.setAttribute('id', 'ed11y-live-highlighter');
+		document.querySelector('body').append(newStyles);
+	}
+
 	// todo: aria-live announcements.
 	if (Ed11y.results.length > 0 && ed11yOptions['showResults'] === true) {
 		let ed11yStyles = '';
@@ -114,16 +123,13 @@ let ed11yUpdateCount = function() {
 		  }
 
 		
-		let newStyles = document.querySelector('#ed11y-live-highlighter');
-		if (!newStyles) {
-			newStyles = document.createElement('div');
-			newStyles.setAttribute('hidden', '');
-			newStyles.setAttribute('id', 'ed11y-live-highlighter');
-			document.querySelector('body').append(newStyles);
-		}
+		
 		newStyles.innerHTML = `
 		<style>${ed11yStyles}</style>
 		`;
+	}
+	else {
+		newStyles.innerHTML = '';
 	}
 }
 
@@ -208,30 +214,38 @@ let ed11yAdminInit = function(ed11yTarget) {
 	ed11yStyle.setAttribute('hidden','');
 	ed11yStyle.innerHTML = `
 	<style>
-		#ed11y-issue-link.ed11y-warning[aria-pressed="true"] {
+		#ed11y-issue-link[aria-pressed="false"]:not(:focus-visible) {
+			box-shadow: none;
+		}
+		#ed11y-issue-link.ed11y-warning[aria-pressed="false"] {
 			background-color: #fad859;
 			color: #000b;
 		}
 		
-		#ed11y-issue-link.ed11y-alert[aria-pressed="true"] {
-			background: #b80519;
+		#ed11y-issue-link.ed11y-alert[aria-pressed="false"] {
+			background-color: #b80519;
 			color: #fff;
 		}
-		#ed11y-issue-link[aria-pressed="true"]:not(:focus-visible) {
-			box-shadow: none;
+		#ed11y-issue-link[aria-pressed="false"]:hover {
+			transition: none;
+			box-shadow: inset 0 0 0 1px var(--wp-admin-theme-color-darker-10), inset 0 0 0 2px #fffa;
 		}
 		ed11y-element-panel { display: none !important; }
 	</style>`;
 	Ed11y.wpIssueToggle.insertAdjacentElement('afterend', ed11yStyle);
 
 	// Set up change observer.
-	// Todo: set class dynamically based on target.
 	const ed11yTargetNode = document.querySelector('.editor-styles-wrapper');
-	// Only watch for changes to Block classes, not just typing.
-	const ed11yObserverConfig = { attributeFilter: ['class'], subtree: true };
-	// Callback function to execute when mutations are observed.
-	const ed11yMutationCallback = () => {
-		ed11yMutationTimeoutWatch();
+	// Observe for class changes and typing.
+	const ed11yObserverConfig = { attributeFilter: ['class'], characterData: true, subtree: true };
+	// Immediately recheck on class change; wait for typing pauses for typing.
+	const ed11yMutationCallback = (callback) => {
+		if (callback[0].type === 'characterData') {
+			ed11yMutationTimeoutWatch(750);
+		} else {
+			ed11yMutationTimeoutWatch(0);
+		}
+		
 	};
 
 	// Create an observer instance linked to the callback function
@@ -265,14 +279,13 @@ let ed11yFindCompatibleEditor = function() {
 
 // Debouncer: trigger re-check when typing pauses for > .5s.
 let ed11yMutationTimeout;
-function ed11yMutationTimeoutWatch() {
+function ed11yMutationTimeoutWatch(wait) {
   clearTimeout(ed11yMutationTimeout);
   if (Ed11y.panel && Ed11y.panel.classList.contains('active') === false) {
 	ed11yMutationTimeout = setTimeout(function () {
-		console.log('go');
 		ed11yFindNewBlocks();
 		Ed11y.options.ignoreElements = ed11yOptions['ignoreElements'];
 		Ed11y.checkAll(false,false);
-	  }, 500);
+	  }, wait);
   }
 }

@@ -227,7 +227,7 @@ function ed11y_livecheck_field() {
 		<option <?php echo 'none' === $settings ? 'selected="true"' : ''; ?>value="none">None</option>
 	</select>
 	<p id="livecheck_description">
-		In the Gutenburg editor, this outlines blocks with potential issues. Authors need to pull up the preview page to view tooltips or dismiss alerts.
+		In the Gutenburg editor, this outlines potential issues as authors type. Authors can dismiss alerts from the preview page.
 	</p>
 		
 	<?php
