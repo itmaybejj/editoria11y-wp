@@ -277,15 +277,26 @@ let ed11yFindCompatibleEditor = function() {
 	}
 }
 
-// Debouncer: trigger re-check when typing pauses for > .5s.
+/**
+ * Debounced recheck:
+ * Immediately, on block selection change.
+ * After .75s pause, when typing.
+ * No more frequently than every 1500s.
+ */
 let ed11yMutationTimeout;
+let ed11yMutationRacer = 0;
 function ed11yMutationTimeoutWatch(wait) {
-  clearTimeout(ed11yMutationTimeout);
-  if (Ed11y.panel && Ed11y.panel.classList.contains('active') === false) {
+	clearTimeout(ed11yMutationTimeout);
+
+	let timeOut = ed11yMutationRacer - Date.now();
+	timeOut = timeOut < 0 ? wait : timeOut;
+	
 	ed11yMutationTimeout = setTimeout(function () {
-		ed11yFindNewBlocks();
-		Ed11y.options.ignoreElements = ed11yOptions['ignoreElements'];
-		Ed11y.checkAll(false,false);
-	  }, wait);
-  }
+		ed11yMutationRacer = Date.now() + 1500;
+		if (Ed11y.panel && Ed11y.panel.classList.contains('active') === false) {
+			ed11yFindNewBlocks();
+			Ed11y.options.ignoreElements = ed11yOptions['ignoreElements'];
+			Ed11y.checkAll(false,false);
+		}
+	}, timeOut);
 }
