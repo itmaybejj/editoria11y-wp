@@ -1,4 +1,6 @@
 let ed11yOptions = false;
+let ed11yOpen = localStorage.getItem('ed11yOpen');
+ed11yOpen = 'open' === ed11yOpen ? true : false;
 
 // TODO: localStorage or WP use preference for open/shut notifications.
 // TODO: share dismissal API with preview page.
@@ -54,7 +56,7 @@ let ed11yUpdateCount = function() {
 		let ed11yKnownContainers = {};
 		Ed11y.results.forEach(result => {
 			// Skip dismissed items, and only show warnings if they have not been suppressed in plugin settings.
-			if (result[5] === false && !(ed11yOptions['liveCheck'] === 'errors' && result[4])) {
+			if (ed11yOpen && result[5] === false && !(ed11yOptions['liveCheck'] === 'errors' && result[4])) {
 				let ed11yContainerId = result[0].closest('.wp-block').getAttribute('id');
 				let ed11yRingColor = !result[4] ? Ed11y.color.alert : Ed11y.color.warning;
 				let ed11yFontColor = !result[4] ? '#fff' : '#111';
@@ -185,11 +187,14 @@ let ed11yAdminInit = function(ed11yTarget) {
 	Ed11y.wpIssueToggle = document.createElement('button');
 	Ed11y.wpIssueToggle.classList.add('components-button', 'is-secondary', 'hidden');
 	Ed11y.wpIssueToggle.setAttribute('id', 'ed11y-issue-link');
-	Ed11y.wpIssueToggle.setAttribute('title', 'Hide accessibility issues.');
-	Ed11y.wpIssueToggle.setAttribute('aria-pressed', 'true');
+	ed11yTitle = ed11yOpen ? 'Hide accessibility issues' : 'Show accessibility issues';
+	Ed11y.wpIssueToggle.setAttribute('title', ed11yTitle);
+	Ed11y.wpIssueToggle.setAttribute('aria-pressed', ed11yOpen);
 	Ed11y.wpIssueToggle.setAttribute('aria-describedby', 'ed11y-button-description');
 	Ed11y.wpIssueToggle.addEventListener('click', function() {
 		if (Ed11y.wpIssueToggle.getAttribute('aria-pressed') === 'true') {
+			localStorage.setItem('ed11yOpen', 'shut');
+			ed11yOpen = false;
 			Ed11y.wpIssueToggle.setAttribute('aria-pressed','false');
 			Ed11y.wpIssueToggle.setAttribute('title', 'Show accessibility issues');
 			let newStyles = document.querySelector('#ed11y-live-highlighter');
@@ -198,6 +203,8 @@ let ed11yAdminInit = function(ed11yTarget) {
 			}
 			ed11yOptions['showResults'] = false;
 		} else {
+			localStorage.setItem('ed11yOpen', 'open');
+			ed11yOpen = true;
 			Ed11y.wpIssueToggle.setAttribute('aria-pressed','true');
 			Ed11y.wpIssueToggle.setAttribute('title', 'Hide accessibility issues');
 			ed11yOptions['showResults'] = true;
