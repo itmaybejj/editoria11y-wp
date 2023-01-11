@@ -74,6 +74,9 @@
     min-width: 0;
     width: 5em;
 }
+#ed1dismiss td:last-child {
+    text-align: center;
+}
 #ed1 td:first-child {
     min-width: 0;
     text-align: right;
@@ -85,9 +88,6 @@
     text-align: left;
     padding-left: 1em;
     padding-right: 1em;
-}
-#ed1dismiss td:last-child {
-    text-align: center;
 }
 
 #ed1 a,

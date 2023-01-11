@@ -12,7 +12,7 @@ class Ed1 {
             Ed1.url = 'https://' + window.location.host + window.location.pathname + '?';
             if (urlParams.get('page')) {
                 Ed1.url += 'page=' + urlParams.get('page') + '&';
-            }
+            } 
             // Todo build a function to append dynamically applicable values so we can multifilter.
 
             // Only accept numerical offsets
@@ -39,10 +39,12 @@ class Ed1 {
             
             // Test name to filter by; will be validated.
             Ed1.resultKey = urlParams.get('rkey');
-            Ed1.resultKey = !!Ed1.resultKey ? Ed1.resultKey : false;            
+            Ed1.resultKey = !!Ed1.resultKey ? Ed1.resultKey : false;
             
             // Page type to filter by; will be validated.
             Ed1.type = urlParams.get('type');
+
+            Ed1.openDetails = !!Ed1.resultKey || !!Ed1.type;
 
             // Key arrays to be assembled into URLs on request.
             Ed1.requests = {};
@@ -130,10 +132,11 @@ class Ed1 {
             Ed1.get.ed1page(Ed1.buildRequest('ed1page'), false);
 
             // TODO: we could wait until the Details is open to do this.
-            window.setTimeout( function() {Ed1.get.ed1dismiss(Ed1.buildRequest('ed1dismiss'), false);}, 500 );
+            let ed1Lag = Ed1.openDetails ? 0 : 500;
+            window.setTimeout( function() {Ed1.get.ed1dismiss(Ed1.buildRequest('ed1dismiss'), false);}, ed1Lag );
             
             // Show whatever is drawn after one second.
-            window.setTimeout( function() {Ed1.show();}, 1000)
+            window.setTimeout( function() {Ed1.show();}, 500)
             window.setTimeout( function() {
                 let neverLoaded = document.querySelectorAll('#ed1 .loading');
                 Array.from(neverLoaded).forEach((el) => {
@@ -200,7 +203,8 @@ class Ed1 {
             let href;
             if ( url ) {
                 let sep = url.indexOf('?') === -1 ? '?' : '&';
-                href = encodeURI( url ) + sep + 'ed1ref=' + parseInt(pid);
+                url = encodeURI( url );
+                href = pid ? url + sep + 'ed1ref=' + parseInt(pid) : url;
             } else {
                 href = '#' + encodeURIComponent(hash)
             }
@@ -225,7 +229,7 @@ class Ed1 {
 
         Ed1.render.details = function (text, id, open = false) {
             let details = document.createElement('details');
-            if ( open ) {
+            if ( open || Ed1.openDetails === true) {
                 details.setAttribute('open', '');
             }
             let summary = document.createElement('summary');
@@ -370,8 +374,10 @@ class Ed1 {
 
             loading.setAttribute('colspan', '6');
             Ed1.tables['ed1dismiss'].append(loadWrap.cloneNode('deep'));
+
+            let detailTitle = Ed1.openDetails ? 'Dismissals' : 'Recent dismissals'
             
-            let dismissDetails = Ed1.render.details('Recent dismissals', 'ed1dismiss-title')
+            let dismissDetails = Ed1.render.details(detailTitle, 'ed1dismiss-title')
             Ed1.wrapDismiss.append(dismissDetails);
             dismissDetails.append(Ed1.tables['ed1dismiss']);
             Ed1.tables['ed1dismiss'].querySelectorAll('th button').forEach((el) => {
@@ -490,7 +496,7 @@ class Ed1 {
                 }
 
                 if (post.length === 0) {
-                    let notFound = Ed1.render.noResults('No alerts have been dismissed.', '6');
+                    let notFound = Ed1.render.noResults('None', '6');
                     Ed1.tables['ed1dismiss'].insertAdjacentElement('beforeend', notFound);
                 } else {
                     post.forEach((result) => {

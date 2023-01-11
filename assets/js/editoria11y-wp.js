@@ -67,6 +67,7 @@ function ed11ySync() {
 			total = 0;
 			let results = extractResults();
 			let url = Ed11y.options.currentPage;
+			console.log(url);
 			url = url.length > 250 ? url.substring(0, 250) : url;
 			let data = {
 				page_title: ed11yOptions.title,
@@ -129,7 +130,7 @@ ed11yReady(
 				ed11yOptions.title = document.title;
 			}			
 			// When triggered by the in-editor "issues" link, force assertive.
-			if (window.location.href.indexOf("preview=true") > -1) {
+			if (window.location.href.indexOf("preview=true") > -1 || window.location.href.indexOf("ed1ref") > -1) {
 				ed11yOptions['alertMode'] = 'assertive'; 
 			}
 			const ed11y = new Ed11y(ed11yOptions);
