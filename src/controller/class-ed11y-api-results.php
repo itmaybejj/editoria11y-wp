@@ -156,8 +156,8 @@ class Ed11y_Api_Results extends WP_REST_Controller {
 				);
 
 				$rowcount = $wpdb->get_var(
-					"SELECT COUNT(pid) 
-					FROM {$utable};"
+					"SELECT COUNT(DISTINCT pid) 
+					FROM {$rtable};"
 				);
 			}
 		} elseif ( 'keys' == $params['view'] ) {

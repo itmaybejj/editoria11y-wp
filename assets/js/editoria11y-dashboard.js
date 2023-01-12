@@ -48,16 +48,6 @@ class Ed1 {
 
             // Key arrays to be assembled into URLs on request.
             Ed1.requests = {};
-            Ed1.requests['ed1result'] = {
-                base: 'dashboard',
-                view: 'keys',
-                count: 25,
-                offset: resultOffset,
-                sort: resultSort,
-                direction: resultDir,
-                result_key: Ed1.resultKey,
-                entity_type: Ed1.type,
-            }
             Ed1.requests['ed1page'] = {
                 base: 'dashboard',
                 view: 'pages',
@@ -65,6 +55,16 @@ class Ed1 {
                 offset: pageOffset,
                 sort: pageSort,
                 direction: pageDir,
+                result_key: Ed1.resultKey,
+                entity_type: Ed1.type,
+            }
+            Ed1.requests['ed1result'] = {
+                base: 'dashboard',
+                view: 'keys',
+                count: 25,
+                offset: resultOffset,
+                sort: resultSort,
+                direction: resultDir,
                 result_key: Ed1.resultKey,
                 entity_type: Ed1.type,
             }
@@ -264,29 +264,47 @@ class Ed1 {
                 pageWrap.setAttribute('aria-labelledby', labelId);
             }
 
-            let appendPageNumber = (index, current = false) => {
+            let appendPageNumber = (index, first = false, hidden = false, last = false) => {
                 let pageNumber = document.createElement('button');
                 pageNumber.className = 'pagination-number';
-                pageNumber.innerHTML = index;
+                pageNumber.textContent = index;
                 pageNumber.setAttribute('page-index', index);
                 pageNumber.setAttribute('aria-label', 'Page ' + index);
-                if (current) {
+                if (first) {
                     pageNumber.setAttribute('aria-current', 'page');
+                    let ellipse = document.createElement('span');
+                    ellipse.classList.add('ellipses');
+                    ellipse.textContent = '...';
+                    ellipse.setAttribute('hidden', 'hidden');
+                    pageWrap.appendChild(pageNumber);
+                    pageWrap.appendChild(ellipse);
+                } else if (hidden) {
+                    pageNumber.setAttribute('hidden', '');
+                    pageWrap.appendChild(pageNumber);
+                } else if (last && index > 7) {
+                    let ellipse = document.createElement('span');
+                    ellipse.classList.add('ellipses');
+                    ellipse.textContent = '...';
+                    pageWrap.appendChild(ellipse);
+                    pageWrap.appendChild(pageNumber);
+                } else {
+                    pageWrap.appendChild(pageNumber);
                 }
-
-                pageWrap.appendChild(pageNumber);
             };
 
             let pageCount = Math.ceil(rows / perPage);
-            let activePage = Math.ceil(offset / perPage) + 1;
             for (let i = 1; i <= pageCount; i++) {
-                let current = i === activePage;
-                appendPageNumber(i, current);
+                let first = i === 1;
+                let last = i === pageCount;
+                let hidden = !(i <= 6 || last);
+                last = pageCount < 5 ? false : last;
+                appendPageNumber(i, first, hidden, last);
             }
 
             Ed1.tables[after].insertAdjacentElement('afterend', pageWrap);
 
-            pageWrap.querySelectorAll('button').forEach((button) => {
+            let buttons = pageWrap.querySelectorAll('button');
+            buttons.forEach((button) => {
                 const pageIndex = Number(button.getAttribute("page-index"));
 
                 if (pageIndex) {
@@ -301,7 +319,48 @@ class Ed1 {
             e.target.closest('nav').querySelector('[aria-current]').removeAttribute('aria-current');
             Ed1.requests[table]['offset'] = offset;
             Ed1.get[table](Ed1.buildRequest(table), true);
-            e.target.setAttribute('aria-current', 'page');
+            e.target.setAttribute('aria-current', 'true');
+            let current = e.target.getAttribute('page-index');
+            let buttons = e.target.closest('nav').querySelectorAll('.pagination-number');
+            let ellipses = e.target.closest('nav').querySelectorAll('.ellipses');
+            
+            buttons.forEach((el) => {
+
+                // Determine if button is visible.
+                let page = el.getAttribute('page-index');
+                
+                // First and last always show.
+                let show = page == 1 || page == buttons.length;
+                if (!show) {
+                    if (current <= 4) {
+                        // At left edge, pin 6.
+                        show = (page <= 6);
+                    } else if (current >= buttons.length - 4) {
+                        // At right edge, pin 6
+                        show = (page >= buttons.length - 6);
+                    } else {
+                        show = current - page <= 2 && page - current <= 2;
+                    }   
+                }
+
+                if (show) {
+                    el.removeAttribute('hidden');
+                    // Hide ellipses when penultimate number is visible.
+                    if (page == 2) {
+                        Array.from(ellipses)[0].setAttribute('hidden','hidden');
+                    } else if ( page == buttons.length - 1) {
+                        Array.from(ellipses)[1]?.setAttribute('hidden','hidden');
+                    }
+                } else {
+                    el.setAttribute('hidden', true);
+                    if (page == 2) {
+                        Array.from(ellipses)[0].removeAttribute('hidden');
+                    } else if ( page == buttons.length - 1) {
+                        Array.from(ellipses)[1]?.removeAttribute('hidden');
+                    }
+                }
+
+            });
         }
 
         Ed1.readyTriggers = function () {
@@ -403,7 +462,7 @@ class Ed1 {
 
             if (!!post) {
                 if ( !Ed1.wrapResults.querySelector('nav') ) {
-                    Ed1.render.pagination('ed1result', count, 25, 0, 'ed1result-title');
+                    Ed1.render.pagination('ed1result', count, Ed1.requests['ed1result']['count'], 0, 'ed1result-title');
                 }
 
                 post.forEach((result) => {
@@ -443,7 +502,7 @@ class Ed1 {
 
             if (!!post) {
                 if ( !Ed1.wrapPage.querySelector('nav') ) {
-                    Ed1.render.pagination('ed1page', count, 25, 0, 'ed1page-title');
+                    Ed1.render.pagination('ed1page', count, Ed1.requests['ed1page']['count'], 0, 'ed1page-title');
                 }
 
                 post.forEach((result) => {
@@ -492,7 +551,7 @@ class Ed1 {
 
             if (!!post) {
                 if ( !Ed1.wrapDismiss.querySelector('nav') ) {
-                    Ed1.render.pagination('ed1dismiss', count, 25, 0, 'ed1dismiss-title');
+                    Ed1.render.pagination('ed1dismiss', count, Ed1.requests['ed1dismiss']['count'], 0, 'ed1dismiss-title');
                 }
 
                 if (post.length === 0) {
