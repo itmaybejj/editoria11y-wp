@@ -316,17 +316,19 @@ class Ed1 {
         }
 
         Ed1.setPage = function(e, table, offset) {
-            e.target.closest('nav').querySelector('[aria-current]').removeAttribute('aria-current');
+            // Get new content.
             Ed1.requests[table]['offset'] = offset;
             Ed1.get[table](Ed1.buildRequest(table), true);
-            e.target.setAttribute('aria-current', 'true');
-            let current = e.target.getAttribute('page-index');
-            let buttons = e.target.closest('nav').querySelectorAll('.pagination-number');
-            let ellipses = e.target.closest('nav').querySelectorAll('.ellipses');
-            
-            buttons.forEach((el) => {
 
-                // Determine if button is visible.
+            // Update selected state
+            e.target.closest('nav').querySelector('[aria-current]').removeAttribute('aria-current');
+            e.target.setAttribute('aria-current', 'true');
+
+            // Determine which buttons should be visible.
+            let current = e.target.getAttribute('page-index');
+            let ellipses = e.target.closest('nav').querySelectorAll('.ellipses');
+            let buttons = e.target.closest('nav').querySelectorAll('.pagination-number');
+            buttons.forEach((el) => {
                 let page = el.getAttribute('page-index');
                 
                 // First and last always show.
@@ -345,7 +347,7 @@ class Ed1 {
 
                 if (show) {
                     el.removeAttribute('hidden');
-                    // Hide ellipses when penultimate number is visible.
+                    // Hide ellipses when penultimate number is revealed.
                     if (page == 2) {
                         Array.from(ellipses)[0].setAttribute('hidden','hidden');
                     } else if ( page == buttons.length - 1) {

@@ -8,12 +8,16 @@
     padding: 0 0 0 .25em;
     transition: opacity .2s ease-in;
     background: #1d2327;
-    color: #fff;
+    color: #eee;
+    border-radius: 6px;
 }
 
 #ed1 details[open] {
-    min-height: 22rem;
     padding: 0 1em 1em .25em;
+}
+
+#ed1-page-wrapper details[open] {
+    min-height: 22em;
 }
 
 #ed1.show details {
@@ -41,6 +45,7 @@
     margin: 1rem 0 1rem 1%;
     box-shadow: inset 0 0 0 3px white;
     min-width: 45em;
+    border-radius: 3px;
 }
 
 #ed1 td {
@@ -83,6 +88,7 @@
     width: 3em;
     padding-right: 2em;
     padding-left: .5em;
+    font-weight: 500;
 }
 #ed1dismiss td:first-child {
     text-align: left;

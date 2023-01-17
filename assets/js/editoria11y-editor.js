@@ -30,17 +30,19 @@ ed11yReady(
 let ed11yUpdateCount = function() {
 	let count = ed11yOptions['liveCheck'] === 'errors' ? Ed11y.errorCount : Ed11y.totalCount;
 	count = parseInt(count);
-	Ed11y.wpIssueToggle.textContent = count;
-	Ed11y.wpIssueToggle.setAttribute('aria-label', count + ' accessibility issues')
-	if (Ed11y.errorCount > 0) {
+	buttonText = ed11yOpen ? 'Hide alerts' : `${count} issues`;
+	Ed11y.wpIssueToggle.textContent = buttonText;
+	if ((ed11yOptions['liveCheck'] === 'all') && Ed11y.totalCount === 0 || ed11yOptions === 'errors' && Ed11y.errorCount === 0) {
+		Ed11y.wpIssueToggle.classList.add('hidden');
+	} else if (ed11yOpen) {
+		Ed11y.wpIssueToggle.classList.remove('ed11y-warning', 'hidden', 'ed11y-alert');	
+	} else if (!ed11yOpen && Ed11y.errorCount > 0) {
 		Ed11y.wpIssueToggle.classList.remove('ed11y-warning', 'hidden');
 		Ed11y.wpIssueToggle.classList.add('ed11y-alert');
-	} else if (Ed11y.warningCount > 0 && ed11yOptions['liveCheck'] !== 'errors') {
+	} else if (!ed11yOpen && Ed11y.warningCount > 0 && ed11yOptions['liveCheck'] !== 'errors') {
 		Ed11y.wpIssueToggle.classList.remove('ed11y-alert', 'hidden');
 		Ed11y.wpIssueToggle.classList.add('ed11y-warning');
-	} else {
-		Ed11y.wpIssueToggle.classList.add('hidden');
-	}
+	} 
 
 	let newStyles = document.querySelector('#ed11y-live-highlighter');
 	if (!newStyles) {
@@ -164,8 +166,9 @@ let ed11yAdminInit = function(ed11yTarget) {
 
 	// Wordpress does not render empty post titles so we don't need to flag them.
 	ed11yOptions['originalIgnore'] = ed11yOptions['ignoreElements'];
-	
+
 	ed11yOptions['showResults'] = true;
+	ed11yOptions['alertMode'] = 'polite';
 	ed11yInitialBlocks = document.querySelectorAll('.wp-block');
 	Ed11y.WPBlocks = [];
 	if (ed11yInitialBlocks.length !== null) {
@@ -187,32 +190,26 @@ let ed11yAdminInit = function(ed11yTarget) {
 	Ed11y.wpIssueToggle = document.createElement('button');
 	Ed11y.wpIssueToggle.classList.add('components-button', 'is-secondary', 'hidden');
 	Ed11y.wpIssueToggle.setAttribute('id', 'ed11y-issue-link');
-	ed11yTitle = ed11yOpen ? 'Hide accessibility issues' : 'Show accessibility issues';
-	Ed11y.wpIssueToggle.setAttribute('title', ed11yTitle);
-	Ed11y.wpIssueToggle.setAttribute('aria-pressed', ed11yOpen);
 	Ed11y.wpIssueToggle.setAttribute('aria-describedby', 'ed11y-button-description');
 	Ed11y.wpIssueToggle.addEventListener('click', function() {
-		if (Ed11y.wpIssueToggle.getAttribute('aria-pressed') === 'true') {
+		if (ed11yOpen) {
 			localStorage.setItem('ed11yOpen', 'shut');
 			ed11yOpen = false;
-			Ed11y.wpIssueToggle.setAttribute('aria-pressed','false');
-			Ed11y.wpIssueToggle.setAttribute('title', 'Show accessibility issues');
 			let newStyles = document.querySelector('#ed11y-live-highlighter');
 			if (newStyles) {
 				newStyles.innerHTML = '';
 			}
 			ed11yOptions['showResults'] = false;
+			ed11yUpdateCount();
 		} else {
 			localStorage.setItem('ed11yOpen', 'open');
 			ed11yOpen = true;
-			Ed11y.wpIssueToggle.setAttribute('aria-pressed','true');
-			Ed11y.wpIssueToggle.setAttribute('title', 'Hide accessibility issues');
 			ed11yOptions['showResults'] = true;
+			Ed11y.wpIssueToggle.textContent = 'Hide issues';
 			ed11yUpdateCount();
 		}
 	});
 	Ed11y.wpIssueToggle.textContent = "0";
-	Ed11y.wpIssueToggle.setAttribute('aria-live', 'polite');
 	// Todo: add event listener to transfer click to preview link. It appears to have additional functions attached.
 	ed11yPreviewLink.parentElement.insertAdjacentElement('afterend', Ed11y.wpIssueToggle);
 	Ed11y.wpIssueToggle.insertAdjacentElement('afterend', ed11yButtonDescription);
@@ -221,21 +218,23 @@ let ed11yAdminInit = function(ed11yTarget) {
 	ed11yStyle.setAttribute('hidden','');
 	ed11yStyle.innerHTML = `
 	<style>
-		#ed11y-issue-link[aria-pressed="false"]:not(:focus-visible) {
-			box-shadow: none;
-		}
-		#ed11y-issue-link.ed11y-warning[aria-pressed="false"] {
+		#ed11y-issue-link.ed11y-warning {
 			background-color: #fad859;
 			color: #000b;
+			box-shadow: none;
 		}
 		
-		#ed11y-issue-link.ed11y-alert[aria-pressed="false"] {
+		#ed11y-issue-link.ed11y-alert {
 			background-color: #b80519;
 			color: #fff;
+			box-shadow: none;
 		}
-		#ed11y-issue-link[aria-pressed="false"]:hover {
-			transition: none;
-			box-shadow: inset 0 0 0 1px var(--wp-admin-theme-color-darker-10), inset 0 0 0 2px #fffa;
+		#ed11y-issue-link:hover {
+			background: var(--wp-admin-theme-color-darker-10);
+			color: white;
+		}
+		#ed11y-issue-link:focus-visible {
+			box-shadow: 0 0 0 1px white, 0 0 0 2px var(--wp-admin-theme-color-darker-10);
 		}
 		ed11y-element-panel { display: none !important; }
 	</style>`;
