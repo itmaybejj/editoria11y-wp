@@ -284,10 +284,6 @@ function ed11y_ignore_elements_field() {
 	<?php
 }
 
-
-
-
-
 /**
  * Video field
  */
@@ -384,7 +380,7 @@ function ed11y_no_run_field() {
 	value="<?php echo esc_attr( $settings ); ?>" pattern="[^<>\\\x27;|@&]+"/>
 	<p id="ed11y_no_run_description">
 		<?php
-			$string = 'Used to disable checks on particular pagers, or when content editing tools are active.';
+			$string = 'Used to disable checks on particular pager, or when content editing tools are active.';
 			echo wp_kses( __( $string, 'ed11y-wp' ), ed11y_allowed_html() );
 		?>
 	</p>
@@ -427,14 +423,6 @@ function ed11y_plugin_settings_render_page() {
 						<ol>
 							<li>If authors do not see the checker toggle, check your <a href="https://developer.mozilla.org/en-US/docs/Tools/Browser_Console" class="ext" data-extlink="">browser console</a> for errors, and make sure the theme is not hiding <code>ed11y-element-panel</code>.</li>
 							<li>If the checker toggle is <strong>present</strong> but not finding much: make sure your content areas are listed in "Check content in these containers". It is not uncommon for themes to insert editable content outside the <code>main</code> element.</li></ol>
-					<p style="padding-top:8px">
-					<?php
-						esc_html_e( 'To learn more about Editoria11y, please visit the ', 'ed11y-wp' );
-						$domain = esc_url( __( 'https://ed11y.netlify.app/', 'ed11y-wp' ) );
-						$anchor = esc_html__( 'project website.', 'ed11y-wp' );
-						$link   = sprintf( '<a href="%s">%s</a>', $domain, $anchor );
-						echo sprintf( esc_html( '%1$s', 'ed11y-wp' ), $link );
-					?>
 					</p>
 						
 
@@ -445,9 +433,10 @@ function ed11y_plugin_settings_render_page() {
 							</li>
 							<li>
 								<a href="https://github.com/itmaybejj/editoria11y-wp/issues">Issues &amp; feature requests</a><br><br>
-								Version for support requests: <?php echo Ed11y::ED11Y_VERSION; ?>
+								<span style="font-size: .9em;">Version: <?php echo ( esc_html( Ed11y::ED11Y_VERSION ) ); ?></span>
 							</li>
 						</ul>
+						
 
 
 					</div>

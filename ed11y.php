@@ -3,16 +3,17 @@
  * Editoria11y, the accessibility quality assurance assistant.
  *
  * Plugin Name:       Editoria11y
- * Plugin URI:        https://itmaybejj.github.io/editoria11y/
+ * Plugin URI:        https://itmaybejj.github.io/editoria11y/demo/
  * Version:           0.0.2
  * Requires at least: 5.6
  * Requires PHP:      7.2
- * Author:            John Jameson, Princeton University
+ * Author:            Princeton University, WDS
+ * Author URI:		  https://wds.princeton.edu/team
  * License:           GPL v2 or later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain:       ed11y
  * Domain Path:       /languages
- * Description:       Editoria11y is your accessibility quality assurance assistant. Geared towards content authors, Editoria11y straightforwardly identifies accessibility issues at the source.
+ * Description:       The missing spellcheck for accessibility. Checks automatically, highlights issues inline, and provides straightforward tips for correcting errors.
  *
  * @package         Editoria11y
  * @link            https://itmaybejj.github.io/editoria11y/
@@ -26,12 +27,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-// Set up tables on activation
-// https://wordpress.stackexchange.com/questions/25910/uninstall-activate-deactivate-a-plugin-typical-features-how-to/25979#25979
-register_activation_hook( __FILE__, array( 'Ed11y', 'activation' ) );
-
-// TODO: remove tables on deactivation
-register_deactivation_hook( __FILE__, array( 'Ed11y', 'uninstall' ) );
+// Manage tables
+register_activation_hook( __FILE__, array( 'Ed11y', 'activate' ) );
+// register_deactivation_hook( __FILE__, array( 'Ed11y', 'deactivate' ) );
 register_uninstall_hook( __FILE__, array( 'Ed11y', 'uninstall' ) );
 
 /**
@@ -127,12 +125,10 @@ class Ed11y {
 	/**
 	 * Provides DB table schema.
 	 */
-	public static function activation() {
+	public static function activate() {
 		if ( ! current_user_can( 'activate_plugins' ) ) {
 			return;
 		}
-		$plugin = isset( $_REQUEST['plugin'] ) ? $_REQUEST['plugin'] : '';
-		check_admin_referer( "activate-plugin_{$plugin}" );
 
 		global $wpdb;
 
@@ -160,7 +156,7 @@ class Ed11y {
 			created datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
 			updated datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
 			CONSTRAINT result PRIMARY KEY (pid, result_key),
-			FOREIGN KEY (pid) REFERENCES $table_urls(pid) ON DELETE CASCADE
+			FOREIGN KEY (pid) REFERENCES $table_urls (pid) ON DELETE CASCADE
 			) $charset_collate;
 		
 		CREATE TABLE $table_dismissals (
@@ -177,41 +173,32 @@ class Ed11y {
 			KEY page_url (pid),
 			KEY user (user),
 			KEY dismissal_status (dismissal_status),
-			FOREIGN KEY (pid) REFERENCES $table_urls(pid) ON DELETE CASCADE
+			FOREIGN KEY (pid) REFERENCES $table_urls (pid) ON DELETE CASCADE
 			) $charset_collate;
 		";
 
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 		dbDelta( $sql );
-		add_option( 'ed11y_db_version', '0.2' );
 	}
 
 	/**
-	 * Provides DB table schema.
+	 * Remove DB tables on uninstall
 	 */
 	public static function uninstall() {
 		if ( ! current_user_can( 'activate_plugins' ) ) {
 			return;
 		}
-		$plugin = isset( $_REQUEST['plugin'] ) ? $_REQUEST['plugin'] : '';
-		check_admin_referer( "activate-plugin_{$plugin}" );
 
 		global $wpdb;
 
-		$table_urls       = $wpdb->prefix . 'ed11y_urls';
-		$table_results    = $wpdb->prefix . 'ed11y_results';
-		$table_dismissals = $wpdb->prefix . 'ed11y_dismissals';
+		$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}ed11y_dismissals" );
+		$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}ed11y_results" );
+		$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}ed11y_urls" );
 
-		$sql = "
-		DROP TABLE $table_urls;
+		delete_option( 'ed11y_plugin_settings' );
+		// for site options in Multisite
+		delete_site_option( 'ed11y_plugin_settings' );
 
-		DROP TABLE $table_results;
-		
-		DROP TABLE $table_dismissals;
-		";
-
-		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
-		dbDelta( $sql );
 	}
 
 }

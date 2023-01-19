@@ -6,13 +6,13 @@
  * @package Editoria11y
  */
 
-add_filter( 'plugin_action_links_' . ED11Y_BASE, 'add_action_links' );
+add_filter( 'plugin_action_links_' . ED11Y_BASE, 'ed11y_add_action_links' );
 /**
  * Adds link to setting page on plugin admin screen.
  *
  * @param array $links WP action link array.
  */
-function add_action_links( $links ) {
+function ed11y_add_action_links( $links ) {
 	$mylinks = array(
 		'<a href="' . admin_url( 'options-general.php?page=ed11y' ) . '">Settings</a>',
 	);
@@ -32,7 +32,7 @@ function ed11y_get_default_options( $option = false ) {
 		//'ed11y_lang'                => 'en',
 		'ed11y_theme'				=> 'lightTheme',
 		'ed11y_checkRoots'          => false,
-		'ed11y_livecheck'		    => 'all',
+		'ed11y_livecheck'		    => 'errors',
 
 		'ed11y_ignore_elements'     => '#comments *, .wp-block-post-comments *',
 		'ed11y_link_ignore_strings' => false,
