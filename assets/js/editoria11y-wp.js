@@ -133,6 +133,10 @@ ed11yReady(
 			if (window.location.href.indexOf("preview=true") > -1 || window.location.href.indexOf("ed1ref") > -1) {
 				ed11yOptions['alertMode'] = 'assertive'; 
 			}
+			if (window.location.href.indexOf("ed1ref") > -1) {
+				ed11yOptions['showDismissed'] = true;
+			}
+
 			const ed11y = new Ed11y(ed11yOptions);
 			ed11ySync();
 		} 
