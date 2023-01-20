@@ -178,6 +178,16 @@ function ed11y_setting_sections_fields() {
 
 	// Add link text ignore field.
 	add_settings_field(
+		'ed11y_checkvisibility',
+		esc_html__( 'Check if elements are visible whan using panel navigation buttons', 'ed11y-wp' ),
+		'ed11y_checkvisibility_field',
+		'ed11y',
+		'ed11y_advanced_settings',
+		array( 'label_for' => 'ed11y_checkvisibility' )
+	);
+
+	// Add link text ignore field.
+	add_settings_field(
 		'ed11y_link_ignore_strings',
 		esc_html__( 'Ignore these strings in links', 'ed11y-wp' ),
 		'ed11y_link_ignore_strings_field',
@@ -338,6 +348,25 @@ function ed11y_dataviz_content_field() {
 	cols="45" rows="3"
 	placeholder="<?php echo esc_attr( $default ); ?>"
 	><?php echo esc_html( $settings ); ?></textarea>  
+	<?php
+}
+
+/**
+ * Disable vizcheck
+ */
+function ed11y_checkvisibility_field() {
+	$settings = ed11y_get_plugin_settings( 'ed11y_checkvisibility', false );
+	?>
+	<select name="ed11y_plugin_settings[ed11y_checkvisibility]" id="ed11y-checkvisibility" name="ed11y_checkvisibility" class="form-select" aria-describedby="checkvisibility_description">
+		<option <?php echo '' === $settings ? 'selected="true"' : ''; ?>value="">Theme default</option>
+		<option <?php echo 'true' === $settings ? 'selected="true"' : ''; ?>value="true">Check for visibility</option>
+		<option <?php echo 'false' === $settings ? 'selected="true"' : ''; ?>value="false">Disable visibility checking</option>
+	</select>
+
+	<p id="checkvisibility-description">Set if your theme throws "this element may be hidden" alerts 
+		when using the next/previous buttons on the main panel.</p>
+		<p><em>And please tell us if this happens with a common theme so we can add it to the defaults!</em></p>
+		
 	<?php
 }
 
@@ -535,7 +564,6 @@ function ed11y_plugin_settings_validate( $settings ) {
 		'',
 		sanitize_text_field( $settings['ed11y_datavizContent'] )
 	);
-
 
 	return $settings;
 }

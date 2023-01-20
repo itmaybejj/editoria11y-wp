@@ -168,7 +168,7 @@ let ed11yAdminInit = function(ed11yTarget) {
 	ed11yOptions['originalIgnore'] = ed11yOptions['ignoreElements'];
 
 	ed11yOptions['showResults'] = true;
-	ed11yOptions['alertMode'] = 'polite';
+	ed11yOptions['alertMode'] = 'headless';
 	ed11yInitialBlocks = document.querySelectorAll('.wp-block');
 	Ed11y.WPBlocks = [];
 	if (ed11yInitialBlocks.length !== null) {
@@ -299,7 +299,7 @@ function ed11yMutationTimeoutWatch(wait) {
 	
 	ed11yMutationTimeout = setTimeout(function () {
 		ed11yMutationRacer = Date.now() + 1500;
-		if (Ed11y.panel && Ed11y.panel.classList.contains('active') === false) {
+		if (Ed11y && Ed11y.running === false) {
 			ed11yFindNewBlocks();
 			Ed11y.options.ignoreElements = ed11yOptions['ignoreElements'];
 			Ed11y.checkAll(false,false);

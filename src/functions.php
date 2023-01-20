@@ -23,18 +23,31 @@ function ed11y_add_action_links( $links ) {
  * Return the default plugin settings.
  */
 function ed11y_get_default_options( $option = false ) {
+
+	$incompatible = array(
+		'Twenty Seventeen',
+		'OnePress',
+	);
+	// We know some themes are incompatible with vizchecks.
+	$theme = array( wp_get_theme()->get( 'Name' ) );
+	// Todo check this with an actual child theme.
+	if ( false !== wp_get_theme()->parent() ) {
+		array_push( $theme, wp_get_theme()->parent()->get( 'Name' ) );
+	}
+	$check_visibility = count( array_intersect( $incompatible, $theme ) ) === 0;
+
 	$default_options = array(
 		// Todo
 		// Color scheme
 		// Web components
 		// JS unfold theme handler
 		// Disable sync
-		//'ed11y_lang'                => 'en',
-		'ed11y_theme'				=> 'lightTheme',
+		// 'ed11y_lang'                => 'en',
+		'ed11y_theme'               => 'lightTheme',
 		'ed11y_checkRoots'          => false,
-		'ed11y_livecheck'		    => 'errors',
+		'ed11y_livecheck'           => 'errors',
 
-		'ed11y_ignore_elements'     => '#comments *, .wp-block-post-comments *',
+		'ed11y_ignore_elements'     => '#comments *, .wp-block-post-comments *, img.avatar',
 		'ed11y_link_ignore_strings' => false,
 
 		'ed11y_videoContent'        => 'youtube.com, vimeo.com, yuja.com, panopto.com',
@@ -42,6 +55,7 @@ function ed11y_get_default_options( $option = false ) {
 		'ed11y_documentContent'     => 'a[href$=".pdf"], a[href*=".pdf?"], a[href$=".doc"], a[href$=".docx"], a[href*=".doc?"], a[href*=".docx?"], a[href$=".ppt"], a[href$=".pptx"], a[href*=".ppt?"], a[href*=".pptx?"], a[href^="https://docs.google"]',
 		'ed11y_datavizContent'      => 'datastudio.google.com, tableau',
 
+		'ed11y_checkvisibility'     => $check_visibility,
 		'ed11y_no_run'              => false,
 	);
 
@@ -129,7 +143,7 @@ function ed11y_init() {
 		// Prepare settings array.
 		// TODO: this could be cached sitewide.
 		$ed1vals                             = array();
-		$ed1vals['theme']               	 = $settings['ed11y_theme'];
+		$ed1vals['theme']                    = $settings['ed11y_theme'];
 		$ed1vals['checkRoots']               = $settings['ed11y_checkRoots'];
 		$ed1vals['ignoreElements']           = '#wpadminbar *,' . $settings['ed11y_ignore_elements'];
 		$ed1vals['linkIgnoreStrings']        = $settings['ed11y_link_ignore_strings'];
@@ -137,8 +151,9 @@ function ed11y_init() {
 		$ed1vals['audioContent']             = $settings['ed11y_audioContent'];
 		$ed1vals['documentLinks']            = $settings['ed11y_documentContent'];
 		$ed1vals['dataVizContent']           = $settings['ed11y_datavizContent'];
+		$ed1vals['checkVisible']             = $settings['ed11y_checkvisibility'];
 		$ed1vals['preventCheckingIfPresent'] = $settings['ed11y_no_run'];
-		$ed1vals['liveCheck'] = $settings['ed11y_livecheck'];
+		$ed1vals['liveCheck']                = $settings['ed11y_livecheck'];
 
 		// Use permalink as sync URL if available, otherwise use query path.
 		$ed1vals['currentPage'] = get_permalink( get_the_ID() );
@@ -230,11 +245,11 @@ add_action( 'wp_footer', 'ed11y_init' );
 
 // Load live checker when editor is present.
 function ed11y_editor_init() {
-	if ( 'none' !== ed11y_get_plugin_settings( 'ed11y_livecheck', false )) {
+	if ( 'none' !== ed11y_get_plugin_settings( 'ed11y_livecheck', false ) ) {
 		// add_action( 'admin_enqueue_scripts', 'ed11y_load_block_editor_scripts' );
 		add_action( 'enqueue_block_editor_assets', 'ed11y_load_block_editor_scripts' );
 		add_action( 'admin_footer', 'ed11y_init' );
-	};	
+	}
 }
 add_action( 'wp_enqueue_editor', 'ed11y_editor_init' );
 // This would enqueue on the site editor page, which lacks a preview target:

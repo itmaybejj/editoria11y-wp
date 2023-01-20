@@ -67,7 +67,6 @@ function ed11ySync() {
 			total = 0;
 			let results = extractResults();
 			let url = Ed11y.options.currentPage;
-			console.log(url);
 			url = url.length > 250 ? url.substring(0, 250) : url;
 			let data = {
 				page_title: ed11yOptions.title,
@@ -82,7 +81,6 @@ function ed11ySync() {
             let urlParams = new URLSearchParams(queryString);
 			let pid = urlParams.get('ed1ref');
 			data['pid'] = !!pid ? parseInt(pid) : -1;
-			console.log(data);
 			postData('result', data);
 		  // Short timeout to let execution queue clear.
 		}, 100)
@@ -128,12 +126,14 @@ ed11yReady(
 			ed11yOptions.linkIgnoreStrings = ed11yOptions.linkIgnoreStrings ? new RegExp(ed11yOptions.linkIgnoreStrings, 'g') : false;
 			if (ed11yOptions.title.length < 3) {
 				ed11yOptions.title = document.title;
-			}			
+			}
+			ed11yOptions['checkVisible'] = ed11yOptions['checkVisible'] === 'true';
 			// When triggered by the in-editor "issues" link, force assertive.
-			if (window.location.href.indexOf("preview=true") > -1 || window.location.href.indexOf("ed1ref") > -1) {
+			if (window.location.href.indexOf("preview=true") > -1) {
 				ed11yOptions['alertMode'] = 'assertive'; 
 			}
 			if (window.location.href.indexOf("ed1ref") > -1) {
+				ed11yOptions['alertMode'] = 'assertive';
 				ed11yOptions['showDismissed'] = true;
 			}
 
