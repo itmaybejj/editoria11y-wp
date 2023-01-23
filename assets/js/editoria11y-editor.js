@@ -141,7 +141,7 @@ let ed11yFindNewBlocks = function() {
 	ed11yOptions['ignoreElements'] = ed11yOptions['originalIgnore'];
 	let ed11yActiveBlock = document.querySelector('.wp-block.is-selected')?.getAttribute('id');
 	// Ignoring a new block until it is edited.
-	if (ed11yActiveBlock !== 'undefined' && !Ed11y.WPBlocks.includes(ed11yActiveBlock)) {
+	if (!!ed11yActiveBlock && ed11yActiveBlock !== 'undefined' && !Ed11y.WPBlocks.includes(ed11yActiveBlock)) {
 		Ed11y.WPBlocks.push(ed11yActiveBlock);
 		ed11yOptions['ignoreElements'] += `, #${ed11yActiveBlock}, #${ed11yActiveBlock} *`;
 	}

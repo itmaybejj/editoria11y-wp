@@ -225,13 +225,10 @@ function ed11y_init() {
 			$ed1vals['entity_type'] = '404';
 		}
 
-		/*
-		// Allowed characters before echoing.
-		$r = array(
-			'&gt;'   => '>',
-			'&quot;' => '"',
-			'&#039;' => '"',
-		);*/
+		// Mode is assertive from 0ms to 10minutes after a post is modified.
+		$page_edited          = get_post_modified_time( 'U', true );
+		$page_edited          = $page_edited ? abs( 1 + $page_edited - time() ) : false;
+		$ed1vals['alertMode'] = $page_edited && $page_edited < 600 ? 'assertive' : 'polite';
 
 		// At the moment, PHP escapes HTML breakouts. This would not be safe in other languages.
 		echo '

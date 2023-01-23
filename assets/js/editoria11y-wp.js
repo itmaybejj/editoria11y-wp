@@ -127,6 +127,7 @@ ed11yReady(
 			if (ed11yOptions.title.length < 3) {
 				ed11yOptions.title = document.title;
 			}
+			console.log(ed11yOptions.alertMode);
 			ed11yOptions['checkVisible'] = ed11yOptions['checkVisible'] === 'true';
 			// When triggered by the in-editor "issues" link, force assertive.
 			if (window.location.href.indexOf("preview=true") > -1) {
