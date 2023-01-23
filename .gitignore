@@ -25,5 +25,3 @@ node_modules/
 # ignore local files
 .todo.md
 .vscode/
-.vscode
-.vscode/*
