@@ -13,7 +13,6 @@ class Ed1 {
             if (urlParams.get('page')) {
                 Ed1.url += 'page=' + urlParams.get('page') + '&';
             } 
-            // Todo build a function to append dynamically applicable values so we can multifilter.
 
             // Only accept numerical offsets
             let resultOffset = urlParams.get('roff');
@@ -21,13 +20,25 @@ class Ed1 {
             let pageOffset = urlParams.get('poff');
             pageOffset = !isNaN(pageOffset) ? +pageOffset : 0;
 
-            // Todo sanitize
+            // Allow list for sorts.
+            let validSorts = [
+                    'page_title',
+                    'page_total',
+                    'page_url',
+                    'entity_type',
+                    'created',
+                    'count',
+                    'result_key',
+                    'dismissal_status',
+                    'display_name',
+                    'stale'
+            ];
             let resultSort = urlParams.get('rsort');
-            resultSort = !!resultSort ? resultSort : 'count';
+            resultSort = !!resultSort && validSorts.includes(resultSort) ? resultSort : 'count';
             let pageSort = urlParams.get('psort');
-            pageSort = !!pageSort ? pageSort : 'page_total';
+            pageSort = !!pageSort && validSorts.includes(pageSort)? pageSort : 'page_total';
             let dismissSort = urlParams.get('dsort');
-            dismissSort = !!dismissSort ? dismissSort : 'created';
+            dismissSort = !!dismissSort && validSorts.includes(dismissSort) ? dismissSort : 'created';
 
             // Validate sort direction
             let resultDir = urlParams.get('rdir');
@@ -124,14 +135,14 @@ class Ed1 {
                 h1.insertAdjacentElement('afterend', reset);
                 Ed1.wrapResults.style.display = 'none';
             } else {
-                // TODO: we could wait until the Details is open to do this.
+                // Possible todo: we could wait until the Details is open to do this.
                window.setTimeout( function() {Ed1.get.ed1result(Ed1.buildRequest('ed1result'), false)}, 500);
             }
             
             // Always build page table.
             Ed1.get.ed1page(Ed1.buildRequest('ed1page'), false);
 
-            // TODO: we could wait until the Details is open to do this.
+            // Possible todo: we could wait until the Details is open to do this.
             let ed1Lag = Ed1.openDetails ? 0 : 500;
             window.setTimeout( function() {Ed1.get.ed1dismiss(Ed1.buildRequest('ed1dismiss'), false);}, ed1Lag );
             
@@ -591,7 +602,6 @@ class Ed1 {
 
                         let cleanDate = result['created'].split(' ')[0].replace(/[^\-0-9]/g, '');
     
-                        // todo: need to change this to created!!!
                         let on = Ed1.render.td( cleanDate );
                         row.insertAdjacentElement('beforeend', on);
     

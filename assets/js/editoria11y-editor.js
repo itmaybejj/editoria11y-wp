@@ -2,9 +2,8 @@ let ed11yOptions = false;
 let ed11yOpen = localStorage.getItem('ed11yOpen');
 ed11yOpen = 'open' === ed11yOpen ? true : false;
 
-// TODO: localStorage or WP use preference for open/shut notifications.
-// TODO: share dismissal API with preview page.
-// TODO: create aria-live region. Populate it with the issues for the is-active block. It will only change when the block changes.
+// Possible todo: create aria-live region? Populate it with the issues for the is-active block?
+
 // Create callback to see if document is ready.
 function ed11yReady(fn) {
 	if (document.readyState != 'loading'){
@@ -52,7 +51,7 @@ let ed11yUpdateCount = function() {
 		document.querySelector('body').append(newStyles);
 	}
 
-	// todo: aria-live announcements.
+	// Possible todo: aria-live announcements.
 	if (Ed11y.results.length > 0 && ed11yOptions['showResults'] === true) {
 		let ed11yStyles = '';
 		let ed11yKnownContainers = {};
@@ -159,7 +158,7 @@ let ed11yAdminInit = function(ed11yTarget) {
 	ed11yOptions.linkIgnoreStrings = ed11yOptions.linkIgnoreStrings ? new RegExp(ed11yOptions.linkIgnoreStrings, 'g') : false;
 		
 	// Initiate Ed11y with admin options.
-	// Todo: pick checkRoot dynamically based on ed11yTarget.
+	// Possible todo: pick checkRoot dynamically based on ed11yTarget.
 	ed11yOptions['checkRoots'] = '.editor-styles-wrapper';
 	ed11yOptions['ignoreByKey'] = {img : ''};
 	ed11yOptions['ignoreByKey']['h'] = '.wp-block-post-title';
@@ -210,7 +209,7 @@ let ed11yAdminInit = function(ed11yTarget) {
 		}
 	});
 	Ed11y.wpIssueToggle.textContent = "0";
-	// Todo: add event listener to transfer click to preview link. It appears to have additional functions attached.
+
 	ed11yPreviewLink.parentElement.insertAdjacentElement('afterend', Ed11y.wpIssueToggle);
 	Ed11y.wpIssueToggle.insertAdjacentElement('afterend', ed11yButtonDescription);
 
@@ -263,7 +262,7 @@ let ed11yAdminInit = function(ed11yTarget) {
 }
 
 // Look to see if Gutenberg has loaded.
-// Todo: add checks/markup for other common editors.
+// Possible todo: add checks/markup for other common editors.
 let ed11yReadyCount = 0;
 let ed11yTarget = false;
 let ed11yPreviewLink = false;

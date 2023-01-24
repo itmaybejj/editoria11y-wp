@@ -39,7 +39,7 @@ function ed11y_get_default_options( $option = false ) {
 	$check_visibility = count( array_intersect( $incompatible, $theme ) ) === 0;
 
 	$default_options = array(
-		// Todo
+		// Key not-yet-implemented features:
 		// Web components
 		// JS unfold theme handler
 		// Language.
@@ -140,21 +140,24 @@ function ed11y_init() {
 	if ( is_user_logged_in()
 		&& ( $allowed_user_roles || current_user_can( 'edit_posts' ) || current_user_can( 'edit_pages' ) )
 	) {
-		$settings = ed11y_get_plugin_settings( false, true );
-		// Prepare settings array.
-		// TODO: this could be cached sitewide.
-		$ed1vals                             = array();
-		$ed1vals['theme']                    = $settings['ed11y_theme'];
-		$ed1vals['checkRoots']               = $settings['ed11y_checkRoots'];
-		$ed1vals['ignoreElements']           = '#wpadminbar *,' . $settings['ed11y_ignore_elements'];
-		$ed1vals['linkIgnoreStrings']        = $settings['ed11y_link_ignore_strings'];
-		$ed1vals['videoContent']             = $settings['ed11y_videoContent'];
-		$ed1vals['audioContent']             = $settings['ed11y_audioContent'];
-		$ed1vals['documentLinks']            = $settings['ed11y_documentContent'];
-		$ed1vals['dataVizContent']           = $settings['ed11y_datavizContent'];
-		$ed1vals['checkVisible']             = $settings['ed11y_checkvisibility'];
-		$ed1vals['preventCheckingIfPresent'] = $settings['ed11y_no_run'];
-		$ed1vals['liveCheck']                = $settings['ed11y_livecheck'];
+		// Get settings array from cache, if available.
+		$ed1vals = get_site_transient( 'editoria11y_settings' );
+		if ( false === $ed1vals ) {
+			$settings                            = ed11y_get_plugin_settings( false, true );
+			$ed1vals                             = array();
+			$ed1vals['theme']                    = $settings['ed11y_theme'];
+			$ed1vals['checkRoots']               = $settings['ed11y_checkRoots'];
+			$ed1vals['ignoreElements']           = '#wpadminbar *,' . $settings['ed11y_ignore_elements'];
+			$ed1vals['linkIgnoreStrings']        = $settings['ed11y_link_ignore_strings'];
+			$ed1vals['videoContent']             = $settings['ed11y_videoContent'];
+			$ed1vals['audioContent']             = $settings['ed11y_audioContent'];
+			$ed1vals['documentLinks']            = $settings['ed11y_documentContent'];
+			$ed1vals['dataVizContent']           = $settings['ed11y_datavizContent'];
+			$ed1vals['checkVisible']             = $settings['ed11y_checkvisibility'];
+			$ed1vals['preventCheckingIfPresent'] = $settings['ed11y_no_run'];
+			$ed1vals['liveCheck']                = $settings['ed11y_livecheck'];
+			set_site_transient( 'editoria11y_settings', $ed1vals, 360 );
+		}
 
 		// Use permalink as sync URL if available, otherwise use query path.
 		$ed1vals['currentPage'] = get_permalink( get_the_ID() );

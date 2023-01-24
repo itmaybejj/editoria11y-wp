@@ -335,7 +335,6 @@ function ed11y_document_content_field() {
  * Field for datavizContent.
  */
 function ed11y_dataviz_content_field() {
-	// Todo this does not map directly to my two options.
 	$settings = ed11y_get_plugin_settings( 'ed11y_datavizContent' );
 	$default  = ed11y_get_default_options( 'ed11y_datavizContent' );
 	?>
@@ -553,6 +552,9 @@ function ed11y_plugin_settings_validate( $settings ) {
 		'',
 		sanitize_text_field( $settings['ed11y_datavizContent'] )
 	);
+
+	// Reset cache.
+	delete_site_transient( 'editoria11y_settings' );
 
 	return $settings;
 }
