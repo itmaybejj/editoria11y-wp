@@ -15,6 +15,7 @@
         ]
     },
     "require-dev": {
-        "wp-coding-standards/wpcs": "dev-develop"
+        "wp-coding-standards/wpcs": "dev-develop",
+        "phpmd/phpmd": "^2.13"
     }
 }
