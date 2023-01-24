@@ -84,39 +84,29 @@ function ed11y_setting_sections_fields() {
 	// Add dataviz content section.
 	add_settings_section(
 		'ed11y_test_settings',
-		__( 'Customize tests', 'ed11y-wp' ),
+		__( 'Customize test selectors', 'ed11y-wp' ),
 		'__return_false',
 		'ed11y'
 	);
 
-	// Add Advanced section.
+	// Add compatibility section.
 	add_settings_section(
-		'ed11y_advanced_settings',
-		__( 'Advanced', 'ed11y-wp' ),
+		'ed11y_compatibility_settings',
+		__( 'Compatibility with themes and other plugins', 'ed11y-wp' ),
 		'__return_false',
 		'ed11y'
 	);
 
 	/* ================= Fields */
 
-	// Add 'Check Roots' input setting field.
+	// Add themepicker field.
 	add_settings_field(
-		'ed11y_checkRoots',
-		esc_html__( 'Check content in these containers', 'ed11y-wp' ),
-		'ed11y_check_roots_field',
+		'ed11y_theme',
+		esc_html__( 'Theme for tooltips', 'ed11y-wp' ),
+		'ed11y_theme_field',
 		'ed11y',
 		'ed11y_basic',
-		array( 'label_for' => 'ed11y_checkRoots' )
-	);
-
-	// Add container ignore field.
-	add_settings_field(
-		'ed11y_ignore_elements',
-		esc_html__( 'Exclude these elements from checks', 'ed11y-wp' ),
-		'ed11y_ignore_elements_field',
-		'ed11y',
-		'ed11y_basic',
-		array( 'label_for' => 'ed11y_ignore_elements' )
+		array( 'label_for' => 'ed11y_theme' )
 	);
 
 	// Add live check field.
@@ -129,14 +119,34 @@ function ed11y_setting_sections_fields() {
 		array( 'label_for' => 'ed11y_livecheck' )
 	);
 
-	// Add themepicker field.
+	// Add 'Check Roots' input setting field.
 	add_settings_field(
-		'ed11y_theme',
-		esc_html__( 'Theme for tooltips', 'ed11y-wp' ),
-		'ed11y_theme_field',
+		'ed11y_checkRoots',
+		esc_html__( 'Check content in these containers', 'ed11y-wp' ),
+		'ed11y_check_roots_field',
 		'ed11y',
-		'ed11y_basic',
-		array( 'label_for' => 'ed11y_theme' )
+		'ed11y_test_settings',
+		array( 'label_for' => 'ed11y_checkRoots' )
+	);
+
+	// Add container ignore field.
+	add_settings_field(
+		'ed11y_ignore_elements',
+		esc_html__( 'Exclude these elements from checks', 'ed11y-wp' ),
+		'ed11y_ignore_elements_field',
+		'ed11y',
+		'ed11y_test_settings',
+		array( 'label_for' => 'ed11y_ignore_elements' )
+	);
+
+	// Document types field.
+	add_settings_field(
+		'ed11y_documentContent',
+		esc_html__( 'Document types that need manual review', 'ed11y-wp' ),
+		'ed11y_document_content_field',
+		'ed11y',
+		'ed11y_test_settings',
+		array( 'label_for' => 'ed11y_documentContent' )
 	);
 
 	// Add datavizContent field.
@@ -169,23 +179,13 @@ function ed11y_setting_sections_fields() {
 		array( 'label_for' => 'ed11y_audioContent' )
 	);
 
-	// Document types field.
-	add_settings_field(
-		'ed11y_documentContent',
-		esc_html__( 'Document types that need manual review', 'ed11y-wp' ),
-		'ed11y_document_content_field',
-		'ed11y',
-		'ed11y_document_content_settings',
-		array( 'label_for' => 'ed11y_documentContent' )
-	);
-
 	// Add link text ignore field.
 	add_settings_field(
 		'ed11y_checkvisibility',
 		esc_html__( 'Check if elements are visible whan using panel navigation buttons', 'ed11y-wp' ),
 		'ed11y_checkvisibility_field',
 		'ed11y',
-		'ed11y_advanced_settings',
+		'ed11y_compatibility_settings',
 		array( 'label_for' => 'ed11y_checkvisibility' )
 	);
 
@@ -195,7 +195,7 @@ function ed11y_setting_sections_fields() {
 		esc_html__( 'Ignore these strings in links', 'ed11y-wp' ),
 		'ed11y_link_ignore_strings_field',
 		'ed11y',
-		'ed11y_advanced_settings',
+		'ed11y_compatibility_settings',
 		array( 'label_for' => 'ed11y_link_ignore_strings' )
 	);
 
@@ -205,7 +205,7 @@ function ed11y_setting_sections_fields() {
 		esc_html__( 'Turn off Editoria11y if these elements exist', 'ed11y-wp' ),
 		'ed11y_no_run_field',
 		'ed11y',
-		'ed11y_advanced_settings',
+		'ed11y_compatibility_settings',
 		array( 'label_for' => 'ed11y_no_run' )
 	);
 
@@ -240,7 +240,10 @@ function ed11y_livecheck_field() {
 		<option <?php echo 'none' === $settings ? 'selected="true"' : ''; ?>value="none">None</option>
 	</select>
 	<p id="livecheck_description">
-		In the Gutenburg editor, this outlines potential issues as authors type. Authors can dismiss alerts from the preview page.
+		Editoria11y's tips appear when viewing pages or previews.
+	</p>
+	<p>
+		This controls the issue outlines in the block editor. Unset it if you find that annoying.
 	</p>
 	<?php
 }
@@ -261,8 +264,14 @@ function ed11y_check_roots_field() {
 		aria-describedby="target_description" />
 	<p id="target_description">
 		<?php
-			echo wp_kses( __( 'Restrict checker to editable parts of the page, e.g. <br><code>#content, footer</code>. Defaults to <code>main</code> or <code>body</code>, depending on theme.', 'ed11y-wp' ), ed11y_allowed_html() );
+			echo wp_kses( __( 'Restrict checker to editable parts of the page, e.g. <code>#content, footer</code>.', 'ed11y-wp' ), ed11y_allowed_html() );
 		?>
+	</p>
+	<p>
+		<?php
+			echo wp_kses( __( 'Defaults to <code>main</code> or <code>body</code>, depending on theme.', 'ed11y-wp' ), ed11y_allowed_html() );
+		?>
+		</p>
 	</p>
 	<?php
 }
@@ -279,13 +288,13 @@ function ed11y_ignore_elements_field() {
 	class="regular-text" id="ed11y_ignore_elements" 
 	aria-describedby="exclusions_description" 
 	name="ed11y_plugin_settings[ed11y_ignore_elements]"
-	rows="3" cols="45"
-	placeholder="<?php echo esc_attr( $default ); ?>"><?php echo esc_attr( $settings ); ?></textarea>
+	rows="3" cols="45"><?php echo esc_attr( $settings ); ?></textarea>
 	<p id="exclusions_description">
 		<?php
 			echo wp_kses( __( 'Provide CSS selectors for specific elements, e.g. <code>.menu a</code>.' ), ed11y_allowed_html() );
 		?>
 	</p>
+	<p>Default: <code><?php echo esc_attr( $default ); ?></code></p>
 	<?php
 }
 
@@ -298,8 +307,8 @@ function ed11y_video_content_field() {
 	?>
 	<textarea id="ed11y_videoContent" 
 		name="ed11y_plugin_settings[ed11y_videoContent]" 
-		cols="45" rows="3"
-		placeholder="<?php echo esc_attr( $default ); ?>" ><?php echo esc_html( $settings ); ?></textarea> 
+		cols="45" rows="3"><?php echo esc_html( $settings ); ?></textarea>
+		<p>Default: <code><?php echo esc_attr( $default ); ?></code></p>
 	<?php
 }
 
@@ -311,9 +320,8 @@ function ed11y_audio_content_field() {
 	$default  = ed11y_get_default_options( 'ed11y_audioContent' );
 	?>
 	<textarea id="ed11y_audioContent" name="ed11y_plugin_settings[ed11y_audioContent]" 
-	cols="45" rows="3"
-	placeholder="<?php echo esc_attr( $default ); ?>"
-	><?php echo esc_html( $settings ); ?></textarea>  
+	cols="45" rows="3"><?php echo esc_html( $settings ); ?></textarea>
+	<p>Default: <code><?php echo esc_attr( $default ); ?></code></p>
 	<?php
 }
 
@@ -326,8 +334,9 @@ function ed11y_document_content_field() {
 	?>
 	<textarea id="ed11y_documentContent" name="ed11y_plugin_settings[ed11y_documentContent]" 
 	cols="45" rows="3"
-	placeholder="<?php echo esc_attr( $default ); ?>"
-	><?php echo esc_html( $settings ); ?></textarea>  
+	><?php echo esc_html( $settings ); ?></textarea>
+	<p>Set to <code>false</code> to disable test.</p>
+	<p>Default: <code><?php echo esc_attr( $default ); ?></code></p>
 	<?php
 }
 
@@ -339,14 +348,13 @@ function ed11y_dataviz_content_field() {
 	$default  = ed11y_get_default_options( 'ed11y_datavizContent' );
 	?>
 	<textarea id="ed11y_datavizContent" name="ed11y_plugin_settings[ed11y_datavizContent]" 
-	cols="45" rows="3"
-	placeholder="<?php echo esc_attr( $default ); ?>"
-	><?php echo esc_html( $settings ); ?></textarea>  
+	cols="45" rows="3"><?php echo esc_html( $settings ); ?></textarea>
+	<p>Default: <code><?php echo esc_attr( $default ); ?></code></p>
 	<?php
 }
 
 /**
- * Disable vizcheck
+ * Disable visible check
  */
 function ed11y_checkvisibility_field() {
 	$settings = ed11y_get_plugin_settings( 'ed11y_checkvisibility', false );
