@@ -10,7 +10,7 @@ jobs:
     - name: PHPCS
       run: |
         composer install
-        ./vendor/bin/phpcs --standard=WordPress --report=junit src 
+        ./vendor/bin/phpcs --standard=WordPress --report=checkstyle src 
 
   md:
     name: PHP Mess Detector 🧹
