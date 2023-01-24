@@ -1,0 +1,15 @@
+name: Test Plugin
+  on: push:
+
+jobs:
+  lint:
+    name: Code Style
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: PHPCS
+      run: |
+        composer install
+        ./vendor/bin/phpcs --standard=WordPress src 
+
