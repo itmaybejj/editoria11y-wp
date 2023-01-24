@@ -1,13 +1,15 @@
-<?php
+<?php  // phpcs:ignore
 /**
  * Validates
  *
  * @package         Editoria11y
  */
-class Ed11y_Validate {
+class Editoria11y_Validate {
 
 	/**
 	 * Validate entity types.
+	 *
+	 * @param string $string Content type name.
 	 */
 	public static function entity_type( $string ) {
 		$valid = array(
@@ -28,7 +30,9 @@ class Ed11y_Validate {
 	}
 
 	/**
-	 * Validate entity types.
+	 * Validate filters and sorts.
+	 *
+	 * @param string $string Allowed field names.
 	 */
 	public static function sort( $string ) {
 		$valid = array(
@@ -47,7 +51,9 @@ class Ed11y_Validate {
 	}
 
 	/**
-	 * Validate entity types.
+	 * Validate results.
+	 *
+	 * @param string $string Valid test names.
 	 */
 	public static function test_name( $string ) {
 		$valid = array(

@@ -1,4 +1,4 @@
-<?php
+<?php // phpcs:ignore
 /**
  * Stores tests results
  * Reference https://developer.wordpress.org/rest-api/extending-the-rest-api/controller-classes/
@@ -6,7 +6,7 @@
  *
  * @package         Editoria11y
  */
-class Ed11y_Api_Results extends WP_REST_Controller {
+class Editoria11y_Api_Results extends WP_REST_Controller {
 
 	/**
 	 * Register routes
@@ -25,7 +25,7 @@ class Ed11y_Api_Results extends WP_REST_Controller {
 
 		$version   = '1';
 		$namespace = 'ed11y/v' . $version;
-		
+
 		// Report results from scan.
 		register_rest_route(
 			$namespace,
@@ -41,7 +41,7 @@ class Ed11y_Api_Results extends WP_REST_Controller {
 		// Return sitewide data.
 		register_rest_route(
 			$namespace,
-			'/dashboard', // (?P<id>[\d]+)
+			'/dashboard',
 			array(
 				array(
 					'methods'             => WP_REST_Server::READABLE,
@@ -66,10 +66,10 @@ class Ed11y_Api_Results extends WP_REST_Controller {
 	 */
 	public function get_results( $request ) {
 		global $wpdb;
-		require_once ED11Y_SRC . 'class-ed11y-validate.php';
-		$validate = new Ed11y_Validate();
+		require_once ED11Y_SRC . 'class-editoria11y-validate.php';
+		$validate = new Editoria11y_Validate();
 
-		// Sanitize all params before use:
+		// Sanitize all params before use.
 		$params      = $request->get_params();
 		$count       = intval( $params['count'] );
 		$offset      = intval( $params['offset'] );
@@ -101,6 +101,11 @@ class Ed11y_Api_Results extends WP_REST_Controller {
 			if ( ! empty( $where ) ) {
 				$order_by = "{$utable}.{$order_by}";
 
+				/*
+				Complex counts and joins required a direct DB call.
+				Variables are all validated or sanitized.
+				*/
+				// phpcs:disable
 				$data = $wpdb->get_results(
 					"SELECT
 							{$utable}.pid,
@@ -123,17 +128,23 @@ class Ed11y_Api_Results extends WP_REST_Controller {
 							OFFSET {$offset}
 							;"
 				);
-
+				
 				$rowcount = $wpdb->get_var(
 					"SELECT COUNT({$utable}.pid) 
 					FROM {$rtable}
 					INNER JOIN {$utable} ON {$rtable}.pid={$utable}.pid
 					{$where};"
 				);
+				// phpcs:enable
 
 			} else {
 				$where = '';
 
+				/*
+				Complex counts and joins required a direct DB call.
+				Variables are all validated or sanitized.
+				*/
+				// phpcs:disable
 				$data = $wpdb->get_results(
 					"SELECT
 						{$utable}.pid,
@@ -159,13 +170,19 @@ class Ed11y_Api_Results extends WP_REST_Controller {
 					"SELECT COUNT(DISTINCT pid) 
 					FROM {$rtable};"
 				);
+				// phpcs:enable
 			}
-		} elseif ( 'keys' == $params['view'] ) {
+		} elseif ( 'keys' === $params['view'] ) {
 
 			if ( false === $order_by || 'count' === $order_by ) {
 				$order_by = 'SUM(' . $wpdb->prefix . 'ed11y_results.result_count)';
 			}
 
+			/*
+			Complex counts and joins required a direct DB call.
+			Variables are all validated or sanitized.
+			*/
+			// phpcs:disable
 			$rowcount = $wpdb->get_var(
 				"SELECT COUNT(DISTINCT result_key) 
 				FROM {$rtable};"
@@ -183,15 +200,11 @@ class Ed11y_Api_Results extends WP_REST_Controller {
 					OFFSET {$offset}
 					;"
 			);
+			// phpcs:enable
 
 		}
 
-		// return a response or error based on some conditional
-		if ( 1 == 1 ) {
-			return new WP_REST_Response( array( $data, $rowcount ), 200 );
-		} else {
-			return new WP_Error( 'code', __( 'message', 'text-domain' ) );
-		}
+		return new WP_REST_Response( array( $data, $rowcount ), 200 );
 	}
 
 
@@ -208,7 +221,6 @@ class Ed11y_Api_Results extends WP_REST_Controller {
 			return new WP_REST_Response( $data, 200 );
 		}
 		return new WP_REST_Response( $data, 500 );
-		// return new WP_Error( 'cant-update', __( 'Results not recorded', 'editoria11y' ), array( 'status' => 500 ) );
 	}
 
 	/**
@@ -219,7 +231,7 @@ class Ed11y_Api_Results extends WP_REST_Controller {
 	public function get_pid( $url ) {
 		// Get Page ID so we can avoid complex joins in subsequent queries.
 		global $wpdb;
-		$pid = $wpdb->get_var(
+		$pid = $wpdb->get_var( // phpcs:ignore
 			$wpdb->prepare(
 				"SELECT pid FROM {$wpdb->prefix}ed11y_urls
 				WHERE page_url=%s;",
@@ -239,8 +251,6 @@ class Ed11y_Api_Results extends WP_REST_Controller {
 	 */
 	public function send_results( $request ) {
 
-		// not yet valid code
-		// see https://developer.wordpress.org/reference/classes/wpdb/ for escaping. %s string %d digits
 		$params  = $request->get_params();
 		$results = $params['data'];
 		$now     = gmdate( 'Y-m-d H:i:s' );
@@ -251,7 +261,7 @@ class Ed11y_Api_Results extends WP_REST_Controller {
 
 		// Handle clicks from dashboard to changed URLS first to prevent URL collisions.
 		if ( $results['pid'] > -1 ) {
-			$response = $wpdb->query(
+			$response = $wpdb->query( // phpcs:ignore
 				$wpdb->prepare(
 					"DELETE FROM {$wpdb->prefix}ed11y_urls
 					WHERE
@@ -267,9 +277,9 @@ class Ed11y_Api_Results extends WP_REST_Controller {
 
 		// Check if any results exist.
 		if ( $results['page_count'] > 0 || count( $results['dismissals'] ) > 0 ) {
-			
+
 			// Upsert page URL.
-			$response = $wpdb->query(
+			$response = $wpdb->query( // phpcs:ignore
 				$wpdb->prepare(
 					"INSERT INTO {$wpdb->prefix}ed11y_urls
 						(page_url,
@@ -300,7 +310,7 @@ class Ed11y_Api_Results extends WP_REST_Controller {
 
 			foreach ( $results['results'] as $key => $value ) {
 				// Upsert results.
-				$response = $wpdb->query(
+				$response = $wpdb->query( // phpcs:ignore
 					$wpdb->prepare(
 						"INSERT INTO {$wpdb->prefix}ed11y_results
                             (pid,
@@ -330,12 +340,12 @@ class Ed11y_Api_Results extends WP_REST_Controller {
 
 			foreach ( $results['dismissals'] as $key => $value ) {
 				// Update last-seen date on dismissals.
-				$response = $wpdb->query(
+				$response = $wpdb->query( // phpcs:ignore
 					$wpdb->prepare(
 						"UPDATE {$wpdb->prefix}ed11y_dismissals 
                         SET updated = %s, stale = 0
                         WHERE pid = %s AND result_key = %s AND element_id = %s;",
-						// todo include element_id
+						// Todo include element_id.
 						array(
 							$now,
 							$pid,
@@ -359,7 +369,7 @@ class Ed11y_Api_Results extends WP_REST_Controller {
 			// If page is in urls table, updates are in order.
 
 			// Remove any old results.
-			$response = $wpdb->query(
+			$response = $wpdb->query( // phpcs:ignore
 				$wpdb->prepare(
 					"DELETE FROM {$wpdb->prefix}ed11y_results
 					WHERE pid = %d AND updated != %s ;",
@@ -373,7 +383,7 @@ class Ed11y_Api_Results extends WP_REST_Controller {
 			$return[] = $response;
 
 			// Mark any out-of-date dismissals as stale.
-			$response = $wpdb->query(
+			$response = $wpdb->query( // phpcs:ignore
 				$wpdb->prepare(
 					"UPDATE {$wpdb->prefix}ed11y_dismissals 
 					SET stale = 1
@@ -389,7 +399,7 @@ class Ed11y_Api_Results extends WP_REST_Controller {
 
 			if ( 0 === $rows ) {
 				// No records for this route.
-				$response = $wpdb->query(
+				$response = $wpdb->query( // phpcs:ignore
 					$wpdb->prepare(
 						"DELETE FROM {$wpdb->prefix}ed11y_urls WHERE pid = %d;",
 						array(
@@ -402,88 +412,14 @@ class Ed11y_Api_Results extends WP_REST_Controller {
 		return $return;
 	}
 
-
-	/**
-	 * Delete one item from the collection
-	 *
-	 * @param WP_REST_Request $request Full data about the request.
-	 * @return WP_Error|WP_REST_Response
-	 */
-	public function delete_item( $request ) {
-		$item = $this->prepare_results( $request );
-
-		if ( function_exists( 'slug_some_function_to_delete_item' ) ) {
-			$deleted = slug_some_function_to_delete_item( $item );
-			// like $wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->comments} WHERE comment_id IN ( " . $format_string . " )", $comment_ids ) );
-
-			if ( $deleted ) {
-				return new WP_REST_Response( true, 200 );
-			}
-		}
-
-		return new WP_Error( 'cant-delete', __( 'message', 'text-domain' ), array( 'status' => 500 ) );
-	}
-
-
 	/**
 	 * Check if a given request has access to update a specific item
 	 *
 	 * @param WP_REST_Request $request Full data about the request.
 	 * @return WP_Error|bool
 	 */
-	public function update_item_permissions_check( $request ) {
+	public function update_item_permissions_check( $request ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundInExtendedClass
 		return current_user_can( 'edit_posts' );
-	}
-
-	/**
-	 * Check if a given request has access to delete a specific item
-	 *
-	 * @param WP_REST_Request $request Full data about the request.
-	 * @return WP_Error|bool
-	 */
-	public function delete_item_permissions_check( $request ) {
-		return current_user_can( 'edit_others_posts' );
-	}
-
-	/**
-	 * Prepare the item for create or update operation
-	 *
-	 * @param WP_REST_Request $request Request object
-	 * @return WP_Error|object $prepared_item
-	 */
-	protected function prepare_results( $request ) {
-		$params = $request->get_params();
-		$now    = time();
-		$item   = (object) array();
-		foreach ( $params['results'] as $key => $value ) {
-			if ( $results['page_count'] > 0 ) {
-				$item[] = array(
-					'page_title'        => $results['page_title'],
-					'page_path'         => $results['page_path'],
-					'page_url'          => $results['page_url'],
-					'page_language'     => $results['language'],
-					'page_result_count' => $results['page_count'],
-					'entity_type'       => $results['entity_type'],
-					'route_name'        => $results['route_name'],
-					'result_name'       => $key,
-					'result_name_count' => $value,
-					'updated'           => $now,
-					'created'           => $now,
-				);
-			}
-		}
-		return $item;
-	}
-
-	/**
-	 * Prepare the item for the REST response
-	 *
-	 * @param mixed           $item WordPress representation of the item.
-	 * @param WP_REST_Request $request Request object.
-	 * @return mixed
-	 */
-	public function prepare_item_for_response( $item, $request ) {
-		return array();
 	}
 
 }

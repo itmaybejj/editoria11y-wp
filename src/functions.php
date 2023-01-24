@@ -1,4 +1,4 @@
-<?php
+<?php // phpcs:ignore
 
 /**
  * Editoria11y functions settings loader.
@@ -21,6 +21,8 @@ function ed11y_add_action_links( $links ) {
 
 /**
  * Return the default plugin settings.
+ *
+ * @param string $option False for all, or specify one by key.
  */
 function ed11y_get_default_options( $option = false ) {
 
@@ -38,11 +40,9 @@ function ed11y_get_default_options( $option = false ) {
 
 	$default_options = array(
 		// Todo
-		// Color scheme
 		// Web components
 		// JS unfold theme handler
-		// Disable sync
-		// 'ed11y_lang'                => 'en',
+		// Language.
 		'ed11y_theme'               => 'lightTheme',
 		'ed11y_checkRoots'          => false,
 		'ed11y_livecheck'           => 'errors',
@@ -70,7 +70,8 @@ function ed11y_get_default_options( $option = false ) {
  * Function for quickly grabbing settings for the plugin without having to call get_option()
  * every time we need a setting.
  *
- * @param mixed $option Option name.
+ * @param  mixed $option Option name, or false for all.
+ * @param  bool  $include_defaults Whether to provide a default value if empty.
  */
 function ed11y_get_plugin_settings( $option = false, $include_defaults = false ) {
 	$settings = get_option( 'ed11y_plugin_settings', array() );
@@ -108,8 +109,8 @@ function ed11y_load_scripts() {
 		&& ( $allowed_user_roles || current_user_can( 'edit_posts' ) || current_user_can( 'edit_pages' ) )
 	) {
 		// added last two parameters 10/27/22 need to test.
-		wp_enqueue_script( 'ed11y-wp-js', trailingslashit( ED11Y_ASSETS ) . 'lib/editoria11y.min.js', null, true, Ed11y::ED11Y_VERSION, false );
-		wp_enqueue_script( 'ed11y-wp-js-shim', trailingslashit( ED11Y_ASSETS ) . 'js/editoria11y-wp.js', array( 'wp-api' ), true, Ed11y::ED11Y_VERSION, false );
+		wp_enqueue_script( 'ed11y-wp-js', trailingslashit( ED11Y_ASSETS ) . 'lib/editoria11y.min.js', null, true, Editoria11y::ED11Y_VERSION, false );
+		wp_enqueue_script( 'ed11y-wp-js-shim', trailingslashit( ED11Y_ASSETS ) . 'js/editoria11y-wp.js', array( 'wp-api' ), true, Editoria11y::ED11Y_VERSION, false );
 	}
 }
 add_action( 'wp_enqueue_scripts', 'ed11y_load_scripts' );
@@ -121,8 +122,8 @@ function ed11y_load_block_editor_scripts() {
 	// Get the enable option.
 	// Check if scroll top enable.
 	// Todo: only load on edit pages.
-	wp_enqueue_script( 'ed11y-wp-js', trailingslashit( ED11Y_ASSETS ) . 'lib/editoria11y.min.js', null, true, Ed11y::ED11Y_VERSION, false );
-	wp_enqueue_script( 'ed11y-wp-editor', trailingslashit( ED11Y_ASSETS ) . 'js/editoria11y-editor.js', null, true, Ed11y::ED11Y_VERSION, false );
+	wp_enqueue_script( 'ed11y-wp-js', trailingslashit( ED11Y_ASSETS ) . 'lib/editoria11y.min.js', null, true, Editoria11y::ED11Y_VERSION, false );
+	wp_enqueue_script( 'ed11y-wp-editor', trailingslashit( ED11Y_ASSETS ) . 'js/editoria11y-editor.js', null, true, Editoria11y::ED11Y_VERSION, false );
 }
 
 /**
@@ -162,8 +163,8 @@ function ed11y_init() {
 			$ed1vals['currentPage'] = home_url( $wp->request );
 		}
 
-		// Get dismissals for route.
-		// Todo: move to JSON delivery?
+		// Get dismissals for route. Complex joins require manual DB call.
+		// phpcs:disable
 		global $wpdb;
 		$utable                      = $wpdb->prefix . 'ed11y_urls';
 		$dtable                      = $wpdb->prefix . 'ed11y_dismissals';
@@ -192,6 +193,7 @@ function ed11y_init() {
 				)
 			)
 		);
+		// phpcs:enable
 		$ed1vals['syncedDismissals'] = array();
 		foreach ( $dismissals_on_page as $key => $value ) {
 			$ed1vals['syncedDismissals'][ $value->result_key ][ $value->element_id ] = $value->dismissal_status;
@@ -200,7 +202,7 @@ function ed11y_init() {
 		$ed1vals['title'] = trim( wp_title( '', false, 'right' ) );
 
 		$ed1vals['entity_type'] = 'other';
-		// https://wordpress.stackexchange.com/questions/83887/return-current-page-type
+		// Ref https://wordpress.stackexchange.com/questions/83887/return-current-page-type .
 		if ( is_page() ) {
 			$ed1vals['entity_type'] = is_front_page() ? 'Front' : 'Page';
 		} elseif ( is_home() ) {
@@ -240,14 +242,13 @@ function ed11y_init() {
 }
 add_action( 'wp_footer', 'ed11y_init' );
 
-// Load live checker when editor is present.
+/**
+ * Load live checker when editor is present.
+ * */
 function ed11y_editor_init() {
 	if ( 'none' !== ed11y_get_plugin_settings( 'ed11y_livecheck', false ) ) {
-		// add_action( 'admin_enqueue_scripts', 'ed11y_load_block_editor_scripts' );
 		add_action( 'enqueue_block_editor_assets', 'ed11y_load_block_editor_scripts' );
 		add_action( 'admin_footer', 'ed11y_init' );
 	}
 }
 add_action( 'wp_enqueue_editor', 'ed11y_editor_init' );
-// This would enqueue on the site editor page, which lacks a preview target:
-// add_action( 'enqueue_block_editor_assets', 'editor_init' );

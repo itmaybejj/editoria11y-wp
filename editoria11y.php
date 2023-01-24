@@ -1,14 +1,15 @@
-<?php
+<?php // phpcs:disable WordPress.Files.FileName.InvalidClassFileName
+
 /**
  * Editoria11y, the accessibility quality assurance assistant.
  *
  * Plugin Name:       Editoria11y
  * Plugin URI:        https://itmaybejj.github.io/editoria11y/demo/
- * Version:           0.0.2
+ * Version:           1.0.0
  * Requires at least: 5.6
  * Requires PHP:      7.2
  * Author:            Princeton University, WDS
- * Author URI:		  https://wds.princeton.edu/team
+ * Author URI:        https://wds.princeton.edu/team
  * License:           GPL v2 or later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain:       ed11y
@@ -18,32 +19,17 @@
  * @package         Editoria11y
  * @link            https://itmaybejj.github.io/editoria11y/
  * @author          John Jameson, Princeton University
- * @copyright       2022 The Trustees of Princeton University
+ * @copyright       2023 The Trustees of Princeton University
  * @license         GPL v2 or later
  */
 
-// Exit if accessed directly.
-if ( ! defined( 'ABSPATH' ) ) {
-	exit;
-}
-
-// Manage tables
-register_activation_hook( __FILE__, array( 'Ed11y', 'activate' ) );
-// register_deactivation_hook( __FILE__, array( 'Ed11y', 'deactivate' ) );
-register_uninstall_hook( __FILE__, array( 'Ed11y', 'uninstall' ) );
-
 /**
- * Calls Editoria11y library with site config.
+ * Class Editoria11y
+ *
+ * @package Editoria11y
  */
-class Ed11y {
-	const ED11Y_VERSION = '1.0.0-alpha';
-
-	protected static $instance;
-
-	public static function init() {
-		is_null( self::$instance ) and self::$instance = new self();
-		return self::$instance;
-	}
+class Editoria11y {
+	const ED11Y_VERSION = '1.0.0';
 
 	/**
 	 * Attachs functions to loop.
@@ -53,8 +39,7 @@ class Ed11y {
 		// Set the constants needed by the plugin.
 		add_action( 'plugins_loaded', array( &$this, 'constants' ), 1 );
 
-		// Internationalize the text strings used.
-		// Todo.
+		// Internationalize the text strings used. (Todo).
 		add_action( 'plugins_loaded', array( &$this, 'i18n' ), 2 );
 
 		// Load the functions files.
@@ -63,7 +48,7 @@ class Ed11y {
 		// Load the admin files.
 		add_action( 'plugins_loaded', array( &$this, 'admin' ), 4 );
 
-		// Load the API
+		// Load the API.
 		add_action( 'plugins_loaded', array( &$this, 'api' ), 5 );
 
 	}
@@ -92,6 +77,7 @@ class Ed11y {
 		load_plugin_textdomain( 'ed11y-wp', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
 	}
 
+
 	/**
 	 * Loads page functions.
 	 */
@@ -114,11 +100,11 @@ class Ed11y {
 	 */
 	public function api() {
 		// Load the API.
-		require_once ED11Y_SRC . 'controller/class-ed11y-api-results.php';
-		$ed11y_api_results = new Ed11y_Api_Results();
+		require_once ED11Y_SRC . 'controller/class-editoria11y-api-results.php';
+		$ed11y_api_results = new Editoria11y_Api_Results();
 		$ed11y_api_results->init();
-		require_once ED11Y_SRC . 'controller/class-ed11y-api-dismissals.php';
-		$ed11y_api_dismissals = new Ed11y_Api_Dismissals();
+		require_once ED11Y_SRC . 'controller/class-editoria11y-api-dismissals.php';
+		$ed11y_api_dismissals = new Editoria11y_Api_Dismissals();
 		$ed11y_api_dismissals->init();
 	}
 
@@ -138,8 +124,7 @@ class Ed11y {
 		$table_results    = $wpdb->prefix . 'ed11y_results';
 		$table_dismissals = $wpdb->prefix . 'ed11y_dismissals';
 
-		$sql = "
-		CREATE TABLE $table_urls (
+		$sql_urls = "CREATE TABLE $table_urls (
 			pid int(9) unsigned AUTO_INCREMENT NOT NULL,
 			page_url varchar(255) NOT NULL,
 			entity_type varchar(255) NOT NULL,
@@ -147,9 +132,9 @@ class Ed11y {
 			page_total smallint(4) unsigned NOT NULL,
 			PRIMARY KEY page_url (page_url),
 			KEY pid (pid)
-			) $charset_collate;
+			) $charset_collate;";
 
-		CREATE TABLE $table_results (
+		$sql_results = "CREATE TABLE $table_results (
 			pid int(9) unsigned NOT NULL,
 			result_key varchar(32) NOT NULL,
 			result_count smallint(4) NOT NULL,
@@ -157,9 +142,9 @@ class Ed11y {
 			updated datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
 			CONSTRAINT result PRIMARY KEY (pid, result_key),
 			FOREIGN KEY (pid) REFERENCES $table_urls (pid) ON DELETE CASCADE
-			) $charset_collate;
-		
-		CREATE TABLE $table_dismissals (
+			) $charset_collate;";
+
+		$sql_dismissals = "CREATE TABLE $table_dismissals (
 			id int(9) unsigned AUTO_INCREMENT NOT NULL,
 			pid int(9) unsigned NOT NULL,
 			result_key varchar(32) NOT NULL,
@@ -174,11 +159,12 @@ class Ed11y {
 			KEY user (user),
 			KEY dismissal_status (dismissal_status),
 			FOREIGN KEY (pid) REFERENCES $table_urls (pid) ON DELETE CASCADE
-			) $charset_collate;
-		";
+			) $charset_collate;";
 
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
-		dbDelta( $sql );
+		maybe_create_table( $table_urls, $sql_urls );
+		maybe_create_table( $table_results, $sql_results );
+		maybe_create_table( $table_dismissals, $sql_dismissals );
 	}
 
 	/**
@@ -191,16 +177,26 @@ class Ed11y {
 
 		global $wpdb;
 
-		$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}ed11y_dismissals" );
-		$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}ed11y_results" );
-		$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}ed11y_urls" );
+		$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}ed11y_dismissals" ); // phpcs:ignore
+		$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}ed11y_results" ); // phpcs:ignore
+		$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}ed11y_urls" ); // phpcs:ignore
 
 		delete_option( 'ed11y_plugin_settings' );
-		// for site options in Multisite
+		// For site options in Multisite, apparently.
 		delete_site_option( 'ed11y_plugin_settings' );
 
 	}
 
 }
 
-new Ed11y();
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+// Manage DB tables.
+register_activation_hook( __FILE__, array( 'Editoria11y', 'activate' ) );
+
+register_uninstall_hook( __FILE__, array( 'Editoria11y', 'uninstall' ) );
+
+new Editoria11y();

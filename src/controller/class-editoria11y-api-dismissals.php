@@ -1,4 +1,4 @@
-<?php
+<?php //phpcs:ignore
 /**
  * Stores tests results
  * Reference https://developer.wordpress.org/rest-api/extending-the-rest-api/controller-classes/
@@ -6,7 +6,7 @@
  *
  * @package         Editoria11y
  */
-class Ed11y_Api_Dismissals extends WP_REST_Controller {
+class Editoria11y_Api_Dismissals extends WP_REST_Controller {
 
 	/**
 	 * Register routes
@@ -25,7 +25,7 @@ class Ed11y_Api_Dismissals extends WP_REST_Controller {
 		$version   = '1';
 		$namespace = 'ed11y/v' . $version;
 		$base      = 'dismiss';
-		// Set up single-page routes
+		// Set up single-page routes.
 		register_rest_route(
 			$namespace,
 			'/' . $base,
@@ -77,20 +77,20 @@ class Ed11y_Api_Dismissals extends WP_REST_Controller {
 		$results = $params['data'];
 		$now     = gmdate( 'Y-m-d H:i:s' );
 		global $wpdb;
-		$pid = $wpdb->get_var(
+		$pid = $wpdb->get_var( // phpcs:ignore
 			$wpdb->prepare(
 				"SELECT pid FROM {$wpdb->prefix}ed11y_urls
 				WHERE page_url=%s;",
 				array(
 					$results['page_url'],
 				)
-				)
-		 );
+			)
+		);
 
 		if ( 'reset' === $results['dismissal_status'] ) {
 
 			// Delete URL if total is 0, record if it never existed.
-			$response = $wpdb->query(
+			$response = $wpdb->query( // phpcs:ignore
 				$wpdb->prepare(
 					"DELETE FROM {$wpdb->prefix}ed11y_dismissals 
 					WHERE pid = %d 
@@ -114,7 +114,7 @@ class Ed11y_Api_Dismissals extends WP_REST_Controller {
 
 		} else {
 
-			$response = $wpdb->query(
+			$response = $wpdb->query( // phpcs:ignore
 				$wpdb->prepare(
 					"INSERT INTO {$wpdb->prefix}ed11y_dismissals 
 						(pid,
@@ -152,10 +152,10 @@ class Ed11y_Api_Dismissals extends WP_REST_Controller {
 	 */
 	public function get_dismissals( $request ) {
 		global $wpdb;
-		require_once ED11Y_SRC . 'class-ed11y-validate.php';
-		$validate = new Ed11y_Validate();
+		require_once ED11Y_SRC . 'class-editoria11y-validate.php';
+		$validate = new Editoria11y_Validate();
 
-		// Sanitize all params before use:
+		// Sanitize all params before use.
 		$params      = $request->get_params();
 		$count       = intval( $params['count'] );
 		$offset      = intval( $params['offset'] );
@@ -185,12 +185,13 @@ class Ed11y_Api_Dismissals extends WP_REST_Controller {
 
 		if ( 'page_title' === $order_by ) {
 			$order_by = "{$utable}.{$order_by}";
-		} else if ( 'display_name' === $order_by ) {
+		} elseif ( 'display_name' === $order_by ) {
 			$order_by = "{$wpdb->users}.{$order_by}";
 		} else {
 			$order_by = "{$dtable}.{$order_by}";
 		}
 
+		// phpcs:disable
 		$data = $wpdb->get_results(
 			"SELECT
 					{$utable}.pid,
@@ -235,15 +236,11 @@ class Ed11y_Api_Dismissals extends WP_REST_Controller {
 					{$dtable}.dismissal_status,
 					{$dtable}.stale
 					;"
-				);
-		$rowcount = $wpdb->num_rows;
+		);
+		$rowcount   = $wpdb->num_rows;
 
-		// return a response or error based on some conditional
-		if ( 1 == 1 ) {
-			return new WP_REST_Response( array( $data, $rowcount ), 200 );
-		} else {
-			return new WP_Error( 'code', __( 'message', 'text-domain' ) );
-		}
+		// phpcs:enable
+		return new WP_REST_Response( array( $data, $rowcount ), 200 );
 	}
 
 	/**
@@ -252,7 +249,7 @@ class Ed11y_Api_Dismissals extends WP_REST_Controller {
 	 * @param WP_REST_Request $request Full data about the request.
 	 * @return WP_Error|bool
 	 */
-	public function update_item_permissions_check( $request ) {
+	public function update_item_permissions_check( $request ) { // phpcs:ignore
 		return current_user_can( 'edit_posts' );
 	}
 
@@ -262,7 +259,7 @@ class Ed11y_Api_Dismissals extends WP_REST_Controller {
 	 * @param WP_REST_Request $request Full data about the request.
 	 * @return WP_Error|bool
 	 */
-	public function delete_item_permissions_check( $request ) {
+	public function delete_item_permissions_check( $request ) { // phpcs:ignore
 		return current_user_can( 'edit_others_posts' );
 	}
 
