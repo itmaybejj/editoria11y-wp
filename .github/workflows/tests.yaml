@@ -1,7 +1,7 @@
 on: push
 
 jobs:
-  lint:
+  cs:
     name: PHP Code Style 😎
     runs-on: ubuntu-latest
     steps:
@@ -12,6 +12,7 @@ jobs:
         composer install
         ./vendor/bin/phpcs --standard=WordPress src 
 
+  md:
     name: PHP Mess Detector 🧹
     runs-on: ubuntu-latest
     steps:
