@@ -1,5 +1,4 @@
-name: Test Plugin
-  on: push
+on: push
 
 jobs:
   lint:
