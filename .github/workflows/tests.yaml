@@ -2,7 +2,7 @@ on: push
 
 jobs:
   lint:
-    name: Code Style
+    name: PHP Code Style 😎
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -11,7 +11,12 @@ jobs:
       run: |
         composer install
         ./vendor/bin/phpcs --standard=WordPress src 
-    - name: PHP Mess Detector 🧹
+
+    name: PHP Mess Detector 🧹
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2      
+    - name: PHPMD
       run: |
         composer install
         ./vendor/bin/phpmd src github cleancode,naming,unusedcode 
