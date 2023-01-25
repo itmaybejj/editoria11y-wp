@@ -10,13 +10,12 @@ jobs:
     - name: PHPCS
       run: |
         composer install
-        mkdir reports/
-        ./vendor/bin/phpcs --standard=WordPress --report=junit --report-file=./reports/report.xml src 
+        ./vendor/bin/phpcs --standard=WordPress --report=junit --report-file=./report.xml src 
     - name: Test Report
         if: success() || failure()    # run this step even if previous step failed
         with:
           name: PHPCS Results         # Name of the check run which will be created
-          path: reports/report.xml    # Path to test results
+          path: report.xml    # Path to test results
           reporter: jest-junit        # Format of test results
 
   md:
