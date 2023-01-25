@@ -10,7 +10,14 @@ jobs:
     - name: PHPCS
       run: |
         composer install
-        ./vendor/bin/phpcs --standard=WordPress --report=checkstyle src 
+        mkdir reports/
+        ./vendor/bin/phpcs --standard=WordPress --report=junit --report-file=./reports/report.xml src 
+    - name: Test Report
+        if: success() || failure()    # run this step even if previous step failed
+        with:
+          name: PHPCS Results         # Name of the check run which will be created
+          path: reports/report.xml    # Path to test results
+          reporter: jest-junit        # Format of test results
 
   md:
     name: PHP Mess Detector 🧹
@@ -20,4 +27,4 @@ jobs:
     - name: PHPMD
       run: |
         composer install
-        ./vendor/bin/phpmd src github cleancode,naming,unusedcode 
+        ./vendor/bin/phpmd src github cleancode,naming,unusedcode
