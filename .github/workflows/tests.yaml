@@ -12,6 +12,7 @@ jobs:
         composer install
         ./vendor/bin/phpcs --standard=WordPress --report=junit --report-file=./report.xml src 
     - name: Test Report
+        uses: dorny/test-reporter@v1
         if: success() || failure()    # run this step even if previous step failed
         with:
           name: PHPCS Results         # Name of the check run which will be created
