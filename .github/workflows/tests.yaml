@@ -9,7 +9,8 @@ jobs:
     - name: PHPCS
       run: |
         composer install
-        ./vendor/bin/phpcs --standard=WordPress --report=junit --report-file=./report.xml src 
+        ./vendor/bin/phpcs --standard=WordPress --report=junit --report-file=./report.xml src
+        cat ./report.xml
     - uses: dorny/test-reporter@v1
       if: success() || failure()        # run this step even if previous step failed
       with:
