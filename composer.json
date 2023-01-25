@@ -2,11 +2,11 @@
     "prefer-stable": true,
     "minimum-stability": "dev",
     "scripts": {
-        "post-install-cmd": [
-             "./vendor/bin/phpcs --config-set installed_paths vendor/wp-coding-standards/wpcs"
+        "install-codestandards": [
+             "vendor/bin/phpcs --config-set installed_paths vendor/wp-coding-standards/wpcs/"
         ],
-        "post-update-cmd": [
-            "@post-install-cmd"
+        "post-install-cmd": [
+            "@install-codestandards"
         ]
     },
     "require-dev": {
@@ -16,7 +16,7 @@
     },
     "config": {
         "allow-plugins": {
-            "dealerdirect/phpcodesniffer-composer-installer": false
+            "dealerdirect/phpcodesniffer-composer-installer": true
         }
     }
 }
