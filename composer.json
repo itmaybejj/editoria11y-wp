@@ -1,21 +1,21 @@
 {
     "prefer-stable": true,
     "minimum-stability": "dev",
-    "config": {
-        "allow-plugins": {
-            "dealerdirect/phpcodesniffer-composer-installer": true
-        }
-    },
     "scripts": {
-        "install-codestandards": [
-            "Dealerdirect\\Composer\\Plugin\\Installers\\PHPCodeSniffer\\Plugin::run"
-        ],
         "post-install-cmd": [
-            "@install-codestandards"
+             "./vendor/bin/phpcs --config-set installed_paths vendor/wp-coding-standards/wpcs"
+        ],
+        "post-update-cmd": [
+            "@post-install-cmd"
         ]
     },
     "require-dev": {
         "wp-coding-standards/wpcs": "dev-develop",
         "phpmd/phpmd": "^2.13"
+    },
+    "config": {
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": false
+        }
     }
 }
