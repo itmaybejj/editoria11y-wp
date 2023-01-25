@@ -13,13 +13,15 @@ jobs:
       if: always() # always run even if the previous step fails
       with:
         report_paths: '**/build/test-results/*.xml'
-    - name: Test Report
-      uses: dorny/test-reporter@v1
-      if: always() # always run even if the previous step fails
-      with:
-        name: JUNIT Tests                     # Name of the check run which will be created
-        path: '**/build/test-results/*.xml'   # Path to test results
-        reporter: java-junit                  #  Format of test results        
+        detailed_summary: true
+        check_name: PHPCS Report
+    # - name: Test Report
+    #   uses: dorny/test-reporter@v1
+    #   if: always() # always run even if the previous step fails
+    #   with:
+    #     name: JUNIT Tests                     # Name of the check run which will be created
+    #     path: '**/build/test-results/*.xml'   # Path to test results
+    #     reporter: java-junit                  #  Format of test results        
 
   md:
     name: PHP Mess Detector 🧹
