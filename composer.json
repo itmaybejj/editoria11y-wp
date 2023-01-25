@@ -11,7 +11,8 @@
     },
     "require-dev": {
         "wp-coding-standards/wpcs": "dev-develop",
-        "phpmd/phpmd": "^2.13"
+        "phpmd/phpmd": "^2.13",
+        "dealerdirect/phpcodesniffer-composer-installer": "^1.0"
     },
     "config": {
         "allow-plugins": {
