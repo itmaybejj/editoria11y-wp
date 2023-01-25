@@ -7,13 +7,12 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: PHPCS
-      run: composer install && ./vendor/bin/phpcs -i && ./vendor/bin/phpcs --standard=WordPress --report=junit src
-    # - uses: dorny/test-reporter@v1
-    #   if: success() || failure()        # run this step even if previous step failed
-    #   with:
-    #     name: PHPCS Results         # Name of the check run which will be created
-    #     path: ./report.xml          # Path to test results
-    #     reporter: java-junit        # Format of test results
+      run: composer install && ./vendor/bin/phpcs -i && ./vendor/bin/phpcs --standard=WordPress --report=junit --report-file=./build/test-results/report.xml src
+    - name: Publish Test Report
+      uses: mikepenz/action-junit-report@v3
+      if: always() # always run even if the previous step fails
+      with:
+        report_paths: '**/build/test-results/*.xml'
 
   md:
     name: PHP Mess Detector 🧹
