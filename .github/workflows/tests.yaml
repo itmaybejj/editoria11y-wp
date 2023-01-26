@@ -24,7 +24,7 @@ jobs:
     - name: Install modules
       run: yarn
     - name: Run ESlint
-      run: npx eslint scripts/ --ext .js,.jsx,.ts,.tsx
+      run: npx eslint assets/js --ext .js,.jsx,.ts,.tsx
 
 
   md:
