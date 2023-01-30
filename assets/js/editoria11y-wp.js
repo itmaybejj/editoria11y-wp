@@ -80,9 +80,7 @@ function ed11ySync() {
 				page_url: url,
 				created: 0,
 				pid: !!pid ? parseInt(pid) : -1,
-				entity_id : ed11yOptions.pageId ? ed11yOptions.pageId : 0,
 			};
-			console.log(data);
 			postData('result', data);
 		  // Short timeout to let execution queue clear.
 		}, 100)
@@ -138,7 +136,6 @@ ed11yReady(
 				ed11yOptions['alertMode'] = 'assertive';
 				ed11yOptions['showDismissed'] = true;
 			}
-			console.log(ed11yOptions['pageId']);
 
 			const ed11y = new Ed11y(ed11yOptions);
 			ed11ySync();

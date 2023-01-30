@@ -230,8 +230,6 @@ function ed11y_init() {
 			$ed1vals['entity_type'] = '404';
 		}
 
-		$ed1vals['pageId'] 		= get_the_ID();
-
 		// Mode is assertive from 0ms to 10minutes after a post is modified.
 		$page_edited          = get_post_modified_time( 'U', true );
 		$page_edited          = $page_edited ? abs( 1 + $page_edited - time() ) : false;
@@ -246,6 +244,23 @@ function ed11y_init() {
 	}
 }
 add_action( 'wp_footer', 'ed11y_init' );
+
+/**
+ * Preserve query Args
+ *
+ * @param string $link The redirect URL.
+ *
+ * @return string
+ */
+function ed11y_old_slug_redirect_url_filter( $link ) {
+	if ( isset( $_GET['ed1ref'] ) ) {
+		$link = add_query_arg( 'ed1ref', intval( $_GET['ed1ref'] ), $link );
+	}
+	// filter...
+	return $link;
+}
+add_filter( 'old_slug_redirect_url', 'ed11y_old_slug_redirect_url_filter' );
+
 
 /**
  * Load live checker when editor is present.

@@ -127,11 +127,10 @@ class Editoria11y {
 
 		$sql_urls = "CREATE TABLE $table_urls (
 			pid int(9) unsigned AUTO_INCREMENT NOT NULL,
-			page_url varchar(1024) NOT NULL,
+			page_url varchar(512) NOT NULL,
 			entity_type varchar(255) NOT NULL,
 			page_title varchar(1024) NOT NULL,
 			page_total smallint(4) unsigned NOT NULL,
-			entity_id int(9) unsigned NOT NULL,
 			PRIMARY KEY page_url (page_url),
 			KEY pid (pid)
 			) $charset_collate;";
