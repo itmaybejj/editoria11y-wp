@@ -183,8 +183,8 @@ class Editoria11y {
 		$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}ed11y_urls" ); // phpcs:ignore
 
 		delete_option( 'ed11y_plugin_settings' );
-		// For site options in Multisite, apparently.
 		delete_site_option( 'ed11y_plugin_settings' );
+		delete_site_transient( 'editoria11y_settings' );
 
 	}
 
