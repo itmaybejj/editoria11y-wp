@@ -68,6 +68,9 @@ function ed11ySync() {
 			let results = extractResults();
 			let url = Ed11y.options.currentPage;
 			url = url.length > 250 ? url.substring(0, 250) : url;
+			let queryString = window.location.search;
+            let urlParams = new URLSearchParams(queryString);
+			let pid = urlParams.get('ed1ref');
 			let data = {
 				page_title: ed11yOptions.title,
 				page_count: results[2],
@@ -76,11 +79,10 @@ function ed11ySync() {
 				dismissals: results[1],
 				page_url: url,
 				created: 0,
+				pid: !!pid ? parseInt(pid) : -1,
+				entity_id : ed11yOptions.pageId ? ed11yOptions.pageId : 0,
 			};
-			let queryString = window.location.search;
-            let urlParams = new URLSearchParams(queryString);
-			let pid = urlParams.get('ed1ref');
-			data['pid'] = !!pid ? parseInt(pid) : -1;
+			console.log(data);
 			postData('result', data);
 		  // Short timeout to let execution queue clear.
 		}, 100)
@@ -136,6 +138,7 @@ ed11yReady(
 				ed11yOptions['alertMode'] = 'assertive';
 				ed11yOptions['showDismissed'] = true;
 			}
+			console.log(ed11yOptions['pageId']);
 
 			const ed11y = new Ed11y(ed11yOptions);
 			ed11ySync();

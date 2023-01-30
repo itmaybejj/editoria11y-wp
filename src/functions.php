@@ -230,6 +230,8 @@ function ed11y_init() {
 			$ed1vals['entity_type'] = '404';
 		}
 
+		$ed1vals['pageId'] 		= get_the_ID();
+
 		// Mode is assertive from 0ms to 10minutes after a post is modified.
 		$page_edited          = get_post_modified_time( 'U', true );
 		$page_edited          = $page_edited ? abs( 1 + $page_edited - time() ) : false;
