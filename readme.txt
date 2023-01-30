@@ -10,9 +10,9 @@ Content accessibility checker written to be intuitive and useful for non-technic
 
 == Description ==
 
-Editoria11y ("editorial accessibility ally") is a quality assurance tool built for the writer's workflow:
+Editoria11y ("editorial accessibility ally") is a quality assurance tool built for an author's workflow:
 
-1. It provides instant feedback. Authors do not need to be taught to (and remember to!) press a button to start a check or visit a dashboard to view scan results.
+1. It provides instant feedback. Authors do not need to remember to press a button or visit a dashboard to check their work.
 2. It checks in context on pages, not just within the post editor, allowing it to test content edited in widgets or theme features.
 3. It focuses exclusively on **content** issues: assisting authors at improving the things that are their responsibility.
 
@@ -66,9 +66,9 @@ Note that all this runs locally within your site. This plugin is the WordPress a
     * Audio embeds, reminding the user to provide a transcript
     * Social media embeds, reminding the user to provide alt attributes
 
-## Compared to other checkers
+== Frequently Asked Questions ==
 
-= Crawling and scanning plugins =
+= How is this different from other checkers? =
 
 Editoria11y is meant to supplement, not replace, these tools. 
 
@@ -78,7 +78,7 @@ Editoria11y is...spellcheck: a seamless, automatic and intuitive integration for
 * Eschews obfuscation and techno-legal jargon. It explains what the issue is in plain language, with a simple explanation of how to fix it. "This image needs alternative text" with a short explanation of what alternative text is makes sense without prior technical knowledge; "Failure of WCAG 1.1.1 Level A: Non-text Content" does not.
 * Deliberately excludes tests for theme and plugin issues, like invalid HTML tags and ARIA attributes. Testing is critically important for themers and developers, but it is work for themers and developers, not content editors. For ongoing quality assurance, Editoria11y provides people with a tool that fits their role, so they only receive alerts for things they can fix.
 
-= Sa11y =
+= How is this different from Sa11y? =
 
 Editoria11y is quite similar to [Sa11y](https://wordpress.org/plugins/sa11y/). Editoria11y began as a Sa11y fork, and the maintainers collaborate on new tests and optimizations.
 
@@ -94,24 +94,15 @@ The look, feel and features outside of the core test suite are a bit different:
     * A legibility scoring library is included
     * A contrast checking library is included
 
-= Overlays =
+= Is this an overlay? =
 
-Overlays are tools that modify your site's theme according to automated attempts to parse its code and design, and claim this will meet the accessibility needs of the site's users. They may override font sizes or colors, or attempt to tag text that appears to be styled as a heading so that screen readers can view a page outline. You should familiarize yourself with the [assistive technology compatibility problems overlays may introduce](https://overlayfactsheet.com/) before assuming they will improve your site for users with disabilities.
+Overlays are tools that modify your site's public pages according to automated attempts to modify its code and design, claiming these machine-generated changes to your site will better meet the accessibility needs of your users. 
 
-**Editoria11y is not an overlay.** It does not modify the site viewed by not-logged-in-users in any way. It is, quite simply, spellcheck for accessibility: it helps **you** make sure your site is easy to read by humans, as well as search engine crawlers, screen readers and related assistive technologies.
+Overlays may override your font sizes or colors, or attempt to re-tag headings and buttons so that screen readers can operate your site. You should familiarize yourself with the [assistive technology compatibility problems overlays may introduce](https://overlayfactsheet.com/) before assuming these changes will be helpful.
 
-## Credit
+**Editoria11y is not an overlay.** It does not modify the site viewed by not-logged-in-users in any way. It is an editor-facing "spellchecker" that helps your site editors create accessible content.
 
-Editoria11y's WordPress plugin is maintained by Princeton University's [Web Development Services](https://wds.princeton.edu/) team:
-
-* [John Jameson](https://github.com/itmaybejj): Editoria11y JS and CMS integrations
-* [Jason Partyka](https://github.com/jasonpartyka): Devops
-* [Brian Osborne](https://github.com/bkosborne): Code review
-* [Michael Muzzie](https://www.drupal.org/u/notmike): Wapuu photos
-
-Editoria11y began as a fork of the Toronto Metropolitan University's [Sa11y Accessibility Checker](https://sa11y.netlify.app/), and our teams regularly pass new code and ideas back and forth.
-
-== Installation ==
+## Installation
 
 Editoria11y's default settings will work great for most sites. 
 
@@ -128,6 +119,17 @@ If you notice anything amiss, experiment with these settings:
 If you are a theme developer, note that the library dispatches JavaScript events at several key moments (scan finishes, panel opens, tooltip opens or shuts), allowing you to attach custom functionality. JavaScript on sites running Editoria11y can use these events to do things like [automatically opening accordion widgets](https://github.com/itmaybejj/editoria11y/blob/main/README.md#dealing-with-alerts-on-hidden-or-size-constrained-content) if they contain hidden alerts, disabling "sticky" site menus if the panel is open, or even syncing results to third-party dashboards.
 
 And then...tell us how it went! This plugin and its base library are both under active development. Ideally send bug reports and feature requests through the [GitHub issue queue](https://github.com/itmaybejj/editoria11y-wp/issues).
+
+## Credit
+
+Editoria11y's WordPress plugin is maintained by Princeton University's [Web Development Services](https://wds.princeton.edu/) team:
+
+* [John Jameson](https://github.com/itmaybejj): Editoria11y JS and CMS integrations
+* [Jason Partyka](https://github.com/jasonpartyka): Devops
+* [Brian Osborne](https://github.com/bkosborne): Code review
+* [Michael Muzzie](https://www.drupal.org/u/notmike): Wapuu photos
+
+Editoria11y began as a fork of the Toronto Metropolitan University's [Sa11y Accessibility Checker](https://sa11y.netlify.app/), and our teams regularly pass new code and ideas back and forth.
 
 == Screenshots ==
 1. Checker with an open alert on a link with a URL as its text
