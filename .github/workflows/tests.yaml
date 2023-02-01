@@ -35,4 +35,4 @@ jobs:
     - name: PHPMD
       run: |
         composer install
-        composer github
+        composer phpmd-github
