@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<phpmd-baseline>
+  <violation rule="PHPMD\Rule\CleanCode\MissingImport" file="src/controller/class-editoria11y-api-dismissals.php"/>
+  <violation rule="PHPMD\Rule\CyclomaticComplexity" file="src/controller/class-editoria11y-api-dismissals.php" method="get_dismissals"/>
+  <violation rule="PHPMD\Rule\UnusedLocalVariable" file="src/controller/class-editoria11y-api-dismissals.php"/>
+  <violation rule="PHPMD\Rule\UnusedFormalParameter" file="src/controller/class-editoria11y-api-dismissals.php"/>
+  <violation rule="PHPMD\Rule\CyclomaticComplexity" file="src/controller/class-editoria11y-api-results.php" method="get_results"/>
+  <violation rule="PHPMD\Rule\CleanCode\MissingImport" file="src/controller/class-editoria11y-api-results.php"/>
+  <violation rule="PHPMD\Rule\CyclomaticComplexity" file="src/controller/class-editoria11y-api-results.php" method="send_results"/>
+  <violation rule="PHPMD\Rule\UnusedFormalParameter" file="src/controller/class-editoria11y-api-results.php"/>
+  <violation rule="PHPMD\Rule\CyclomaticComplexity" file="src/functions.php"/>
+  <violation rule="PHPMD\Rule\UnusedLocalVariable" file="src/functions.php"/>
+</phpmd-baseline>
