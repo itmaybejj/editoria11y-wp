@@ -7,6 +7,15 @@
         ],
         "post-install-cmd": [
             "@install-codestandards"
+        ],
+        "phpcs": [
+            "./vendor/bin/phpcs --standard=WordPress src"
+        ],
+        "phpmd": [
+            "./vendor/bin/phpmd src text ./phpmd.xml"
+        ],
+        "phpmd-github": [
+            "./vendor/bin/phpmd src github ./phpmd.xml"
         ]
     },
     "require-dev": {
