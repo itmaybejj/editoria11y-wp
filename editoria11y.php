@@ -13,7 +13,7 @@
  * Author URI:        https://wds.princeton.edu/team
  * License:           GPL v2 or later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain:       ed11y
+ * Text Domain:       editoria11y
  * Domain Path:       /languages
  * Description:       User friendly content quality assurance. Checks automatically, highlights issues inline, and provides straightforward, easy-to-understand tips.
  *
@@ -75,7 +75,7 @@ class Editoria11y {
 	 */
 	public function i18n() {
 		// Todo.
-		load_plugin_textdomain( 'ed11y-wp', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
+		load_plugin_textdomain( 'editoria11y', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
 	}
 
 

@@ -119,7 +119,7 @@ function ed11ySync() {
 // Call callback, init Editoria11y.
 ed11yReady(
 	function() {
-		let ed11yOpts = document.getElementById('ed11y-wp-init');
+		let ed11yOpts = document.getElementById('editoria11y-init');
 		if (!!ed11yOpts && window.location.href.indexOf('elementor-preview') === -1) {
 			ed11yOptions = JSON.parse(ed11yOpts.innerHTML);
 			
