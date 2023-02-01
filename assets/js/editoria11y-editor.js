@@ -269,7 +269,7 @@ let ed11yPreviewLink = false;
 let ed11yFindCompatibleEditor = function() {
 	ed11yTarget = ed11yTarget ? ed11yTarget : document.querySelector('.editor-styles-wrapper');
 	ed11yPreviewLink = ed11yPreviewLink ? ed11yPreviewLink : document.querySelector('button[class*="preview"]');
-	ed11yOptions = ed11yOptions ? ed11yOptions : document.getElementById("ed11y-wp-init");
+	ed11yOptions = ed11yOptions ? ed11yOptions : document.getElementById("editoria11y-init");
 	if (!!ed11yTarget & !!ed11yPreviewLink && !!ed11yOptions) {
 		ed11yAdminInit(ed11yTarget);
 	} else if (ed11yReadyCount < 10) {

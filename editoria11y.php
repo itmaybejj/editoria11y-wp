@@ -1,20 +1,21 @@
 <?php // phpcs:disable WordPress.Files.FileName.InvalidClassFileName
 
 /**
- * Editoria11y, the accessibility quality assurance assistant.
+ * Editoria11y Accessibility Checker
  *
- * Plugin Name:       Editoria11y
+ * Plugin Name:       Editoria11y Accessibility Checker
  * Plugin URI:        https://itmaybejj.github.io/editoria11y/demo/
  * Version:           1.0.0
- * Requires at least: 5.6
  * Requires PHP:      7.2
+ * Requires at least: 6.0
+ * Tested up to:      6.1
  * Author:            Princeton University, WDS
  * Author URI:        https://wds.princeton.edu/team
  * License:           GPL v2 or later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain:       ed11y
+ * Text Domain:       editoria11y
  * Domain Path:       /languages
- * Description:       The missing spellcheck for accessibility. Checks automatically, highlights issues inline, and provides straightforward tips for correcting errors.
+ * Description:       User friendly content quality assurance. Checks automatically, highlights issues inline, and provides straightforward, easy-to-understand tips.
  *
  * @package         Editoria11y
  * @link            https://itmaybejj.github.io/editoria11y/
@@ -74,7 +75,7 @@ class Editoria11y {
 	 */
 	public function i18n() {
 		// Todo.
-		load_plugin_textdomain( 'ed11y-wp', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
+		load_plugin_textdomain( 'editoria11y', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
 	}
 
 
@@ -126,7 +127,7 @@ class Editoria11y {
 
 		$sql_urls = "CREATE TABLE $table_urls (
 			pid int(9) unsigned AUTO_INCREMENT NOT NULL,
-			page_url varchar(255) NOT NULL,
+			page_url varchar(512) NOT NULL,
 			entity_type varchar(255) NOT NULL,
 			page_title varchar(1024) NOT NULL,
 			page_total smallint(4) unsigned NOT NULL,
@@ -182,8 +183,8 @@ class Editoria11y {
 		$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}ed11y_urls" ); // phpcs:ignore
 
 		delete_option( 'ed11y_plugin_settings' );
-		// For site options in Multisite, apparently.
 		delete_site_option( 'ed11y_plugin_settings' );
+		delete_site_transient( 'editoria11y_settings' );
 
 	}
 

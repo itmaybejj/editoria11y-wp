@@ -1,36 +1,43 @@
 === Editoria11y Accessibility Checker ===
-Contributors: itmaybejj
-Tags: accessibility, accessibility automated testing, accessibility checker
-Requires at least: 5.6
-Tested up to: 6.0
-Requires PHP: 7.2
+Contributors: itmaybejj, partyka
+Tags: accessibility checker, automated testing, quality assurance, SEO
 Stable tag: 1.0.0
-License: GPLv2 or later
+Tested up to: 6.1
+License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Accessibility "spellcheck," written to be intuitive and useful for non-technical content creators.
+Content accessibility checker written to be intuitive and useful for non-technical authors and editors.
 
 == Description ==
 
-Editoria11y ("editorial accessibility ally") is a quality assurance tool built around three key needs not met by crawlers and developer-focused scanning tools:
+Editoria11y ("editorial accessibility ally") is a quality assurance tool built for an author's workflow:
 
-1. It checks automatically. Authors do not need be taught to (and remember to!) press a button or visit a dashboard.
-2. It checks content in context on the page, not just within the post editor, allowing it to detect issues in themes and widgets that only appear after publishing.
-3. It focuses exclusively on **content** issues: assisting authors at fixing the things that are their responsibility, without confusing or annoying them with alerts for code or theme issues. Editoria11y is meant to **supplement**, not replace, testing with comprehensive tools and real assistive devices.
+1. It provides instant feedback. Authors do not need to remember to press a button or visit a dashboard to check their work.
+2. It checks in context on pages, not just within the post editor, allowing it to test content edited in widgets or theme features.
+3. It focuses exclusively on **content** issues: assisting authors at improving the things that are their responsibility.
 
-**Editoria11y is not an [overlay](https://overlayfactsheet.com/)!** It does not modify your site in any way. 
+It is meant to **supplement**, not replace, [testing your code and visual design](https://webaim.org/resources/evalquickref/) with developer-focused tools and testing practices.
 
 ## The authoring experience
 
-* When authors are viewing pages, Editoria11y's toggle indicates if any issues are present (no issues, some manual checks needed, some definite issues found).
-* When Editoria11y finds something new, an alert is placed on elements with issues, with tooltips that explain the problem and what actions are needed to resolve it. If the item might be a false positive, buttons are available to ignore the alert on this page, either for the current user ("Hide alert") or for all users ("Mark as Checked and OK"). 
-* The main panel allows authors to show and hide tooltips, step through the issues on the page, restore previously dismissed alerts, visualize text alternatives for images on the page ("alts"), and view the document's heading outline.
+Check out a [demo of the checker itself](https://itmaybejj.github.io/editoria11y/demo/).
 
-Note that all this runs locally within your site; this plugin is a wrapper for the free and open-source [Editoria11y library](https://github.com/itmaybejj/editoria11y).
- 
+* When **logged-in authors and editors** are viewing published or in-preview pages, Editoria11y's toggle discretely indicates if any issues are present on the current page.
+* Clicking the toggle opens the checker's main panel. Alerts are placed on pieces of content with issues, with tooltips to explain each problem and what actions are needed to resolve it. If an issue is not critical or may be OK as written, buttons are available to dismiss the alert on this page, either for the current user ("Hide alert") or for all users ("Mark as Checked and OK").
+* When Editoria11y finds **new** issues on a page that was just edited, the panel pops open automatically.
+* The main panel also allows authors jump to the next issue, restore previously dismissed alerts, visualize text alternatives for images on the page ("alts"), and view the document's heading outline.
+* Optionally, the checker can also outline blocks with issues while the author is editing the content.
+
+## The admin experience
+
+* Filterable reports let you explore recent issues, which pages have the most issues, which issues are most common, and which issues have been dismissed. These populate and update as content is viewed and updated.
+* Various settings are available to constrain checks to specific parts of the page and tweak the sensitivity of several tests.
+
+Note that all this runs locally within your site. This plugin is the WordPress adaptation of the free and open-source [Editoria11y library](https://github.com/itmaybejj/editoria11y). Tests run in the browser and findings are stored in your own database; nothing is sent to any third party.
+
 ## The tests
 
-* Text alternatives
+* Text alternatives for visual content
     * Images with no alt text
     * Images with a filename as alt text
     * Images with very long alt text
@@ -59,59 +66,77 @@ Note that all this runs locally within your site; this plugin is a wrapper for t
     * Audio embeds, reminding the user to provide a transcript
     * Social media embeds, reminding the user to provide alt attributes
 
-## The admin experience
+== Frequently Asked Questions ==
 
-* Filterable reports let you explore recent issues, which pages have the most issues, which issues are most common, and which issues have been dismissed. These populate and update as content is viewed and updated.
-* Various settings are available to constrain checks to specific parts of the page and tweak the sensitivity of several tests.
+= How is this different from other checkers? =
 
-## Compared to other checkers
-### Sa11y
-Editoria11y is most similar to [Sa11y](https://wordpress.org/plugins/sa11y/) -- in fact, Editoria11y began as a Sa11y fork, and they are developed in parallel, so new features in one usually appears in the other within a few months. 
+Editoria11y is meant to supplement, not replace, these tools. 
 
-Both are inline checkers aimed at content authors. Try both; the look and feel is a bit different.
+Editoria11y is...spellcheck: a seamless, automatic and intuitive integration for content authoring. It:
 
-Feature-wise, key philosophical distinctions are...
-* Editoria11y synchronizes its information with your WordPress database, meaning:
-    * Sitewide reporting can be reviewed on a dashboard.
-    * Alerts "marked as OK" are dismissed for all authors.
-* Sa11y imports several additional test libraries, adding legibility scoring and color contrast tests. 
-* Sa11y's settings can be adjusted by the end-user. Editoria11y is centrally managed by the site admin.
+* Does not require training before use.
+* Eschews obfuscation and techno-legal jargon. It explains what the issue is in plain language, with a simple explanation of how to fix it. "This image needs alternative text" with a short explanation of what alternative text is makes sense without prior technical knowledge; "Failure of WCAG 1.1.1 Level A: Non-text Content" does not.
+* Deliberately excludes tests for theme and plugin issues, like invalid HTML tags and ARIA attributes. Testing is critically important for themers and developers, but it is work for themers and developers, not content editors. For ongoing quality assurance, Editoria11y provides people with a tool that fits their role, so they only receive alerts for things they can fix.
 
-### Crawling and auditing tools
-Both Editoria11y and Sa11y differ from manual accessibility testing tools and site-wide crawlers in that they:
-* Are generally simpler to use. Results are always highlighted inline: "This heading skipped a level and probably should be an H2 rather than an H4" is a very different experience from "Incorrect heading order somewhere on this page. Affected code `<h4>Example</h4>`. Go find it yourself."
-* Eschew obfuscation and techno-legal jargon. They explain what the issue is in plain language, with a simple explanation of how to fix it. "This image needs alternative text" requires much less training to understand than "WCAG 1.1.1 Level A: Non-text Content."
-* Exclude code-level alerts. Code testing is critically important, but non-technical authors do not know what to do with alerts for "broken ARIA references" or "tab order modified."
+= How is this different from Sa11y? =
 
-This is not to denigrate developer-focused tools; as accessibility developers, we both recommend them and rely on them on a daily basis. It is to say: on an average site, automatic inline checkers meet a different need.
+Editoria11y is quite similar to [Sa11y](https://wordpress.org/plugins/sa11y/). Editoria11y began as a Sa11y fork, and the maintainers collaborate on new tests and optimizations.
+
+The look, feel and features outside of the core test suite are a bit different:
+
+* Editoria11y focuses on providing shared experience for all editors:
+    * An API is added, meaning findings are synchronized with your site's database, populating a site-wide reporting dashboard
+    * Manual-checks marked as "OK" are dismissed for **all** users, not just the current user
+    * Issues can be highlighted within the Block Editor/Gutenberg as you edit, not just on the published page
+    * All configuration is managed in the plugin settings
+* Sa11y focuses on flexibility and extensibility:
+    * The end-user interface can override appearance and test coverage settings
+    * A legibility scoring library is included
+    * A contrast checking library is included
+
+= Is this an overlay? =
+
+Overlays are tools that modify your site's public pages according to automated attempts to modify its code and design, claiming these machine-generated changes to your site will better meet the accessibility needs of your users. 
+
+Overlays may override your font sizes or colors, or attempt to re-tag headings and buttons so that screen readers can operate your site. You should familiarize yourself with the [assistive technology compatibility problems overlays may introduce](https://overlayfactsheet.com/) before assuming these changes will be helpful.
+
+**Editoria11y is not an overlay.** It does not modify the site viewed by not-logged-in-users in any way. It is an editor-facing "spellchecker" that helps your site editors create accessible content.
+
+## Installation
+
+Editoria11y's default settings will work great for most sites. 
+
+Your first task after installation should be clicking through each of the main pages of your site. This will start to populate your dashboard report, and give you a chance to look for issues to fix or dismiss.
+
+If you notice anything amiss, experiment with these settings:
+
+1. Pick a "Theme for tooltips" that looks nice with your site's colors.
+2. If the checker is flagging issues that are not relevant to content editors, either use "Check content in these containers" to constrain checks to the parts of the page with editable content, or "Exclude these elements from checks" to skip over certain elements, regions or widgets.
+3. Editoria11y also provides a minimalist "as-you-type" issue highlighter that works inside the Block Editor/Gutenberg. If you find this feature annoying rather than helpful, change "Highlight issues while editing content" to "Only definite errors" or "None."
+4. If you do not want PDF or other document types flagged for manual checks, provide a shorter selector list or set "Document types that need manual review" to `false`
+5. If your theme has done something very unusual with its layout, such as setting the height of the content container to 0px, you may see confusing alerts when opening Editoria11y tips saying that the highlighted element may be off-screen or invisible. If that happens, disable "Check if elements are visible when using panel navigation buttons." This is disabled by defaults on any WordPress themes we have noticed this on, so if you find a theme 
+
+If you are a theme developer, note that the library dispatches JavaScript events at several key moments (scan finishes, panel opens, tooltip opens or shuts), allowing you to attach custom functionality. JavaScript on sites running Editoria11y can use these events to do things like [automatically opening accordion widgets](https://github.com/itmaybejj/editoria11y/blob/main/README.md#dealing-with-alerts-on-hidden-or-size-constrained-content) if they contain hidden alerts, disabling "sticky" site menus if the panel is open, or even syncing results to third-party dashboards.
+
+And then...tell us how it went! This plugin and its base library are both under active development. Ideally send bug reports and feature requests through the [GitHub issue queue](https://github.com/itmaybejj/editoria11y-wp/issues).
 
 ## Credit
 
-Editoria11y is maintained by Princeton University's [Web Development Services](https://wds.princeton.edu/) team:
-* [John Jameson](https://github.com/itmaybejj)
-* [Jason Partyka](https://github.com/jasonpartyka)
-* [Brian Osborne](https://github.com/bkosborne)
+Editoria11y's WordPress plugin is maintained by Princeton University's [Web Development Services](https://wds.princeton.edu/) team:
+
+* [John Jameson](https://github.com/itmaybejj): Editoria11y JS and CMS integrations
+* [Jason Partyka](https://github.com/jasonpartyka): Devops
+* [Brian Osborne](https://github.com/bkosborne): Code review
+* [Michael Muzzie](https://www.drupal.org/u/notmike): Wapuu photos
 
 Editoria11y began as a fork of the Toronto Metropolitan University's [Sa11y Accessibility Checker](https://sa11y.netlify.app/), and our teams regularly pass new code and ideas back and forth.
 
-
-== Installation ==
-
-Editoria11y's default configuration should work fine out of the box on most themes.
-
-If you want to customize the checker, visit the plugin settings page and:
-
-* Select a color scheme that looks nice for your site.
-* Limit the checker to author-editable parts of the page (e.g, `main, #footer-widget`) if it is throwing alerts on things only you can modify.
-* If you notice false positives, use the "Skip over these elements" setting to suppress them.
-* Tell us how it went! This plugin and its base library are both under active development. Ideally send bug reports and feature requests through the [GitHub issue queue](https://github.com/itmaybejj/editoria11y-wp/issues).
-
-If you are a developer, note that the library dispatches JavaScript events at key moments (scan finishes, panel opens, tooltip opens or shuts...), allowing you to attach custom functionality. JavaScript on sites running Editoria11y can use these events to [automatically open accordion widgets](https://github.com/itmaybejj/editoria11y/blob/main/README.md#dealing-with-alerts-on-hidden-or-size-constrained-content) if they contain hidden alerts, to disable "sticky" site menus when the panel opens, or even to sync the count and type of alerts found to third-party analytics platforms.
-
 == Screenshots ==
-1. Todo
+1. Checker with an open alert on a link with a URL as its text
+2. Optional feature: highlighting while editing
+3. Site-wide reporting dashboard
 
 == Changelog ==
 
 = 1.0.0 =
-* Initial release.
+* Initial WordPress release; aligns with [Editoria11y library](https://itmaybejj.github.io/editoria11y/) v2.0.2 and Editoria11y Drupal v2.0.5

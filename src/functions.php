@@ -109,8 +109,8 @@ function ed11y_load_scripts() {
 		&& ( $allowed_user_roles || current_user_can( 'edit_posts' ) || current_user_can( 'edit_pages' ) )
 	) {
 		// added last two parameters 10/27/22 need to test.
-		wp_enqueue_script( 'ed11y-wp-js', trailingslashit( ED11Y_ASSETS ) . 'lib/editoria11y.min.js', null, true, Editoria11y::ED11Y_VERSION, false );
-		wp_enqueue_script( 'ed11y-wp-js-shim', trailingslashit( ED11Y_ASSETS ) . 'js/editoria11y-wp.js', array( 'wp-api' ), true, Editoria11y::ED11Y_VERSION, false );
+		wp_enqueue_script( 'editoria11y-js', trailingslashit( ED11Y_ASSETS ) . 'lib/editoria11y.min.js', null, true, Editoria11y::ED11Y_VERSION, false );
+		wp_enqueue_script( 'editoria11y-js-shim', trailingslashit( ED11Y_ASSETS ) . 'js/editoria11y-wp.js', array( 'wp-api' ), true, Editoria11y::ED11Y_VERSION, false );
 	}
 }
 add_action( 'wp_enqueue_scripts', 'ed11y_load_scripts' );
@@ -122,8 +122,8 @@ function ed11y_load_block_editor_scripts() {
 	// Get the enable option.
 	// Check if scroll top enable.
 	// Todo: only load on edit pages.
-	wp_enqueue_script( 'ed11y-wp-js', trailingslashit( ED11Y_ASSETS ) . 'lib/editoria11y.min.js', null, true, Editoria11y::ED11Y_VERSION, false );
-	wp_enqueue_script( 'ed11y-wp-editor', trailingslashit( ED11Y_ASSETS ) . 'js/editoria11y-editor.js', null, true, Editoria11y::ED11Y_VERSION, false );
+	wp_enqueue_script( 'editoria11y-js', trailingslashit( ED11Y_ASSETS ) . 'lib/editoria11y.min.js', null, true, Editoria11y::ED11Y_VERSION, false );
+	wp_enqueue_script( 'editoria11y-editor', trailingslashit( ED11Y_ASSETS ) . 'js/editoria11y-editor.js', null, true, Editoria11y::ED11Y_VERSION, false );
 }
 
 /**
@@ -237,13 +237,30 @@ function ed11y_init() {
 
 		// At the moment, PHP escapes HTML breakouts. This would not be safe in other languages.
 		echo '
-		<script id="ed11y-wp-init" type="application/json">
+		<script id="editoria11y-init" type="application/json">
 			' . wp_json_encode( $ed1vals ) . '
 		</script>
 		';
 	}
 }
 add_action( 'wp_footer', 'ed11y_init' );
+
+/**
+ * Preserve query Args
+ *
+ * @param string $link The redirect URL.
+ *
+ * @return string
+ */
+function ed11y_old_slug_redirect_url_filter( $link ) {
+	if ( isset( $_GET['ed1ref'] ) ) {
+		$link = add_query_arg( 'ed1ref', intval( $_GET['ed1ref'] ), $link );
+	}
+	// filter...
+	return $link;
+}
+add_filter( 'old_slug_redirect_url', 'ed11y_old_slug_redirect_url_filter' );
+
 
 /**
  * Load live checker when editor is present.
