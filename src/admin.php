@@ -208,7 +208,6 @@ function ed11y_setting_sections_fields() {
 		'ed11y_compatibility_settings',
 		array( 'label_for' => 'ed11y_no_run' )
 	);
-
 }
 add_action( 'admin_init', 'ed11y_setting_sections_fields' );
 
@@ -567,13 +566,10 @@ function ed11y_plugin_settings_validate( $settings ) {
 	return $settings;
 }
 
-
-
 /**
  * Render the plugin settings page.
  */
 function editoria11y_dashboard() {
-
 	wp_enqueue_script( 'editoria11y-js', trailingslashit( ED11Y_ASSETS ) . 'lib/editoria11y.min.js', array( 'wp-api' ), true, Editoria11y::ED11Y_VERSION, false );
 	wp_enqueue_script( 'editoria11y-js-dash', trailingslashit( ED11Y_ASSETS ) . 'js/editoria11y-dashboard.js', array( 'wp-api' ), true, Editoria11y::ED11Y_VERSION, false );
 	wp_enqueue_style( 'editoria11y-css', trailingslashit( ED11Y_ASSETS ) . 'css/editoria11y-dashboard.css', null, Editoria11y::ED11Y_VERSION );
@@ -583,7 +579,6 @@ function editoria11y_dashboard() {
 			<div id="ed1-results-wrapper"></div>
 			<div id="ed1-dismissals-wrapper"></div>
 		</div>';
-
 }
 
 add_action( 'admin_menu', 'ed11y_dashboard_menu' );

@@ -9,9 +9,9 @@ class Editoria11y_Validate {
 	/**
 	 * Validate entity types.
 	 *
-	 * @param string $string Content type name.
+	 * @param string $user_input Content type name.
 	 */
-	public static function entity_type( $string ) {
+	public static function entity_type( $user_input ) {
 		$valid = array(
 			'Front',
 			'Page',
@@ -26,15 +26,15 @@ class Editoria11y_Validate {
 			'Search',
 			'404',
 		);
-		return in_array( $string, $valid, true );
+		return in_array( $user_input, $valid, true );
 	}
 
 	/**
 	 * Validate filters and sorts.
 	 *
-	 * @param string $string Allowed field names.
+	 * @param string $user_input Allowed field names.
 	 */
-	public static function sort( $string ) {
+	public static function sort( $user_input ) {
 		$valid = array(
 			'pid',
 			'page_url',
@@ -47,15 +47,15 @@ class Editoria11y_Validate {
 			'display_name',
 			'dismissal_status',
 		);
-		return in_array( $string, $valid, true );
+		return in_array( $user_input, $valid, true );
 	}
 
 	/**
 	 * Validate results.
 	 *
-	 * @param string $string Valid test names.
+	 * @param string $user_input Valid test names.
 	 */
-	public static function test_name( $string ) {
+	public static function test_name( $user_input ) {
 		$valid = array(
 			'headingLevelSkipped',
 			'headingEmpty',
@@ -90,7 +90,6 @@ class Editoria11y_Validate {
 			'embedTwitter',
 			'embedCustom',
 		);
-		return in_array( $string, $valid, true );
+		return in_array( $user_input, $valid, true );
 	}
-
 }

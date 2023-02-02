@@ -26,5 +26,8 @@
         ]
     },
     "globals": {
+        "ed11yLang": true,
+        "wpApiSettings": true,
+        "Ed11y": true
     }
 }
