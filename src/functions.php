@@ -63,7 +63,6 @@ function ed11y_get_default_options( $option = false ) {
 	$filtered = apply_filters( 'ed11y_default_options', $default_options );
 
 	return $option ? $filtered[ $option ] : $filtered;
-
 }
 
 /**
