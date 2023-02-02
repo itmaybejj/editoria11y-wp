@@ -252,10 +252,9 @@ add_action( 'wp_footer', 'ed11y_init' );
  * @return string
  */
 function ed11y_old_slug_redirect_url_filter( $link ) {
-	if ( isset( $_GET['ed1ref'] ) && isset( $_GET['_wpnonce'] ) && wp_verify_nonce( $_GET['_wpnonce'] ) ) { // phpcs:ignore
+	if ( isset( $_GET['ed1ref'] ) && isset( $_REQUEST['_wpnonce'] ) && wp_verify_nonce( $_REQUEST['_wpnonce'], 'ed1ref' ) ) { // phpcs:ignore
 		$link = add_query_arg( 'ed1ref', intval( $_GET['ed1ref'] ), $link ); // phpcs:ignore
 	}
-	// filter...
 	return $link;
 }
 add_filter( 'old_slug_redirect_url', 'ed11y_old_slug_redirect_url_filter' );

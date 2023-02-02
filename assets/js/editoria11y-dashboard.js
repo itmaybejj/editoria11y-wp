@@ -13,6 +13,8 @@ class Ed1 {
       if (urlParams.get('page')) {
         Ed1.url += 'page=' + urlParams.get('page') + '&';
       }
+      let nonceWrapper = document.getElementById('editoria11y-nonce');
+      Ed1.nonce = JSON.parse(nonceWrapper.innerHTML);
 
       // Only accept numerical offsets
       let resultOffset = urlParams.get('roff');
@@ -215,7 +217,7 @@ class Ed1 {
       if (url) {
         let sep = url.indexOf('?') === -1 ? '?' : '&';
         url = encodeURI(url);
-        href = pid ? url + sep + 'ed1ref=' + parseInt(pid) + '&_wpnonce=' + wpApiSettings.nonce : url;
+        href = pid ? url + sep + 'ed1ref=' + parseInt(pid) + '&_wpnonce=' + Ed1.nonce : url;
       } else {
         href = '#' + encodeURIComponent(hash);
       }
@@ -572,18 +574,6 @@ class Ed1 {
           Ed1.tables['ed1dismiss'].insertAdjacentElement('beforeend', notFound);
         } else {
           post.forEach((result) => {
-            /**
-                                     * created: "2022-12-09 15:27:45"
-                                        dismissal_status: "hide"
-                                        entity_type: "Post"
-                                        page_title: "Hello world!"
-                                        page_url: "https://editoria11y-wp.ddev.site/2022/10/03/hello-world/"
-                                        pid: "16"
-                                        result_key: "linkTextIsGeneric"
-                                        stale: "0"
-                                        updated: "2022-12-16 22:18:38"
-                                        user: "0"
-                                     */
             let row = document.createElement('tr');
 
             let marked = Ed1.render.td(result['dismissal_status']);
