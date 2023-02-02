@@ -7,7 +7,9 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: PHPCS
-      run: mkdir -p ./build/test-results && composer install && ./vendor/bin/phpcs -i && ./vendor/bin/phpcs --standard=WordPress --report=junit --report-file=./build/test-results/report.xml src
+      run: |
+        composer install
+        composer phpcs-github
     - name: Publish Test Report
       uses: mikepenz/action-junit-report@v3
       if: always() # always run even if the previous step fails

@@ -11,6 +11,9 @@
         "phpcs": [
             "./vendor/bin/phpcs --standard=WordPress src"
         ],
+        "phpcs-github": [
+            "mkdir -p ./build/test-results && ./vendor/bin/phpcs --standard=WordPress --report=junit --report-file=./build/test-results/report.xml src"
+        ],
         "phpmd": [
             "./vendor/bin/phpmd src text ./phpmd.xml"
         ],
@@ -18,10 +21,12 @@
             "./vendor/bin/phpmd src github ./phpmd.xml"
         ]
     },
+    "require": {
+        "dealerdirect/phpcodesniffer-composer-installer": "^1.0"
+    },
     "require-dev": {
         "wp-coding-standards/wpcs": "dev-develop",
-        "phpmd/phpmd": "^2.13",
-        "dealerdirect/phpcodesniffer-composer-installer": "^1.0"
+        "phpmd/phpmd": "^2.13"
     },
     "config": {
         "allow-plugins": {
