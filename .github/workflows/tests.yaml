@@ -5,7 +5,7 @@ jobs:
     name: PHP Code Style 😎
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: PHPCS
       run: mkdir -p ./build/test-results && composer install && ./vendor/bin/phpcs -i && ./vendor/bin/phpcs --standard=WordPress --report=junit --report-file=./build/test-results/report.xml src
     - name: Publish Test Report
@@ -20,7 +20,7 @@ jobs:
     name: JavaScript Static Analysis (eslint)
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Install modules
       run: yarn
     - name: Run ESlint
@@ -31,7 +31,7 @@ jobs:
     name: PHP Mess Detector 🧹
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2      
+    - uses: actions/checkout@v3      
     - name: PHPMD
       run: |
         composer install

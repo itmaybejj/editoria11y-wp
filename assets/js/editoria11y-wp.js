@@ -37,7 +37,7 @@ function ed11ySync() {
     let total = 0;
     Ed11y.results.forEach(result => {
       /* let test = Ed11y.results[i][1];
-					let dismissKey = Ed11y.results[i][4]; */
+						  let dismissKey = Ed11y.results[i][4]; */
       let testName = result[1];
       let dismissStatus = result[5];
       let dismissKey = result[4];
@@ -138,7 +138,7 @@ ed11yReady(
       }
 
       // eslint-disable-next-line
-	  const ed11y = new Ed11y(ed11yOptions);
+			const ed11y = new Ed11y(ed11yOptions);
       ed11ySync();
     }
   }

@@ -2,17 +2,17 @@ class Ed1 {
   constructor() {
 
     /**
-         * Gather query variables into arrays.
-         * Clicking sort buttons will update arrays before
-         * buildRequest assembles values into API call.
-         */
+             * Gather query variables into arrays.
+             * Clicking sort buttons will update arrays before
+             * buildRequest assembles values into API call.
+             */
     Ed1.params = function () {
       let queryString = window.location.search;
       let urlParams = new URLSearchParams(queryString);
       Ed1.url = 'https://' + window.location.host + window.location.pathname + '?';
       if (urlParams.get('page')) {
         Ed1.url += 'page=' + urlParams.get('page') + '&';
-      } 
+      }
 
       // Only accept numerical offsets
       let resultOffset = urlParams.get('roff');
@@ -36,7 +36,7 @@ class Ed1 {
       let resultSort = urlParams.get('rsort');
       resultSort = !!resultSort && validSorts.includes(resultSort) ? resultSort : 'count';
       let pageSort = urlParams.get('psort');
-      pageSort = !!pageSort && validSorts.includes(pageSort)? pageSort : 'page_total';
+      pageSort = !!pageSort && validSorts.includes(pageSort) ? pageSort : 'page_total';
       let dismissSort = urlParams.get('dsort');
       dismissSort = !!dismissSort && validSorts.includes(dismissSort) ? dismissSort : 'created';
 
@@ -47,11 +47,11 @@ class Ed1 {
       pageDir = pageDir === 'DESC' || pageDir === 'ASC' ? pageDir : 'DESC';
       let dismissDir = urlParams.get('ddir');
       dismissDir = dismissDir === 'DESC' || dismissDir === 'ASC' ? dismissDir : 'DESC';
-            
+
       // Test name to filter by; will be validated.
       Ed1.resultKey = urlParams.get('rkey');
       Ed1.resultKey = Ed1.resultKey ? Ed1.resultKey : false;
-            
+
       // Page type to filter by; will be validated.
       Ed1.type = urlParams.get('type');
 
@@ -92,10 +92,10 @@ class Ed1 {
     };
 
     /**
-         * Assemble request array into API call.
-         * @param {*} request 
-         * @returns string 
-         */
+             * Assemble request array into API call.
+             * @param {*} request 
+             * @returns string 
+             */
     Ed1.buildRequest = function (request) {
       let q = Ed1.requests[request];
       let req = `${q.base}?view=${q.view}&count=${q.count}&offset=${q.offset}&sort=${q.sort}&direction=${q.direction}&result_key=${q.result_key}&entity_type=${q.entity_type}`;
@@ -103,11 +103,11 @@ class Ed1 {
     };
 
     /**
-         * Gather GET requests and make API calls.
-         */
+             * Gather GET requests and make API calls.
+             */
     Ed1.init = async function () {
       // Get results with default params
-            
+
       Ed1.params();
       Ed1.tables = {};
       Ed1.wrapper = document.getElementById('ed1');
@@ -117,7 +117,7 @@ class Ed1 {
       Ed1.render.tableHeaders();
 
       // Only build result table if there is no result or type filter.
-      if ( !!Ed1.resultKey || !!Ed1.type ) {
+      if (!!Ed1.resultKey || !!Ed1.type) {
         let h1 = document.querySelector('#ed1 h1');
         let resetType = 'View all issues';
         if (Ed1.resultKey) {
@@ -136,19 +136,19 @@ class Ed1 {
         Ed1.wrapResults.style.display = 'none';
       } else {
         // Possible todo: we could wait until the Details is open to do this.
-        window.setTimeout( function() {Ed1.get.ed1result(Ed1.buildRequest('ed1result'), false);}, 500);
+        window.setTimeout(function () { Ed1.get.ed1result(Ed1.buildRequest('ed1result'), false); }, 500);
       }
-            
+
       // Always build page table.
       Ed1.get.ed1page(Ed1.buildRequest('ed1page'), false);
 
       // Possible todo: we could wait until the Details is open to do this.
       let ed1Lag = Ed1.openDetails ? 0 : 500;
-      window.setTimeout( function() {Ed1.get.ed1dismiss(Ed1.buildRequest('ed1dismiss'), false);}, ed1Lag );
-            
+      window.setTimeout(function () { Ed1.get.ed1dismiss(Ed1.buildRequest('ed1dismiss'), false); }, ed1Lag);
+
       // Show whatever is drawn after one second.
-      window.setTimeout( function() {Ed1.show();}, 500);
-      window.setTimeout( function() {
+      window.setTimeout(function () { Ed1.show(); }, 500);
+      window.setTimeout(function () {
         let neverLoaded = document.querySelectorAll('#ed1 .loading');
         Array.from(neverLoaded).forEach((el) => {
           el.textContent = 'API error.';
@@ -156,11 +156,11 @@ class Ed1 {
       }, 3000);
     };
 
-    Ed1.show = function() {
+    Ed1.show = function () {
       Ed1.wrapper.classList.add('show');
     };
 
-    Ed1.announce = function(string) {
+    Ed1.announce = function (string) {
       if (!Ed1.liveRegion) {
         Ed1.liveRegion = document.createElement('div');
         Ed1.liveRegion.setAttribute('class', 'visually-hidden');
@@ -168,19 +168,19 @@ class Ed1 {
         document.getElementById('ed1').insertAdjacentElement('beforeend', Ed1.liveRegion);
       }
       Ed1.liveRegion.textContent = '';
-      window.setTimeout(function() {
+      window.setTimeout(function () {
         Ed1.liveRegion.textContent = string;
-      },1500);
-    }; 
+      }, 1500);
+    };
 
     /**
-         * 
-         * Builder functions to quickly assemble HTML elements.
-         * @param {*} text 
-         * @param {*} hash 
-         * @param {*} sorted 
-         * @returns th
-         */
+             * 
+             * Builder functions to quickly assemble HTML elements.
+             * @param {*} text 
+             * @param {*} hash 
+             * @param {*} sorted 
+             * @returns th
+             */
     Ed1.render = {};
 
     Ed1.render.th = function (text, hash = false, sorted = false) {
@@ -212,9 +212,9 @@ class Ed1 {
       let link = document.createElement('a');
       link.textContent = text;
       let href;
-      if ( url ) {
+      if (url) {
         let sep = url.indexOf('?') === -1 ? '?' : '&';
-        url = encodeURI( url );
+        url = encodeURI(url);
         href = pid ? url + sep + 'ed1ref=' + parseInt(pid) + '&_wpnonce=' + wpApiSettings.nonce : url;
       } else {
         href = '#' + encodeURIComponent(hash);
@@ -240,7 +240,7 @@ class Ed1 {
 
     Ed1.render.details = function (text, id, open = false) {
       let details = document.createElement('details');
-      if ( open || Ed1.openDetails === true) {
+      if (open || Ed1.openDetails === true) {
         details.setAttribute('open', '');
       }
       let summary = document.createElement('summary');
@@ -257,14 +257,14 @@ class Ed1 {
       return row;
     };
     /**
-         * Hat tip to https://webdesign.tutsplus.com/tutorials/pagination-with-vanilla-javascript--cms-41896
-         * @param {*} after 
-         * @param {*} rows 
-         * @param {*} perPage 
-         * @param {*} offset 
-         * @param {*} labelId 
-         * @returns 
-         */
+             * Hat tip to https://webdesign.tutsplus.com/tutorials/pagination-with-vanilla-javascript--cms-41896
+             * @param {*} after 
+             * @param {*} rows 
+             * @param {*} perPage 
+             * @param {*} offset 
+             * @param {*} labelId 
+             * @returns 
+             */
     Ed1.render.pagination = function (after, rows, perPage, offset, labelId = false) {
       if (rows <= perPage) {
         return false;
@@ -326,7 +326,7 @@ class Ed1 {
       });
     };
 
-    Ed1.setPage = function(e, table, offset) {
+    Ed1.setPage = function (e, table, offset) {
       // Get new content.
       Ed1.requests[table]['offset'] = offset;
       Ed1.get[table](Ed1.buildRequest(table), true);
@@ -341,7 +341,7 @@ class Ed1 {
       let buttons = e.target.closest('nav').querySelectorAll('.pagination-number');
       buttons.forEach((el) => {
         let page = el.getAttribute('page-index');
-                
+
         // First and last always show.
         let show = page == 1 || page == buttons.length;
         if (!show) {
@@ -353,22 +353,22 @@ class Ed1 {
             show = (page >= buttons.length - 6);
           } else {
             show = current - page <= 2 && page - current <= 2;
-          }   
+          }
         }
 
         if (show) {
           el.removeAttribute('hidden');
           // Hide ellipses when penultimate number is revealed.
           if (page == 2) {
-            Array.from(ellipses)[0].setAttribute('hidden','hidden');
-          } else if ( page == buttons.length - 1) {
-            Array.from(ellipses)[1]?.setAttribute('hidden','hidden');
+            Array.from(ellipses)[0].setAttribute('hidden', 'hidden');
+          } else if (page == buttons.length - 1) {
+            Array.from(ellipses)[1]?.setAttribute('hidden', 'hidden');
           }
         } else {
           el.setAttribute('hidden', true);
           if (page == 2) {
             Array.from(ellipses)[0].removeAttribute('hidden');
-          } else if ( page == buttons.length - 1) {
+          } else if (page == buttons.length - 1) {
             Array.from(ellipses)[1]?.removeAttribute('hidden');
           }
         }
@@ -424,7 +424,7 @@ class Ed1 {
       loading.setAttribute('colspan', '2');
       Ed1.tables['ed1result'].append(loadWrap.cloneNode('deep'));
       resultDetails.append(Ed1.tables['ed1result']);
-            
+
       Ed1.tables['ed1result'].querySelectorAll('th button').forEach((el) => {
         el.addEventListener('click', function () {
           Ed1.reSort();
@@ -448,7 +448,7 @@ class Ed1 {
       Ed1.tables['ed1dismiss'].append(loadWrap.cloneNode('deep'));
 
       let detailTitle = Ed1.openDetails ? 'Dismissals' : 'Recent dismissals';
-            
+
       let dismissDetails = Ed1.render.details(detailTitle, 'ed1dismiss-title');
       Ed1.wrapDismiss.append(dismissDetails);
       dismissDetails.append(Ed1.tables['ed1dismiss']);
@@ -462,11 +462,11 @@ class Ed1 {
     };
 
     /**
-         * Renderer for viewing results by test name.
-         * 
-         * @param {*} post 
-         * @param {*} count 
-         */
+             * Renderer for viewing results by test name.
+             * 
+             * @param {*} post 
+             * @param {*} count 
+             */
     Ed1.render.ed1result = function (post, count, announce) {
 
       Ed1.tables['ed1result'].querySelectorAll('tr + tr').forEach(el => {
@@ -474,7 +474,7 @@ class Ed1 {
       });
 
       if (post) {
-        if ( !Ed1.wrapResults.querySelector('nav') ) {
+        if (!Ed1.wrapResults.querySelector('nav')) {
           Ed1.render.pagination('ed1result', count, Ed1.requests['ed1result']['count'], 0, 'ed1result-title');
         }
 
@@ -502,11 +502,11 @@ class Ed1 {
     };
 
     /**
-         * Renderer for viewing results by page.
-         * 
-         * @param {*} post 
-         * @param {*} count 
-         */
+             * Renderer for viewing results by page.
+             * 
+             * @param {*} post 
+             * @param {*} count 
+             */
     Ed1.render.ed1page = function (post, count, announce) {
 
       Ed1.tables['ed1page'].querySelectorAll('tr + tr').forEach(el => {
@@ -514,7 +514,7 @@ class Ed1 {
       });
 
       if (post) {
-        if ( !Ed1.wrapPage.querySelector('nav') ) {
+        if (!Ed1.wrapPage.querySelector('nav')) {
           Ed1.render.pagination('ed1page', count, Ed1.requests['ed1page']['count'], 0, 'ed1page-title');
         }
 
@@ -552,10 +552,10 @@ class Ed1 {
     };
 
     /**
-         * Renderer for viewing dismissed alerts.
-         * @param {*} post 
-         * @param {*} count 
-         */
+             * Renderer for viewing dismissed alerts.
+             * @param {*} post 
+             * @param {*} count 
+             */
     Ed1.render.ed1dismiss = function (post, count, announce) {
 
       Ed1.tables['ed1dismiss'].querySelectorAll('tr + tr').forEach(el => {
@@ -563,7 +563,7 @@ class Ed1 {
       });
 
       if (post) {
-        if ( !Ed1.wrapDismiss.querySelector('nav') ) {
+        if (!Ed1.wrapDismiss.querySelector('nav')) {
           Ed1.render.pagination('ed1dismiss', count, Ed1.requests['ed1dismiss']['count'], 0, 'ed1dismiss-title');
         }
 
@@ -573,20 +573,20 @@ class Ed1 {
         } else {
           post.forEach((result) => {
             /**
-                         * created: "2022-12-09 15:27:45"
-                            dismissal_status: "hide"
-                            entity_type: "Post"
-                            page_title: "Hello world!"
-                            page_url: "https://editoria11y-wp.ddev.site/2022/10/03/hello-world/"
-                            pid: "16"
-                            result_key: "linkTextIsGeneric"
-                            stale: "0"
-                            updated: "2022-12-16 22:18:38"
-                            user: "0"
-                         */
+                                     * created: "2022-12-09 15:27:45"
+                                        dismissal_status: "hide"
+                                        entity_type: "Post"
+                                        page_title: "Hello world!"
+                                        page_url: "https://editoria11y-wp.ddev.site/2022/10/03/hello-world/"
+                                        pid: "16"
+                                        result_key: "linkTextIsGeneric"
+                                        stale: "0"
+                                        updated: "2022-12-16 22:18:38"
+                                        user: "0"
+                                     */
             let row = document.createElement('tr');
 
-            let marked = Ed1.render.td( result['dismissal_status'] );
+            let marked = Ed1.render.td(result['dismissal_status']);
             row.insertAdjacentElement('beforeend', marked);
 
             let pageLink = Ed1.render.td(result['page_title'], false, result['page_url'], result['pid']);
@@ -596,26 +596,26 @@ class Ed1 {
             let keyName = ed11yLang.en[result['result_key']].title;
             let key = Ed1.render.td(keyName, false, Ed1.url + 'rkey=' + result['result_key'], false, 'rkey');
             row.insertAdjacentElement('beforeend', key);
-    
-            let by = Ed1.render.td( result['display_name'] );
+
+            let by = Ed1.render.td(result['display_name']);
             row.insertAdjacentElement('beforeend', by);
 
             let cleanDate = result['created'].split(' ')[0].replace(/[^\-0-9]/g, '');
-    
-            let on = Ed1.render.td( cleanDate );
+
+            let on = Ed1.render.td(cleanDate);
             row.insertAdjacentElement('beforeend', on);
-    
+
             // old 
-            let stale = Ed1.render.td( !result['stale'] ? 'No' : 'Yes' );
+            let stale = Ed1.render.td(!result['stale'] ? 'No' : 'Yes');
             row.insertAdjacentElement('beforeend', stale);
-    
+
             Ed1.tables['ed1dismiss'].insertAdjacentElement('beforeend', row);
           });
         }
 
-                
+
       }
-                
+
 
       if (announce) {
         Ed1.announce(post.length + ' results');
@@ -626,8 +626,8 @@ class Ed1 {
     };
 
     /**
-         * API calls.
-         */
+             * API calls.
+             */
     Ed1.api = {
       method: 'GET',
       headers: {
@@ -676,8 +676,8 @@ class Ed1 {
     };
 
     /**
-         * User Interactions.
-         */
+             * User Interactions.
+             */
     Ed1.reSort = function () {
       let el = document.activeElement;
       let table = el.closest('table');
