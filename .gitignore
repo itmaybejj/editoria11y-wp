@@ -25,3 +25,9 @@ node_modules/
 # ignore local files
 .todo.md
 .vscode/
+
+# Ignore files related to tooling
+report.xml
+composer.lock
+.idea/
+vendor/
