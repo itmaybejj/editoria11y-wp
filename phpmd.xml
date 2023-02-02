@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<ruleset name="My first PHPMD rule set"
+         xmlns="http://pmd.sf.net/ruleset/1.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://pmd.sf.net/ruleset/1.0.0
+                     http://pmd.sf.net/ruleset_xml_schema.xsd"
+         xsi:noNamespaceSchemaLocation="
+                     http://pmd.sf.net/ruleset_xml_schema.xsd">
+    <description>
+        A Rule Set for Editoria11y-WP
+    </description>
+
+    <!-- Import the entire unused code rule set -->
+    <rule ref="rulesets/unusedcode.xml" />
+
+    <!-- Import the entire cyclomatic complexity rule -->
+    <rule ref="rulesets/codesize.xml/CyclomaticComplexity" />
+
+
+    <!-- Import entire naming rule set, modify ShortVariable rule -->
+    <!-- The "wp" variable is clear in the context of WordPress. -->
+    <rule ref="rulesets/naming.xml">
+        <exclude name="ShortVariable" />
+    </rule>
+    <rule ref="rulesets/naming.xml/ShortVariable">
+        <properties>
+            <property name="exceptions">
+                <value>
+                    wp
+                </value>
+            </property>
+        </properties>
+    </rule>
+
+    <!-- Import the clean code rule -->
+    <rule ref="rulesets/cleancode.xml">
+        <exclude name="ElseExpression" />
+        <exclude name="BooleanArgumentFlag" />
+    </rule>
+
+
+</ruleset>

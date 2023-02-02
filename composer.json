@@ -1,20 +1,31 @@
 {
     "prefer-stable": true,
     "minimum-stability": "dev",
+    "scripts": {
+        "install-codestandards": [
+             "vendor/bin/phpcs --config-set installed_paths vendor/wp-coding-standards/wpcs/"
+        ],
+        "post-install-cmd": [
+            "@install-codestandards"
+        ],
+        "phpcs": [
+            "./vendor/bin/phpcs --standard=WordPress src"
+        ],
+        "phpmd": [
+            "./vendor/bin/phpmd src text ./phpmd.xml"
+        ],
+        "phpmd-github": [
+            "./vendor/bin/phpmd src github ./phpmd.xml"
+        ]
+    },
+    "require-dev": {
+        "wp-coding-standards/wpcs": "dev-develop",
+        "phpmd/phpmd": "^2.13",
+        "dealerdirect/phpcodesniffer-composer-installer": "^1.0"
+    },
     "config": {
         "allow-plugins": {
             "dealerdirect/phpcodesniffer-composer-installer": true
         }
-    },
-    "scripts": {
-        "install-codestandards": [
-            "Dealerdirect\\Composer\\Plugin\\Installers\\PHPCodeSniffer\\Plugin::run"
-        ],
-        "post-install-cmd": [
-            "@install-codestandards"
-        ]
-    },
-    "require-dev": {
-        "wp-coding-standards/wpcs": "dev-develop"
     }
 }

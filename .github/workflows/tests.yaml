@@ -1,0 +1,38 @@
+on: push
+
+jobs:
+  cs:
+    name: PHP Code Style 😎
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: PHPCS
+      run: mkdir -p ./build/test-results && composer install && ./vendor/bin/phpcs -i && ./vendor/bin/phpcs --standard=WordPress --report=junit --report-file=./build/test-results/report.xml src
+    - name: Publish Test Report
+      uses: mikepenz/action-junit-report@v3
+      if: always() # always run even if the previous step fails
+      with:
+        report_paths: '**/build/test-results/*.xml'
+        detailed_summary: true
+        check_name: PHPCS Report
+
+  eslint:
+    name: JavaScript Static Analysis (eslint)
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install modules
+      run: yarn
+    - name: Run ESlint
+      run: npx eslint assets/js --ext .js,.jsx,.ts,.tsx
+
+
+  md:
+    name: PHP Mess Detector 🧹
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2      
+    - name: PHPMD
+      run: |
+        composer install
+        composer phpmd-github
