@@ -103,7 +103,7 @@ let ed11yUpdateCount = function () {
 					color: ${value.font};
 					display: inline-block;
 					padding: 4px 4px 2px 6px;
-					content: "${value.title.replace('"',"''").replace('?,', ',')}";
+					content: "${value.title.replace('"',"'").replace('?,', ',') /* eslint-disable-line */ }";
 					z-index: -1;
 					opacity: 0;
 					font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
