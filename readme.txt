@@ -138,5 +138,13 @@ Editoria11y began as a fork of the Toronto Metropolitan University's [Sa11y Acce
 
 == Changelog ==
 
+= 1.0.1 =
+* Updates library to v2.0.3
+* Remove "possible heading" alert on linked text.
+* Remove false positive for decorative images inside a link that has additional text.
+* Moved heading tooltip toggles inside heading tags for WordPress theme compatibility.
+* Removed heading outline tests on hidden headings. This may well miss nested headings inside accordions, but it removes false positives on display:none elements.
+* Bugfixes for in-editor highlighting.
+
 = 1.0.0 =
-* Initial WordPress release; aligns with [Editoria11y library](https://itmaybejj.github.io/editoria11y/) v2.0.2 and Editoria11y Drupal v2.0.5
+* Initial WordPress release; aligns with [Editoria11y library](https://itmaybejj.github.io/editoria11y/) v2.0.2 and Editoria11y Drupal v2.0.5.
