@@ -1,7 +1,7 @@
 === Editoria11y Accessibility Checker ===
 Contributors: itmaybejj, partyka
 Tags: accessibility checker, automated testing, quality assurance, SEO
-Stable tag: 1.0.0
+Stable tag: 1.0.1
 Tested up to: 6.1
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
