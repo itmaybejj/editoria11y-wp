@@ -454,8 +454,9 @@ function ed11y_plugin_settings_render_page() {
 
 						<h2 class="postbox-heading">Getting help</h3>
 						<ul>
+							<li><a href="https://wordpress.org/plugins/editoria11y-accessibility-checker/">Editoria11y Plugin</a></li>
 							<li>
-								<a href="https://github.com/itmaybejj/editoria11y">Editoria11y library documentation</a>
+								<a href="https://github.com/itmaybejj/editoria11y">Editoria11y JS Library</a>
 							</li>
 							<li>
 								<a href="https://github.com/itmaybejj/editoria11y-wp/issues">Issues &amp; feature requests</a><br><br>

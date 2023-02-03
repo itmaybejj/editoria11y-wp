@@ -137,8 +137,7 @@ ed11yReady(
         ed11yOptions['showDismissed'] = true;
       }
 
-      // eslint-disable-next-line
-			const ed11y = new Ed11y(ed11yOptions);
+			const ed11y = new Ed11y(ed11yOptions); // eslint-disable-line
       ed11ySync();
     }
   }

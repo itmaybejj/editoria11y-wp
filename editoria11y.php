@@ -4,7 +4,7 @@
  * Editoria11y Accessibility Checker
  *
  * Plugin Name:       Editoria11y Accessibility Checker
- * Plugin URI:        https://itmaybejj.github.io/editoria11y/demo/
+ * Plugin URI:        https://wordpress.org/plugins/editoria11y-accessibility-checker/
  * Version:           1.0.0
  * Requires PHP:      7.2
  * Requires at least: 6.0
@@ -18,7 +18,7 @@
  * Description:       User friendly content quality assurance. Checks automatically, highlights issues inline, and provides straightforward, easy-to-understand tips.
  *
  * @package         Editoria11y
- * @link            https://itmaybejj.github.io/editoria11y/
+ * @link            https://wordpress.org/plugins/editoria11y-accessibility-checker/
  * @author          John Jameson, Princeton University
  * @copyright       2023 The Trustees of Princeton University
  * @license         GPL v2 or later

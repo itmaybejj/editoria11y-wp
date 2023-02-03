@@ -80,25 +80,25 @@ Editoria11y is...spellcheck: a seamless, automatic and intuitive integration for
 
 = How is this different from Sa11y? =
 
-Editoria11y is quite similar to [Sa11y](https://wordpress.org/plugins/sa11y/). Editoria11y began as a Sa11y fork, and the maintainers collaborate on new tests and optimizations.
+Editoria11y's test suite is quite similar to [Sa11y](https://wordpress.org/plugins/sa11y/). Editoria11y began as a Sa11y fork, and the maintainers collaborate on new tests and optimizations.
 
-The look, feel and features outside of the core test suite are a bit different:
+The look, feel and features outside of the core test suite are a bit different. At a high level:
 
-* Editoria11y focuses on providing shared experience for all editors:
+* Sa11y focuses on flexibility and extensibility:
+    * The end-user can override appearance and test coverage settings from the results panel
+    * A legibility scoring library is included
+    * A contrast checking library is included
+* Editoria11y focuses on providing a shared experience for all editors:
     * An API is added, meaning findings are synchronized with your site's database, populating a site-wide reporting dashboard
     * Manual-checks marked as "OK" are dismissed for **all** users, not just the current user
     * Issues can be highlighted within the Block Editor/Gutenberg as you edit, not just on the published page
     * All configuration is managed in the plugin settings
-* Sa11y focuses on flexibility and extensibility:
-    * The end-user interface can override appearance and test coverage settings
-    * A legibility scoring library is included
-    * A contrast checking library is included
 
 = Is this an overlay? =
 
 Overlays are tools that modify your site's public pages according to automated attempts to modify its code and design, claiming these machine-generated changes to your site will better meet the accessibility needs of your users. 
 
-Overlays may override your font sizes or colors, or attempt to re-tag headings and buttons so that screen readers can operate your site. You should familiarize yourself with the [assistive technology compatibility problems overlays may introduce](https://overlayfactsheet.com/) before assuming these changes will be helpful.
+Overlays may override your font sizes or colors, or modify its heading tags and buttons. You should familiarize yourself with the [assistive technology compatibility problems overlays may introduce](https://overlayfactsheet.com/) before assuming these changes will be helpful.
 
 **Editoria11y is not an overlay.** It does not modify the site viewed by not-logged-in-users in any way. It is an editor-facing "spellchecker" that helps your site editors create accessible content.
 
@@ -106,7 +106,7 @@ Overlays may override your font sizes or colors, or attempt to re-tag headings a
 
 Editoria11y's default settings will work great for most sites. 
 
-Your first task after installation should be clicking through each of the main pages of your site. This will start to populate your dashboard report, and give you a chance to look for issues to fix or dismiss.
+Your first task after installation should be clicking through a representative sampling of the main pages of your site. This will start to populate your dashboard report, and give you a chance to look for issues to fix or dismiss.
 
 If you notice anything amiss, experiment with these settings:
 
