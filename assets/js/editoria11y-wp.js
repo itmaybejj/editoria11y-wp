@@ -66,7 +66,7 @@ function ed11ySync() {
     window.setTimeout(function () {
       let results = extractResults();
       let url = Ed11y.options.currentPage;
-      url = url.length > 250 ? url.substring(0, 250) : url;
+      url = url.length > 224 ? url.substring(0, 224) : url;
       let queryString = window.location.search;
       let urlParams = new URLSearchParams(queryString);
       let pid = urlParams.get('ed1ref');
