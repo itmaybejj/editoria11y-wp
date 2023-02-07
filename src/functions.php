@@ -43,7 +43,7 @@ function ed11y_get_default_options( $option = false ) {
 		// Web components
 		// JS unfold theme handler
 		// Language.
-		'ed11y_theme'               => 'lightTheme',
+		'ed11y_theme'               => 'sleekTheme',
 		'ed11y_checkRoots'          => false,
 		'ed11y_livecheck'           => 'errors',
 

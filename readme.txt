@@ -138,6 +138,9 @@ Editoria11y began as a fork of the Toronto Metropolitan University's [Sa11y Acce
 
 == Changelog ==
 
+= 1.0.3 =
+* Updates library to v2.0.4, with new base theme.
+
 = 1.0.2 =
 * Updates library to v2.0.3
 * Remove "possible heading" alert on linked text.

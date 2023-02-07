@@ -219,7 +219,8 @@ function ed11y_theme_field() {
 	?>
 
 	<select name="ed11y_plugin_settings[ed11y_theme]" id="ed11y-theme" name="ed11y_theme" class="form-select">
-		<option <?php echo 'lightTheme' === $settings ? 'selected="true"' : ''; ?>value="lightTheme">Light</option>
+		<option <?php echo 'sleekTheme' === $settings ? 'selected="true"' : ''; ?>value="sleekTheme">Sleek</option>
+		<option <?php echo 'lightTheme' === $settings ? 'selected="true"' : ''; ?>value="lightTheme">Classic</option>
 		<option <?php echo 'darkTheme' === $settings ? 'selected="true"' : ''; ?>value="darkTheme">Dark</option>
 	</select>
 
