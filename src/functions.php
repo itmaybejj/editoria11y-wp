@@ -45,7 +45,7 @@ function ed11y_get_default_options( $option = false ) {
 		// Language.
 		'ed11y_theme'               => 'sleekTheme',
 		'ed11y_checkRoots'          => false,
-		'ed11y_livecheck'           => 'errors',
+		'ed11y_livecheck'           => 'all',
 
 		'ed11y_ignore_elements'     => '#comments *, .wp-block-post-comments *, img.avatar',
 		'ed11y_link_ignore_strings' => false,

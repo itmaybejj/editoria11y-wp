@@ -231,7 +231,7 @@ function ed11y_theme_field() {
  * Target field
  */
 function ed11y_livecheck_field() {
-	$settings = ed11y_get_plugin_settings( 'ed11y_livecheck', false );
+	$settings = ed11y_get_plugin_settings( 'ed11y_livecheck', true );
 	?>
 
 	<select name="ed11y_plugin_settings[ed11y_livecheck]" id="ed11y-livecheck" name="ed11y_livecheck" class="form-select" aria-describedby="livecheck_description">
