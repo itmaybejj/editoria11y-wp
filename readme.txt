@@ -1,7 +1,7 @@
 === Editoria11y Accessibility Checker ===
 Contributors: itmaybejj, partyka
 Tags: accessibility checker, automated testing, quality assurance, SEO
-Stable tag: 1.0.4
+Stable tag: 1.0.5
 Tested up to: 6.1
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -137,6 +137,9 @@ Editoria11y began as a fork of the Toronto Metropolitan University's [Sa11y Acce
 3. Site-wide reporting dashboard
 
 == Changelog ==
+
+= 1.0.5 =
+* Bugfix for live edit highlighter.
 
 = 1.0.4 =
 * Fix for installation failure on certain PHP versions.

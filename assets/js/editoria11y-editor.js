@@ -59,7 +59,7 @@ let ed11yUpdateCount = function () {
       // Skip dismissed items, and only show warnings if they have not been suppressed in plugin settings.
       if (ed11yOpen && result[5] === false && !(ed11yOptions['liveCheck'] === 'errors' && result[4])) {
         let ed11yContainerId = result[0].closest('.wp-block').getAttribute('id');
-        let ed11yRingColor = !result[4] ? Ed11y.color.alert : Ed11y.color.warning;
+        let ed11yRingColor = !result[4] ? Ed11y.theme.alert : Ed11y.theme.warning;
         let ed11yFontColor = !result[4] ? '#fff' : '#111';
         // Concatenate results when multiple hits in same black.
         if (!ed11yKnownContainers[ed11yContainerId]) {
@@ -74,7 +74,7 @@ let ed11yUpdateCount = function () {
             // First alert of this type in block.
             if (ed11yKnownContainers[ed11yContainerId]['ring'] !== ed11yRingColor) {
               // If one is red, red wins.
-              ed11yRingColor = Ed11y.color.alert;
+              ed11yRingColor = Ed11y.theme.alert;
             }
             // Put question marks at end.
             let ed11yNewTitle = '';
