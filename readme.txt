@@ -132,9 +132,10 @@ Editoria11y's WordPress plugin is maintained by Princeton University's [Web Deve
 Editoria11y began as a fork of the Toronto Metropolitan University's [Sa11y Accessibility Checker](https://sa11y.netlify.app/), and our teams regularly pass new code and ideas back and forth.
 
 == Screenshots ==
-1. Checker with an open alert on a link with a URL as its text
-2. Optional feature: highlighting while editing
+1. Checker with an open "manual check" request
+2. Optional feature: highlighting live in the block editor
 3. Site-wide reporting dashboard
+4. Checker set to dark theme, showing a table header alert
 
 == Changelog ==
 
