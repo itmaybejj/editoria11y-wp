@@ -100,7 +100,7 @@ class Ed1 {
              */
     Ed1.buildRequest = function (request) {
       let q = Ed1.requests[request];
-      let req = `${q.base}?view=${q.view}&count=${q.count}&offset=${q.offset}&sort=${q.sort}&direction=${q.direction}&result_key=${q.result_key}&entity_type=${q.entity_type}`;
+      let req = `${q.base}?view=${q.view}&count=${q.count}&offset=${q.offset}&sort=${q.sort}&direction=${q.direction}&result_key=${q.result_key}&entity_type=${q.entity_type}&nocache=${Date.now()}`;
       return req;
     };
 
