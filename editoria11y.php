@@ -5,7 +5,7 @@
  *
  * Plugin Name:       Editoria11y Accessibility Checker
  * Plugin URI:        https://wordpress.org/plugins/editoria11y-accessibility-checker/
- * Version:           1.0.6
+ * Version:           1.0.7
  * Requires PHP:      7.2
  * Requires at least: 6.0
  * Tested up to:      6.1
