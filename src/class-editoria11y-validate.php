@@ -75,6 +75,7 @@ class Editoria11y_Validate {
 			'altPartOfLinkWithText',
 			'linkNoText',
 			'linkTextIsUrl',
+			'linkTextIsURL',
 			'linkTextIsGeneric',
 			'linkDocument',
 			'linkNewWindow',

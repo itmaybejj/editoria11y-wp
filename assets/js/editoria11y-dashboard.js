@@ -120,7 +120,7 @@ class Ed1 {
 
       // Only build result table if there is no result or type filter.
       if (!!Ed1.resultKey || !!Ed1.type) {
-        let h1 = document.querySelector('#ed1 h1');
+        let h1 = Ed1.wrapper.querySelector('#ed1 h1');
         let resetType = 'View all issues';
         if (Ed1.resultKey) {
           h1.textContent = 'Issue report: "' + ed11yLang.en[Ed1.resultKey].title + '"';
@@ -493,6 +493,13 @@ class Ed1 {
 
           Ed1.tables['ed1result'].insertAdjacentElement('beforeend', row);
         });
+
+        if (!Ed1.csvLink) {
+          //heeere
+          Ed1.csvLink = Ed1.render.a('Download results as CSV', '' , Ed1.url + '&ed11y_export_results_csv=download' );
+          Ed1.csvLink.classList.add('ed11y-export');
+          Ed1.wrapper.append( Ed1.csvLink );
+        }
       }
 
       if (announce) {

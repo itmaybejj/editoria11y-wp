@@ -622,3 +622,99 @@ function ed11y_dashboard_menu() {
 	$capability = '1' === $setting ? 'manage_options' : 'edit_others_posts';
 	add_menu_page( esc_html__( 'Editoria11y', 'editoria11y' ), esc_html__( 'Editoria11y', 'editoria11y' ), $capability, ED11Y_SRC . 'admin.php', 'editoria11y_dashboard', 'dashicons-chart-bar', 90 );
 }
+
+function ed11y_test_nice_names() {
+	$tests                                = array();
+	$tests['headingLevelSkipped']         = __( 'Manual check: was a heading level skipped?', 'editoria11y' );
+	$tests['headingEmpty']                = __( 'Heading tag without any text', 'editoria11y' );
+	$tests['headingIsLong']               = __( 'Manual check: long heading', 'editoria11y' );
+	$tests['blockQuoteIsShort']           = __( 'Manual check: is this a blockquote?', 'editoria11y' );
+	$tests['altMissing']                  = __( 'Image has no alternative text attribute', 'editoria11y' );
+	$tests['altNull']                     = __( 'Manual check: image has no alt text', 'editoria11y' );
+	$tests['altURL']                      = __( "Image's text alternative is a URL", 'editoria11y' );
+	$tests['alURLLinked']                 = __( "Linked image's text alternative is a URL", 'editoria11y' );
+	$tests['altImageOf']                  = __( 'Manual check: possibly redundant text in alt', 'editoria11y' );
+	$tests['altImageOfLinked']            = __( 'Manual check: possibly redundant text in linked image', 'editoria11y' );
+	$tests['altDeadspace']                = __( "Image's text alternative is unpronounceable", 'editoria11y' );
+	$tests['altDeadspaceLinked']          = __( "Linked Image's text alternative is unpronounceable", 'editoria11y' );
+	$tests['altEmptyLinked']              = __( 'Linked Image has no alt text', 'editoria11y' );
+	$tests['altLong']                     = __( 'Manual check: very long alternative text', 'editoria11y' );
+	$tests['altLongLinked']               = __( 'Manual check: very long alternative text in linked image', 'editoria11y' );
+	$tests['altPartOfLinkWithText']       = __( 'Manual check: link contains both text and an image', 'editoria11y' );
+	$tests['linkNoText']                  = __( 'Link with no accessible text', 'editoria11y' );
+	$tests['linkTextIsURL']               = __( 'Manual check: is this link text a URL?', 'editoria11y' );
+	$tests['linkTextIsGeneric']           = __( 'Manual check: is this link meaningful and concise?', 'editoria11y' );
+	$tests['linkDocument']                = __( 'Manual check: is the linked document accessible?', 'editoria11y' );
+	$tests['linkNewWindow']               = __( 'Manual check: is opening a new window expected?', 'editoria11y' );
+	$tests['tableNoHeaderCells']          = __( 'Table has no header cells', 'editoria11y' );
+	$tests['tableContainsContentHeading'] = __( 'Content heading inside a table', 'editoria11y' );
+	$tests['tableEmptyHeaderCell']        = __( 'Empty table header cell', 'editoria11y' );
+	$tests['textPossibleList']            = __( 'Manual check: should this have list formatting?', 'editoria11y' );
+	$tests['textPossibleHeading']         = __( 'Manual check: should this be a heading?', 'editoria11y' );
+	$tests['textUppercase']               = __( 'Manual check: is this uppercase text needed?', 'editoria11y' );
+	$tests['embedVideo']                  = __( 'Manual check: is this video accurately captioned?', 'editoria11y' );
+	$tests['embedAudio']                  = __( 'Manual check: is an accurate transcript provided?', 'editoria11y' );
+	$tests['embedVisualization']          = __( 'Manual check: is this visualization accessible?', 'editoria11y' );
+	$tests['embedTwitter']                = __( 'Manual check: is this embed a keyboard trap?', 'editoria11y' );
+	$tests['embedCustom']                 = __( 'Manual check: is this embedded content accessible?', 'editoria11y' );
+	return $tests;
+}
+
+function ed11y_export_results_csv() {
+	if ( isset( $_GET['ed11y_export_results_csv'] ) ) {
+		$setting    = ed11y_get_plugin_settings( 'ed11y_report_restrict' );
+		$capability = '1' === $setting ? 'manage_options' : 'edit_others_posts';
+		if ( ! current_user_can( $capability ) ) {
+			return;
+		}
+		$test_name = ed11y_test_nice_names();
+
+		header( 'Content-type: text/csv' );
+		header( 'Content-Disposition: attachment; filename="wp-posts.csv"' );
+		header( 'Pragma: no-cache' );
+		header( 'Expires: 0' );
+
+		$file = fopen( 'php://output', 'w' );
+
+		global $wpdb;
+		$utable = $wpdb->prefix . 'ed11y_urls';
+		$rtable = $wpdb->prefix . 'ed11y_results';
+		/*
+		Complex counts and joins required a direct DB call.
+		Variables are all validated or sanitized.
+		*/
+		// phpcs:disable
+		$data = $wpdb->get_results(
+			"SELECT
+				{$utable}.pid,
+				{$utable}.page_url,
+				{$utable}.page_title,
+				{$utable}.entity_type,
+				{$utable}.page_total,
+				SUM({$rtable}.result_count) AS count,
+				{$rtable}.result_key,
+			MAX({$rtable}.created) as created
+			FROM {$rtable}
+			INNER JOIN {$utable} ON {$rtable}.pid={$utable}.pid
+			GROUP BY {$utable}.pid,
+				{$utable}.page_url,
+				{$utable}.page_title,
+				{$utable}.entity_type,
+				{$utable}.page_total,
+				{$rtable}.created
+			ORDER BY count DESC;"
+		);
+		// phpcs:enable
+
+		fputcsv( $file, array( 'Count', 'Issue', 'URL', 'Page', 'Type', 'Detected on') );
+
+		foreach ( $data as $result ) {
+			fputcsv( $file, array( $result->count, $test_name[ $result->result_key ], $result->page_url, $result->page_title, $result->entity_type, $result->created ) );
+		}
+
+		exit();
+
+	}
+}
+
+add_action( 'admin_init', 'ed11y_export_results_csv' );

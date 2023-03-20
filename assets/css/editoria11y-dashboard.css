@@ -220,6 +220,16 @@
     color: #aaa;
 }
 
+#ed1 .ed11y-export {
+    display: inline-block;
+    padding: .5rem;
+    width: auto;
+    border-radius: 4px;
+    text-decoration: none;
+    border: 1px solid;
+    margin-top: 1.5rem;
+}
+
 #ed1 .visually-hidden {
   clip: rect(0 0 0 0);
   clip-path: inset(50%);
