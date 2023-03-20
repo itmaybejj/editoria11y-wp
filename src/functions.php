@@ -57,6 +57,7 @@ function ed11y_get_default_options( $option = false ) {
 
 		'ed11y_checkvisibility'     => $check_visibility,
 		'ed11y_no_run'              => false,
+		'ed11y_report_restrict'     => false,
 	);
 
 	// Allow dev to filter the default settings.

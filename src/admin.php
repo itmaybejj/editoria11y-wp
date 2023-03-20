@@ -99,6 +99,8 @@ function ed11y_setting_sections_fields() {
 
 	/* ================= Fields */
 
+	/* == basic config == */
+
 	// Add themepicker field.
 	add_settings_field(
 		'ed11y_theme',
@@ -118,6 +120,18 @@ function ed11y_setting_sections_fields() {
 		'ed11y_basic',
 		array( 'label_for' => 'ed11y_livecheck' )
 	);
+
+	// Add reports permission field.
+	add_settings_field(
+		'ed11y_report_restrict',
+		esc_html__( 'Only admins can view reports', 'editoria11y' ),
+		'ed11y_report_restrict_field',
+		'ed11y',
+		'ed11y_basic',
+		array( 'label_for' => 'ed11y_report_restrict_field' )
+	);
+
+	/* == Customize selectors == */
 
 	// Add 'Check Roots' input setting field.
 	add_settings_field(
@@ -228,7 +242,7 @@ function ed11y_theme_field() {
 }
 
 /**
- * Target field
+ * Livecheck field
  */
 function ed11y_livecheck_field() {
 	$settings = ed11y_get_plugin_settings( 'ed11y_livecheck', true );
@@ -247,6 +261,18 @@ function ed11y_livecheck_field() {
 	</p>
 	<?php
 }
+
+/**
+ * Dashboard access for editors field
+ */
+function ed11y_report_restrict_field() {
+	$settings = ed11y_get_plugin_settings( 'ed11y_report_restrict' );
+	?>
+	<input type="checkbox" aria-describedby="ed11y_report_restrict_description" name="ed11y_plugin_settings[ed11y_report_restrict]" id="ed11y_report_restrict_field" value="1"<?php checked( '1', $settings ); ?> />
+	<p id="ed11y_report_restrict_description">By default both admins and editors can view reports.</p>
+	<?php
+}
+
 
 /**
  * Target field
@@ -592,5 +618,7 @@ add_action( 'admin_menu', 'ed11y_dashboard_menu' );
  * Add Editoria11y dashboard to admin sidebar menu.
  */
 function ed11y_dashboard_menu() {
-	add_menu_page( esc_html__( 'Editoria11y', 'editoria11y' ), esc_html__( 'Editoria11y', 'editoria11y' ), 'manage_options', ED11Y_SRC . 'admin.php', 'editoria11y_dashboard', 'dashicons-chart-bar', 90 );
+	$setting    = ed11y_get_plugin_settings( 'ed11y_report_restrict' );
+	$capability = '1' === $setting ? 'manage_options' : 'edit_others_posts';
+	add_menu_page( esc_html__( 'Editoria11y', 'editoria11y' ), esc_html__( 'Editoria11y', 'editoria11y' ), $capability, ED11Y_SRC . 'admin.php', 'editoria11y_dashboard', 'dashicons-chart-bar', 90 );
 }
