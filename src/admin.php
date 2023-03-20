@@ -623,6 +623,9 @@ function ed11y_dashboard_menu() {
 	add_menu_page( esc_html__( 'Editoria11y', 'editoria11y' ), esc_html__( 'Editoria11y', 'editoria11y' ), $capability, ED11Y_SRC . 'admin.php', 'editoria11y_dashboard', 'dashicons-chart-bar', 90 );
 }
 
+/**
+ * Returns array of nicenames for test result keys.
+ */
 function ed11y_test_nice_names() {
 	$tests                                = array();
 	$tests['headingLevelSkipped']         = __( 'Manual check: was a heading level skipped?', 'editoria11y' );
@@ -660,8 +663,11 @@ function ed11y_test_nice_names() {
 	return $tests;
 }
 
+/**
+ * Returns a CSV download of site results.
+ */
 function ed11y_export_results_csv() {
-	if ( isset( $_GET['ed11y_export_results_csv'] ) ) {
+	if ( isset( $_GET['ed11y_export_results_csv'] ) && isset( $_REQUEST['_wpnonce'] ) && wp_verify_nonce( $_REQUEST['_wpnonce'], 'ed1ref' ) ) { // phpcs:ignore
 		$setting    = ed11y_get_plugin_settings( 'ed11y_report_restrict' );
 		$capability = '1' === $setting ? 'manage_options' : 'edit_others_posts';
 		if ( ! current_user_can( $capability ) ) {
@@ -679,6 +685,7 @@ function ed11y_export_results_csv() {
 		global $wpdb;
 		$utable = $wpdb->prefix . 'ed11y_urls';
 		$rtable = $wpdb->prefix . 'ed11y_results';
+
 		/*
 		Complex counts and joins required a direct DB call.
 		Variables are all validated or sanitized.
@@ -706,7 +713,7 @@ function ed11y_export_results_csv() {
 		);
 		// phpcs:enable
 
-		fputcsv( $file, array( 'Count', 'Issue', 'URL', 'Page', 'Type', 'Detected on') );
+		fputcsv( $file, array( 'Count', 'Issue', 'URL', 'Page', 'Type', 'Detected on' ) );
 
 		foreach ( $data as $result ) {
 			fputcsv( $file, array( $result->count, $test_name[ $result->result_key ], $result->page_url, $result->page_title, $result->entity_type, $result->created ) );
