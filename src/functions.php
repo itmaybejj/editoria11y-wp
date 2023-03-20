@@ -109,8 +109,8 @@ function ed11y_load_scripts() {
 		&& ( $allowed_user_roles || current_user_can( 'edit_posts' ) || current_user_can( 'edit_pages' ) )
 	) {
 		// added last two parameters 10/27/22 need to test.
-		wp_enqueue_script( 'editoria11y-js', trailingslashit( ED11Y_ASSETS ) . 'lib/editoria11y.min.js', null, true, Editoria11y::ED11Y_VERSION, false );
-		wp_enqueue_script( 'editoria11y-js-shim', trailingslashit( ED11Y_ASSETS ) . 'js/editoria11y-wp.js', array( 'wp-api' ), true, Editoria11y::ED11Y_VERSION, false );
+		wp_enqueue_script( 'editoria11y-js', trailingslashit( ED11Y_ASSETS ) . 'lib/editoria11y.min.js', null, Editoria11y::ED11Y_VERSION, false );
+		wp_enqueue_script( 'editoria11y-js-shim', trailingslashit( ED11Y_ASSETS ) . 'js/editoria11y-wp.js', array( 'wp-api' ), Editoria11y::ED11Y_VERSION, false );
 	}
 }
 add_action( 'wp_enqueue_scripts', 'ed11y_load_scripts' );
@@ -122,8 +122,8 @@ function ed11y_load_block_editor_scripts() {
 	// Get the enable option.
 	// Check if scroll top enable.
 	// Todo: only load on edit pages.
-	wp_enqueue_script( 'editoria11y-js', trailingslashit( ED11Y_ASSETS ) . 'lib/editoria11y.min.js', null, true, Editoria11y::ED11Y_VERSION, false );
-	wp_enqueue_script( 'editoria11y-editor', trailingslashit( ED11Y_ASSETS ) . 'js/editoria11y-editor.js', null, true, Editoria11y::ED11Y_VERSION, false );
+	wp_enqueue_script( 'editoria11y-js', trailingslashit( ED11Y_ASSETS ) . 'lib/editoria11y.min.js', null, Editoria11y::ED11Y_VERSION, false );
+	wp_enqueue_script( 'editoria11y-editor', trailingslashit( ED11Y_ASSETS ) . 'js/editoria11y-editor.js', null, Editoria11y::ED11Y_VERSION, false );
 }
 
 /**

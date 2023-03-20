@@ -1,8 +1,8 @@
 === Editoria11y Accessibility Checker ===
 Contributors: itmaybejj, partyka
 Tags: accessibility checker, automated testing, quality assurance, SEO
-Stable tag: 1.0.7
-Tested up to: 6.1
+Stable tag: 1.0.8
+Tested up to: 6.2
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -20,7 +20,7 @@ It is meant to **supplement**, not replace, [testing your code and visual design
 
 ## The authoring experience
 
-Check out a [demo of the checker itself](https://itmaybejj.github.io/editoria11y/demo/).
+Check out a [demo of the checker itself](https://editoria11y.princeton.edu/demo).
 
 * When **logged-in authors and editors** are viewing published or in-preview pages, Editoria11y's toggle discretely indicates if any issues are present on the current page.
 * Clicking the toggle opens the checker's main panel. Alerts are placed on pieces of content with issues, with tooltips to explain each problem and what actions are needed to resolve it. If an issue is not critical or may be OK as written, buttons are available to dismiss the alert on this page, either for the current user ("Hide alert") or for all users ("Mark as Checked and OK").
@@ -33,7 +33,7 @@ Check out a [demo of the checker itself](https://itmaybejj.github.io/editoria11y
 * Filterable reports let you explore recent issues, which pages have the most issues, which issues are most common, and which issues have been dismissed. These populate and update as content is viewed and updated.
 * Various settings are available to constrain checks to specific parts of the page and tweak the sensitivity of several tests.
 
-Note that all this runs locally within your site. This plugin is the WordPress adaptation of the free and open-source [Editoria11y library](https://github.com/itmaybejj/editoria11y). Tests run in the browser and findings are stored in your own database; nothing is sent to any third party.
+Note that all this runs locally within your site. This plugin is the WordPress adaptation of the free and open-source [Editoria11y library](https://editoria11y.princeton.edu). Tests run in the browser and findings are stored in your own database; nothing is sent to any third party.
 
 ## The tests
 
@@ -116,7 +116,7 @@ If you notice anything amiss, experiment with these settings:
 4. If you do not want PDF or other document types flagged for manual checks, provide a shorter selector list or set "Document types that need manual review" to `false`
 5. If your theme has done something very unusual with its layout, such as setting the height of the content container to 0px, you may see confusing alerts when opening Editoria11y tips saying that the highlighted element may be off-screen or invisible. If that happens, disable "Check if elements are visible when using panel navigation buttons." This is disabled by defaults on any WordPress themes we have noticed this on, so if you find a theme 
 
-If you are a theme developer, note that the library dispatches JavaScript events at several key moments (scan finishes, panel opens, tooltip opens or shuts), allowing you to attach custom functionality. JavaScript on sites running Editoria11y can use these events to do things like [automatically opening accordion widgets](https://github.com/itmaybejj/editoria11y/blob/main/README.md#dealing-with-alerts-on-hidden-or-size-constrained-content) if they contain hidden alerts, disabling "sticky" site menus if the panel is open, or even syncing results to third-party dashboards.
+If you are a theme developer, note that the library dispatches JavaScript events at several key moments (scan finishes, panel opens, tooltip opens or shuts), allowing you to attach custom functionality. JavaScript on sites running Editoria11y can use these events to do things like [automatically opening accordion widgets](https://editoria11y.princeton.edu/configuration/#hidden-content) if they contain hidden alerts, disabling "sticky" site menus if the panel is open, or even syncing results to third-party dashboards.
 
 And then...tell us how it went! This plugin and its base library are both under active development. Ideally send bug reports and feature requests through the [GitHub issue queue](https://github.com/itmaybejj/editoria11y-wp/issues).
 
@@ -139,6 +139,10 @@ Editoria11y began as a fork of the Toronto Metropolitan University's [Sa11y Acce
 
 == Changelog ==
 
+= 1.0.8 =
+* Adds option to restrict viewing reports to site admins.
+* Adds CSV export for site reports.
+
 = 1.0.7 =
 * Fix for bug that was preventing scrolling the outline and alt tag tabs on the main panel.
 * Improvements to alignments and colors on tips.
@@ -148,20 +152,3 @@ Editoria11y began as a fork of the Toronto Metropolitan University's [Sa11y Acce
 
 = 1.0.5 =
 * Bugfix for live edit highlighter.
-
-= 1.0.4 =
-* Fix for installation failure on certain PHP versions.
-
-= 1.0.3 =
-* Updates library to v2.0.4, with new base theme.
-
-= 1.0.2 =
-* Updates library to v2.0.3
-* Remove "possible heading" alert on linked text.
-* Remove false positive for decorative images inside a link that has additional text.
-* Moved heading tooltip toggles inside heading tags for WordPress theme compatibility.
-* Removed heading outline tests on hidden headings. This may well miss nested headings inside accordions, but it removes false positives on display:none elements.
-* Bugfixes for in-editor highlighting.
-
-= 1.0.0 =
-* Initial WordPress release; aligns with [Editoria11y library](https://itmaybejj.github.io/editoria11y/) v2.0.2 and Editoria11y Drupal v2.0.5.
