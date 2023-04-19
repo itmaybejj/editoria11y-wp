@@ -1,7 +1,7 @@
 === Editoria11y Accessibility Checker ===
 Contributors: itmaybejj, partyka
 Tags: accessibility checker, automated testing, quality assurance, SEO
-Stable tag: 1.0.8
+Stable tag: 1.0.9
 Tested up to: 6.2
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -138,6 +138,11 @@ Editoria11y began as a fork of the Toronto Metropolitan University's [Sa11y Acce
 4. Checker set to dark theme, showing a table header alert
 
 == Changelog ==
+
+
+= 1.0.9 =
+* Fix for configuration page not showing current selections for some fields.
+* Fixes for some CSS conflicts in the block editor.
 
 = 1.0.8 =
 * Adds option to restrict viewing reports to site admins.

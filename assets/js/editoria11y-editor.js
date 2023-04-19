@@ -97,25 +97,30 @@ let ed11yUpdateCount = function () {
     for (const [key, value] of Object.entries(ed11yKnownContainers)) {
       ed11yStyles += `
 				#${key}::after { 
-					position: absolute;
-					font-size: 13px;
-					background: ${value.ring};
-					color: ${value.font};
-					display: inline-block;
-					padding: 4px 4px 2px 6px;
+					position: absolute !important;
+					font-size: 13px !important;
+					background: ${value.ring} !important;
+					color: ${value.font} !important;
+					display: inline-block !important;
+					padding: 4px 4px 2px 6px !important;
 					content: "${value.title.replace('"',"'").replace('?,', ',') /* eslint-disable-line */ }";
-					z-index: -1;
-					opacity: 0;
-					font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
-					font-weight: 500;
-					line-height: 15px;
-					bottom: 0;
-					right: 0;
-					border-radius: 2px 0 0 0;
+					z-index: -1 !important;
+					opacity: 0 !important;
+					font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif !important;
+					font-weight: 500 !important;
+					line-height: 15px !important;
+					bottom: 0 !important;
+					right: 0 !important;
+          top: auto !important;
+          left: auto !important;
+          width: auto !important;
+          height: auto !important;
+					border-radius: 2px 0 0 0 !important;
+          letter-spacing: 0 !important;
 				}
 				#${key}:not(.is-selected)::after { 
-					opacity: 1;
-					z-index: 1;
+					opacity: 1 !important;
+					z-index: 1 !important;
 				}
 				#${key}:not(.is-selected) { 
 					box-shadow: 0 0 0 2px ${value.ring};

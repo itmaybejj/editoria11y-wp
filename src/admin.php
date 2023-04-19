@@ -229,7 +229,7 @@ add_action( 'admin_init', 'ed11y_setting_sections_fields' );
  * Target field
  */
 function ed11y_theme_field() {
-	$settings = ed11y_get_plugin_settings( 'ed11y_theme', true );
+	$settings = ed11y_get_plugin_settings( 'ed11y_theme' );
 	?>
 
 	<select name="ed11y_plugin_settings[ed11y_theme]" id="ed11y-theme" name="ed11y_theme" class="form-select">
@@ -245,7 +245,7 @@ function ed11y_theme_field() {
  * Livecheck field
  */
 function ed11y_livecheck_field() {
-	$settings = ed11y_get_plugin_settings( 'ed11y_livecheck', true );
+	$settings = ed11y_get_plugin_settings( 'ed11y_livecheck' );
 	?>
 
 	<select name="ed11y_plugin_settings[ed11y_livecheck]" id="ed11y-livecheck" name="ed11y_livecheck" class="form-select" aria-describedby="livecheck_description">
