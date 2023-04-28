@@ -162,6 +162,7 @@ let ed11yAdminInit = function () {
   ed11yOptions['checkRoots'] = '.editor-styles-wrapper';
   ed11yOptions['ignoreByKey'] = { img: '' };
   ed11yOptions['ignoreByKey']['h'] = '.wp-block-post-title';
+  ed11yOptions['altPlaceholder'] = 'This image has an empty alt attribute;';
 
   // Wordpress does not render empty post titles so we don't need to flag them.
   ed11yOptions['originalIgnore'] = ed11yOptions['ignoreElements'];

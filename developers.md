@@ -1,4 +1,8 @@
+# Push
+Don't forget to pull the latest library, using scripts/get.sh
+Don't forget to do a global search for the old version number.
 
+# Setup
 1. Run composer install
 2. Add Wordpress wpcs to your phpcs path to add WordPress code validation:
    First get the existing list: 

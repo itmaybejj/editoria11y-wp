@@ -136,7 +136,7 @@ function ed11y_setting_sections_fields() {
 	// Add 'Check Roots' input setting field.
 	add_settings_field(
 		'ed11y_checkRoots',
-		esc_html__( 'Check content in these containers', 'editoria11y' ),
+		esc_html__( 'Check this part of the page', 'editoria11y' ),
 		'ed11y_check_roots_field',
 		'ed11y',
 		'ed11y_test_settings',
@@ -146,7 +146,7 @@ function ed11y_setting_sections_fields() {
 	// Add container ignore field.
 	add_settings_field(
 		'ed11y_ignore_elements',
-		esc_html__( 'Exclude these elements from checks', 'editoria11y' ),
+		esc_html__( 'Do not flag these elements', 'editoria11y' ),
 		'ed11y_ignore_elements_field',
 		'ed11y',
 		'ed11y_test_settings',
@@ -156,7 +156,7 @@ function ed11y_setting_sections_fields() {
 	// Document types field.
 	add_settings_field(
 		'ed11y_documentContent',
-		esc_html__( 'Document types that need manual review', 'editoria11y' ),
+		esc_html__( 'Document types flagged as needing manual review', 'editoria11y' ),
 		'ed11y_document_content_field',
 		'ed11y',
 		'ed11y_test_settings',
@@ -166,7 +166,7 @@ function ed11y_setting_sections_fields() {
 	// Add datavizContent field.
 	add_settings_field(
 		'ed11y_datavizContent',
-		esc_html__( 'Embeds that need manual review', 'editoria11y' ),
+		esc_html__( 'Embeds flagged as needing manual review', 'editoria11y' ),
 		'ed11y_dataviz_content_field',
 		'ed11y',
 		'ed11y_test_settings',
@@ -176,7 +176,7 @@ function ed11y_setting_sections_fields() {
 	// Add Video content field.
 	add_settings_field(
 		'ed11y_videoContent',
-		esc_html__( 'Video sources that need captions', 'editoria11y' ),
+		esc_html__( 'Videos flagged as needing a manual check for captions', 'editoria11y' ),
 		'ed11y_video_content_field',
 		'ed11y',
 		'ed11y_test_settings',
@@ -186,7 +186,7 @@ function ed11y_setting_sections_fields() {
 	// Audio content field.
 	add_settings_field(
 		'ed11y_audioContent',
-		esc_html__( 'Audio sources that need transcripts', 'editoria11y' ),
+		esc_html__( 'Audio flagged as needing a manual check for transcripts', 'editoria11y' ),
 		'ed11y_audio_content_field',
 		'ed11y',
 		'ed11y_test_settings',
@@ -254,10 +254,10 @@ function ed11y_livecheck_field() {
 		<option <?php echo 'none' === $settings ? 'selected="true"' : ''; ?>value="none">None</option>
 	</select>
 	<p id="livecheck_description">
-		Editoria11y's tips appear when viewing pages or previews.
+		Editoria11y's full tips with details and dismissal options appear when viewing published or preview pages.
 	</p>
 	<p>
-		This controls the issue outlines in the block editor. Unset it if you find that annoying.
+		Simplified alerts can also be injected into the block editor, as highlights around the affected block. Adjust this to reduce or remove those highlights.
 	</p>
 	<?php
 }
@@ -290,12 +290,14 @@ function ed11y_check_roots_field() {
 		aria-describedby="target_description" />
 	<p id="target_description">
 		<?php
-			echo wp_kses( __( 'Restrict checker to editable parts of the page, e.g. <code>#content, footer</code>.', 'editoria11y' ), ed11y_allowed_html() );
+			echo wp_kses( __( 'Editoria11y works best when it only checks content editors can...edit.
+			If it is flagging issues in your header or footer, put CSS selectors here for the elements 
+			that contain your editable content, e.g. <code>#content, footer</code>', 'editoria11y' ), ed11y_allowed_html() );
 		?>
 	</p>
 	<p>
 		<?php
-			echo wp_kses( __( 'Defaults to <code>main</code> or <code>body</code>, depending on theme.', 'editoria11y' ), ed11y_allowed_html() );
+			echo wp_kses( __( 'The default is <code>main</code> or <code>body</code>, depending on theme.', 'editoria11y' ), ed11y_allowed_html() );
 		?>
 		</p>
 	</p>
@@ -317,8 +319,14 @@ function ed11y_ignore_elements_field() {
 	rows="3" cols="45"><?php echo esc_attr( $settings ); ?></textarea>
 	<p id="exclusions_description">
 		<?php
-			echo wp_kses( __( 'Provide CSS selectors for specific elements, e.g. <code>.menu a</code>.' ), ed11y_allowed_html() );
+			echo wp_kses( __( 'If Editoria11y is flagging things editors cannot fix, e.g., theme-generated "read more" links or social media widgets,
+			provide CSS selectors for elements you would like it to ignore. Be specific, e.g. <code>.read-more a, .wp-block-post-excerpt__more-link, #comments h3</code>' ), ed11y_allowed_html() );
 		?>
+	</p>
+	<p>
+		If you are new at this, start by <a href="https://developer.chrome.com/docs/devtools/open/">opening 
+			your browser's developer tools</a>, inspecting the element you do not want flagged, 
+			and looking for unique-looking <a href="https://developer.mozilla.org/en-US/docs/Learn/Getting_started_with_the_web/CSS_basics#different_types_of_selectors">CSS selectors</a>.
 	</p>
 	<p>Default: <code><?php echo esc_attr( $default ); ?></code></p>
 	<?php
@@ -361,8 +369,9 @@ function ed11y_document_content_field() {
 	<textarea id="ed11y_documentContent" name="ed11y_plugin_settings[ed11y_documentContent]" 
 	cols="45" rows="3"
 	><?php echo esc_html( $settings ); ?></textarea>
-	<p>Set to <code>false</code> to disable test.</p>
-	<p>Default: <code><?php echo esc_attr( $default ); ?></code></p>
+	<p>By default, Editoria11y will flag links to these document types: <code><?php echo esc_attr( $default ); ?></code></p>
+	<p>If you would like to override this to flag more or fewer document types, copy and paste that list into this field and adjust to your liking. 
+		If you do not want any document links flagged, set this field to <code>false</code></p>
 	<?php
 }
 
@@ -392,7 +401,8 @@ function ed11y_checkvisibility_field() {
 	</select>
 
 	<p id="checkvisibility-description">Set if your theme throws "this element may be hidden" alerts 
-		when using the next/previous buttons on the main panel.</p>
+		when using the next/previous buttons on the main panel. 
+		See the main library documentation for <a href="https://editoria11y.princeton.edu/configuration/#js-events">JS events</a> and <a href="https://editoria11y.princeton.edu/configuration/#hidden-content">developer tips for revealing hidden content on demand</a>.</p>
 		<p><em>And please tell us if this happens with a common theme so we can add it to the defaults!</em></p>
 	<?php
 }
@@ -481,9 +491,9 @@ function ed11y_plugin_settings_render_page() {
 
 						<h2 class="postbox-heading">Getting help</h3>
 						<ul>
-							<li><a href="https://wordpress.org/plugins/editoria11y-accessibility-checker/">Editoria11y Plugin</a></li>
+							<li><a href="https://wordpress.org/plugins/editoria11y-accessibility-checker/">Editoria11y WordPress Plugin Documentation</a></li>
 							<li>
-								<a href="https://github.com/itmaybejj/editoria11y">Editoria11y JS Library</a>
+								<a href="https://editoria11y.princeton.edu">Editoria11y Library Documentation</a>
 							</li>
 							<li>
 								<a href="https://github.com/itmaybejj/editoria11y-wp/issues">Issues &amp; feature requests</a><br><br>
