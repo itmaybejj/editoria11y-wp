@@ -1,8 +1,8 @@
 === Editoria11y Accessibility Checker ===
 Contributors: itmaybejj, partyka
 Tags: accessibility checker, automated testing, quality assurance, SEO
-Stable tag: 1.0.10
-Tested up to: 6.2
+Stable tag: 1.0.11
+Tested up to: 6.3
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -138,6 +138,9 @@ Editoria11y began as a fork of the Toronto Metropolitan University's [Sa11y Acce
 4. Checker set to dark theme, showing a table header alert
 
 == Changelog ==
+
+= 1.0.11 =
+* Bugfix for Type errors when checking HTML5 media embeds.
 
 = 1.0.10 =
 * As-you-edit highlighter now recognizes WordPress's placeholder text in image alts.
