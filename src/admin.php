@@ -196,7 +196,7 @@ function ed11y_setting_sections_fields() {
 	// Add link text ignore field.
 	add_settings_field(
 		'ed11y_checkvisibility',
-		esc_html__( 'Check if elements are visible whan using panel navigation buttons', 'editoria11y' ),
+		esc_html__( 'Check if elements are visible when using panel navigation buttons', 'editoria11y' ),
 		'ed11y_checkvisibility_field',
 		'ed11y',
 		'ed11y_compatibility_settings',
