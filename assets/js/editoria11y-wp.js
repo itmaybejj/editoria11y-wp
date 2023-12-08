@@ -38,9 +38,9 @@ function ed11ySync() {
     Ed11y.results.forEach(result => {
       /* let test = Ed11y.results[i][1];
 						  let dismissKey = Ed11y.results[i][4]; */
-      let testName = result[1];
-      let dismissStatus = result[5];
-      let dismissKey = result[4];
+      let testName = result.test;
+      let dismissStatus = result.dismissStatus;
+      let dismissKey = result.dismissKey;
       if (dismissStatus !== 'ok') {
         // log all items not marked as OK
         if (results[testName]) {
@@ -142,5 +142,3 @@ ed11yReady(
     }
   }
 );
-
-

@@ -486,7 +486,7 @@ class Ed1 {
           let pageCount = Ed1.render.td(result['count']);
           row.insertAdjacentElement('beforeend', pageCount);
 
-          let keyName = ed11yLang.en[result['result_key']].title;
+          let keyName = ed11yLang.en[result['result_key']] ? ed11yLang.en[result['result_key']].title : result['result_key'];
           // URL sanitized on build...
           let key = Ed1.render.td(keyName, false, Ed1.url + 'rkey=' + result['result_key'], false, 'rkey');
           row.insertAdjacentElement('beforeend', key);

@@ -58,6 +58,7 @@ function ed11y_get_default_options( $option = false ) {
 		'ed11y_checkvisibility'     => $check_visibility,
 		'ed11y_no_run'              => false,
 		'ed11y_report_restrict'     => false,
+		'ed11y_custom_tests'        => 0,
 	);
 
 	// Allow dev to filter the default settings.
@@ -116,8 +117,34 @@ function ed11y_load_scripts() {
 add_action( 'wp_enqueue_scripts', 'ed11y_load_scripts' );
 
 /**
- * Loads the scripts for the plugin.
+ * Enqueue content assets but only in the Editor.
  */
+function ed11y_enqueue_editor_content_assets() {
+	if ( is_admin() ) {
+		// 'none' !== ed11y_get_plugin_settings( 'ed11y_livecheck', false )
+		wp_enqueue_script(
+			'editoria11y-js',
+			trailingslashit( ED11Y_ASSETS ) . 'lib/editoria11y.min.js',
+			null,
+			Editoria11y::ED11Y_VERSION,
+			false
+		);
+
+		wp_enqueue_script(
+			'editoria11y-editor',
+			trailingslashit( ED11Y_ASSETS ) . 'js/editoria11y-editor.js',
+			null,
+			Editoria11y::ED11Y_VERSION,
+			false
+		);
+		wp_localize_script(
+			'editoria11y-editor',
+			'ed11yVars',
+			array( 'worker' => trailingslashit( ED11Y_ASSETS ) . 'js/editoria11y-editor-worker.js',
+					'options' => ed11y_get_params(),
+		));
+	}
+}
 function ed11y_load_block_editor_scripts() {
 	// Get the enable option.
 	// Check if scroll top enable.
@@ -125,12 +152,10 @@ function ed11y_load_block_editor_scripts() {
 	wp_enqueue_script( 'editoria11y-js', trailingslashit( ED11Y_ASSETS ) . 'lib/editoria11y.min.js', null, Editoria11y::ED11Y_VERSION, false );
 	wp_enqueue_script( 'editoria11y-editor', trailingslashit( ED11Y_ASSETS ) . 'js/editoria11y-editor.js', null, Editoria11y::ED11Y_VERSION, false );
 }
+add_action( 'enqueue_block_assets', 'ed11y_enqueue_editor_content_assets' );
 
-/**
- * Initialize.
- */
-function ed11y_init() {
 
+function ed11y_get_params() {
 	// Allowed roles.
 	$user               = wp_get_current_user();
 	$allowed_roles      = array( 'editor', 'administrator', 'author', 'contributor' );
@@ -156,6 +181,7 @@ function ed11y_init() {
 			$ed1vals['checkVisible']             = $settings['ed11y_checkvisibility'];
 			$ed1vals['preventCheckingIfPresent'] = $settings['ed11y_no_run'];
 			$ed1vals['liveCheck']                = $settings['ed11y_livecheck'];
+			$ed1vals['customTests']              = $settings['ed11y_custom_tests'];
 			set_site_transient( 'editoria11y_settings', $ed1vals, 360 );
 		}
 
@@ -234,11 +260,20 @@ function ed11y_init() {
 		$page_edited          = get_post_modified_time( 'U', true );
 		$page_edited          = $page_edited ? abs( 1 + $page_edited - time() ) : false;
 		$ed1vals['alertMode'] = $page_edited && $page_edited < 600 ? 'assertive' : 'polite';
+		return( $ed1vals );
+}
+
+/**
+ * Initialize.
+ */
+function ed11y_init() {
+
+	
 
 		// At the moment, PHP escapes HTML breakouts. This would not be safe in other languages.
 		echo '
 		<script id="editoria11y-init" type="application/json">
-			' . wp_json_encode( $ed1vals ) . '
+			' . wp_json_encode( ed11y_get_params() ) . '
 		</script>
 		';
 	}
@@ -263,10 +298,11 @@ add_filter( 'old_slug_redirect_url', 'ed11y_old_slug_redirect_url_filter' );
 
 /**
  * Load live checker when editor is present.
+ * THIS IS NOT WORKING FOR NEW EDITOR
  * */
 function ed11y_editor_init() {
 	if ( 'none' !== ed11y_get_plugin_settings( 'ed11y_livecheck', false ) ) {
-		add_action( 'enqueue_block_editor_assets', 'ed11y_load_block_editor_scripts' );
+		add_action( 'enqueue_block_assets', 'ed11y_enqueue_editor_content_assets' );
 		add_action( 'admin_footer', 'ed11y_init' );
 	}
 }

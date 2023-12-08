@@ -25,7 +25,7 @@ Check out a [demo of the checker itself](https://editoria11y.princeton.edu/demo)
 * When **logged-in authors and editors** are viewing published or in-preview pages, Editoria11y's toggle discretely indicates if any issues are present on the current page.
 * Clicking the toggle opens the checker's main panel. Alerts are placed on pieces of content with issues, with tooltips to explain each problem and what actions are needed to resolve it. If an issue is not critical or may be OK as written, buttons are available to dismiss the alert on this page, either for the current user ("Hide alert") or for all users ("Mark as Checked and OK").
 * When Editoria11y finds **new** issues on a page that was just edited, the panel pops open automatically.
-* The main panel also allows authors jump to the next issue, restore previously dismissed alerts, visualize text alternatives for images on the page ("alts"), and view the document's heading outline.
+* The main panel also allows authors to jump to the next issue, restore previously dismissed alerts, visualize text alternatives for images on the page ("alts"), and view the document's heading outline.
 * Optionally, the checker can also outline blocks with issues while the author is editing the content.
 
 ## The admin experience
@@ -65,6 +65,7 @@ Note that all this runs locally within your site. This plugin is the WordPress a
     * Video embeds, reminding the user to add closed captions
     * Audio embeds, reminding the user to provide a transcript
     * Social media embeds, reminding the user to provide alt attributes
+* [Custom tests](https://editoria11y.princeton.edu/configuration/#customtests) of your choosing
 
 == Frequently Asked Questions ==
 
@@ -138,6 +139,12 @@ Editoria11y began as a fork of the Toronto Metropolitan University's [Sa11y Acce
 4. Checker set to dark theme, showing a table header alert
 
 == Changelog ==
+
+= 1.0.13 =
+* Themes and plugins can now provide custom tests.
+* More accurate accessible name calculation for complex situations involving CSS generated content, nested SVG or aria-labelledby references.
+* Headings are now clickable in the outline panel.
+* Bugfix: two consecutive paragraphs starting with "A " could throw a false positive on the possible link test.
 
 = 1.0.12 =
 * "Is this a list" test can now detect emoji-based fake lists.
