@@ -262,21 +262,19 @@ function ed11y_get_params() {
 		$ed1vals['alertMode'] = $page_edited && $page_edited < 600 ? 'assertive' : 'polite';
 		return( $ed1vals );
 }
-
+}
 /**
  * Initialize.
  */
 function ed11y_init() {
 
-	
-
+	// todo: localize script instead.
 		// At the moment, PHP escapes HTML breakouts. This would not be safe in other languages.
 		echo '
 		<script id="editoria11y-init" type="application/json">
 			' . wp_json_encode( ed11y_get_params() ) . '
 		</script>
 		';
-	}
 }
 add_action( 'wp_footer', 'ed11y_init' );
 

@@ -45,26 +45,26 @@ let ed11yUpdateButton = function(count) {
     Ed11y.wpIssueToggle.setAttribute('id', 'ed11y-issue-link');
     Ed11y.wpIssueToggle.setAttribute('aria-describedby', 'ed11y-button-description');
     Ed11y.wpIssueToggle.addEventListener('click', function () {
-        if (ed11yOpen) {
-            // closing
-            let newStyles = document.querySelector('#ed11y-live-highlighter');
-            if (newStyles) {
-            newStyles.innerHTML = '';
-            }
-        } else {
-            Ed11y.wpIssueToggle.textContent = 'Hide issues';
+      if (ed11yOpen) {
+        // closing
+        let newStyles = document.querySelector('#ed11y-live-highlighter');
+        if (newStyles) {
+          newStyles.innerHTML = '';
         }
-        ed11yOpen = !ed11yOpen;
-        let newState = ed11yOpen ? 'open' : 'shut';
-        localStorage.setItem('ed11yOpen', newState);
-        ed11yOptions['showResults'] = ed11yOpen;
-        if (ed11yScriptIs === 'onPage') {
-          Ed11y.checkAll(false, false);
-        } else if (ed11yWorker) {
-          ed11yWorker.port.postMessage([false, false, newState]);
-        }
-      
-      
+      } else {
+        Ed11y.wpIssueToggle.textContent = 'Hide issues';
+      }
+      ed11yOpen = !ed11yOpen;
+      let newState = ed11yOpen ? 'open' : 'shut';
+      localStorage.setItem('ed11yOpen', newState);
+      ed11yOptions['showResults'] = ed11yOpen;
+      if (ed11yScriptIs === 'onPage') {
+        Ed11y.checkAll(false, false);
+      } else if (ed11yWorker) {
+        ed11yWorker.port.postMessage([false, false, newState]);
+      }
+
+
     });
     Ed11y.wpIssueToggle.textContent = '0';
 
@@ -80,7 +80,7 @@ let ed11yUpdateButton = function(count) {
    color: #000b;
    box-shadow: none;
   }
-  
+
   #ed11y-issue-link.ed11y-alert {
    background-color: #b80519;
    color: #fff;
@@ -121,14 +121,14 @@ let  ed11yReadResults = function () {
   count = parseInt(count);
   if (ed11yScriptIs === 'inIframe') {
     ed11yWorker.port.postMessage([false, {
-        totalCount: Ed11y.totalCount,
-        warningCount: Ed11y.warningCount,
-        errorCount: Ed11y.errorCount,
+      totalCount: Ed11y.totalCount,
+      warningCount: Ed11y.warningCount,
+      errorCount: Ed11y.errorCount,
     }]);
   } else {
-      ed11yUpdateButton(count);
+    ed11yUpdateButton(count);
   }
-  
+
   if (ed11yScriptIs === 'outsideIframe') {
     return;
   }
@@ -147,11 +147,21 @@ let  ed11yReadResults = function () {
     let ed11yStyles = '';
     let ed11yKnownContainers = {};
     Ed11y.results.forEach(result => {
+      let ed11yContainerId = result.element.closest('.wp-block').getAttribute('id');
       // Skip dismissed items, and only show warnings if they have not been suppressed in plugin settings.
       if (ed11yOpen && result.dismissalStatus === false && !(ed11yOptions['liveCheck'] === 'errors' && result.dismissalKey)) {
-        let ed11yContainerId = result.element.closest('.wp-block').getAttribute('id');
+        let subSelector = false;
+        if (result.element.closest('a[href]')) {
+          subSelector = `a[href="${CSS.escape(result.element.closest('a[href]').getAttribute('href'))}"]`;
+        } else if (result.element.closest('img[src]')) {
+          subSelector = `img[src="${CSS.escape(result.element.closest('img[src]').getAttribute('src'))}"]`;
+        }
         let ed11yRingColor = !result.dismissalKey ? Ed11y.theme.alert : Ed11y.theme.warning;
         let ed11yFontColor = !result.dismissalKey ? '#fff' : '#111';
+        let subRing = {
+            ring: ed11yRingColor,
+            subSelector : subSelector,
+        }
         // Concatenate results when multiple hits in same black.
         if (!ed11yKnownContainers[ed11yContainerId]) {
           // First alert in block.
@@ -159,13 +169,15 @@ let  ed11yReadResults = function () {
             title: Ed11y.M[result.test]['title'],
             ring: ed11yRingColor,
             font: ed11yFontColor,
+            subSelector : [subRing],
           };
         } else {
           if (ed11yKnownContainers[ed11yContainerId]['title'].indexOf(Ed11y.M[result.test]['title']) === -1) {
             // First alert of this type in block.
             if (ed11yKnownContainers[ed11yContainerId]['ring'] !== ed11yRingColor) {
-              // If one is red, red wins.
+              // If either is red, red wins.
               ed11yRingColor = Ed11y.theme.alert;
+              ed11yFontColor = '#fff';
             }
             // Put question marks at end.
             let ed11yNewTitle = '';
@@ -174,11 +186,10 @@ let  ed11yReadResults = function () {
             } else {
               ed11yNewTitle = ed11yKnownContainers[ed11yContainerId]['title'] + ', ' + Ed11y.M[result.test]['title'];
             }
-            ed11yKnownContainers[ed11yContainerId] = {
-              title: ed11yNewTitle,
-              ring: ed11yRingColor,
-              font: ed11yFontColor,
-            };
+            ed11yKnownContainers[ed11yContainerId].title = ed11yNewTitle;
+            ed11yKnownContainers[ed11yContainerId].ring = ed11yRingColor;
+            ed11yKnownContainers[ed11yContainerId].font = ed11yFontColor;            
+            ed11yKnownContainers[ed11yContainerId].subSelector.push(subRing);
           }
         }
       }
@@ -187,7 +198,7 @@ let  ed11yReadResults = function () {
 
     for (const [key, value] of Object.entries(ed11yKnownContainers)) {
       ed11yStyles += `
-    #${key}::after { 
+    #${key}::after {
      position: absolute !important;
      font-size: 13px !important;
      background: ${value.ring} !important;
@@ -209,23 +220,37 @@ let  ed11yReadResults = function () {
      border-radius: 2px 0 0 0 !important;
           letter-spacing: 0 !important;
     }
-    #${key}:not(.is-selected)::after { 
+    #${key}:not(.is-selected)::after {
      opacity: 1 !important;
      z-index: 1 !important;
     }
-    #${key}:not(.is-selected) { 
+    #${key}:not(.is-selected) {
      box-shadow: 0 0 0 2px ${value.ring};
      outline: 1px solid ${value.ring};
      border-radius: 2px;
     }
    `;
+   value.subSelector.forEach(subSelector => {
+    if (subSelector) {
+        ed11yStyles += `
+        #${key}:not(.is-selected) ${subSelector.subSelector} {
+            box-shadow: 0 0 0 2px ${subSelector.ring}, 0 0 0 3px ;
+            outline: 2px solid ${subSelector.ring};
+            border-radius: 2px;
+           }
+        `
+       }
+   })
+   
     }
+    
 
 
-
-    newStyles.innerHTML = `
-  <style>${ed11yStyles}</style>
-  `;
+    
+    newStyles.innerHTML = '';
+    let styleWrapper = document.createElement('style');
+    styleWrapper.textContent = ed11yStyles;
+    newStyles.append(styleWrapper);
   }
   else {
     newStyles.innerHTML = '';
@@ -251,13 +276,12 @@ let ed11yFirstScan = function() {
   }
   ed11yFindNewBlocks();
   const ed11y = new Ed11y(ed11yOptions); // eslint-disable-line
-  console.log('scanning');
   document.addEventListener('ed11yResults', function () {
     ed11yReadResults();
   });
 };
 
-let ed11yGetOptions = function(fromPage = false) {
+let ed11yGetOptions = function() {
   ed11yOptions.linkIgnoreStrings = ed11yOptions.linkIgnoreStrings ? new RegExp(ed11yOptions.linkIgnoreStrings, 'g') : false;
 
   // Initiate Ed11y with admin options.
@@ -297,30 +321,27 @@ let ed11yChangeObserverInit = function () {
 };
 
 let ed11yInnerInit = function() {
-    ed11yWorker.port.onmessage = (e) => {
-        if (!!e.data[2]) {
-            // open or shut
-            console.log(e.data[2]);
-            ed11yOpen = e.data[2] === 'open';
-            console.log(ed11yOpen);
-            ed11yOptions['showResults'] = ed11yOpen;
-            Ed11y.checkAll(false, false);
-        };
+  ed11yWorker.port.onmessage = (e) => {
+    if (e.data[2]) {
+      // open or shut
+      ed11yOpen = e.data[2] === 'open';
+      ed11yOptions['showResults'] = ed11yOpen;
+      Ed11y.checkAll(false, false);
     }
-    ed11yGetOptions();
-    ed11yFirstScan();
-    ed11yChangeObserverInit();
-}
+  };
+  ed11yGetOptions();
+  ed11yFirstScan();
+  ed11yChangeObserverInit();
+};
 
 let ed11yOuterInit = function() {
-  ed11yGetOptions(true);
+  ed11yGetOptions();
   // todo: set up button update
   ed11yWorker.port.onmessage = function (e) {
-    if (!!e.data[1]) {
+    if (e.data[1]) {
       Ed11y.totalCount = e.data[1].totalCount;
       Ed11y.warningCount = e.data[1].warningCount;
       Ed11y.errorCount = e.data[1].errorCount;
-      console.log(Ed11y.totalCount);
     }
     ed11yReadResults();
   };
@@ -329,11 +350,9 @@ let ed11yOuterInit = function() {
 
 // Initiate Editoria11y create alert link, initiate content change watcher.
 let ed11yPageInit = function () {
-  ed11yGetOptions(true);
+  ed11yGetOptions();
   ed11yFirstScan();
   ed11yChangeObserverInit();
-  console.log('page init');
-
 };
 
 // Look to see if Gutenberg has loaded.
@@ -341,10 +360,10 @@ let ed11yPageInit = function () {
 let ed11yFindCompatibleEditor = function () {
 
   if (!ed11yScriptIs) {
-    
+
     if (document.querySelector('body.editor-styles-wrapper') && ed11yWorker) {
-        // inside iFrame
-        ed11yScriptIs = 'inIframe';
+      // inside iFrame
+      ed11yScriptIs = 'inIframe';
     } else if (document.querySelector('[class*="-visual-editor"] iframe') && ed11yWorker) {
       ed11yScriptIs = 'outsideIframe'; // onPage, inIframe, outsideIframe
     } else if ( document.querySelector('.has-inline-canvas')) {
@@ -352,10 +371,8 @@ let ed11yFindCompatibleEditor = function () {
     }
   }
 
-  console.log(ed11yScriptIs);
   switch (ed11yScriptIs) {
   case 'inIframe':
-    console.log('inner');
     ed11yInnerInit();
     return;
   case 'onPage':
@@ -364,9 +381,9 @@ let ed11yFindCompatibleEditor = function () {
   }
   if (!!ed11yButtonWrapper && !!ed11yOptions) {
     if (ed11yScriptIs === 'onPage') {
-        ed11yPageInit();
+      ed11yPageInit();
     } else {
-        ed11yOuterInit();
+      ed11yOuterInit();
     }
     return;
   }
@@ -378,7 +395,7 @@ let ed11yFindCompatibleEditor = function () {
   } else {
     console.log('No editor found');
   }
-  
+
 };
 
 /**
