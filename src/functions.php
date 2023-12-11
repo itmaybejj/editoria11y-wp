@@ -158,7 +158,8 @@ add_action( 'enqueue_block_assets', 'ed11y_enqueue_editor_content_assets' );
 
 /**
  * Returns page-specific config for the Editoria11y library.
- * @param $user  WP_User user object
+ *
+ * @param $user WP_User Object
  */
 function ed11y_get_params( $user ) {
 
