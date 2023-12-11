@@ -115,7 +115,6 @@ let ed11yUpdateButton = function(count) {
 
 // Get issue count from Ed11y object and apply to alert link.
 let  ed11yReadResults = function () {
-  console.log('read results from ' + ed11yScriptIs);
   // todo inject from WP
   let count = ed11yOptions['liveCheck'] === 'errors' ? Ed11y.errorCount : Ed11y.totalCount;
   count = parseInt(count);

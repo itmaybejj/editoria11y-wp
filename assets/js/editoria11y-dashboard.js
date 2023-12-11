@@ -622,8 +622,8 @@ class Ed1 {
     };
 
     /**
-             * API calls.
-             */
+	 * API calls.
+	 */
     Ed1.api = {
       method: 'GET',
       headers: {
@@ -670,10 +670,11 @@ class Ed1 {
         }
       });
     };
+	
 
     /**
-             * User Interactions.
-             */
+	 * User Interactions.
+	 */
     Ed1.reSort = function () {
       let el = document.activeElement;
       let table = el.closest('table');

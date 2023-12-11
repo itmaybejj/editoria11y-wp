@@ -39,9 +39,7 @@ function ed11ySync() {
       /* let test = Ed11y.results[i][1];
 						  let dismissKey = Ed11y.results[i][4]; */
       let testName = result.test;
-      let dismissStatus = result.dismissStatus;
-      let dismissKey = result.dismissKey;
-      if (dismissStatus !== 'ok') {
+      if (result.dismissalStatus !== 'ok') {
         // log all items not marked as OK
         if (results[testName]) {
           results[testName] = parseInt(results[testName]) + 1;
@@ -51,9 +49,9 @@ function ed11ySync() {
           total++;
         }
       }
-      if (dismissStatus !== 'false') {
+      if (result.dismissalStatus !== 'false') {
         let insert = {};
-        insert = [testName, dismissKey];
+        insert = [testName, result.dismissalKey];
         dismissals.push(
           insert
         );
@@ -62,14 +60,15 @@ function ed11ySync() {
     return [results, dismissals, total];
   };
 
+  let url = Ed11y.options.currentPage;
+  url = url.length > 224 ? url.substring(0, 224) : url;
+  let queryString = window.location.search;
+  let urlParams = new URLSearchParams(queryString);
+  let pid = urlParams.get('ed1ref');
+
   let sendResults = function () {
     window.setTimeout(function () {
       let results = extractResults();
-      let url = Ed11y.options.currentPage;
-      url = url.length > 224 ? url.substring(0, 224) : url;
-      let queryString = window.location.search;
-      let urlParams = new URLSearchParams(queryString);
-      let pid = urlParams.get('ed1ref');
       let data = {
         page_title: ed11yOptions.title,
         page_count: results[2],
@@ -85,13 +84,30 @@ function ed11ySync() {
     }, 100);
   };
 
-  let firstRun = true;
+  let resetResults = function () {
+	window.setTimeout(function () {
+		let results = {};
+		let data = {
+			page_title: ed11yOptions.title,
+			page_count: results[2],
+			entity_type: ed11yOptions.entity_type, // node or false
+			results: results[0],
+			dismissals: results[1],
+			page_url: url,
+			created: 0,
+			pid: pid ? parseInt(pid) : -1,
+		};
+		postData('result', data);
+		// Short timeout to let execution queue clear.
+	}, 100);
+  };
+  if (pid && ed11yOptions.preventCheckingIfPresent && !!document.querySelector(ed11yOptions.preventCheckingIfPresent)) {
+	// We just got here from the dashboard and there should not be results at this route.
+	resetResults();
+  }
 
   document.addEventListener('ed11yResults', function () {
-    if (firstRun) {
-      sendResults();
-      firstRun = false;
-    }
+    sendResults();
   });
 
   let sendDismissal = function (detail) {
@@ -137,7 +153,7 @@ ed11yReady(
         ed11yOptions['showDismissed'] = true;
       }
 
-			const ed11y = new Ed11y(ed11yOptions); // eslint-disable-line
+	const ed11y = new Ed11y(ed11yOptions); // eslint-disable-line
       ed11ySync();
     }
   }
