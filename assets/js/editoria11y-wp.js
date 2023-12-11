@@ -153,5 +153,12 @@ ed11yReady(
 	const ed11y = new Ed11y(ed11yOptions); // eslint-disable-line
       ed11ySync();
     }
+	// Equalize checker overlaps and blocks.
+	let shiftPanel = document.createElement('style');
+	shiftPanel.textContent = `
+	.edac-highlight-panel ~ ed11y-element-panel {
+		margin: 0 9px 66px 0;
+		}`;
+	document.querySelector('body')?.append(shiftPanel);
   }
 );

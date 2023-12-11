@@ -146,7 +146,7 @@ Editoria11y began as a fork of the Toronto Metropolitan University's [Sa11y Acce
 * More accurate accessible name calculation for complex situations involving CSS generated content, nested SVG or aria-labelledby references.
 * Headings are now clickable in the outline panel.
 * Experimental inline checker now highlights specific links with issues within a block.
-* Bugfix: Experimental inline checker was not appearing for 
+* Bugfix: Experimental inline checker was not appearing in some contexts.
 * Bugfix: two consecutive paragraphs starting with "A " could throw a false positive on the possible link test.
 
 = 1.0.12 =
