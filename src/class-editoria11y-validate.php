@@ -49,5 +49,4 @@ class Editoria11y_Validate {
 		);
 		return in_array( $user_input, $valid, true );
 	}
-
 }

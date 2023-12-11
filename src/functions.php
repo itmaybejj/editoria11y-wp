@@ -157,7 +157,8 @@ add_action( 'enqueue_block_assets', 'ed11y_enqueue_editor_content_assets' );
 
 
 /**
- * Returns options for the library.
+ * Returns page-specific config for the Editoria11y library.
+ * @param $user  WP_User user object
  */
 function ed11y_get_params( $user ) {
 
@@ -257,8 +258,8 @@ function ed11y_get_params( $user ) {
 	$page_edited          = $page_edited ? abs( 1 + $page_edited - time() ) : false;
 	$ed1vals['alertMode'] = $page_edited && $page_edited < 600 ? 'assertive' : 'polite';
 	return( $ed1vals );
-
 }
+
 /**
  * Initialize.
  */
