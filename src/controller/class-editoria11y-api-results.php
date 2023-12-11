@@ -90,7 +90,7 @@ class Editoria11y_Api_Results extends WP_REST_Controller {
 			$where = '';
 			if ( $result_key ) {
 				// Filtering by test name.
-				//$where = "WHERE {$rtable}.result_key = '{$result_key}'";
+				$where = "WHERE {$rtable}.result_key = '{$result_key}'";
 			}
 			if ( $entity_type ) {
 				// Filtering by entity type.
