@@ -120,42 +120,45 @@ add_action( 'wp_enqueue_scripts', 'ed11y_load_scripts' );
  * Enqueue content assets but only in the Editor.
  */
 function ed11y_enqueue_editor_content_assets() {
-	if ( is_admin() ) {
-		// 'none' !== ed11y_get_plugin_settings( 'ed11y_livecheck', false )
-		wp_enqueue_script(
-			'editoria11y-js',
-			trailingslashit( ED11Y_ASSETS ) . 'lib/editoria11y.min.js',
-			null,
-			Editoria11y::ED11Y_VERSION,
-			false
-		);
 
-		wp_enqueue_script(
-			'editoria11y-editor',
-			trailingslashit( ED11Y_ASSETS ) . 'js/editoria11y-editor.js',
-			null,
-			Editoria11y::ED11Y_VERSION,
-			false
-		);
-		wp_localize_script(
-			'editoria11y-editor',
-			'ed11yVars',
-			array( 'worker' => trailingslashit( ED11Y_ASSETS ) . 'js/editoria11y-editor-worker.js',
+	if ( is_admin() ) {
+
+		// Allowed roles.
+		$user               = wp_get_current_user();
+		$allowed_roles      = array( 'editor', 'administrator', 'author', 'contributor' );
+		$allowed_user_roles = array_intersect( $allowed_roles, $user->roles );
+		if ( $allowed_user_roles && 'none' !== ed11y_get_plugin_settings( 'ed11y_livecheck', false ) ) {
+			wp_enqueue_script(
+				'editoria11y-js',
+				trailingslashit( ED11Y_ASSETS ) . 'lib/editoria11y.min.js',
+				null,
+				Editoria11y::ED11Y_VERSION,
+				false
+			);
+			wp_enqueue_script(
+				'editoria11y-editor',
+				trailingslashit( ED11Y_ASSETS ) . 'js/editoria11y-editor.js',
+				null,
+				Editoria11y::ED11Y_VERSION,
+				false
+			);
+			wp_localize_script(
+				'editoria11y-editor',
+				'ed11yVars',
+				array(
+					'worker'  => trailingslashit( ED11Y_ASSETS ) . 'js/editoria11y-editor-worker.js',
 					'options' => ed11y_get_params( wp_get_current_user() ),
-			)
-		);
+				)
+			);
+		}
 	}
-}
-function ed11y_load_block_editor_scripts() {
-	// Get the enable option.
-	// Check if scroll top enable.
-	// Todo: only load on edit pages.
-	wp_enqueue_script( 'editoria11y-js', trailingslashit( ED11Y_ASSETS ) . 'lib/editoria11y.min.js', null, Editoria11y::ED11Y_VERSION, false );
-	wp_enqueue_script( 'editoria11y-editor', trailingslashit( ED11Y_ASSETS ) . 'js/editoria11y-editor.js', null, Editoria11y::ED11Y_VERSION, false );
 }
 add_action( 'enqueue_block_assets', 'ed11y_enqueue_editor_content_assets' );
 
 
+/**
+ * Returns options for the library.
+ */
 function ed11y_get_params( $user ) {
 
 	// Get settings array from cache, if available.
@@ -272,7 +275,7 @@ function ed11y_init() {
 			// At the moment, PHP escapes HTML breakouts. This would not be safe in other languages.
 			echo '
 			<script id="editoria11y-init" type="application/json">
-				' . wp_json_encode( ed11y_get_params($user) ) . '
+				' . wp_json_encode( ed11y_get_params( $user ) ) . '
 			</script>
 			';
 		}

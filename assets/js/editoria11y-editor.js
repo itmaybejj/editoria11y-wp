@@ -1,11 +1,12 @@
+// eslint-disable-next-line no-undef
 let ed11yOptions = ed11yVars.options;
 let ed11yOpen = localStorage.getItem('ed11yOpen');
 ed11yOpen = 'open' === ed11yOpen ? true : false;
-let ed11yInitialized = false;
 let ed11yReadyCount = 0;
 let ed11yScriptIs = false; // onPage, inIframe, outsideIframe
 let ed11yButtonWrapper = false;
 let ed11yWPBlocks = [];
+// eslint-disable-next-line no-undef
 const ed11yWorker = window.SharedWorker ? new SharedWorker(ed11yVars.worker) : false;
 
 
@@ -160,7 +161,7 @@ let  ed11yReadResults = function () {
         let subRing = {
             ring: ed11yRingColor,
             subSelector : subSelector,
-        }
+        };
         // Concatenate results when multiple hits in same black.
         if (!ed11yKnownContainers[ed11yContainerId]) {
           // First alert in block.
@@ -237,9 +238,9 @@ let  ed11yReadResults = function () {
             outline: 2px solid ${subSelector.ring};
             border-radius: 2px;
            }
-        `
+        `;
        }
-   })
+   });
    
     }
     

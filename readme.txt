@@ -65,7 +65,7 @@ Note that all this runs locally within your site. This plugin is the WordPress a
     * Video embeds, reminding the user to add closed captions
     * Audio embeds, reminding the user to provide a transcript
     * Social media embeds, reminding the user to provide alt attributes
-* [Custom tests](https://editoria11y.princeton.edu/configuration/#customtests) of your choosing
+* [Custom results](https://editoria11y.princeton.edu/configuration/#customtests) provided by your JS
 
 == Frequently Asked Questions ==
 
@@ -141,10 +141,11 @@ Editoria11y began as a fork of the Toronto Metropolitan University's [Sa11y Acce
 == Changelog ==
 
 = 1.0.13 =
-* Themes and plugins can now provide  [https://editoria11y.princeton.edu/configuration/#customtests](custom results).
+* Themes and plugins can now provide [https://editoria11y.princeton.edu/configuration/#customtests](custom results).
 * Old results will clear from the dashboard when clicking through to a page with checking disabled.
 * More accurate accessible name calculation for complex situations involving CSS generated content, nested SVG or aria-labelledby references.
 * Headings are now clickable in the outline panel.
+* Experimental inline checker now highlights specific links with issues within a block.
 * Bugfix: two consecutive paragraphs starting with "A " could throw a false positive on the possible link test.
 
 = 1.0.12 =
