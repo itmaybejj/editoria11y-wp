@@ -127,7 +127,7 @@ function ed11y_enqueue_editor_content_assets() {
 		$user               = wp_get_current_user();
 		$allowed_roles      = array( 'editor', 'administrator', 'author', 'contributor' );
 		$allowed_user_roles = array_intersect( $allowed_roles, $user->roles );
-		if ( ( is_super_admin( $user->ID ) || $allowed_user_roles ) && 'none' !== ed11y_get_plugin_settings( 'ed11y_livecheck', false ) ) {
+		if ( ( $allowed_user_roles || current_user_can( 'edit_posts' ) || current_user_can( 'edit_pages' ) ) && 'none' !== ed11y_get_plugin_settings( 'ed11y_livecheck', false ) ) {
 			wp_enqueue_script(
 				'editoria11y-js',
 				trailingslashit( ED11Y_ASSETS ) . 'lib/editoria11y.min.js',
