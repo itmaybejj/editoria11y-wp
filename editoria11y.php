@@ -112,11 +112,7 @@ class Editoria11y {
 	/**
 	 * Provides DB table schema.
 	 */
-	public static function activate() {
-		if ( ! current_user_can( 'activate_plugins' ) ) {
-			return;
-		}
-
+	private static function create_database() {
 		global $wpdb;
 
 		$charset_collate = $wpdb->get_charset_collate();
@@ -169,26 +165,89 @@ class Editoria11y {
 	}
 
 	/**
+	 * Plugin Activation
+	 */
+	public static function activate( $network = false ) {
+		if ( ! current_user_can( 'activate_plugins' ) ) {
+			return;
+		}
+
+		if ( $network ) {
+
+			$sites = get_sites(
+				array(
+					'number'     => 10000,
+					'fields'     =>'ids',
+					'network_id' => get_current_network_id(),
+				)
+			);
+
+			foreach ( $sites as $siteid ) {
+
+				switch_to_blog( $siteid );
+				self::create_database();
+				restore_current_blog();
+
+			}
+
+		} else {
+
+			self::create_database();
+
+		}
+	}
+
+	/**
 	 * Remove DB tables on uninstall
 	 */
-	public static function uninstall() {
+	public static function uninstall( $network = false ) {
 		if ( ! current_user_can( 'activate_plugins' ) ) {
 			return;
 		}
 
 		global $wpdb;
 
-		$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}ed11y_dismissals" ); // phpcs:ignore
-		$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}ed11y_results" ); // phpcs:ignore
-		$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}ed11y_urls" ); // phpcs:ignore
+		if ( $network ) {
 
-		delete_option( 'ed11y_plugin_settings' );
+			$sites = get_sites(
+				array(
+					'number'     => 10000,
+					'fields'     =>'ids',
+					'network_id' => get_current_network_id(),
+				)
+			);
+
+			foreach ( $sites as $siteid ) {
+
+				switch_to_blog( $siteid );
+
+				$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}ed11y_dismissals" ); // phpcs:ignore
+				$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}ed11y_results" ); // phpcs:ignore
+				$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}ed11y_urls" ); // phpcs:ignore
+
+				delete_option( 'ed11y_plugin_settings' );
+
+				restore_current_blog();
+
+			}
+
+		} else {
+
+			$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}ed11y_dismissals" ); // phpcs:ignore
+			$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}ed11y_results" ); // phpcs:ignore
+			$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}ed11y_urls" ); // phpcs:ignore
+
+			delete_option( 'ed11y_plugin_settings' );
+
+		}
+
 		delete_site_option( 'ed11y_plugin_settings' );
 		delete_site_transient( 'editoria11y_settings' );
 
 	}
 
 }
+
 
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -201,3 +260,4 @@ register_activation_hook( __FILE__, array( 'Editoria11y', 'activate' ) );
 register_uninstall_hook( __FILE__, array( 'Editoria11y', 'uninstall' ) );
 
 new Editoria11y();
+
