@@ -1,8 +1,8 @@
 === Editoria11y Accessibility Checker ===
 Contributors: itmaybejj, partyka
 Tags: accessibility checker, automated testing, quality assurance, SEO
-Stable tag: 1.0.13
-Tested up to: 6.4
+Stable tag: 1.0.14
+Tested up to: 6.5
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -139,6 +139,10 @@ Editoria11y began as a fork of the Toronto Metropolitan University's [Sa11y Acce
 4. Checker set to dark theme, showing a table header alert
 
 == Changelog ==
+
+= 1.0.14 =
+* Page URLs now have a slightly shorter limit for [Pantheon compatibility](https://docs.pantheon.io/guides/wordpressvip/troubleshooting#maximum-index-size)
+* Update library to [2.1.2](https://github.com/itmaybejj/editoria11y/releases/tag/2.1.2) 
 
 = 1.0.13 =
 * Themes and plugins can now provide [custom results](https://editoria11y.princeton.edu/configuration/#customtests).

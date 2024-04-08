@@ -62,7 +62,7 @@ function ed11ySync() {
   };
 
   let url = Ed11y.options.currentPage;
-  url = url.length > 224 ? url.substring(0, 224) : url;
+  url = url.length > 190 ? url.substring(0, 189) : url;
   let queryString = window.location.search;
   let urlParams = new URLSearchParams(queryString);
   ed11yResetID = urlParams.get('ed1ref');
