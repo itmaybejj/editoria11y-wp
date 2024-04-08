@@ -5,10 +5,10 @@
  *
  * Plugin Name:       Editoria11y Accessibility Checker
  * Plugin URI:        https://wordpress.org/plugins/editoria11y-accessibility-checker/
- * Version:           1.0.13
+ * Version:           1.0.14
  * Requires PHP:      7.2
  * Requires at least: 6.0
- * Tested up to:      6.4
+ * Tested up to:      6.5
  * Author:            Princeton University, WDS
  * Author URI:        https://wds.princeton.edu/team
  * License:           GPL v2 or later
@@ -123,7 +123,7 @@ class Editoria11y {
 
 		$sql_urls = "CREATE TABLE $table_urls (
 			pid int(9) unsigned AUTO_INCREMENT NOT NULL,
-			page_url varchar(225) NOT NULL,
+			page_url varchar(190) NOT NULL,
 			entity_type varchar(255) NOT NULL,
 			page_title varchar(1024) NOT NULL,
 			page_total smallint(4) unsigned NOT NULL,
