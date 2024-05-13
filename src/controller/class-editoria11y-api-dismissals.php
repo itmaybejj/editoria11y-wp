@@ -6,7 +6,6 @@
  *
  * @package         Editoria11y
  */
-
 class Editoria11y_Api_Dismissals extends WP_REST_Controller {
 
 	/**

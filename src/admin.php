@@ -657,8 +657,8 @@ function ed11y_plugin_settings_validate( $settings ) {
  * Render the plugin settings page.
  */
 function editoria11y_dashboard() {
-    // Lazy-create DB if network activation failed.
-    Editoria11y::check_tables();
+	// Lazy-create DB if network activation failed.
+	Editoria11y::check_tables();
 
 	wp_enqueue_script( 'editoria11y-js', trailingslashit( ED11Y_ASSETS ) . 'lib/editoria11y.min.js', array( 'wp-api' ), true, Editoria11y::ED11Y_VERSION, false );
 	wp_enqueue_script( 'editoria11y-js-dash', trailingslashit( ED11Y_ASSETS ) . 'js/editoria11y-dashboard.js', array( 'wp-api' ), true, Editoria11y::ED11Y_VERSION, false );

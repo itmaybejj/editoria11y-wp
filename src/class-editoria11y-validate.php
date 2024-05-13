@@ -1,12 +1,16 @@
 <?php  // phpcs:ignore
 /**
- * Validates
+ * Validation functions.
  *
  * @package         Editoria11y
  */
 
 namespace Editoria11y;
 
+/**
+ * Validate API results.
+ *
+ */
 class Editoria11y_Validate {
 
 	/**
