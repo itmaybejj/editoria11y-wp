@@ -164,6 +164,18 @@ class Editoria11y {
 		maybe_create_table( $table_dismissals, $sql_dismissals );
 	}
 
+  /**
+   * Make sure tables are in place and up to date.
+   */
+  public static function checkTables(): void {
+    // Lazy-create DB if network activation failed.
+    $tableCheck = get_site_transient( 'editoria11y_db_version' );
+    if ($tableCheck !=='1.0') { // false or wrong version
+      Editoria11y::create_database();
+      set_site_transient( 'editoria11y_db_version', '1.0' );
+    }
+  }
+
 	/**
 	 * Plugin Activation
 	 */

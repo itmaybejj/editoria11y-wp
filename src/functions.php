@@ -183,6 +183,9 @@ function ed11y_get_params( $user ) {
 		set_site_transient( 'editoria11y_settings', $ed1vals, 360 );
 	}
 
+  // Lazy-create DB if network activation failed.
+  Editoria11y::checkTables();
+
 	// Use permalink as sync URL if available, otherwise use query path.
 	$ed1vals['currentPage'] = get_permalink( get_the_ID() );
 	if ( empty( $ed1vals['currentPage'] ) || is_archive() || is_home() || is_front_page() ) {
