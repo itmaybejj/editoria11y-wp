@@ -5,6 +5,8 @@
  *  @package         Editoria11y
  */
 
+use Editoria11y\Editoria11y;
+
 /**
  * Allowed HTML for filters.
  */
@@ -656,7 +658,7 @@ function ed11y_plugin_settings_validate( $settings ) {
  */
 function editoria11y_dashboard() {
     // Lazy-create DB if network activation failed.
-    Editoria11y::checkTables();
+    Editoria11y::check_tables();
 
 	wp_enqueue_script( 'editoria11y-js', trailingslashit( ED11Y_ASSETS ) . 'lib/editoria11y.min.js', array( 'wp-api' ), true, Editoria11y::ED11Y_VERSION, false );
 	wp_enqueue_script( 'editoria11y-js-dash', trailingslashit( ED11Y_ASSETS ) . 'js/editoria11y-dashboard.js', array( 'wp-api' ), true, Editoria11y::ED11Y_VERSION, false );
@@ -704,7 +706,7 @@ function ed11y_test_nice_names() {
 	$tests['altLong']                     = __( 'Manual check: very long alternative text', 'editoria11y' );
 	$tests['altLongLinked']               = __( 'Manual check: very long alternative text in linked image', 'editoria11y' );
 	$tests['altPartOfLinkWithText']       = __( 'Manual check: link contains both text and an image', 'editoria11y' );
-    $tests['altMeaningless']              = __( 'Alt text is meaningless', 'editoria11y' );
+	$tests['altMeaningless']              = __( 'Alt text is meaningless', 'editoria11y' );
 	$tests['linkNoText']                  = __( 'Link with no accessible text', 'editoria11y' );
 	$tests['linkTextIsURL']               = __( 'Manual check: is this link text a URL?', 'editoria11y' );
 	$tests['linkTextIsGeneric']           = __( 'Manual check: is this link meaningful and concise?', 'editoria11y' );

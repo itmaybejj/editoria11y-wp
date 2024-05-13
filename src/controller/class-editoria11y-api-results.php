@@ -6,7 +6,8 @@
  *
  * @package         Editoria11y
  */
-class Editoria11y_Api_Results extends WP_REST_Controller {
+
+class Editoria11y_Api_Results extends \WP_REST_Controller {
 
 	/**
 	 * Register routes
@@ -128,7 +129,7 @@ class Editoria11y_Api_Results extends WP_REST_Controller {
 							OFFSET {$offset}
 							;"
 				);
-				
+
 				$rowcount = $wpdb->get_var(
 					"SELECT COUNT({$utable}.pid) 
 					FROM {$rtable}

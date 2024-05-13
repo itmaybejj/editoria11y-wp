@@ -4,6 +4,9 @@
  *
  * @package         Editoria11y
  */
+
+namespace Editoria11y;
+
 class Editoria11y_Validate {
 
 	/**

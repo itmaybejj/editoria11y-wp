@@ -26,14 +26,14 @@ jobs:
     - name: Install modules
       run: yarn
     - name: Run ESlint
-      run: npx eslint assets/js --ext .js,.jsx,.ts,.tsx
+      run: npx eslint assets/js
 
 
   md:
     name: PHP Mess Detector 🧹
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3      
+    - uses: actions/checkout@v3
     - name: PHPMD
       run: |
         composer install

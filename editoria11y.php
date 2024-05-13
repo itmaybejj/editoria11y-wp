@@ -24,6 +24,11 @@
  * @license         GPL v2 or later
  */
 
+namespace Editoria11y;
+
+use Editoria11y_Api_Dismissals;
+use Editoria11y_Api_Results;
+
 /**
  * Class Editoria11y
  *
@@ -109,19 +114,19 @@ class Editoria11y {
 		$ed11y_api_dismissals->init();
 	}
 
-	/**
-	 * Provides DB table schema.
-	 */
-	private static function create_database() {
-		global $wpdb;
+  /**
+   * Provides DB table schema.
+   */
+  public static function create_database(): void {
+    global $wpdb;
 
-		$charset_collate = $wpdb->get_charset_collate();
+    $charset_collate = $wpdb->get_charset_collate();
 
-		$table_urls       = $wpdb->prefix . 'ed11y_urls';
-		$table_results    = $wpdb->prefix . 'ed11y_results';
-		$table_dismissals = $wpdb->prefix . 'ed11y_dismissals';
+    $table_urls       = $wpdb->prefix . 'ed11y_urls';
+    $table_results    = $wpdb->prefix . 'ed11y_results';
+    $table_dismissals = $wpdb->prefix . 'ed11y_dismissals';
 
-		$sql_urls = "CREATE TABLE $table_urls (
+    $sql_urls = "CREATE TABLE $table_urls (
 			pid int(9) unsigned AUTO_INCREMENT NOT NULL,
 			page_url varchar(190) NOT NULL,
 			entity_type varchar(255) NOT NULL,
@@ -131,7 +136,7 @@ class Editoria11y {
 			KEY pid (pid)
 			) $charset_collate;";
 
-		$sql_results = "CREATE TABLE $table_results (
+    $sql_results = "CREATE TABLE $table_results (
 			pid int(9) unsigned NOT NULL,
 			result_key varchar(32) NOT NULL,
 			result_count smallint(4) NOT NULL,
@@ -141,7 +146,7 @@ class Editoria11y {
 			FOREIGN KEY (pid) REFERENCES $table_urls (pid) ON DELETE CASCADE
 			) $charset_collate;";
 
-		$sql_dismissals = "CREATE TABLE $table_dismissals (
+    $sql_dismissals = "CREATE TABLE $table_dismissals (
 			id int(9) unsigned AUTO_INCREMENT NOT NULL,
 			pid int(9) unsigned NOT NULL,
 			result_key varchar(32) NOT NULL,
@@ -158,20 +163,20 @@ class Editoria11y {
 			FOREIGN KEY (pid) REFERENCES $table_urls (pid) ON DELETE CASCADE
 			) $charset_collate;";
 
-		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
-		maybe_create_table( $table_urls, $sql_urls );
-		maybe_create_table( $table_results, $sql_results );
-		maybe_create_table( $table_dismissals, $sql_dismissals );
-	}
+    require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+    maybe_create_table( $table_urls, $sql_urls );
+    maybe_create_table( $table_results, $sql_results );
+    maybe_create_table( $table_dismissals, $sql_dismissals );
+  }
 
   /**
    * Make sure tables are in place and up to date.
    */
-  public static function checkTables(): void {
+  public static function check_tables(): void {
     // Lazy-create DB if network activation failed.
     $tableCheck = get_site_transient( 'editoria11y_db_version' );
     if ($tableCheck !=='1.0') { // false or wrong version
-      Editoria11y::create_database();
+      self::create_database();
       set_site_transient( 'editoria11y_db_version', '1.0' );
     }
   }
@@ -197,14 +202,16 @@ class Editoria11y {
 			foreach ( $sites as $siteid ) {
 
 				switch_to_blog( $siteid );
-				self::create_database();
+        self::create_database();
+
 				restore_current_blog();
 
 			}
 
 		} else {
 
-			self::create_database();
+      $schema = new Editoria11y_Schema();
+      self::create_database();
 
 		}
 	}

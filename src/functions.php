@@ -6,6 +6,8 @@
  * @package Editoria11y
  */
 
+use Editoria11y\Editoria11y;
+
 add_filter( 'plugin_action_links_' . ED11Y_BASE, 'ed11y_add_action_links' );
 /**
  * Adds link to setting page on plugin admin screen.
@@ -101,7 +103,7 @@ function ed11y_get_plugin_settings( $option = false, $include_defaults = false )
 /**
  * Loads the scripts for the plugin.
  */
-function ed11y_load_scripts() {
+function ed11y_load_scripts(): void {
 	$user               = wp_get_current_user();
 	$allowed_roles      = array( 'editor', 'administrator', 'author', 'contributor' );
 	$allowed_user_roles = array_intersect( $allowed_roles, $user->roles );
@@ -183,8 +185,8 @@ function ed11y_get_params( $user ) {
 		set_site_transient( 'editoria11y_settings', $ed1vals, 360 );
 	}
 
-  // Lazy-create DB if network activation failed.
-  Editoria11y::checkTables();
+	// Lazy-create DB if network activation failed.
+	//Editoria11y::check_tables();
 
 	// Use permalink as sync URL if available, otherwise use query path.
 	$ed1vals['currentPage'] = get_permalink( get_the_ID() );
