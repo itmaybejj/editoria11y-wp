@@ -175,7 +175,7 @@ class Editoria11y {
   public static function check_tables(): void {
     // Lazy-create DB if network activation failed.
     $tableCheck = get_site_transient( 'editoria11y_db_version' );
-    if ($tableCheck !=='1.0') { // false or wrong version
+    if ($tableCheck !=='1.1') { // false or wrong version
       self::create_database();
       set_site_transient( 'editoria11y_db_version', '1.0' );
     }

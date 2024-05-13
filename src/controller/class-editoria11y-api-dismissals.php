@@ -1,4 +1,6 @@
 <?php //phpcs:ignore
+use Editoria11y\Editoria11y_Validate;
+
 /**
  * Stores tests results
  * Reference https://developer.wordpress.org/rest-api/extending-the-rest-api/controller-classes/

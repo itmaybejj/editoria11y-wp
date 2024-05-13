@@ -161,6 +161,8 @@ add_action( 'enqueue_block_assets', 'ed11y_enqueue_editor_content_assets' );
 /**
  * Returns page-specific config for the Editoria11y library.
  *
+ * @SuppressWarnings(PHPMD.StaticAccess)
+ *
  * @param Object $user WP_User.
  */
 function ed11y_get_params( $user ) {
@@ -191,6 +193,9 @@ function ed11y_get_params( $user ) {
 		global $wp;
 		$ed1vals['currentPage'] = home_url( $wp->request );
 	}
+
+	// Lazy-create DB if network activation failed.
+	Editoria11y::check_tables();
 
 	// Get dismissals for route. Complex joins require manual DB call.
 	// phpcs:disable

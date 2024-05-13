@@ -1,4 +1,6 @@
 <?php // phpcs:ignore
+use Editoria11y\Editoria11y_Validate;
+
 /**
  * Stores tests results
  * Reference https://developer.wordpress.org/rest-api/extending-the-rest-api/controller-classes/
@@ -6,7 +8,7 @@
  *
  * @package         Editoria11y
  */
-class Editoria11y_Api_Results extends \WP_REST_Controller {
+class Editoria11y_Api_Results extends WP_REST_Controller {
 
 	/**
 	 * Register routes

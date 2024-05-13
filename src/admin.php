@@ -655,6 +655,8 @@ function ed11y_plugin_settings_validate( $settings ) {
 
 /**
  * Render the plugin settings page.
+ *
+ * @SuppressWarnings(PHPMD.StaticAccess)
  */
 function editoria11y_dashboard() {
 	// Lazy-create DB if network activation failed.
