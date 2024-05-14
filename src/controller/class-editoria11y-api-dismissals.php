@@ -1,5 +1,4 @@
 <?php //phpcs:ignore
-use Editoria11y\Editoria11y_Validate;
 
 /**
  * Stores tests results

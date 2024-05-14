@@ -5,8 +5,6 @@
  * @package         Editoria11y
  */
 
-namespace Editoria11y;
-
 /**
  * Validate API results.
  */

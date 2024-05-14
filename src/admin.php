@@ -664,6 +664,7 @@ function editoria11y_dashboard() {
 
 	wp_enqueue_script( 'editoria11y-js', trailingslashit( ED11Y_ASSETS ) . 'lib/editoria11y.min.js', array( 'wp-api' ), true, Editoria11y::ED11Y_VERSION, false );
 	wp_enqueue_script( 'editoria11y-js-dash', trailingslashit( ED11Y_ASSETS ) . 'js/editoria11y-dashboard.js', array( 'wp-api' ), true, Editoria11y::ED11Y_VERSION, false );
+	wp_enqueue_style( 'editoria11y-lib-css', trailingslashit( ED11Y_ASSETS ) . 'lib/editoria11y.min.css', null, Editoria11y::ED11Y_VERSION );
 	wp_enqueue_style( 'editoria11y-css', trailingslashit( ED11Y_ASSETS ) . 'css/editoria11y-dashboard.css', null, Editoria11y::ED11Y_VERSION );
 	$nonce = wp_create_nonce( 'ed1ref' );
 	echo '<div id="ed1">

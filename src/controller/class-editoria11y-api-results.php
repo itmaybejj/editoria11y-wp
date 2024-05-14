@@ -1,5 +1,4 @@
 <?php // phpcs:ignore
-use Editoria11y\Editoria11y_Validate;
 
 /**
  * Stores tests results
@@ -256,7 +255,7 @@ class Editoria11y_Api_Results extends WP_REST_Controller {
 		$params  = $request->get_params();
 		$results = $params['data'];
 		$now     = gmdate( 'Y-m-d H:i:s' );
-		$rows    = 0; // If 0 at end, delete URL.
+		$rows    = $results['page_count'] > 0 || count( $results['dismissals'] ) > 0 ? 1 : 0; // If 0 at end, delete URL.
 		$pid     = false;
 		$return  = array();
 		global $wpdb;
@@ -278,7 +277,7 @@ class Editoria11y_Api_Results extends WP_REST_Controller {
 		}
 
 		// Check if any results exist.
-		if ( $results['page_count'] > 0 || count( $results['dismissals'] ) > 0 ) {
+		if ( 0 < $rows ) {
 
 			// Upsert page URL.
 			$response = $wpdb->query( // phpcs:ignore

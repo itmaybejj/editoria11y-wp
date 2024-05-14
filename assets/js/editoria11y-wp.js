@@ -51,13 +51,13 @@ function ed11ySync() {
         }
       }
       if (result.dismissalStatus !== 'false') {
-        let insert = {};
-        insert = [testName, result.dismissalKey];
+        let insert = [testName, result.dismissalKey];
         dismissals.push(
           insert
         );
       }
     });
+    console.log([results, dismissals, total]);
     return [results, dismissals, total];
   };
 
@@ -149,6 +149,7 @@ ed11yReady(
         ed11yOptions['alertMode'] = 'assertive';
         ed11yOptions['showDismissed'] = true;
       }
+      ed11yOptions.cssUrls = [ed11yOptions.cssLocation];
 
 	const ed11y = new Ed11y(ed11yOptions); // eslint-disable-line
       ed11ySync();

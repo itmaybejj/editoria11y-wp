@@ -10,7 +10,10 @@ git clone git@github.com:itmaybejj/editoria11y.git .
 git checkout $GIT_REF
 rm ../assets/lib/editoria11y.min.js
 rm ../assets/lib/editoria11y.min.js.map
+rm ../assets/lib/editoria11y.min.css
 mv dist/editoria11y.min.js ../assets/lib/
 mv dist/editoria11y.min.js.map ../assets/lib/
+mv dist/editoria11y.min.css ../assets/lib/
+
 cd ../
 rm -rf tmp

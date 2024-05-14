@@ -114,6 +114,7 @@ function ed11y_load_scripts(): void {
 		// added last two parameters 10/27/22 need to test.
 		wp_enqueue_script( 'editoria11y-js', trailingslashit( ED11Y_ASSETS ) . 'lib/editoria11y.min.js', null, Editoria11y::ED11Y_VERSION, false );
 		wp_enqueue_script( 'editoria11y-js-shim', trailingslashit( ED11Y_ASSETS ) . 'js/editoria11y-wp.js', array( 'wp-api' ), Editoria11y::ED11Y_VERSION, false );
+		wp_enqueue_style( 'editoria11y-lib-css', trailingslashit( ED11Y_ASSETS ) . 'lib/editoria11y.min.css', null, Editoria11y::ED11Y_VERSION );
 	}
 }
 add_action( 'wp_enqueue_scripts', 'ed11y_load_scripts' );
@@ -152,6 +153,11 @@ function ed11y_enqueue_editor_content_assets() {
 					'options' => ed11y_get_params( wp_get_current_user() ),
 				)
 			);
+			wp_enqueue_style(
+				'editoria11y-lib-css',
+				trailingslashit( ED11Y_ASSETS ) . 'lib/editoria11y.min.css',
+				null,
+				Editoria11y::ED11Y_VERSION );
 		}
 	}
 }
@@ -184,6 +190,7 @@ function ed11y_get_params( $user ) {
 		$ed1vals['preventCheckingIfPresent'] = $settings['ed11y_no_run'];
 		$ed1vals['liveCheck']                = $settings['ed11y_livecheck'];
 		$ed1vals['customTests']              = $settings['ed11y_custom_tests'];
+		$ed1vals['cssLocation']				 = trailingslashit( ED11Y_ASSETS ) . 'lib/editoria11y.min.css';
 		set_site_transient( 'editoria11y_settings', $ed1vals, 360 );
 	}
 
