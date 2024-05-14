@@ -98,7 +98,7 @@ let ed11yUpdateButton = function(count) {
  </style>`;
     Ed11y.wpIssueToggle.insertAdjacentElement('afterend', ed11yStyle);
   }
-  let buttonText = ed11yOpen ? 'Hide alerts' : `${count} issues`;
+  let buttonText = ed11yOpen ? 'Hide alerts' : `${count} issue${count > 1 ? 's' : ''}`;
   Ed11y.wpIssueToggle.textContent = buttonText;
   if ((ed11yOptions['liveCheck'] === 'all') && Ed11y.totalCount === 0 || ed11yOptions['liveCheck'] === 'errors' && Ed11y.errorCount === 0) {
     Ed11y.wpIssueToggle.classList.add('hidden');
@@ -188,7 +188,7 @@ let  ed11yReadResults = function () {
             }
             ed11yKnownContainers[ed11yContainerId].title = ed11yNewTitle;
             ed11yKnownContainers[ed11yContainerId].ring = ed11yRingColor;
-            ed11yKnownContainers[ed11yContainerId].font = ed11yFontColor;            
+            ed11yKnownContainers[ed11yContainerId].font = ed11yFontColor;
             ed11yKnownContainers[ed11yContainerId].subSelector.push(subRing);
           }
         }
@@ -241,12 +241,12 @@ let  ed11yReadResults = function () {
         `;
        }
    });
-   
+
     }
-    
 
 
-    
+
+
     newStyles.innerHTML = '';
     let styleWrapper = document.createElement('style');
     styleWrapper.textContent = ed11yStyles;

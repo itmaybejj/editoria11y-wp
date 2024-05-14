@@ -57,7 +57,6 @@ function ed11ySync() {
         );
       }
     });
-    console.log([results, dismissals, total]);
     return [results, dismissals, total];
   };
 
