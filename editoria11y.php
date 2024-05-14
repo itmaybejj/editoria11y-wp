@@ -24,11 +24,6 @@
  * @license         GPL v2 or later
  */
 
-namespace Editoria11y;
-
-use Editoria11y_Api_Dismissals;
-use Editoria11y_Api_Results;
-
 /**
  * Class Editoria11y
  *
@@ -129,12 +124,14 @@ class Editoria11y {
 
     $sql_urls = "CREATE TABLE $table_urls (
 			pid int(9) unsigned AUTO_INCREMENT NOT NULL,
+			post_id int(9) unsigned NOT NULL default '0',
 			page_url varchar(190) NOT NULL,
 			entity_type varchar(255) NOT NULL,
 			page_title varchar(1024) NOT NULL,
 			page_total smallint(4) unsigned NOT NULL,
 			PRIMARY KEY page_url (page_url),
-			KEY pid (pid)
+			KEY pid (pid),
+			KEY post_id (post_id)
 			) $charset_collate;";
 
     $sql_results = "CREATE TABLE $table_results (
@@ -157,7 +154,7 @@ class Editoria11y {
 			created datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
 			updated datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
 			stale tinyint(1) NOT NULL default '0',
-			PRIMARY KEY (id),
+			PRIMARY KEY  (id),
 			KEY page_url (pid),
 			KEY user (user),
 			KEY dismissal_status (dismissal_status),
@@ -165,9 +162,9 @@ class Editoria11y {
 			) $charset_collate;";
 
     require_once ABSPATH . 'wp-admin/includes/upgrade.php';
-    maybe_create_table( $table_urls, $sql_urls );
-    maybe_create_table( $table_results, $sql_results );
-    maybe_create_table( $table_dismissals, $sql_dismissals );
+	dbDelta( $sql_urls ); // Creates or updates
+    maybe_create_table( $table_results, $sql_results ); // Create only
+    maybe_create_table( $table_dismissals, $sql_dismissals ); // Create only
   }
 
   /**
@@ -176,45 +173,20 @@ class Editoria11y {
   public static function check_tables(): void {
     // Lazy-create DB if network activation failed.
     $tableCheck = get_site_transient( 'editoria11y_db_version' );
-    if ($tableCheck !=='1.1') { // false or wrong version
-      self::create_database();
-      set_site_transient( 'editoria11y_db_version', '1.0' );
+
+    if ( $tableCheck !== 1.1) {
+		// Lazy DB creation
+      	self::create_database();
     }
+
+	set_site_transient( 'editoria11y_db_version', 1.1 );
   }
 
 	/**
 	 * Plugin Activation
 	 */
 	public static function activate( $network = false ) {
-		if ( ! current_user_can( 'activate_plugins' ) ) {
-			return;
-		}
-
-		if ( $network ) {
-
-			$sites = get_sites(
-				array(
-					'number'     => 10000,
-					'fields'     =>'ids',
-					'network_id' => get_current_network_id(),
-				)
-			);
-
-			foreach ( $sites as $siteid ) {
-
-				switch_to_blog( $siteid );
-        self::create_database();
-
-				restore_current_blog();
-
-			}
-
-		} else {
-
-      $schema = new Editoria11y_Schema();
-      self::create_database();
-
-		}
+		// No action needed.
 	}
 
 	/**
@@ -246,6 +218,7 @@ class Editoria11y {
 				$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}ed11y_urls" ); // phpcs:ignore
 
 				delete_option( 'ed11y_plugin_settings' );
+				delete_site_transient( 'editoria11y_db_version' );
 
 				restore_current_blog();
 

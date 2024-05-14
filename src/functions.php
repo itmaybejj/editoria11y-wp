@@ -6,8 +6,6 @@
  * @package Editoria11y
  */
 
-use Editoria11y\Editoria11y;
-
 add_filter( 'plugin_action_links_' . ED11Y_BASE, 'ed11y_add_action_links' );
 /**
  * Adds link to setting page on plugin admin screen.
@@ -194,12 +192,15 @@ function ed11y_get_params( $user ) {
 		set_site_transient( 'editoria11y_settings', $ed1vals, 360 );
 	}
 
+	$ed1vals['post_id'] = get_the_ID();
+
 	// Use permalink as sync URL if available, otherwise use query path.
-	$ed1vals['currentPage'] = get_permalink( get_the_ID() );
+	$ed1vals['currentPage'] = get_permalink( $ed1vals['post_id'] );
 	if ( empty( $ed1vals['currentPage'] ) || is_archive() || is_home() || is_front_page() ) {
 		global $wp;
 		$ed1vals['currentPage'] = home_url( $wp->request );
 	}
+
 
 	// Lazy-create DB if network activation failed.
 	Editoria11y::check_tables();
@@ -209,9 +210,41 @@ function ed11y_get_params( $user ) {
 	global $wpdb;
 	$utable                      = $wpdb->prefix . 'ed11y_urls';
 	$dtable                      = $wpdb->prefix . 'ed11y_dismissals';
-	$dismissals_on_page          = $wpdb->get_results(
-		$wpdb->prepare(
-			"SELECT
+
+	$dismissals_on_page = [];
+	if ($ed1vals['post_id']) {
+		$dismissals_on_page          = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT
+			{$dtable}.result_key,
+			{$dtable}.element_id,
+			{$dtable}.dismissal_status
+			FROM {$dtable}
+			INNER JOIN {$utable} ON {$utable}.pid={$dtable}.pid
+			WHERE {$utable}.post_id = %s
+			AND (
+				{$dtable}.dismissal_status = 'ok'
+					OR
+					(
+						{$dtable}.dismissal_status = 'hide'
+						AND
+						{$dtable}.user = %d
+					)
+				)
+			;",
+				array(
+					$ed1vals['post_id'],
+					$user->ID,
+				)
+			)
+		);
+	}
+
+	if ( count($dismissals_on_page) === 0 ) {
+		// Try again using URL, due to schema changes in 1.0.15
+		$dismissals_on_page = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT
 			{$dtable}.result_key,
 			{$dtable}.element_id,
 			{$dtable}.dismissal_status
@@ -228,12 +261,14 @@ function ed11y_get_params( $user ) {
 					)
 				)
 			;",
-			array(
-				$ed1vals['currentPage'],
-				$user->ID,
+				array(
+					$ed1vals['currentPage'],
+					$user->ID,
+				)
 			)
-		)
-	);
+		);
+	}
+
 	// phpcs:enable
 	$ed1vals['syncedDismissals'] = array();
 	foreach ( $dismissals_on_page as $key => $value ) {

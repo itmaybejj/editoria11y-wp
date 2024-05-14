@@ -229,19 +229,34 @@ class Editoria11y_Api_Results extends WP_REST_Controller {
 	 *
 	 * @param string $url to find.
 	 */
-	public function get_pid( $url ) {
-		// Get Page ID so we can avoid complex joins in subsequent queries.
-		global $wpdb;
-		$pid = $wpdb->get_var( // phpcs:ignore
-			$wpdb->prepare(
-				"SELECT pid FROM {$wpdb->prefix}ed11y_urls
+	public function get_pid(string $url, $post_id ) {
+		if ( $url ) {
+			// Get Page ID so we can avoid complex joins in subsequent queries.
+			global $wpdb;
+			$pid = $wpdb->get_var( // phpcs:ignore
+				$wpdb->prepare(
+					"SELECT pid FROM {$wpdb->prefix}ed11y_urls
 				WHERE page_url=%s;",
-				array(
-					$url,
+					array(
+						$url,
+					)
 				)
-			)
-		);
-		return $pid;
+			);
+			return $pid;
+		} else {
+			// Get Page ID so we can avoid complex joins in subsequent queries.
+			global $wpdb;
+			$pid = $wpdb->get_var( // phpcs:ignore
+				$wpdb->prepare(
+					"SELECT pid FROM {$wpdb->prefix}ed11y_urls
+				WHERE post_id=%s;",
+					array(
+						$post_id,
+					)
+				)
+			);
+			return $pid;
+		}
 	}
 
 	/**
@@ -250,7 +265,8 @@ class Editoria11y_Api_Results extends WP_REST_Controller {
 	 *
 	 * @param WP_REST_Request $request Full data about the request.
 	 */
-	public function send_results( $request ) {
+	public function send_results( $request ): array
+	{
 
 		$params  = $request->get_params();
 		$results = $params['data'];
@@ -284,30 +300,36 @@ class Editoria11y_Api_Results extends WP_REST_Controller {
 				$wpdb->prepare(
 					"INSERT INTO {$wpdb->prefix}ed11y_urls
 						(page_url,
+						 post_id,
 						entity_type,
 						page_title,
 						page_total)
-					VALUES (%s, %s, %s, %d)
+					VALUES (%s, %d, %s, %s, %d)
 					ON DUPLICATE KEY UPDATE
 						entity_type = %s,
 						page_title = %s,
-						page_total = %d
+						page_total = %d,
+						post_id = %d
 					;",
 					array(
 						$results['page_url'],
+						$results['post_id'],
 						$results['entity_type'],
 						$results['page_title'],
 						$results['page_count'],
 						$results['entity_type'],
 						$results['page_title'],
 						$results['page_count'],
+						$results['post_id']
 					)
 				)
 			);
 			$return[] = $response;
 
 			// Get Page ID so we can avoid complex joins in subsequent queries.
-			$pid = $this->get_pid( $results['page_url'] );
+			$pid = $results['post_id'] > 0 ?
+				$this->get_pid(false, $results['post_id'])
+				: $this->get_pid( $results['page_url'], false);
 
 			foreach ( $results['results'] as $key => $value ) {
 				// Upsert results.
@@ -319,7 +341,7 @@ class Editoria11y_Api_Results extends WP_REST_Controller {
                             result_count,
                             created,
                             updated)
-                        VALUES (%s, %s, %d, %s, %s) 
+                        VALUES (%d, %s, %d, %s, %s) 
                         ON DUPLICATE KEY UPDATE
                             result_count = %d,
                             updated = %s
@@ -362,7 +384,9 @@ class Editoria11y_Api_Results extends WP_REST_Controller {
 
 		if ( ! is_numeric( $pid ) ) {
 			// Resultless pages missed the foreach.
-			$pid = $this->get_pid( $results['page_url'] );
+			$pid = $results['post_id'] > 0 ?
+				$this->get_pid(false, $results['post_id'])
+				: $this->get_pid( $results['page_url'], false);
 			// For pages with no issues, this is the only query.
 		}
 

@@ -78,15 +78,11 @@ class Editoria11y_Api_Dismissals extends WP_REST_Controller {
 		$results = $params['data'];
 		$now     = gmdate( 'Y-m-d H:i:s' );
 		global $wpdb;
-		$pid = $wpdb->get_var( // phpcs:ignore
-			$wpdb->prepare(
-				"SELECT pid FROM {$wpdb->prefix}ed11y_urls
-				WHERE page_url=%s;",
-				array(
-					$results['page_url'],
-				)
-			)
-		);
+
+		// Get Page ID so we can avoid complex joins in subsequent queries.
+		$pid = $results['post_id'] > 0 ?
+			$this->get_pid(false, $results['post_id'])
+			: $this->get_pid( $results['page_url'], false);
 
 		if ( 'reset' === $results['dismissal_status'] ) {
 
@@ -242,6 +238,41 @@ class Editoria11y_Api_Dismissals extends WP_REST_Controller {
 
 		// phpcs:enable
 		return new WP_REST_Response( array( $data, $rowcount ), 200 );
+	}
+
+	/**
+	 * Returns the pid from the URL table.
+	 *
+	 * @param string $url to find.
+	 */
+	public function get_pid( $url, $post_id ) {
+		if ( $url ) {
+			// Get Page ID so we can avoid complex joins in subsequent queries.
+			global $wpdb;
+			$pid = $wpdb->get_var( // phpcs:ignore
+				$wpdb->prepare(
+					"SELECT pid FROM {$wpdb->prefix}ed11y_urls
+				WHERE page_url=%s;",
+					array(
+						$url,
+					)
+				)
+			);
+			return $pid;
+		} else {
+			// Get Page ID so we can avoid complex joins in subsequent queries.
+			global $wpdb;
+			$pid = $wpdb->get_var( // phpcs:ignore
+				$wpdb->prepare(
+					"SELECT pid FROM {$wpdb->prefix}ed11y_urls
+				WHERE post_id=%s;",
+					array(
+						$post_id,
+					)
+				)
+			);
+			return $pid;
+		}
 	}
 
 	/**

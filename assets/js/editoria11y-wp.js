@@ -71,6 +71,7 @@ function ed11ySync() {
 		let results = extractResults();
 		let data = {
 			page_title: ed11yOptions.title,
+            post_id: ed11yOptions.post_id ? ed11yOptions.post_id : 0,
 			page_count: results[2],
 			entity_type: ed11yOptions.entity_type, // node or false
 			results: results[0],
@@ -97,6 +98,7 @@ function ed11ySync() {
 			page_url: url,
 			created: 0,
 			pid: ed11yResetID ? parseInt( ed11yResetID ) : -1,
+            post_id: ed11yOptions.post_id ? ed11yOptions.post_id : 0,
 		};
 		postData('result', data);
 		// Short timeout to let execution queue clear.
@@ -118,6 +120,7 @@ function ed11ySync() {
         result_key: detail.dismissTest, // which test is sending a result
         element_id: detail.dismissKey, // some recognizable attribute of the item marked
         dismissal_status: detail.dismissAction, // ok, ignore or reset
+        post_id: ed11yOptions.post_id ? ed11yOptions.post_id : 0,
       };
       postData('dismiss', data);
     }
