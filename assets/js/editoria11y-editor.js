@@ -82,8 +82,10 @@ let ed11yUpdateButton = function(count) {
    .is-full-canvas #ed11y-issue-link {
       display: inline-block;
       position: absolute;
-      top: 60px;
+      top: 59px;
       background: white;
+      border-radius: 0;
+      box-shadow: 1px 1px var(--wp-components-color-accent,var(--wp-admin-theme-color,#3858e9));
   }
   #ed11y-issue-link.ed11y-warning {
    background-color: #fad859;

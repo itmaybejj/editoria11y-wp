@@ -80,9 +80,7 @@ class Editoria11y_Api_Dismissals extends WP_REST_Controller {
 		global $wpdb;
 
 		// Get Page ID so we can avoid complex joins in subsequent queries.
-		$pid = $results['post_id'] > 0 ?
-			$this->get_pid( false, $results['post_id'] )
-			: $this->get_pid( $results['page_url'], false );
+		$pid = $this->get_pid( $results['page_url'], $results['post_id'] );
 
 		if ( 'reset' === $results['dismissal_status'] ) {
 
@@ -90,7 +88,9 @@ class Editoria11y_Api_Dismissals extends WP_REST_Controller {
 			$response = $wpdb->query( // phpcs:ignore
 				$wpdb->prepare(
 					"DELETE FROM {$wpdb->prefix}ed11y_dismissals 
-					WHERE pid = %d 
+					WHERE pid = %d
+					AND result_key = %s
+					AND element_ID = %s  
 					AND (
 						dismissal_status = 'ok'
 						OR
@@ -102,6 +102,8 @@ class Editoria11y_Api_Dismissals extends WP_REST_Controller {
 					);",
 					array(
 						$pid,
+						$results['result_key'],
+						$results['element_id'],
 						wp_get_current_user()->ID,
 					)
 				)
@@ -247,22 +249,8 @@ class Editoria11y_Api_Dismissals extends WP_REST_Controller {
 	 * @param string $post_id the WP post ID number.
 	 */
 	public function get_pid( string $url, string $post_id ): ?string {
-		if ( $url ) {
-			// Get Page ID so we can avoid complex joins in subsequent queries.
-			global $wpdb;
-			$pid = $wpdb->get_var( // phpcs:ignore
-				$wpdb->prepare(
-					"SELECT pid FROM {$wpdb->prefix}ed11y_urls
-				WHERE page_url=%s;",
-					array(
-						$url,
-					)
-				)
-			);
-			return $pid;
-		} else {
-			// Get Page ID so we can avoid complex joins in subsequent queries.
-			global $wpdb;
+		global $wpdb;
+		if ( $post_id > 0 ) {
 			$pid = $wpdb->get_var( // phpcs:ignore
 				$wpdb->prepare(
 					"SELECT pid FROM {$wpdb->prefix}ed11y_urls
@@ -272,8 +260,21 @@ class Editoria11y_Api_Dismissals extends WP_REST_Controller {
 					)
 				)
 			);
-			return $pid;
 		}
+		// Not found by post ID, or post ID not provided
+		if ( empty($pid) ) {
+			global $wpdb;
+			return $wpdb->get_var( // phpcs:ignore
+				$wpdb->prepare(
+					"SELECT pid FROM {$wpdb->prefix}ed11y_urls
+				WHERE page_url=%s;",
+					array(
+						$url,
+					)
+				)
+			);
+		}
+		return $pid;
 	}
 
 	/**

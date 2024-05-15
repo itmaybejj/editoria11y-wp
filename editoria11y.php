@@ -129,8 +129,8 @@ class Editoria11y {
 			entity_type varchar(255) NOT NULL,
 			page_title varchar(1024) NOT NULL,
 			page_total smallint(4) unsigned NOT NULL,
-			PRIMARY KEY page_url (page_url),
-			KEY pid (pid),
+			PRIMARY KEY pid (pid),
+			KEY page_url (page_url),
 			KEY post_id (post_id)
 			) $charset_collate;";
 
@@ -162,9 +162,25 @@ class Editoria11y {
 			) $charset_collate;";
 
     require_once ABSPATH . 'wp-admin/includes/upgrade.php';
-	dbDelta( $sql_urls ); // Creates or updates
+	maybe_create_table( $table_urls, $sql_urls ); // Creates or updates
     maybe_create_table( $table_results, $sql_results ); // Create only
     maybe_create_table( $table_dismissals, $sql_dismissals ); // Create only
+
+	// versions < 1.1
+  	$url_columns = $wpdb->get_results( "DESC $table_urls" );
+	if( count($url_columns) !== 6) {
+		$wpdb->query("ALTER TABLE $table_urls
+			ADD post_id int(9) unsigned NOT NULL default 0,
+			DROP PRIMARY KEY, ADD PRIMARY KEY pid ( pid ),
+			ADD KEY post_id (post_id)
+	 	;");
+		$wpdb->query("ALTER TABLE $table_results
+			DROP FOREIGN KEY (pid), ADD FOREIGN KEY (pid) REFERENCES $table_urls (pid) ON DELETE CASCADE
+	 	;");
+		$wpdb->query("ALTER TABLE $table_dismissals
+			DROP FOREIGN KEY (pid), ADD FOREIGN KEY (pid) REFERENCES $table_urls (pid) ON DELETE CASCADE
+	 	;");
+	}
   }
 
   /**

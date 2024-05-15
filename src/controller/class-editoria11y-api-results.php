@@ -231,8 +231,20 @@ class Editoria11y_Api_Results extends WP_REST_Controller {
 	 * @param string $post_id WP post ID.
 	 */
 	public function get_pid( string $url, string $post_id ): ?string {
-		if ( $url ) {
-			// Get Page ID so we can avoid complex joins in subsequent queries.
+		global $wpdb;
+		if ( $post_id > 0 ) {
+			$pid = $wpdb->get_var( // phpcs:ignore
+				$wpdb->prepare(
+					"SELECT pid FROM {$wpdb->prefix}ed11y_urls
+				WHERE post_id=%s;",
+					array(
+						$post_id,
+					)
+				)
+			);
+		}
+		// Not found by post ID, or post ID not provided
+		if ( empty($pid) ) {
 			global $wpdb;
 			return $wpdb->get_var( // phpcs:ignore
 				$wpdb->prepare(
@@ -243,20 +255,8 @@ class Editoria11y_Api_Results extends WP_REST_Controller {
 					)
 				)
 			);
-		} else {
-			// Get Page ID so we can avoid complex joins in subsequent queries.
-			global $wpdb;
-			$pid = $wpdb->get_var( // phpcs:ignore
-				$wpdb->prepare(
-					"SELECT pid FROM {$wpdb->prefix}ed11y_urls
-				WHERE post_id=%s;",
-					array(
-						$post_id,
-					)
-				)
-			);
-			return $pid;
 		}
+		return $pid;
 	}
 
 	/**
@@ -271,13 +271,12 @@ class Editoria11y_Api_Results extends WP_REST_Controller {
 		$results = $params['data'];
 		$now     = gmdate( 'Y-m-d H:i:s' );
 		$rows    = $results['page_count'] > 0 || count( $results['dismissals'] ) > 0 ? 1 : 0; // If 0 at end, delete URL.
-		$pid     = false;
 		$return  = array();
 		global $wpdb;
 
 		// Handle clicks from dashboard to changed URLS first to prevent URL collisions.
 		if ( $results['pid'] > -1 ) {
-			$response = $wpdb->query( // phpcs:ignore
+			$wpdb->query( // phpcs:ignore
 				$wpdb->prepare(
 					"DELETE FROM {$wpdb->prefix}ed11y_urls
 					WHERE
@@ -291,44 +290,50 @@ class Editoria11y_Api_Results extends WP_REST_Controller {
 			);
 		}
 
+		$pid = $this->get_pid( $results['page_url'], $results['post_id'] ); // may be 0
+
 		// Check if any results exist.
 		if ( 0 < $rows ) {
 
-			// Upsert page URL.
-			$response = $wpdb->query( // phpcs:ignore
-				$wpdb->prepare(
-					"INSERT INTO {$wpdb->prefix}ed11y_urls
+			if ( empty($pid) ) {
+				// Insert results.
+				$return[] = $wpdb->query( // phpcs:ignore
+					$wpdb->prepare(
+						"INSERT INTO {$wpdb->prefix}ed11y_urls
 						(page_url,
 						 post_id,
 						entity_type,
 						page_title,
 						page_total)
-					VALUES (%s, %d, %s, %s, %d)
-					ON DUPLICATE KEY UPDATE
-						entity_type = %s,
-						page_title = %s,
-						page_total = %d,
-						post_id = %d
-					;",
-					array(
-						$results['page_url'],
-						$results['post_id'],
-						$results['entity_type'],
-						$results['page_title'],
-						$results['page_count'],
-						$results['entity_type'],
-						$results['page_title'],
-						$results['page_count'],
-						$results['post_id'],
+					VALUES (%s, %d, %s, %s, %d);",
+						array(
+							$results['page_url'],
+							$results['post_id'],
+							$results['entity_type'],
+							$results['page_title'],
+							$results['page_count'],
+						)
 					)
-				)
-			);
-			$return[] = $response;
-
-			// Get Page ID so we can avoid complex joins in subsequent queries.
-			$pid = $results['post_id'] > 0 ?
-				$this->get_pid( false, $results['post_id'] )
-				: $this->get_pid( $results['page_url'], false );
+				);
+				// Get new pid.
+				$pid = $this->get_pid( $results['page_url'], $results['post_id'] );
+			} else {
+				// Update result for existing PID.
+				$return[] = $wpdb->update( // phpcs:ignore
+						$wpdb->prefix . 'ed11y_urls',
+							[
+								'page_url' => $results['page_url'],
+								'post_id' => $results['post_id'],
+								'entity_type' => $results['entity_type'],
+								'page_title' => $results['page_title'],
+								'page_total' => $results['page_count'],
+							],
+						    [
+								'pid' => $pid,
+							],
+							[ '%s', '%d', '%s', '%s', '%d' ],
+							'%d');
+			}
 
 			foreach ( $results['results'] as $key => $value ) {
 				// Upsert results.
@@ -340,7 +345,7 @@ class Editoria11y_Api_Results extends WP_REST_Controller {
                             result_count,
                             created,
                             updated)
-                        VALUES (%d, %s, %d, %s, %s) 
+                        VALUES (%d, %s, %d, %s, %s)
                         ON DUPLICATE KEY UPDATE
                             result_count = %d,
                             updated = %s
@@ -364,7 +369,7 @@ class Editoria11y_Api_Results extends WP_REST_Controller {
 				// Update last-seen date on dismissals.
 				$response = $wpdb->query( // phpcs:ignore
 					$wpdb->prepare(
-						"UPDATE {$wpdb->prefix}ed11y_dismissals 
+						"UPDATE {$wpdb->prefix}ed11y_dismissals
                         SET updated = %s, stale = 0
                         WHERE pid = %s AND result_key = %s AND element_id = %s;",
 						// Todo include element_id.
@@ -381,17 +386,7 @@ class Editoria11y_Api_Results extends WP_REST_Controller {
 			}
 		}
 
-		if ( ! is_numeric( $pid ) ) {
-			// Resultless pages missed the foreach.
-			$pid = $results['post_id'] > 0 ?
-				$this->get_pid( false, $results['post_id'] )
-				: $this->get_pid( $results['page_url'], false );
-			// For pages with no issues, this is the only query.
-		}
-
 		if ( 0 < $pid ) {
-			// If page is in urls table, updates are in order.
-
 			// Remove any old results.
 			$response = $wpdb->query( // phpcs:ignore
 				$wpdb->prepare(
@@ -409,7 +404,7 @@ class Editoria11y_Api_Results extends WP_REST_Controller {
 			// Mark any out-of-date dismissals as stale.
 			$response = $wpdb->query( // phpcs:ignore
 				$wpdb->prepare(
-					"UPDATE {$wpdb->prefix}ed11y_dismissals 
+					"UPDATE {$wpdb->prefix}ed11y_dismissals
 					SET stale = 1
 					WHERE pid = %d AND updated != %s ;",
 					array(

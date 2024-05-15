@@ -193,12 +193,49 @@ function ed11y_get_params( $user ) {
 		set_site_transient( 'editoria11y_settings', $ed1vals, 360 );
 	}
 
+	$ed1vals['title'] = trim( wp_title( '', false, 'right' ) );
+
+	// Get entity type and post id (if single)
 	$ed1vals['post_id'] = get_the_ID();
+	$ed1vals['entity_type'] = 'other';
+	// Ref https://wordpress.stackexchange.com/questions/83887/return-current-page-type .
+	if ( is_page() ) {
+		$ed1vals['entity_type'] = is_front_page() ? 'Front' : 'Page';
+	} elseif ( is_home() ) {
+		$ed1vals['entity_type'] = 'Home';
+		$ed1vals['post_id'] = 0;
+	} elseif ( is_single() ) {
+		$ed1vals['entity_type'] = ( is_attachment() ) ? 'Attachment' : 'Post';
+	} elseif ( is_category() ) {
+		$ed1vals['entity_type'] = 'Category';
+		$ed1vals['post_id'] = 0;
+	} elseif ( is_tag() ) {
+		$ed1vals['entity_type'] = 'Tag';
+		$ed1vals['post_id'] = 0;
+	} elseif ( is_tax() ) {
+		$ed1vals['entity_type'] = 'Taxonomy';
+		$ed1vals['post_id'] = 0;
+	} elseif ( is_archive() ) {
+		$ed1vals['post_id'] = 0;
+		if ( is_author() ) {
+			$ed1vals['entity_type'] = 'Author';
+		} else {
+			$ed1vals['entity_type'] = 'Archive';
+		}
+	} elseif ( is_search() ) {
+		$ed1vals['post_id'] = 0;
+		$ed1vals['entity_type'] = 'Search';
+	} elseif ( is_404() ) {
+		$ed1vals['post_id'] = 0;
+		$ed1vals['entity_type'] = '404';
+	}
+
+	global $wp;
 
 	// Use permalink as sync URL if available, otherwise use query path.
-	$ed1vals['currentPage'] = get_permalink( $ed1vals['post_id'] );
-	if ( empty( $ed1vals['currentPage'] ) || is_archive() || is_home() || is_front_page() ) {
-		global $wp;
+	if ( $ed1vals['post_id'] > 0 ) {
+		$ed1vals['currentPage'] = get_permalink( $ed1vals['post_id'] );
+	} else {
 		$ed1vals['currentPage'] = home_url( $wp->request );
 	}
 
@@ -206,22 +243,29 @@ function ed11y_get_params( $user ) {
 	Editoria11y::check_tables();
 
 	// Get dismissals for route. Complex joins require manual DB call.
+	// OR for permalink during transition to new DB structure.
 	// phpcs:disable
 	global $wpdb;
 	$utable                      = $wpdb->prefix . 'ed11y_urls';
 	$dtable                      = $wpdb->prefix . 'ed11y_dismissals';
 
-	$dismissals_on_page = [];
-	if ($ed1vals['post_id']) {
-		$dismissals_on_page          = $wpdb->get_results(
-			$wpdb->prepare(
-				"SELECT
+	$dismissals_on_page = $wpdb->get_results(
+		$wpdb->prepare(
+			"SELECT
 			{$dtable}.result_key,
 			{$dtable}.element_id,
 			{$dtable}.dismissal_status
 			FROM {$dtable}
 			INNER JOIN {$utable} ON {$utable}.pid={$dtable}.pid
-			WHERE {$utable}.post_id = %s
+			WHERE (
+			    {$utable}.page_url = %s
+			        OR
+			    	(
+			    	    0 < %d
+			    	    AND
+			    	    {$utable}.post_id = %d
+			    	)
+			    )
 			AND (
 				{$dtable}.dismissal_status = 'ok'
 					OR
@@ -232,75 +276,19 @@ function ed11y_get_params( $user ) {
 					)
 				)
 			;",
-				array(
-					$ed1vals['post_id'],
-					$user->ID,
-				)
+			array(
+				$ed1vals['currentPage'],
+				$ed1vals['post_id'],
+				$ed1vals['post_id'],
+				$user->ID,
 			)
-		);
-	}
-
-	if ( count($dismissals_on_page) === 0 ) {
-		// Try again using URL, due to schema changes in 1.0.15
-		$dismissals_on_page = $wpdb->get_results(
-			$wpdb->prepare(
-				"SELECT
-			{$dtable}.result_key,
-			{$dtable}.element_id,
-			{$dtable}.dismissal_status
-			FROM {$dtable}
-			INNER JOIN {$utable} ON {$utable}.pid={$dtable}.pid
-			WHERE {$utable}.page_url = %s
-			AND (
-				{$dtable}.dismissal_status = 'ok'
-					OR
-					(
-						{$dtable}.dismissal_status = 'hide'
-						AND
-						{$dtable}.user = %d
-					)
-				)
-			;",
-				array(
-					$ed1vals['currentPage'],
-					$user->ID,
-				)
-			)
-		);
-	}
-
+		)
+	);
 	// phpcs:enable
+
 	$ed1vals['syncedDismissals'] = array();
 	foreach ( $dismissals_on_page as $key => $value ) {
 		$ed1vals['syncedDismissals'][ $value->result_key ][ $value->element_id ] = $value->dismissal_status;
-	}
-
-	$ed1vals['title'] = trim( wp_title( '', false, 'right' ) );
-
-	$ed1vals['entity_type'] = 'other';
-	// Ref https://wordpress.stackexchange.com/questions/83887/return-current-page-type .
-	if ( is_page() ) {
-		$ed1vals['entity_type'] = is_front_page() ? 'Front' : 'Page';
-	} elseif ( is_home() ) {
-		$ed1vals['entity_type'] = 'Home';
-	} elseif ( is_single() ) {
-		$ed1vals['entity_type'] = ( is_attachment() ) ? 'Attachment' : 'Post';
-	} elseif ( is_category() ) {
-		$ed1vals['entity_type'] = 'Category';
-	} elseif ( is_tag() ) {
-		$ed1vals['entity_type'] = 'Tag';
-	} elseif ( is_tax() ) {
-		$ed1vals['entity_type'] = 'Taxonomy';
-	} elseif ( is_archive() ) {
-		if ( is_author() ) {
-			$ed1vals['entity_type'] = 'Author';
-		} else {
-			$ed1vals['entity_type'] = 'Archive';
-		}
-	} elseif ( is_search() ) {
-		$ed1vals['entity_type'] = 'Search';
-	} elseif ( is_404() ) {
-		$ed1vals['entity_type'] = '404';
 	}
 
 	// Mode is assertive from 0ms to 10minutes after a post is modified.

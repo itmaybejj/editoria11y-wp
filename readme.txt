@@ -141,10 +141,14 @@ Editoria11y began as a fork of the Toronto Metropolitan University's [Sa11y Acce
 == Changelog ==
 
 = 1.0.15
-* Fix for tables not provisioning on network activation for multi-site installs
-* Auto-opens detail/summary elements when jumping to a hidden alert
-* Better alert placement on hidden elements
-* Backwards compatibility for Firefox 115 ESR
+* Fix for tables not provisioning on network activation for multi-site installs.
+* Fix for false positives on links titled only "Download," "Tab" or "Window."
+* Auto-opens detail/summary elements when jumping to a hidden alert.
+* Adds alert for WordPress button blocks that are not yet linked.
+* Better alert placement on hidden elements.
+* Basic support for inline highlighting in the Site Editor.
+* Backwards compatibility for Firefox 115 ESR.
+* Begins recording post ID with results, to support future filters and functionality.
 
 = 1.0.14 =
 * Page URLs now have a slightly shorter limit for [Pantheon compatibility](https://docs.pantheon.io/guides/wordpressvip/troubleshooting#maximum-index-size)
