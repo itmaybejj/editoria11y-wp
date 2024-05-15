@@ -7,6 +7,9 @@ class Ed1 {
              * buildRequest assembles values into API call.
              */
     Ed1.params = function () {
+      // Custom test names
+      ed11yLang.en.emptyWpButton = {title: 'Empty Wordpress Button'};
+
       let queryString = window.location.search;
       let urlParams = new URLSearchParams(queryString);
       Ed1.url = '//' + window.location.host + window.location.pathname + '?';
@@ -95,8 +98,8 @@ class Ed1 {
 
     /**
              * Assemble request array into API call.
-             * @param {*} request 
-             * @returns string 
+             * @param {*} request
+             * @returns string
              */
     Ed1.buildRequest = function (request) {
       let q = Ed1.requests[request];
@@ -176,11 +179,11 @@ class Ed1 {
     };
 
     /**
-             * 
+             *
              * Builder functions to quickly assemble HTML elements.
-             * @param {*} text 
-             * @param {*} hash 
-             * @param {*} sorted 
+             * @param {*} text
+             * @param {*} hash
+             * @param {*} sorted
              * @returns th
              */
     Ed1.render = {};
@@ -260,12 +263,12 @@ class Ed1 {
     };
     /**
              * Hat tip to https://webdesign.tutsplus.com/tutorials/pagination-with-vanilla-javascript--cms-41896
-             * @param {*} after 
-             * @param {*} rows 
-             * @param {*} perPage 
-             * @param {*} offset 
-             * @param {*} labelId 
-             * @returns 
+             * @param {*} after
+             * @param {*} rows
+             * @param {*} perPage
+             * @param {*} offset
+             * @param {*} labelId
+             * @returns
              */
     Ed1.render.pagination = function (after, rows, perPage, offset, labelId = false) {
       if (rows <= perPage) {
@@ -465,9 +468,9 @@ class Ed1 {
 
     /**
              * Renderer for viewing results by test name.
-             * 
-             * @param {*} post 
-             * @param {*} count 
+             *
+             * @param {*} post
+             * @param {*} count
              */
     Ed1.render.ed1result = function (post, count, announce) {
 
@@ -487,6 +490,7 @@ class Ed1 {
           row.insertAdjacentElement('beforeend', pageCount);
 
           let keyName = ed11yLang.en[result['result_key']] ? ed11yLang.en[result['result_key']].title : result['result_key'];
+
           // URL sanitized on build...
           let key = Ed1.render.td(keyName, false, Ed1.url + 'rkey=' + result['result_key'], false, 'rkey');
           row.insertAdjacentElement('beforeend', key);
@@ -511,9 +515,9 @@ class Ed1 {
 
     /**
              * Renderer for viewing results by page.
-             * 
-             * @param {*} post 
-             * @param {*} count 
+             *
+             * @param {*} post
+             * @param {*} count
              */
     Ed1.render.ed1page = function (post, count, announce) {
 
@@ -561,8 +565,8 @@ class Ed1 {
 
     /**
              * Renderer for viewing dismissed alerts.
-             * @param {*} post 
-             * @param {*} count 
+             * @param {*} post
+             * @param {*} count
              */
     Ed1.render.ed1dismiss = function (post, count, announce) {
 
@@ -601,7 +605,7 @@ class Ed1 {
             let on = Ed1.render.td(cleanDate);
             row.insertAdjacentElement('beforeend', on);
 
-            // old 
+            // old
             let stale = Ed1.render.td(!result['stale'] ? 'No' : 'Yes');
             row.insertAdjacentElement('beforeend', stale);
 
@@ -670,7 +674,7 @@ class Ed1 {
         }
       });
     };
-	
+
 
     /**
 	 * User Interactions.

@@ -76,6 +76,15 @@ let ed11yUpdateButton = function(count) {
     ed11yStyle.setAttribute('hidden', '');
     ed11yStyle.innerHTML = `
  <style>
+   .edit-site-layout #ed11y-issue-link {
+      display: none;
+  }
+   .is-full-canvas #ed11y-issue-link {
+      display: inline-block;
+      position: absolute;
+      top: 60px;
+      background: white;
+  }
   #ed11y-issue-link.ed11y-warning {
    background-color: #fad859;
    color: #000b;
@@ -377,7 +386,7 @@ let ed11yFindCompatibleEditor = function () {
     return;
   case 'onPage':
   case 'outsideIframe':
-    ed11yButtonWrapper = ed11yButtonWrapper ? ed11yButtonWrapper : document.querySelector('.edit-post-header__settings, .edit-site-header-edit-mode__end');
+    ed11yButtonWrapper = ed11yButtonWrapper ? ed11yButtonWrapper : document.querySelector('.edit-post-header__settings, .edit-site-layout__header-container');
   }
   if (!!ed11yButtonWrapper && !!ed11yOptions) {
     if (ed11yScriptIs === 'onPage') {

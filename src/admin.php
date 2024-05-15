@@ -5,8 +5,6 @@
  *  @package         Editoria11y
  */
 
-use Editoria11y\Editoria11y;
-
 /**
  * Allowed HTML for filters.
  */
@@ -726,6 +724,8 @@ function ed11y_test_nice_names() {
 	$tests['embedVisualization']          = __( 'Manual check: is this visualization accessible?', 'editoria11y' );
 	$tests['embedTwitter']                = __( 'Manual check: is this embed a keyboard trap?', 'editoria11y' );
 	$tests['embedCustom']                 = __( 'Manual check: is this embedded content accessible?', 'editoria11y' );
+
+    $tests['emptyWpButton']               = __( 'Empty Wordpress Button', 'editoria11y' );
 	return $tests;
 }
 

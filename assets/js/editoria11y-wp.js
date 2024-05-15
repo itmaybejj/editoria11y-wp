@@ -131,12 +131,63 @@ function ed11ySync() {
 
 }
 
+const ed11yCustomTests = function() {
+    document.addEventListener('ed11yRunCustomTests', function() {
+
+        // 1. Write your custom test.
+        // This can be anything you want.
+        //
+        // This example uses Ed11y.findElements(),
+        // which respects checkRoots and ignoreElements,
+        // to find links with a particular string in their URL.
+        Ed11y.findElements('emptyWpButton','a.wp-element-button:not(href)');
+
+        // 2. Create a message for your tooltip.
+        // You'll need a title and some contents,
+        // as a value for the key you create for your test.
+        //
+        // Be sure to use the same key as the test name below.
+
+        Ed11y.M.emptyWpButton = {
+            title: 'Empty Wordpress Button',
+            tip: (href) =>
+                `<p>The button style visually indicates a link, but this button is not linked.</p>`,
+        };
+
+        // 3. Push each item you want flagged to Ed11y.results.
+        //
+        // You must provide:
+        //   el: The element
+        //   test: A key for your test
+        //   content: The tip you created above.
+        //   position: "beforebegin" for images and links,
+        //             "afterbegin" for paragraphs.
+        //   dismissalKey: false for errors,
+        //             a unique string for manual checks.
+        Ed11y.elements.emptyWpButton?.forEach((el) => {
+            Ed11y.results.push({
+                element: el,
+                test: 'emptyWpButton',
+                content: Ed11y.M.emptyWpButton.tip(),
+                position: 'beforebegin',
+                dismissalKey: false,
+            })
+        })
+
+        // 4. When you are done with all your custom tests,
+        // dispatch an "ed11yResume" event:
+        let allDone = new CustomEvent('ed11yResume');
+        document.dispatchEvent(allDone);
+    })
+}
+
 // Call callback, init Editoria11y.
 ed11yReady(
   function () {
     let ed11yOpts = document.getElementById('editoria11y-init');
     if (!!ed11yOpts && window.location.href.indexOf('elementor-preview') === -1) {
       ed11yOptions = JSON.parse(ed11yOpts.innerHTML);
+      ed11yOptions.customTests = 1;
 
       ed11yOptions.linkStringsNewWindows = ed11yOptions.linkStringsNewWindows ? new RegExp(ed11yOptions.linkStringsNewWindows, 'g') : /window|\stab|download/g;
       if (ed11yOptions.title.length < 3) {
@@ -153,7 +204,8 @@ ed11yReady(
       }
       ed11yOptions.cssUrls = [ed11yOptions.cssLocation];
 
-	const ed11y = new Ed11y(ed11yOptions); // eslint-disable-line
+	  const ed11y = new Ed11y(ed11yOptions); // eslint-disable-line
+      ed11yCustomTests();
       ed11ySync();
     }
 	// Equalize checker overlaps and blocks.
