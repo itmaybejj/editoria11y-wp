@@ -150,8 +150,8 @@ const ed11yCustomTests = function() {
 
         Ed11y.M.emptyWpButton = {
             title: 'Empty Wordpress Button',
-            tip: (href) =>
-                `<p>The button style visually indicates a link, but this button is not linked.</p>`,
+            tip: () =>
+                '<p>The button style visually indicates a link, but this button is not linked.</p>',
         };
 
         // 3. Push each item you want flagged to Ed11y.results.
@@ -171,15 +171,15 @@ const ed11yCustomTests = function() {
                 content: Ed11y.M.emptyWpButton.tip(),
                 position: 'beforebegin',
                 dismissalKey: false,
-            })
-        })
+            });
+        });
 
         // 4. When you are done with all your custom tests,
         // dispatch an "ed11yResume" event:
         let allDone = new CustomEvent('ed11yResume');
         document.dispatchEvent(allDone);
-    })
-}
+    });
+};
 
 // Call callback, init Editoria11y.
 ed11yReady(

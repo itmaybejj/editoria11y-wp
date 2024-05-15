@@ -152,10 +152,10 @@ function ed11y_enqueue_editor_content_assets() {
 				)
 			);
 			wp_enqueue_style(
-			'editoria11y-lib-css',
-			trailingslashit( ED11Y_ASSETS ) . 'lib/editoria11y.min.css',
-			null,
-			Editoria11y::ED11Y_VERSION
+				'editoria11y-lib-css',
+				trailingslashit( ED11Y_ASSETS ) . 'lib/editoria11y.min.css',
+				null,
+				Editoria11y::ED11Y_VERSION
 			);
 		}
 	}

@@ -246,8 +246,7 @@ class Editoria11y_Api_Dismissals extends WP_REST_Controller {
 	 * @param string $url of the post.
 	 * @param string $post_id the WP post ID number.
 	 */
-	public function get_pid(string $url, string $post_id ): ?string
-	{
+	public function get_pid( string $url, string $post_id ): ?string {
 		if ( $url ) {
 			// Get Page ID so we can avoid complex joins in subsequent queries.
 			global $wpdb;

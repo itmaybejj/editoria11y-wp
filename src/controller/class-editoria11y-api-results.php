@@ -65,8 +65,7 @@ class Editoria11y_Api_Results extends WP_REST_Controller {
 	 * @param WP_REST_Request $request Full data about the request.
 	 * @return WP_REST_Response
 	 */
-	public function get_results(WP_REST_Request $request ): WP_REST_Response
-	{
+	public function get_results( WP_REST_Request $request ): WP_REST_Response {
 		global $wpdb;
 		require_once ED11Y_SRC . 'class-editoria11y-validate.php';
 		$validate = new Editoria11y_Validate();
@@ -216,8 +215,7 @@ class Editoria11y_Api_Results extends WP_REST_Controller {
 	 * @param WP_REST_Request $request Full data about the request.
 	 * @return WP_REST_Response
 	 */
-	public function update_item( $request ): WP_REST_Response
-	{
+	public function update_item( $request ): WP_REST_Response {
 
 		$data = $this->send_results( $request );
 		if ( ! ( in_array( false, $data, true ) ) ) {
@@ -232,8 +230,7 @@ class Editoria11y_Api_Results extends WP_REST_Controller {
 	 * @param string $url of post.
 	 * @param string $post_id WP post ID.
 	 */
-	public function get_pid(string $url, string $post_id ): ?string
-	{
+	public function get_pid( string $url, string $post_id ): ?string {
 		if ( $url ) {
 			// Get Page ID so we can avoid complex joins in subsequent queries.
 			global $wpdb;
@@ -268,7 +265,7 @@ class Editoria11y_Api_Results extends WP_REST_Controller {
 	 *
 	 * @param WP_REST_Request $request Full data about the request.
 	 */
-	public function send_results(WP_REST_Request $request ): array {
+	public function send_results( WP_REST_Request $request ): array {
 
 		$params  = $request->get_params();
 		$results = $params['data'];
@@ -445,8 +442,7 @@ class Editoria11y_Api_Results extends WP_REST_Controller {
 	 * @param WP_REST_Request $request Full data about the request.
 	 * @return bool
 	 */
-	public function update_item_permissions_check( $request ): bool
-	{ // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundInExtendedClass
+	public function update_item_permissions_check( $request ): bool { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundInExtendedClass
 		return current_user_can( 'edit_posts' );
 	}
 }
