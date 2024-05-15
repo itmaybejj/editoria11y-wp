@@ -282,7 +282,7 @@ let ed11yFirstScan = function() {
 };
 
 let ed11yGetOptions = function() {
-  ed11yOptions.linkIgnoreStrings = ed11yOptions.linkIgnoreStrings ? new RegExp(ed11yOptions.linkIgnoreStrings, 'g') : false;
+  ed11yOptions.linkStringsNewWindows = ed11yOptions.linkStringsNewWindows ? new RegExp(ed11yOptions.linkStringsNewWindows, 'g') : /window|\stab|download/g;
 
   // Initiate Ed11y with admin options.
   // Possible todo: pick checkRoot dynamically based on ed11yTarget.
@@ -387,11 +387,11 @@ let ed11yFindCompatibleEditor = function () {
     }
     return;
   }
-  if (ed11yReadyCount < 10) {
+  if (ed11yReadyCount < 600) {
     window.setTimeout(function () {
       ed11yReadyCount++;
       ed11yFindCompatibleEditor();
-    }, 500);
+    }, 1000);
   } else {
     console.log('No editor found');
   }

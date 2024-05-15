@@ -138,7 +138,7 @@ ed11yReady(
     if (!!ed11yOpts && window.location.href.indexOf('elementor-preview') === -1) {
       ed11yOptions = JSON.parse(ed11yOpts.innerHTML);
 
-      ed11yOptions.linkIgnoreStrings = ed11yOptions.linkIgnoreStrings ? new RegExp(ed11yOptions.linkIgnoreStrings, 'g') : false;
+      ed11yOptions.linkStringsNewWindows = ed11yOptions.linkStringsNewWindows ? new RegExp(ed11yOptions.linkStringsNewWindows, 'g') : /window|\stab|download/g;
       if (ed11yOptions.title.length < 3) {
         ed11yOptions.title = document.title;
       }

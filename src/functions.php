@@ -179,7 +179,7 @@ function ed11y_get_params( $user ) {
 		$ed1vals['theme']                    = $settings['ed11y_theme'];
 		$ed1vals['checkRoots']               = $settings['ed11y_checkRoots'];
 		$ed1vals['ignoreElements']           = '#wpadminbar *,' . $settings['ed11y_ignore_elements'];
-		$ed1vals['linkIgnoreStrings']        = $settings['ed11y_link_ignore_strings'];
+		$ed1vals['linkStringsNewWindows']    = $settings['ed11y_link_ignore_strings'];
 		$ed1vals['videoContent']             = $settings['ed11y_videoContent'];
 		$ed1vals['audioContent']             = $settings['ed11y_audioContent'];
 		$ed1vals['documentLinks']            = $settings['ed11y_documentContent'];
