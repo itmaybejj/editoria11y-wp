@@ -152,10 +152,11 @@ function ed11y_enqueue_editor_content_assets() {
 				)
 			);
 			wp_enqueue_style(
-				'editoria11y-lib-css',
-				trailingslashit( ED11Y_ASSETS ) . 'lib/editoria11y.min.css',
-				null,
-				Editoria11y::ED11Y_VERSION );
+			'editoria11y-lib-css',
+			trailingslashit( ED11Y_ASSETS ) . 'lib/editoria11y.min.css',
+			null,
+			Editoria11y::ED11Y_VERSION
+			);
 		}
 	}
 }
@@ -188,7 +189,7 @@ function ed11y_get_params( $user ) {
 		$ed1vals['preventCheckingIfPresent'] = $settings['ed11y_no_run'];
 		$ed1vals['liveCheck']                = $settings['ed11y_livecheck'];
 		$ed1vals['customTests']              = $settings['ed11y_custom_tests'];
-		$ed1vals['cssLocation']				 = trailingslashit( ED11Y_ASSETS ) . 'lib/editoria11y.min.css';
+		$ed1vals['cssLocation']              = trailingslashit( ED11Y_ASSETS ) . 'lib/editoria11y.min.css';
 		set_site_transient( 'editoria11y_settings', $ed1vals, 360 );
 	}
 
@@ -200,7 +201,6 @@ function ed11y_get_params( $user ) {
 		global $wp;
 		$ed1vals['currentPage'] = home_url( $wp->request );
 	}
-
 
 	// Lazy-create DB if network activation failed.
 	Editoria11y::check_tables();

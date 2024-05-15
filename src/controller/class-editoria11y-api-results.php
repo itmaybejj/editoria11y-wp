@@ -63,9 +63,10 @@ class Editoria11y_Api_Results extends WP_REST_Controller {
 	 * Get dashboard table data.
 	 *
 	 * @param WP_REST_Request $request Full data about the request.
-	 * @return WP_Error|WP_REST_Response
+	 * @return WP_REST_Response
 	 */
-	public function get_results( $request ) {
+	public function get_results(WP_REST_Request $request ): WP_REST_Response
+	{
 		global $wpdb;
 		require_once ED11Y_SRC . 'class-editoria11y-validate.php';
 		$validate = new Editoria11y_Validate();
@@ -213,9 +214,10 @@ class Editoria11y_Api_Results extends WP_REST_Controller {
 	 * Update one item from the collection
 	 *
 	 * @param WP_REST_Request $request Full data about the request.
-	 * @return WP_Error|WP_REST_Response
+	 * @return WP_REST_Response
 	 */
-	public function update_item( $request ) {
+	public function update_item( $request ): WP_REST_Response
+	{
 
 		$data = $this->send_results( $request );
 		if ( ! ( in_array( false, $data, true ) ) ) {
@@ -227,13 +229,15 @@ class Editoria11y_Api_Results extends WP_REST_Controller {
 	/**
 	 * Returns the pid from the URL table.
 	 *
-	 * @param string $url to find.
+	 * @param string $url of post.
+	 * @param string $post_id WP post ID.
 	 */
-	public function get_pid(string $url, $post_id ) {
+	public function get_pid(string $url, string $post_id ): ?string
+	{
 		if ( $url ) {
 			// Get Page ID so we can avoid complex joins in subsequent queries.
 			global $wpdb;
-			$pid = $wpdb->get_var( // phpcs:ignore
+			return $wpdb->get_var( // phpcs:ignore
 				$wpdb->prepare(
 					"SELECT pid FROM {$wpdb->prefix}ed11y_urls
 				WHERE page_url=%s;",
@@ -242,7 +246,6 @@ class Editoria11y_Api_Results extends WP_REST_Controller {
 					)
 				)
 			);
-			return $pid;
 		} else {
 			// Get Page ID so we can avoid complex joins in subsequent queries.
 			global $wpdb;
@@ -265,8 +268,7 @@ class Editoria11y_Api_Results extends WP_REST_Controller {
 	 *
 	 * @param WP_REST_Request $request Full data about the request.
 	 */
-	public function send_results( $request ): array
-	{
+	public function send_results(WP_REST_Request $request ): array {
 
 		$params  = $request->get_params();
 		$results = $params['data'];
@@ -320,7 +322,7 @@ class Editoria11y_Api_Results extends WP_REST_Controller {
 						$results['entity_type'],
 						$results['page_title'],
 						$results['page_count'],
-						$results['post_id']
+						$results['post_id'],
 					)
 				)
 			);
@@ -328,8 +330,8 @@ class Editoria11y_Api_Results extends WP_REST_Controller {
 
 			// Get Page ID so we can avoid complex joins in subsequent queries.
 			$pid = $results['post_id'] > 0 ?
-				$this->get_pid(false, $results['post_id'])
-				: $this->get_pid( $results['page_url'], false);
+				$this->get_pid( false, $results['post_id'] )
+				: $this->get_pid( $results['page_url'], false );
 
 			foreach ( $results['results'] as $key => $value ) {
 				// Upsert results.
@@ -361,7 +363,7 @@ class Editoria11y_Api_Results extends WP_REST_Controller {
 				$return[] = $response;
 			}
 
-			foreach ( $results['dismissals'] as $key => $value ) {
+			foreach ( $results['dismissals'] as $value ) {
 				// Update last-seen date on dismissals.
 				$response = $wpdb->query( // phpcs:ignore
 					$wpdb->prepare(
@@ -385,8 +387,8 @@ class Editoria11y_Api_Results extends WP_REST_Controller {
 		if ( ! is_numeric( $pid ) ) {
 			// Resultless pages missed the foreach.
 			$pid = $results['post_id'] > 0 ?
-				$this->get_pid(false, $results['post_id'])
-				: $this->get_pid( $results['page_url'], false);
+				$this->get_pid( false, $results['post_id'] )
+				: $this->get_pid( $results['page_url'], false );
 			// For pages with no issues, this is the only query.
 		}
 
@@ -441,9 +443,10 @@ class Editoria11y_Api_Results extends WP_REST_Controller {
 	 * Check if a given request has access to update a specific item
 	 *
 	 * @param WP_REST_Request $request Full data about the request.
-	 * @return WP_Error|bool
+	 * @return bool
 	 */
-	public function update_item_permissions_check( $request ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundInExtendedClass
+	public function update_item_permissions_check( $request ): bool
+	{ // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundInExtendedClass
 		return current_user_can( 'edit_posts' );
 	}
 }

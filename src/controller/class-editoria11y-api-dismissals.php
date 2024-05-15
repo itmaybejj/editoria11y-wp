@@ -81,8 +81,8 @@ class Editoria11y_Api_Dismissals extends WP_REST_Controller {
 
 		// Get Page ID so we can avoid complex joins in subsequent queries.
 		$pid = $results['post_id'] > 0 ?
-			$this->get_pid(false, $results['post_id'])
-			: $this->get_pid( $results['page_url'], false);
+			$this->get_pid( false, $results['post_id'] )
+			: $this->get_pid( $results['page_url'], false );
 
 		if ( 'reset' === $results['dismissal_status'] ) {
 
@@ -243,9 +243,11 @@ class Editoria11y_Api_Dismissals extends WP_REST_Controller {
 	/**
 	 * Returns the pid from the URL table.
 	 *
-	 * @param string $url to find.
+	 * @param string $url of the post.
+	 * @param string $post_id the WP post ID number.
 	 */
-	public function get_pid( $url, $post_id ) {
+	public function get_pid(string $url, string $post_id ): ?string
+	{
 		if ( $url ) {
 			// Get Page ID so we can avoid complex joins in subsequent queries.
 			global $wpdb;
