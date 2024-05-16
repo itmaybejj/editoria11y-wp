@@ -50,6 +50,8 @@ class Editoria11y_Validate {
 			'created',
 			'display_name',
 			'dismissal_status',
+			'post_modified',
+			'post_status',
 		);
 		return in_array( $user_input, $valid, true );
 	}

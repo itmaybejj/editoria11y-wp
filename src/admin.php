@@ -667,6 +667,7 @@ function editoria11y_dashboard() {
 	$nonce = wp_create_nonce( 'ed1ref' );
 	echo '<div id="ed1">
 			<h1>Editoria11y accessibility checker</h1>
+			<div id="ed1-recent-wrapper"></div>
 			<div id="ed1-page-wrapper"></div>
 			<div id="ed1-results-wrapper"></div>
 			<div id="ed1-dismissals-wrapper"></div>

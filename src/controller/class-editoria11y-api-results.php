@@ -60,6 +60,47 @@ class Editoria11y_Api_Results extends WP_REST_Controller {
 	}
 
 	/**
+	 * Associate old records with post ID
+	 */
+	private function add_post_id () {
+		set_site_transient( 'ed11y_got_ids', true );
+
+		global $wpdb;
+		$utable      = $wpdb->prefix . 'ed11y_urls';
+
+		$missing_id = $wpdb->get_results(
+			"SELECT
+						{$utable}.page_url
+						FROM {$utable}
+						WHERE (
+						    $utable.post_id = 0
+						    AND
+						    (
+						        $utable.entity_type = 'Page'
+						        OR
+						        $utable.entity_type = 'Post'
+						    )
+						)
+						;"
+		);
+		foreach ( $missing_id as $value ) {
+			$post_id = url_to_postid($value->page_url);
+			if ( !empty($post_id) ) {
+				$wpdb->update( // phpcs:ignore
+					$utable,
+					[
+						'post_id' => $post_id,
+					],
+					[
+						'page_url' => $value->page_url,
+					],
+					[ '%d', '%s']
+				);
+			}
+		}
+	}
+
+	/**
 	 * Get dashboard table data.
 	 *
 	 * @param WP_REST_Request $request Full data about the request.
@@ -70,6 +111,15 @@ class Editoria11y_Api_Results extends WP_REST_Controller {
 		require_once ED11Y_SRC . 'class-editoria11y-validate.php';
 		$validate = new Editoria11y_Validate();
 
+		$utable      = $wpdb->prefix . 'ed11y_urls';
+		$rtable      = $wpdb->prefix . 'ed11y_results';
+		$post_table  = $wpdb->prefix . 'posts';
+
+		$got_ids = get_site_transient('ed11y_got_ids');
+		if ( empty($got_ids) ) {
+			$this->add_post_id();
+		}
+
 		// Sanitize all params before use.
 		$params      = $request->get_params();
 		$count       = intval( $params['count'] );
@@ -78,101 +128,68 @@ class Editoria11y_Api_Results extends WP_REST_Controller {
 		$order_by    = ! empty( $params['sort'] ) && $validate->sort( $params['sort'] ) ? $params['sort'] : false;
 		$entity_type = ! empty( $params['entity_type'] ) && $validate->entity_type( $params['entity_type'] ) ? $params['entity_type'] : false;
 		$result_key  = ! empty( $params['result_key'] ) && 'false' !== $params['result_key'] ? esc_sql( $params['result_key'] ) : false;
-		$utable      = $wpdb->prefix . 'ed11y_urls';
-		$rtable      = $wpdb->prefix . 'ed11y_results';
+		$post_status  = ! empty( $params['post_status'] ) && 'false' !== $params['post_status'] ? esc_sql( $params['post_status'] ) : false;
 
 		if ( 'pages' === $params['view'] ) {
-			// Get top pages.
+			// Get "Issues by Page" view.
 
 			// Sort by sanitized param; page total is default.
 			$order_by = $order_by ? $order_by : 'page_total';
 
 			// Build where clause based on sanitized params.
 			$where = '';
+			$total_column = "{$utable}.page_total";
 			if ( $result_key ) {
 				// Filtering by test name.
 				$where = "WHERE {$rtable}.result_key = '{$result_key}'";
+				$total_column = "{$rtable}.result_count";
 			}
 			if ( $entity_type ) {
 				// Filtering by entity type.
 				$where = empty( $where ) ? 'WHERE ' : $where . 'AND ';
 				$where = $where . "{$utable}.entity_type = '{$entity_type}'";
 			}
+			if ( !empty($post_status) ) {
+				// Filtering by published status.
+				$where = empty( $where ) ? 'WHERE ' : $where . 'AND ';
+				$where = $where . "{$utable}.post_id > '0' AND ";
+				$where = $where . "{$post_table}.post_status = '{$post_status}'";
+			}
 
-			if ( ! empty( $where ) ) {
-				$order_by = "{$utable}.{$order_by}";
-
-				/*
-				Complex counts and joins required a direct DB call.
-				Variables are all validated or sanitized.
-				*/
-				// phpcs:disable
-				$data = $wpdb->get_results(
-					"SELECT
-							{$utable}.pid,
-							{$utable}.page_url,
-							{$utable}.page_title,
-							{$utable}.entity_type,
-							{$utable}.page_total,
-							MAX({$rtable}.created) as created
-							FROM {$rtable}
-							INNER JOIN {$utable} ON {$rtable}.pid={$utable}.pid
-							{$where}
-							GROUP BY {$utable}.pid,
-							{$utable}.page_url,
-							{$utable}.page_title,
-							{$utable}.entity_type,
-							{$utable}.page_total,
-							{$rtable}.created
-							ORDER BY {$order_by} {$direction}
-							LIMIT {$count}
-							OFFSET {$offset}
-							;"
-				);
-
-				$rowcount = $wpdb->get_var(
-					"SELECT COUNT({$utable}.pid) 
-					FROM {$rtable}
-					INNER JOIN {$utable} ON {$rtable}.pid={$utable}.pid
-					{$where};"
-				);
-				// phpcs:enable
-
-			} else {
-				$where = '';
-
-				/*
-				Complex counts and joins required a direct DB call.
-				Variables are all validated or sanitized.
-				*/
-				// phpcs:disable
-				$data = $wpdb->get_results(
-					"SELECT
+			/*
+			Complex counts and joins required a direct DB call.
+			Variables are all validated or sanitized.
+			*/
+			// phpcs:disable
+			$data = $wpdb->get_results(
+				"SELECT DISTINCT
 						{$utable}.pid,
 						{$utable}.page_url,
 						{$utable}.page_title,
 						{$utable}.entity_type,
-						{$utable}.page_total,
-						MAX({$rtable}.created) AS created
-					FROM {$utable}
-					INNER JOIN {$rtable} ON {$utable}.pid={$rtable}.pid
-					GROUP BY {$utable}.pid,
-							{$utable}.page_url,
-							{$utable}.page_title,
-							{$utable}.entity_type,
-							{$utable}.page_total
-					ORDER BY {$order_by} {$direction}
-					LIMIT {$count}
-					OFFSET {$offset}
-					;"
-				);
+						$total_column AS page_total,
+						{$post_table}.post_status AS post_status,
+						{$post_table}.post_modified AS post_modified
+						FROM {$utable}
+						LEFT JOIN {$rtable} ON {$utable}.pid={$rtable}.pid
+						LEFT JOIN {$post_table} ON {$utable}.post_id={$post_table}.ID
+						{$where}
+						ORDER BY {$order_by} {$direction}
+						LIMIT {$count}
+						OFFSET {$offset}
+						;"
+			);
 
-				$rowcount = $wpdb->get_var(
-					"SELECT COUNT(DISTINCT pid) 
-					FROM {$rtable};"
-				);
-				// phpcs:enable
-			}
+			$rowcount = $wpdb->get_var(
+				"SELECT COUNT({$utable}.pid) 
+				FROM {$utable}
+				INNER JOIN {$rtable} ON {$utable}.pid={$rtable}.pid
+				LEFT JOIN {$post_table} ON {$utable}.post_id={$post_table}.ID
+				{$where};"
+			);
+			// phpcs:enable
+
+
 		} elseif ( 'keys' === $params['view'] ) {
 
 			if ( false === $order_by || 'count' === $order_by ) {
@@ -195,6 +212,7 @@ class Editoria11y_Api_Results extends WP_REST_Controller {
 					{$rtable}.result_key
 					FROM {$rtable}
 					INNER JOIN {$utable} ON {$rtable}.pid={$utable}.pid
+					LEFT JOIN {$post_table} ON {$utable}.post_id={$post_table}.ID
 					GROUP BY {$rtable}.result_key
 					ORDER BY {$order_by} {$direction}
 					LIMIT {$count}
@@ -203,6 +221,102 @@ class Editoria11y_Api_Results extends WP_REST_Controller {
 			);
 			// phpcs:enable
 
+		} else if ( 'recent' === $params['view'] ) {
+			// Get Recent Issues Table.
+
+			// Sort by sanitized param; page total is default.
+			$order_by = $order_by ? $order_by : 'page_total';
+
+			// Build where clause based on sanitized params.
+			$where = '';
+			if ( $result_key ) {
+				// Filtering by test name.
+				$where = "WHERE {$rtable}.result_key = '{$result_key}'";
+			}
+			if ( $entity_type ) {
+				// Filtering by entity type.
+				$where = empty( $where ) ? 'WHERE ' : $where . 'AND ';
+				$where = $where . "{$utable}.entity_type = '{$entity_type}'";
+			}
+			if ( !empty($post_status) ) {
+				// Filtering by published status.
+				$where = empty( $where ) ? 'WHERE ' : $where . 'AND ';
+				$where = $where . "{$utable}.post_id > '0' AND ";
+				$where = $where . "{$post_table}.post_status = '{$post_status}'";
+			}
+
+			if ( ! empty( $where ) ) {
+
+				/*
+				Complex counts and joins required a direct DB call.
+				Variables are all validated or sanitized.
+				Subquery needed because I couldn't get DISTINCT working.
+				*/
+				// phpcs:disable
+				$data = $wpdb->get_results(
+					"SELECT
+							{$rtable}.result_key,
+					    	{$rtable}.result_count,
+							{$utable}.pid,
+							{$utable}.page_url,
+							{$utable}.page_title,
+							{$utable}.entity_type,
+							{$utable}.page_total,
+							{$post_table}.post_status,
+							{$rtable}.created as created
+							FROM {$utable}
+							INNER JOIN {$rtable} ON {$utable}.pid={$rtable}.pid
+							LEFT JOIN {$post_table} ON {$utable}.post_id={$post_table}.ID
+							{$where}
+							ORDER BY {$order_by} {$direction}
+							LIMIT {$count}
+							OFFSET {$offset}
+							;"
+				);
+
+				$rowcount = $wpdb->get_var(
+					"SELECT COUNT({$utable}.pid) 
+					FROM {$rtable}
+					INNER JOIN {$utable} ON {$rtable}.pid={$utable}.pid
+					LEFT JOIN {$post_table} ON {$utable}.post_id={$post_table}.ID
+					{$where};"
+				);
+				// phpcs:enable
+
+			} else {
+				$where = '';
+
+				/*
+				Complex counts and joins required a direct DB call.
+				Variables are all validated or sanitized.
+				*/
+				// phpcs:disable
+				$data = $wpdb->get_results(
+					"SELECT
+					    {$rtable}.result_key,
+					    {$rtable}.result_count,
+						{$utable}.pid,
+						{$utable}.page_url,
+						{$utable}.page_title,
+						{$utable}.entity_type,
+						{$utable}.page_total,
+						{$post_table}.post_status,
+						{$rtable}.created as created
+					FROM {$rtable}
+					INNER JOIN {$utable} ON {$rtable}.pid={$utable}.pid    
+					LEFT JOIN {$post_table} ON {$utable}.post_id={$post_table}.ID
+					ORDER BY {$order_by} {$direction}
+					LIMIT {$count}
+					OFFSET {$offset}
+					;"
+				);
+
+				$rowcount = $wpdb->get_var(
+					"SELECT COUNT(pid) 
+					FROM {$utable};"
+				);
+				// phpcs:enable
+			}
 		}
 
 		return new WP_REST_Response( array( $data, $rowcount ), 200 );
