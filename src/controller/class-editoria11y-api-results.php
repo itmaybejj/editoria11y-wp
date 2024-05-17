@@ -456,10 +456,14 @@ class Editoria11y_Api_Results extends WP_REST_Controller {
 						'page_total'  => $results['page_count'],
 					),
 					array(
-					   'pid' => $pid,
+						'pid' => $pid,
 					),
 					array(
-						'%s', '%d', '%s', '%s', '%d'
+						'%s',
+						'%d',
+						'%s',
+						'%s',
+						'%d',
 					),
 					'%d'
 				);
