@@ -195,7 +195,7 @@ function ed11y_get_params( $user ) {
 
 	$ed1vals['title'] = trim( wp_title( '', false, 'right' ) );
 
-	// Get entity type and post id (if single)
+	// Get entity type and post id (if single).
 	$ed1vals['post_id'] = get_the_ID();
 	$ed1vals['entity_type'] = 'other';
 	// Ref https://wordpress.stackexchange.com/questions/83887/return-current-page-type .
@@ -208,25 +208,25 @@ function ed11y_get_params( $user ) {
 		$ed1vals['entity_type'] = ( is_attachment() ) ? 'Attachment' : 'Post';
 	} elseif ( is_category() ) {
 		$ed1vals['entity_type'] = 'Category';
-		$ed1vals['post_id'] = 0;
+		$ed1vals['post_id']     = 0;
 	} elseif ( is_tag() ) {
 		$ed1vals['entity_type'] = 'Tag';
-		$ed1vals['post_id'] = 0;
+		$ed1vals['post_id']     = 0;
 	} elseif ( is_tax() ) {
 		$ed1vals['entity_type'] = 'Taxonomy';
-		$ed1vals['post_id'] = 0;
+		$ed1vals['post_id']     = 0;
 	} elseif ( is_archive() ) {
-		$ed1vals['post_id'] = 0;
+		$ed1vals['post_id']     = 0;
 		if ( is_author() ) {
 			$ed1vals['entity_type'] = 'Author';
 		} else {
 			$ed1vals['entity_type'] = 'Archive';
 		}
 	} elseif ( is_search() ) {
-		$ed1vals['post_id'] = 0;
+		$ed1vals['post_id']     = 0;
 		$ed1vals['entity_type'] = 'Search';
 	} elseif ( is_404() ) {
-		$ed1vals['post_id'] = 0;
+		$ed1vals['post_id']     = 0;
 		$ed1vals['entity_type'] = '404';
 	}
 

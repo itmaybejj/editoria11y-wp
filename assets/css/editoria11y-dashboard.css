@@ -2,6 +2,10 @@
     width: 98%;
 }
 
+#ed1 h1 {
+    line-height: 1;
+}
+
 #ed1 details {
     opacity: 0;
     font-size: .875rem;

@@ -62,12 +62,13 @@ class Editoria11y_Api_Results extends WP_REST_Controller {
 	/**
 	 * Associate old records with post ID
 	 */
-	private function add_post_id () {
+	private function add_post_id() {
 		set_site_transient( 'ed11y_got_ids', true );
 
 		global $wpdb;
-		$utable      = $wpdb->prefix . 'ed11y_urls';
+		$utable = $wpdb->prefix . 'ed11y_urls';
 
+		// phpcs:disable
 		$missing_id = $wpdb->get_results(
 			"SELECT
 						{$utable}.page_url
@@ -83,18 +84,22 @@ class Editoria11y_Api_Results extends WP_REST_Controller {
 						)
 						;"
 		);
+		// phpcs:enable
 		foreach ( $missing_id as $value ) {
-			$post_id = url_to_postid($value->page_url);
-			if ( !empty($post_id) ) {
+			$post_id = url_to_postid( $value->page_url );
+			if ( ! empty( $post_id ) ) {
 				$wpdb->update( // phpcs:ignore
 					$utable,
-					[
-						'post_id' => $post_id,
-					],
-					[
+					array(
+						'post_id' => $post_id
+					),
+					array(
 						'page_url' => $value->page_url,
-					],
-					[ '%d', '%s']
+					),
+					array(
+						'%d',
+						'%s'
+					)
 				);
 			}
 		}
@@ -111,12 +116,12 @@ class Editoria11y_Api_Results extends WP_REST_Controller {
 		require_once ED11Y_SRC . 'class-editoria11y-validate.php';
 		$validate = new Editoria11y_Validate();
 
-		$utable      = $wpdb->prefix . 'ed11y_urls';
-		$rtable      = $wpdb->prefix . 'ed11y_results';
-		$post_table  = $wpdb->prefix . 'posts';
+		$utable     = $wpdb->prefix . 'ed11y_urls';
+		$rtable     = $wpdb->prefix . 'ed11y_results';
+		$post_table = $wpdb->prefix . 'posts';
 
-		$got_ids = get_site_transient('ed11y_got_ids');
-		if ( empty($got_ids) ) {
+		$got_ids = get_site_transient( 'ed11y_got_ids' );
+		if ( empty( $got_ids ) ) {
 			$this->add_post_id();
 		}
 
@@ -128,7 +133,7 @@ class Editoria11y_Api_Results extends WP_REST_Controller {
 		$order_by    = ! empty( $params['sort'] ) && $validate->sort( $params['sort'] ) ? $params['sort'] : false;
 		$entity_type = ! empty( $params['entity_type'] ) && $validate->entity_type( $params['entity_type'] ) ? $params['entity_type'] : false;
 		$result_key  = ! empty( $params['result_key'] ) && 'false' !== $params['result_key'] ? esc_sql( $params['result_key'] ) : false;
-		$post_status  = ! empty( $params['post_status'] ) && 'false' !== $params['post_status'] ? esc_sql( $params['post_status'] ) : false;
+		$post_status = ! empty( $params['post_status'] ) && 'false' !== $params['post_status'] ? esc_sql( $params['post_status'] ) : false;
 
 		if ( 'pages' === $params['view'] ) {
 			// Get "Issues by Page" view.
@@ -137,11 +142,11 @@ class Editoria11y_Api_Results extends WP_REST_Controller {
 			$order_by = $order_by ? $order_by : 'page_total';
 
 			// Build where clause based on sanitized params.
-			$where = '';
+			$where        = '';
 			$total_column = "{$utable}.page_total";
 			if ( $result_key ) {
 				// Filtering by test name.
-				$where = "WHERE {$rtable}.result_key = '{$result_key}'";
+				$where = "WHERE {$rtable}.result_key       = '{$result_key}'";
 				$total_column = "{$rtable}.result_count";
 			}
 			if ( $entity_type ) {
@@ -149,7 +154,7 @@ class Editoria11y_Api_Results extends WP_REST_Controller {
 				$where = empty( $where ) ? 'WHERE ' : $where . 'AND ';
 				$where = $where . "{$utable}.entity_type = '{$entity_type}'";
 			}
-			if ( !empty($post_status) ) {
+			if ( ! empty( $post_status ) ) {
 				// Filtering by published status.
 				$where = empty( $where ) ? 'WHERE ' : $where . 'AND ';
 				$where = $where . "{$utable}.post_id > '0' AND ";
@@ -180,15 +185,24 @@ class Editoria11y_Api_Results extends WP_REST_Controller {
 						;"
 			);
 
-			$rowcount = $wpdb->get_var(
-				"SELECT COUNT({$utable}.pid) 
+			if ( empty($where) ) {
+				$rowcount = $wpdb->get_var(
+					"SELECT
+    			COUNT({$utable}.pid) 
+				FROM {$utable}"
+				);
+			} else {
+				$rowcount = $wpdb->get_var(
+					"SELECT
+    			COUNT({$utable}.pid) 
 				FROM {$utable}
-				INNER JOIN {$rtable} ON {$utable}.pid={$rtable}.pid
+				LEFT JOIN {$rtable} ON {$utable}.pid={$rtable}.pid
 				LEFT JOIN {$post_table} ON {$utable}.post_id={$post_table}.ID
 				{$where};"
-			);
-			// phpcs:enable
+				);
+			}
 
+			// phpcs:enable
 
 		} elseif ( 'keys' === $params['view'] ) {
 
@@ -202,7 +216,7 @@ class Editoria11y_Api_Results extends WP_REST_Controller {
 			*/
 			// phpcs:disable
 			$rowcount = $wpdb->get_var(
-				"SELECT COUNT(DISTINCT result_key) 
+				"SELECT COUNT( result_key ) 
 				FROM {$rtable};"
 			);
 
@@ -221,7 +235,7 @@ class Editoria11y_Api_Results extends WP_REST_Controller {
 			);
 			// phpcs:enable
 
-		} else if ( 'recent' === $params['view'] ) {
+		} elseif ( 'recent' === $params['view'] ) {
 			// Get Recent Issues Table.
 
 			// Sort by sanitized param; page total is default.
@@ -238,7 +252,7 @@ class Editoria11y_Api_Results extends WP_REST_Controller {
 				$where = empty( $where ) ? 'WHERE ' : $where . 'AND ';
 				$where = $where . "{$utable}.entity_type = '{$entity_type}'";
 			}
-			if ( !empty($post_status) ) {
+			if ( ! empty( $post_status ) ) {
 				// Filtering by published status.
 				$where = empty( $where ) ? 'WHERE ' : $where . 'AND ';
 				$where = $where . "{$utable}.post_id > '0' AND ";
@@ -246,7 +260,6 @@ class Editoria11y_Api_Results extends WP_REST_Controller {
 			}
 
 			if ( ! empty( $where ) ) {
-
 				/*
 				Complex counts and joins required a direct DB call.
 				Variables are all validated or sanitized.
@@ -357,8 +370,8 @@ class Editoria11y_Api_Results extends WP_REST_Controller {
 				)
 			);
 		}
-		// Not found by post ID, or post ID not provided
-		if ( empty($pid) ) {
+		// Not found by post ID, or post ID not provided.
+		if ( empty( $pid ) ) {
 			global $wpdb;
 			return $wpdb->get_var( // phpcs:ignore
 				$wpdb->prepare(
@@ -404,12 +417,12 @@ class Editoria11y_Api_Results extends WP_REST_Controller {
 			);
 		}
 
-		$pid = $this->get_pid( $results['page_url'], $results['post_id'] ); // may be 0
+		$pid = $this->get_pid( $results['page_url'], $results['post_id'] ); // may be 0.
 
 		// Check if any results exist.
 		if ( 0 < $rows ) {
 
-			if ( empty($pid) ) {
+			if ( empty( $pid ) ) {
 				// Insert results.
 				$return[] = $wpdb->query( // phpcs:ignore
 					$wpdb->prepare(

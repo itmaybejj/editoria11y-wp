@@ -24,7 +24,8 @@ class Ed1 {
       resultOffset = !isNaN(resultOffset) ? +resultOffset : 0;
       let pageOffset = urlParams.get('poff');
       pageOffset = !isNaN(pageOffset) ? +pageOffset : 0;
-      // todo recent offset
+      let recentOffset = urlParams.get('recentoff');
+      recentOffset = !isNaN(recentOffset) ? +recentOffset : 0;
 
       // Allow list for sorts.
       let validSorts = [
@@ -49,7 +50,8 @@ class Ed1 {
       pageSort = !!pageSort && validSorts.includes(pageSort) ? pageSort : 'page_total';
       let dismissSort = urlParams.get('dsort');
       dismissSort = !!dismissSort && validSorts.includes(dismissSort) ? dismissSort : 'created';
-
+      let recentSort = urlParams.get('recentsort');
+      recentSort = !!recentSort && validSorts.includes(recentSort) ? recentSort : 'created';
 
       // Validate sort direction
       let resultDir = urlParams.get('rdir');
@@ -58,7 +60,8 @@ class Ed1 {
       pageDir = pageDir === 'DESC' || pageDir === 'ASC' ? pageDir : 'DESC';
       let dismissDir = urlParams.get('ddir');
       dismissDir = dismissDir === 'DESC' || dismissDir === 'ASC' ? dismissDir : 'DESC';
-      let publishedDir = urlParams.get('pubdir');
+      let recentDir = urlParams.get('recentdir');
+      recentDir = recentDir === 'DESC' || recentDir === 'ASC' ? recentDir : 'DESC';
 
       // Test name to filter by; will be validated.
       Ed1.resultKey = urlParams.get('rkey');
@@ -89,9 +92,9 @@ class Ed1 {
         base: 'dashboard',
         view: 'recent',
         count: 25,
-        offset: pageOffset,
-        sort: pageSort,
-        direction: pageDir,
+        offset: recentOffset,
+        sort: recentSort,
+        direction: recentDir,
         result_key: Ed1.resultKey,
         entity_type: Ed1.type,
         post_status: Ed1.post_status,
@@ -125,7 +128,7 @@ class Ed1 {
      */
     const prettyStatus = function( page_status ) {
       return page_status?.replace( 'publish', 'Published' ).replace( 'draft', 'Draft' );
-    }
+    };
 
     /**
              * Assemble request array into API call.
@@ -159,7 +162,7 @@ class Ed1 {
         let resetType = 'View all issues';
         if (Ed1.resultKey) {
           h1.textContent = 'Issue report: "' + ed11yLang.en[Ed1.resultKey].title + '"';
-        } else if ( !!Ed1.type ) {
+        } else if ( Ed1.type ) {
           h1.textContent = 'Issues on pages of type "' + Ed1.type + '"';
           resetType = 'View issues on all pages';
         } else {
@@ -620,7 +623,7 @@ class Ed1 {
           let type = Ed1.render.td(result['entity_type'], false, `${Ed1.url}type=${result['entity_type']}`);
           row.insertAdjacentElement('beforeend', type);
 
-          let post_status = !!result['post_status'] ?
+          let post_status = result['post_status'] ?
               Ed1.render.td( prettyStatus( result['post_status'] ), false, `${Ed1.url}pstatus=${result['post_status']}`)
               : Ed1.render.td( 'n/a' );
           row.insertAdjacentElement('beforeend', post_status);
@@ -671,7 +674,7 @@ class Ed1 {
           let type = Ed1.render.td(result['entity_type'], false, `${Ed1.url}type=${result['entity_type']}`);
           row.insertAdjacentElement('beforeend', type);
 
-          let post_status = !!result['post_status'] ?
+          let post_status = result['post_status'] ?
               Ed1.render.td( prettyStatus( result['post_status'] ), false, `${Ed1.url}pstatus=${result['post_status']}` )
               : Ed1.render.td( 'n/a' );
           row.insertAdjacentElement('beforeend', post_status);
