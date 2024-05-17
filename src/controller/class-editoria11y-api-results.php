@@ -91,14 +91,14 @@ class Editoria11y_Api_Results extends WP_REST_Controller {
 				$wpdb->update( // phpcs:ignore
 					$utable,
 					array(
-						'post_id' => $post_id
+						'post_id' => $post_id,
 					),
 					array(
 						'page_url' => $value->page_url,
 					),
 					array(
 						'%d',
-						'%s'
+						'%s',
 					)
 				);
 			}
@@ -146,7 +146,7 @@ class Editoria11y_Api_Results extends WP_REST_Controller {
 			$total_column = "{$utable}.page_total";
 			if ( $result_key ) {
 				// Filtering by test name.
-				$where = "WHERE {$rtable}.result_key       = '{$result_key}'";
+				$where        = "WHERE {$rtable}.result_key = '{$result_key}'";
 				$total_column = "{$rtable}.result_count";
 			}
 			if ( $entity_type ) {
@@ -447,19 +447,22 @@ class Editoria11y_Api_Results extends WP_REST_Controller {
 			} else {
 				// Update result for existing PID.
 				$return[] = $wpdb->update( // phpcs:ignore
-						$wpdb->prefix . 'ed11y_urls',
-							[
-								'page_url' => $results['page_url'],
-								'post_id' => $results['post_id'],
-								'entity_type' => $results['entity_type'],
-								'page_title' => $results['page_title'],
-								'page_total' => $results['page_count'],
-							],
-						    [
-								'pid' => $pid,
-							],
-							[ '%s', '%d', '%s', '%s', '%d' ],
-							'%d');
+					$wpdb->prefix . 'ed11y_urls',
+					array(
+						'page_url'    => $results['page_url'],
+						'post_id'     => $results['post_id'],
+						'entity_type' => $results['entity_type'],
+						'page_title'  => $results['page_title'],
+						'page_total'  => $results['page_count'],
+					),
+					array(
+					   'pid' => $pid,
+					),
+					array(
+						'%s', '%d', '%s', '%s', '%d'
+					),
+					'%d'
+				);
 			}
 
 			foreach ( $results['results'] as $key => $value ) {

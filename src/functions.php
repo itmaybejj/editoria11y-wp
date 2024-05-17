@@ -196,14 +196,14 @@ function ed11y_get_params( $user ) {
 	$ed1vals['title'] = trim( wp_title( '', false, 'right' ) );
 
 	// Get entity type and post id (if single).
-	$ed1vals['post_id'] = get_the_ID();
+	$ed1vals['post_id']     = get_the_ID();
 	$ed1vals['entity_type'] = 'other';
 	// Ref https://wordpress.stackexchange.com/questions/83887/return-current-page-type .
 	if ( is_page() ) {
 		$ed1vals['entity_type'] = is_front_page() ? 'Front' : 'Page';
 	} elseif ( is_home() ) {
 		$ed1vals['entity_type'] = 'Home';
-		$ed1vals['post_id'] = 0;
+		$ed1vals['post_id']     = 0;
 	} elseif ( is_single() ) {
 		$ed1vals['entity_type'] = ( is_attachment() ) ? 'Attachment' : 'Post';
 	} elseif ( is_category() ) {
@@ -216,7 +216,7 @@ function ed11y_get_params( $user ) {
 		$ed1vals['entity_type'] = 'Taxonomy';
 		$ed1vals['post_id']     = 0;
 	} elseif ( is_archive() ) {
-		$ed1vals['post_id']     = 0;
+		$ed1vals['post_id'] = 0;
 		if ( is_author() ) {
 			$ed1vals['entity_type'] = 'Author';
 		} else {

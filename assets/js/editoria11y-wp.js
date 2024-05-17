@@ -140,7 +140,7 @@ const ed11yCustomTests = function() {
         // This example uses Ed11y.findElements(),
         // which respects checkRoots and ignoreElements,
         // to find links with a particular string in their URL.
-        Ed11y.findElements('emptyWpButton','a.wp-element-button:not(href)');
+        Ed11y.findElements('emptyWpButton','a.wp-element-button:not([href], [tabindex])');
 
         // 2. Create a message for your tooltip.
         // You'll need a title and some contents,

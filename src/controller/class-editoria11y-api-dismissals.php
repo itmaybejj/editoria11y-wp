@@ -261,8 +261,8 @@ class Editoria11y_Api_Dismissals extends WP_REST_Controller {
 				)
 			);
 		}
-		// Not found by post ID, or post ID not provided
-		if ( empty($pid) ) {
+		// Not found by post ID, or post ID not provided.
+		if ( empty( $pid ) ) {
 			global $wpdb;
 			return $wpdb->get_var( // phpcs:ignore
 				$wpdb->prepare(
