@@ -742,7 +742,7 @@ function ed11y_export_results_csv() {
 		$test_name = ed11y_test_nice_names();
 
 		header( 'Content-type: text/csv' );
-		header( 'Content-Disposition: attachment; filename="wp-posts.csv"' );
+		header( 'Content-Disposition: attachment; filename="Recent_accessibility_issues.csv"' );
 		header( 'Pragma: no-cache' );
 		header( 'Expires: 0' );
 
@@ -751,6 +751,8 @@ function ed11y_export_results_csv() {
 		global $wpdb;
 		$utable = $wpdb->prefix . 'ed11y_urls';
 		$rtable = $wpdb->prefix . 'ed11y_results';
+		$user_meta  = $wpdb->prefix . 'usermeta';
+		$post_table = $wpdb->prefix . 'posts';
 
 		/*
 		Complex counts and joins required a direct DB call.
@@ -759,30 +761,47 @@ function ed11y_export_results_csv() {
 		// phpcs:disable
 		$data = $wpdb->get_results(
 			"SELECT
-				{$utable}.pid,
-				{$utable}.page_url,
-				{$utable}.page_title,
-				{$utable}.entity_type,
-				{$utable}.page_total,
-				SUM({$rtable}.result_count) AS count,
-				{$rtable}.result_key,
-			MAX({$rtable}.created) as created
-			FROM {$rtable}
-			INNER JOIN {$utable} ON {$rtable}.pid={$utable}.pid
-			GROUP BY {$utable}.pid,
-				{$utable}.page_url,
-				{$utable}.page_title,
-				{$utable}.entity_type,
-				{$utable}.page_total,
-				{$rtable}.created
-			ORDER BY count DESC;"
+            {$rtable}.result_key,
+            {$rtable}.result_count,
+            {$utable}.pid,
+            {$utable}.page_url,
+            {$utable}.page_title,
+            {$utable}.entity_type,
+            {$utable}.page_total,
+            {$post_table}.post_status,
+            {$user_meta}.meta_value AS author,
+            {$rtable}.created as created
+            FROM {$utable}
+            LEFT JOIN {$rtable} ON {$utable}.pid={$rtable}.pid
+            LEFT JOIN {$post_table} ON {$utable}.post_id={$post_table}.ID
+			LEFT JOIN {$user_meta} ON {$user_meta}.user_id={$post_table}.post_author AND {$user_meta}.meta_key = 'nickname'
+            ORDER BY page_url ASC;"
 		);
 		// phpcs:enable
 
-		fputcsv( $file, array( 'Count', 'Issue', 'URL', 'Page', 'Type', 'Detected on' ) );
+		fputcsv( $file, array(
+			'Page',
+			'URL',
+            'Issue',
+			'Count',
+			'Author',
+			'Page Type',
+			'Detected on',
+            'Status',
+		) );
 
 		foreach ( $data as $result ) {
-			fputcsv( $file, array( $result->count, $test_name[ $result->result_key ], $result->page_url, $result->page_title, $result->entity_type, $result->created ) );
+			fputcsv( $file, array(
+                $result->page_title,
+                $result->page_url,
+				$test_name[ $result->result_key ],
+				$result->result_count,
+                $result->author,
+                $result->entity_type,
+                $result->created,
+                $result->post_status
+                )
+            );
 		}
 
 		exit();

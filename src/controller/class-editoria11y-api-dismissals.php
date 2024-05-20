@@ -162,8 +162,10 @@ class Editoria11y_Api_Dismissals extends WP_REST_Controller {
 		$order_by    = ! empty( $params['sort'] ) && $validate->sort( $params['sort'] ) ? $params['sort'] : false;
 		$entity_type = ! empty( $params['entity_type'] ) && $validate->entity_type( $params['entity_type'] ) ? $params['entity_type'] : false;
 		$result_key  = ! empty( $params['result_key'] ) && 'false' !== $params['result_key'] ? esc_sql( $params['result_key'] ) : false;
+		$dismissor      = is_numeric( $params['dismissor'] ) ? intval( $params['dismissor'] ) : false;
 		$utable      = $wpdb->prefix . 'ed11y_urls';
 		$dtable      = $wpdb->prefix . 'ed11y_dismissals';
+		$user_meta  = $wpdb->prefix . 'usermeta';
 
 		// Get top pages.
 
@@ -182,10 +184,16 @@ class Editoria11y_Api_Dismissals extends WP_REST_Controller {
 			$where = $where . "{$utable}.entity_type = '{$entity_type}'";
 		}
 
+		if ( 0 < $dismissor ) {
+			// Filtering by author ID number, which has been cast to integer.
+			$where = empty( $where ) ? 'WHERE ' : $where . 'AND ';
+			$where = $where . "{$dtable}.user = '{$dismissor}'";
+		}
+
 		if ( 'page_title' === $order_by ) {
 			$order_by = "{$utable}.{$order_by}";
 		} elseif ( 'display_name' === $order_by ) {
-			$order_by = "{$wpdb->users}.{$order_by}";
+			$order_by = "{$user_meta}.meta_value";
 		} else {
 			$order_by = "{$dtable}.{$order_by}";
 		}
@@ -197,21 +205,23 @@ class Editoria11y_Api_Dismissals extends WP_REST_Controller {
 					{$utable}.page_url,
 					{$utable}.page_title,
 					{$utable}.entity_type,
-					{$wpdb->users}.display_name,
+					{$user_meta}.meta_value AS display_name,
+					{$dtable}.user,
 					{$dtable}.result_key,
 					{$dtable}.dismissal_status,
 					MAX({$dtable}.created) AS created,
 					{$dtable}.stale
 					FROM {$dtable}
-					INNER JOIN {$utable} ON ({$dtable}.pid={$utable}.pid)
-					LEFT JOIN {$wpdb->users} ON ({$wpdb->users}.ID={$dtable}.user)
+					LEFT JOIN {$utable} ON ({$dtable}.pid={$utable}.pid)
+					LEFT JOIN {$user_meta} ON ({$user_meta}.user_id={$dtable}.user) AND {$user_meta}.meta_key = 'nickname'
 					{$where}
 					GROUP BY
 					{$utable}.pid,
 					{$utable}.page_url,
 					{$utable}.page_title,
 					{$utable}.entity_type,
-					{$wpdb->users}.display_name,
+					{$user_meta}.meta_value,
+					{$dtable}.user,
 					{$dtable}.result_key,
 					{$dtable}.dismissal_status,
 					{$dtable}.stale

@@ -118,6 +118,7 @@ class Editoria11y_Api_Results extends WP_REST_Controller {
 
 		$utable     = $wpdb->prefix . 'ed11y_urls';
 		$rtable     = $wpdb->prefix . 'ed11y_results';
+		$user_meta  = $wpdb->prefix . 'usermeta';
 		$post_table = $wpdb->prefix . 'posts';
 
 		$got_ids = get_site_transient( 'ed11y_got_ids' );
@@ -133,10 +134,24 @@ class Editoria11y_Api_Results extends WP_REST_Controller {
 		$order_by    = ! empty( $params['sort'] ) && $validate->sort( $params['sort'] ) ? $params['sort'] : false;
 		$entity_type = ! empty( $params['entity_type'] ) && $validate->entity_type( $params['entity_type'] ) ? $params['entity_type'] : false;
 		$result_key  = ! empty( $params['result_key'] ) && 'false' !== $params['result_key'] ? esc_sql( $params['result_key'] ) : false;
+		$author      = is_numeric( $params['author'] ) ? intval( $params['author'] ) : false;
 		$post_status = ! empty( $params['post_status'] ) && 'false' !== $params['post_status'] ? esc_sql( $params['post_status'] ) : false;
 
+		$post_status_filter = function( $where, $post_status, $utable, $post_table ) {
+			if ( ! empty( $post_status ) ) {
+				// Filtering by published status.
+				$where = empty( $where ) ? 'WHERE ' : $where . 'AND ';
+				$where = $post_status === "publish" ?
+					$where . "( {$utable}.post_id = '0' OR ( {$utable}.post_id > '0' AND {$post_table}.post_status = '{$post_status}' ) )"
+					: $where . "{$utable}.post_id > '0' AND {$post_table}.post_status = '{$post_status}'";
+			}
+			return $where;
+		};
+
 		if ( 'pages' === $params['view'] ) {
-			// Get "Issues by Page" view.
+			/**
+			 * Dashboard panel: list of pages with issues.
+			 */
 
 			// Sort by sanitized param; page total is default.
 			$order_by = $order_by ? $order_by : 'page_total';
@@ -154,12 +169,14 @@ class Editoria11y_Api_Results extends WP_REST_Controller {
 				$where = empty( $where ) ? 'WHERE ' : $where . 'AND ';
 				$where = $where . "{$utable}.entity_type = '{$entity_type}'";
 			}
-			if ( ! empty( $post_status ) ) {
-				// Filtering by published status.
+			$where = $post_status_filter( $where, $post_status, $utable, $post_table );
+
+			if ( 0 < $author ) {
+				// Filtering by author ID number, which has been cast to integer.
 				$where = empty( $where ) ? 'WHERE ' : $where . 'AND ';
-				$where = $where . "{$utable}.post_id > '0' AND ";
-				$where = $where . "{$post_table}.post_status = '{$post_status}'";
+				$where = $where . "{$post_table}.post_author = '{$author}'";
 			}
+
 
 			/*
 			Complex counts and joins required a direct DB call.
@@ -174,10 +191,13 @@ class Editoria11y_Api_Results extends WP_REST_Controller {
 						{$utable}.entity_type,
 						$total_column AS page_total,
 						{$post_table}.post_status AS post_status,
-						{$post_table}.post_modified AS post_modified
+						{$post_table}.post_modified AS post_modified,
+						{$post_table}.post_author AS post_author,
+						{$user_meta}.meta_value AS nickname
 						FROM {$utable}
 						LEFT JOIN {$rtable} ON {$utable}.pid={$rtable}.pid
 						LEFT JOIN {$post_table} ON {$utable}.post_id={$post_table}.ID
+						LEFT JOIN {$user_meta} ON {$user_meta}.user_id={$post_table}.post_author AND {$user_meta}.meta_key = 'nickname'
 						{$where}
 						ORDER BY {$order_by} {$direction}
 						LIMIT {$count}
@@ -205,7 +225,9 @@ class Editoria11y_Api_Results extends WP_REST_Controller {
 			// phpcs:enable
 
 		} elseif ( 'keys' === $params['view'] ) {
-
+			/**
+			 * Dashboard panel: list of issues.
+			 */
 			if ( false === $order_by || 'count' === $order_by ) {
 				$order_by = 'SUM(' . $wpdb->prefix . 'ed11y_results.result_count)';
 			}
@@ -236,7 +258,9 @@ class Editoria11y_Api_Results extends WP_REST_Controller {
 			// phpcs:enable
 
 		} elseif ( 'recent' === $params['view'] ) {
-			// Get Recent Issues Table.
+			/**
+			* Dashboard panel: recent issues.
+			*/
 
 			// Sort by sanitized param; page total is default.
 			$order_by = $order_by ? $order_by : 'page_total';
@@ -252,12 +276,8 @@ class Editoria11y_Api_Results extends WP_REST_Controller {
 				$where = empty( $where ) ? 'WHERE ' : $where . 'AND ';
 				$where = $where . "{$utable}.entity_type = '{$entity_type}'";
 			}
-			if ( ! empty( $post_status ) ) {
-				// Filtering by published status.
-				$where = empty( $where ) ? 'WHERE ' : $where . 'AND ';
-				$where = $where . "{$utable}.post_id > '0' AND ";
-				$where = $where . "{$post_table}.post_status = '{$post_status}'";
-			}
+
+			$where = $post_status_filter( $where, $post_status, $utable, $post_table );
 
 			if ( ! empty( $where ) ) {
 				/*

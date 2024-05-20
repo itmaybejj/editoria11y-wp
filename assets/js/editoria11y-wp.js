@@ -68,6 +68,10 @@ function ed11ySync() {
 
   let sendResults = function () {
     window.setTimeout(function () {
+        if ( ed11yOptions.post_id && document.getElementsByClassName('post-password-form').length > 0 ) {
+            // Don't sync "0 results" if the post has been replaced by a login form.
+            return;
+        }
 		let results = extractResults();
 		let data = {
 			page_title: ed11yOptions.title,

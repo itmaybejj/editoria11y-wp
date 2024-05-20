@@ -42,6 +42,7 @@ class Ed1 {
         'stale',
         'post_status',
         'post_modified',
+        'post_author',
       ];
       let resultSort = urlParams.get('rsort');
       resultSort = !!resultSort && validSorts.includes(resultSort) ? resultSort : 'count';
@@ -69,11 +70,13 @@ class Ed1 {
 
       // Page type to filter by; will be validated.
       Ed1.type = urlParams.get('type');
+      Ed1.author = urlParams.get('author');
+      Ed1.dismissor = urlParams.get('dismissor');
 
       // Published status to filter by todo validate
-      Ed1.post_status = urlParams.get('pstatus') || false;
+      Ed1.post_status = urlParams.get('post_status') || false;
 
-      Ed1.openDetails = !!Ed1.resultKey || !!Ed1.type;
+      Ed1.openDetails = !!Ed1.resultKey || !!Ed1.type || !!Ed1.author || !!Ed1.post_status;
 
       // Key arrays to be assembled into URLs on request.
       Ed1.requests = {};
@@ -87,6 +90,7 @@ class Ed1 {
         result_key: Ed1.resultKey,
         entity_type: Ed1.type,
         post_status: Ed1.post_status,
+        author: Ed1.author,
       };
       Ed1.requests['ed1recent'] = {
         base: 'dashboard',
@@ -98,6 +102,7 @@ class Ed1 {
         result_key: Ed1.resultKey,
         entity_type: Ed1.type,
         post_status: Ed1.post_status,
+        author: Ed1.author,
       };
       Ed1.requests['ed1result'] = {
         base: 'dashboard',
@@ -109,6 +114,7 @@ class Ed1 {
         result_key: Ed1.resultKey,
         entity_type: Ed1.type,
         post_status: Ed1.post_status,
+        author: Ed1.author,
       };
       Ed1.requests['ed1dismiss'] = {
         base: 'dismiss',
@@ -120,6 +126,8 @@ class Ed1 {
         result_key: Ed1.resultKey,
         entity_type: Ed1.type,
         post_status: Ed1.post_status,
+        author: Ed1.author,
+        dismissor: Ed1.dismissor,
       };
     };
 
@@ -127,23 +135,27 @@ class Ed1 {
      * Make nicename for page status.
      */
     const prettyStatus = function( page_status ) {
-      return page_status?.replace( 'publish', 'Published' ).replace( 'draft', 'Draft' );
+      if ( !page_status || page_status.length < 2) {
+        return page_status;
+      }
+      page_status = page_status[0].toUpperCase() + page_status.slice(1);
+      return page_status?.replace( 'Publish', 'Published' );
     };
 
     /**
-             * Assemble request array into API call.
-             * @param {*} request
-             * @returns string
-             */
+     * Assemble request array into API call.
+     * @param {*} request
+     * @returns string
+     */
     Ed1.buildRequest = function (request) {
       let q = Ed1.requests[request];
-      let req = `${q.base}?view=${q.view}&count=${q.count}&offset=${q.offset}&sort=${q.sort}&direction=${q.direction}&result_key=${q.result_key}&entity_type=${q.entity_type}&post_status=${q.post_status}&nocache=${Date.now()}`;
+      let req = `${q.base}?view=${q.view}&count=${q.count}&offset=${q.offset}&sort=${q.sort}&direction=${q.direction}&result_key=${q.result_key}&author=${q.author}&entity_type=${q.entity_type}&post_status=${q.post_status}&dismissor=${q.dismissor}&nocache=${Date.now()}`;
       return req;
     };
 
     /**
-             * Gather GET requests and make API calls.
-             */
+     * Gather GET requests and make API calls.
+     */
     Ed1.init = async function () {
       // Get results with default params
 
@@ -157,16 +169,21 @@ class Ed1 {
       Ed1.render.tableHeaders();
 
       // Only build result table if there is no result or type filter.
-      if (!!Ed1.resultKey || !!Ed1.type || !!Ed1.post_status) {
-        let h1 = Ed1.wrapper.querySelector('#ed1 h1');
+      if (!!Ed1.resultKey || !!Ed1.type || !!Ed1.post_status || !! Ed1.author || !! Ed1.dismissor ) {
+        Ed1.h1 = Ed1.wrapper.querySelector('#ed1 h1');
         let resetType = 'View all issues';
         if (Ed1.resultKey) {
-          h1.textContent = 'Issue report: "' + ed11yLang.en[Ed1.resultKey].title + '"';
+          Ed1.h1.textContent = 'Issue report: "' + ed11yLang.en[Ed1.resultKey].title + '"';
         } else if ( Ed1.type ) {
-          h1.textContent = 'Issues on pages of type "' + Ed1.type + '"';
+          Ed1.h1.textContent = 'Issues on pages of type "' + Ed1.type + '"';
           resetType = 'View issues on all pages';
-        } else {
-          h1.textContent = 'Issues on ' + prettyStatus( Ed1.post_status ) + ' Pages';
+        } else if ( Ed1.author ) {
+          Ed1.h1.textContent = 'Issues on pages created by author';
+        } else if ( Ed1.dismissor ) {
+          Ed1.h1.textContent = 'Issues dismissed by';
+        }
+        else {
+          Ed1.h1.textContent = prettyStatus( Ed1.post_status ) + ' pages';
           resetType = 'View issues on all pages';
         }
         let reset = Ed1.render.a(resetType, false, Ed1.url);
@@ -175,19 +192,22 @@ class Ed1 {
         leftArrow.textContent = '< ';
         leftArrow.setAttribute('aria-hidden', 'true');
         reset.insertAdjacentElement('afterbegin', leftArrow);
-        h1.insertAdjacentElement('afterend', reset);
+        Ed1.h1.insertAdjacentElement('afterend', reset);
         Ed1.wrapResults.style.display = 'none';
       } else {
         // Possible todo: we could wait until the Details is open to do this.
         window.setTimeout(function () { Ed1.get.ed1result(Ed1.buildRequest('ed1result'), false); }, 500);
       }
 
+      let ed1Lag = Ed1.openDetails ? 0 : 500;
+
       // Always build page table.
-      Ed1.get.ed1recent(Ed1.buildRequest('ed1recent'), false);
-      Ed1.get.ed1page(Ed1.buildRequest('ed1page'), false);
+      if ( !Ed1.dismissor ) {
+        Ed1.get.ed1recent(Ed1.buildRequest('ed1recent'), false);
+        Ed1.get.ed1page(Ed1.buildRequest('ed1page'), false);
+      }
 
       // Possible todo: we could wait until the Details is open to do this.
-      let ed1Lag = Ed1.openDetails ? 0 : 500;
       window.setTimeout(function () {
         Ed1.get.ed1dismiss(Ed1.buildRequest('ed1dismiss'), false);
         }, ed1Lag);
@@ -203,7 +223,13 @@ class Ed1 {
     };
 
     Ed1.show = function () {
+      if ( Ed1.dismissor ) {
+        Ed1.wrapRecent.setAttribute('hidden', '');
+        Ed1.wrapPage.setAttribute( 'hidden', '' );
+        Ed1.wrapDismiss.querySelector('details').setAttribute('open', '');
+      }
       Ed1.wrapper.classList.add('show');
+
     };
 
     Ed1.announce = function (string) {
@@ -441,7 +467,8 @@ class Ed1 {
       head.insertAdjacentElement('beforeend', Ed1.render.th('Issues', 'page_total', 'DESC'));
       head.insertAdjacentElement('beforeend', Ed1.render.th('Page', 'page_title'));
       head.insertAdjacentElement('beforeend', Ed1.render.th('Path', 'page_url'));
-      head.insertAdjacentElement('beforeend', Ed1.render.th('Page type', 'entity_type'));
+      head.insertAdjacentElement('beforeend', Ed1.render.th('Author', 'post_author'));
+      head.insertAdjacentElement('beforeend', Ed1.render.th('Type', 'entity_type'));
       head.insertAdjacentElement('beforeend', Ed1.render.th('Status', 'post_status'));
       head.insertAdjacentElement('beforeend', Ed1.render.th('Updated', 'post_modified'));
       Ed1.tables['ed1page'].insertAdjacentElement('beforeend', head);
@@ -468,7 +495,7 @@ class Ed1 {
       head.insertAdjacentElement('beforeend', Ed1.render.th('Path', 'page_url'));
       head.insertAdjacentElement('beforeend', Ed1.render.th('Issue', 'result_key'));
       head.insertAdjacentElement('beforeend', Ed1.render.th('Count', 'result_count'));
-      head.insertAdjacentElement('beforeend', Ed1.render.th('Page type', 'entity_type'));
+      head.insertAdjacentElement('beforeend', Ed1.render.th('Type', 'entity_type'));
       head.insertAdjacentElement('beforeend', Ed1.render.th('Status', 'post_status'));
       Ed1.tables['ed1recent'].insertAdjacentElement('beforeend', head);
 
@@ -509,11 +536,12 @@ class Ed1 {
       Ed1.tables['ed1dismiss'] = document.createElement('table');
       Ed1.tables['ed1dismiss'].setAttribute('id', 'ed1dismiss');
       head = document.createElement('tr');
-      head.insertAdjacentElement('beforeend', Ed1.render.th('Marked', 'dismissal_status'));
-      head.insertAdjacentElement('beforeend', Ed1.render.th('Page', 'page_title'));
-      head.insertAdjacentElement('beforeend', Ed1.render.th('Dismissed alert', 'result_key'));
-      head.insertAdjacentElement('beforeend', Ed1.render.th('By', 'display_name'));
       head.insertAdjacentElement('beforeend', Ed1.render.th('On', 'created', 'DESC'));
+      head.insertAdjacentElement('beforeend', Ed1.render.th('Page', 'page_title'));
+      head.insertAdjacentElement('beforeend', Ed1.render.th('Path', 'page_url'));
+      head.insertAdjacentElement('beforeend', Ed1.render.th('Dismissed alert', 'result_key'));
+      head.insertAdjacentElement('beforeend', Ed1.render.th('Marked', 'dismissal_status'));
+      head.insertAdjacentElement('beforeend', Ed1.render.th('By', 'display_name'));
       head.insertAdjacentElement('beforeend', Ed1.render.th('Current', 'stale'));
       Ed1.tables['ed1dismiss'].insertAdjacentElement('beforeend', head);
 
@@ -535,11 +563,11 @@ class Ed1 {
     };
 
     /**
-             * Renderer for viewing results by test name.
-             *
-             * @param {*} post
-             * @param {*} count
-             */
+     * Renderer for viewing results by test name.
+     *
+     * @param {*} post
+     * @param {*} count
+     */
     Ed1.render.ed1result = function (post, count, announce) {
 
       Ed1.tables['ed1result'].querySelectorAll('tr + tr').forEach(el => {
@@ -624,8 +652,8 @@ class Ed1 {
           row.insertAdjacentElement('beforeend', type);
 
           let post_status = result['post_status'] ?
-              Ed1.render.td( prettyStatus( result['post_status'] ), false, `${Ed1.url}pstatus=${result['post_status']}`)
-              : Ed1.render.td( 'n/a' );
+              Ed1.render.td( prettyStatus( result['post_status'] ), false, `${Ed1.url}post_status=${result['post_status']}`)
+              : Ed1.render.td('n/a', false, false, false, 'muted');
           row.insertAdjacentElement('beforeend', post_status);
 
 
@@ -671,17 +699,38 @@ class Ed1 {
           path = Ed1.render.td( path ? path : '/' );
           row.insertAdjacentElement('beforeend', path);
 
+          let authored;
+          if ( Ed1.author && !authored) {
+            Ed1.h1.textContent = 'Issues on pages created by ' + result['nickname'];
+          }
+          if ( result['nickname'] ) {
+            row.insertAdjacentElement(
+                'beforeend',
+                Ed1.render.td(
+                    result['nickname'],
+                    false,
+                    `${Ed1.url}author=${result['post_author']}`,
+                ),
+            )
+          } else {
+            row.insertAdjacentElement(
+                'beforeend',
+                Ed1.render.td('n/a', false, false, false, 'muted'),
+            )
+          }
+
           let type = Ed1.render.td(result['entity_type'], false, `${Ed1.url}type=${result['entity_type']}`);
           row.insertAdjacentElement('beforeend', type);
 
           let post_status = result['post_status'] ?
-              Ed1.render.td( prettyStatus( result['post_status'] ), false, `${Ed1.url}pstatus=${result['post_status']}` )
-              : Ed1.render.td( 'n/a' );
+              Ed1.render.td( prettyStatus( result['post_status'] ), false, `${Ed1.url}post_status=${result['post_status']}` )
+              : Ed1.render.td('n/a', false, false, false, 'muted');
           row.insertAdjacentElement('beforeend', post_status);
 
-          let cleanDate = result['post_modified']?.split(' ')[0].replace(/[^\-0-9]/g, '');
+          let date = result['post_modified'] ?
+              Ed1.render.td( result['post_modified'].split(' ')[0].replace(/[^\-0-9]/g, '') )
+              : Ed1.render.td('n/a', false, false, false, 'muted' );
 
-          let date = Ed1.render.td(cleanDate, false, '');
           row.insertAdjacentElement('beforeend', date);
 
           Ed1.tables['ed1page'].insertAdjacentElement('beforeend', row);
@@ -698,10 +747,10 @@ class Ed1 {
     };
 
     /**
-             * Renderer for viewing dismissed alerts.
-             * @param {*} post
-             * @param {*} count
-             */
+     * Renderer for viewing dismissed alerts.
+     * @param {*} post
+     * @param {*} count
+     */
     Ed1.render.ed1dismiss = function (post, count, announce) {
 
       Ed1.tables['ed1dismiss'].querySelectorAll('tr + tr').forEach(el => {
@@ -720,26 +769,33 @@ class Ed1 {
           post.forEach((result) => {
             let row = document.createElement('tr');
 
-            let marked = Ed1.render.td(result['dismissal_status']);
-            row.insertAdjacentElement('beforeend', marked);
+            let cleanDate = result['created'].split(' ')[0].replace(/[^\-0-9]/g, '');
+            let on = Ed1.render.td(cleanDate);
+            row.insertAdjacentElement('beforeend', on);
 
             let pageLink = Ed1.render.td(result['page_title'], false, result['page_url'], result['pid']);
             row.insertAdjacentElement('beforeend', pageLink);
+
+            let path = result['page_url'].replace(window.location.protocol + '//' + window.location.host, '');
+            path = Ed1.render.td( path ? path : '/' );
+            row.insertAdjacentElement('beforeend', path);
 
             // need to sanitize URL in response?
             let keyName = ed11yLang.en[result['result_key']].title;
             let key = Ed1.render.td(keyName, false, Ed1.url + 'rkey=' + result['result_key'], false, 'rkey');
             row.insertAdjacentElement('beforeend', key);
 
-            let by = Ed1.render.td(result['display_name']);
+            let marked = Ed1.render.td(result['dismissal_status']);
+            row.insertAdjacentElement('beforeend', marked);
+
+            let dismissor;
+            if ( Ed1.dismissor && !dismissor) {
+              Ed1.h1.textContent = 'Issues dismissed by ' + result['display_name'];
+            }
+            let by = Ed1.render.td(result['display_name'], false, Ed1.url + 'dismissor=' + result['user']);
             row.insertAdjacentElement('beforeend', by);
 
-            let cleanDate = result['created'].split(' ')[0].replace(/[^\-0-9]/g, '');
-
-            let on = Ed1.render.td(cleanDate);
-            row.insertAdjacentElement('beforeend', on);
-
-            // old
+            // Still on page?
             let stale = Ed1.render.td(!result['stale'] ? 'No' : 'Yes');
             row.insertAdjacentElement('beforeend', stale);
 
