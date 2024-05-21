@@ -813,7 +813,7 @@ function ed11y_export_results_csv() {
 					0 < $result->post_status ?
 						$admin . 'post.php?post=' . $result->post_id . '&action=edit'
 						: $result->page_url,
-                )
+				)
 			);
 		}
 
