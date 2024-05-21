@@ -162,10 +162,10 @@ class Editoria11y_Api_Dismissals extends WP_REST_Controller {
 		$order_by    = ! empty( $params['sort'] ) && $validate->sort( $params['sort'] ) ? $params['sort'] : false;
 		$entity_type = ! empty( $params['entity_type'] ) && $validate->entity_type( $params['entity_type'] ) ? $params['entity_type'] : false;
 		$result_key  = ! empty( $params['result_key'] ) && 'false' !== $params['result_key'] ? esc_sql( $params['result_key'] ) : false;
-		$dismissor      = is_numeric( $params['dismissor'] ) ? intval( $params['dismissor'] ) : false;
+		$dismissor   = is_numeric( $params['dismissor'] ) ? intval( $params['dismissor'] ) : false;
 		$utable      = $wpdb->prefix . 'ed11y_urls';
 		$dtable      = $wpdb->prefix . 'ed11y_dismissals';
-		$user_meta  = $wpdb->prefix . 'usermeta';
+		$user_meta   = $wpdb->prefix . 'usermeta';
 
 		// Get top pages.
 

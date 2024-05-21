@@ -137,11 +137,11 @@ class Editoria11y_Api_Results extends WP_REST_Controller {
 		$author      = is_numeric( $params['author'] ) ? intval( $params['author'] ) : false;
 		$post_status = ! empty( $params['post_status'] ) && 'false' !== $params['post_status'] ? esc_sql( $params['post_status'] ) : false;
 
-		$post_status_filter = function( $where, $post_status, $utable, $post_table ) {
+		$post_status_filter = function ( $where, $post_status, $utable, $post_table ) {
 			if ( ! empty( $post_status ) ) {
 				// Filtering by published status.
 				$where = empty( $where ) ? 'WHERE ' : $where . 'AND ';
-				$where = $post_status === "publish" ?
+				$where = 'publish' === $post_status ?
 					$where . "( {$utable}.post_id = '0' OR ( {$utable}.post_id > '0' AND {$post_table}.post_status = '{$post_status}' ) )"
 					: $where . "{$utable}.post_id > '0' AND {$post_table}.post_status = '{$post_status}'";
 			}
@@ -157,12 +157,13 @@ class Editoria11y_Api_Results extends WP_REST_Controller {
 			$order_by = $order_by ? $order_by : 'page_total';
 
 			// Build where clause based on sanitized params.
-			$where        = '';
-			$total_column = "{$utable}.page_total";
 			if ( $result_key ) {
 				// Filtering by test name.
-				$where        = "WHERE {$rtable}.result_key = '{$result_key}'";
 				$total_column = "{$rtable}.result_count";
+				$where        = "WHERE {$rtable}.result_key = '{$result_key}' AND {$total_column} > '0'";
+			} else {
+				$total_column = "{$utable}.page_total";
+				$where        = "WHERE {$total_column} > '0'";
 			}
 			if ( $entity_type ) {
 				// Filtering by entity type.
@@ -176,7 +177,6 @@ class Editoria11y_Api_Results extends WP_REST_Controller {
 				$where = empty( $where ) ? 'WHERE ' : $where . 'AND ';
 				$where = $where . "{$post_table}.post_author = '{$author}'";
 			}
-
 
 			/*
 			Complex counts and joins required a direct DB call.

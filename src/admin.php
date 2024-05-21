@@ -749,8 +749,8 @@ function ed11y_export_results_csv() {
 		$file = fopen( 'php://output', 'w' );
 
 		global $wpdb;
-		$utable = $wpdb->prefix . 'ed11y_urls';
-		$rtable = $wpdb->prefix . 'ed11y_results';
+		$utable     = $wpdb->prefix . 'ed11y_urls';
+		$rtable     = $wpdb->prefix . 'ed11y_results';
 		$user_meta  = $wpdb->prefix . 'usermeta';
 		$post_table = $wpdb->prefix . 'posts';
 
@@ -761,47 +761,59 @@ function ed11y_export_results_csv() {
 		// phpcs:disable
 		$data = $wpdb->get_results(
 			"SELECT
-            {$rtable}.result_key,
-            {$rtable}.result_count,
-            {$utable}.pid,
-            {$utable}.page_url,
-            {$utable}.page_title,
-            {$utable}.entity_type,
-            {$utable}.page_total,
-            {$post_table}.post_status,
-            {$user_meta}.meta_value AS author,
-            {$rtable}.created as created
-            FROM {$utable}
-            LEFT JOIN {$rtable} ON {$utable}.pid={$rtable}.pid
-            LEFT JOIN {$post_table} ON {$utable}.post_id={$post_table}.ID
+			{$rtable}.result_key,
+			{$rtable}.result_count,
+			{$utable}.pid,
+			{$utable}.page_url,
+			{$utable}.page_title,
+			{$utable}.entity_type,
+			{$utable}.page_total,
+			{$utable}.post_id,
+			{$post_table}.post_status,
+			{$user_meta}.meta_value AS author,
+			{$rtable}.created as created
+			FROM {$rtable}
+		    LEFT JOIN {$utable} ON {$utable}.pid={$rtable}.pid
+			LEFT JOIN {$post_table} ON {$utable}.post_id={$post_table}.ID
 			LEFT JOIN {$user_meta} ON {$user_meta}.user_id={$post_table}.post_author AND {$user_meta}.meta_key = 'nickname'
-            ORDER BY page_url ASC;"
+			ORDER BY page_url ASC;"
 		);
 		// phpcs:enable
 
-		fputcsv( $file, array(
-			'Page',
-			'URL',
-            'Issue',
-			'Count',
-			'Author',
-			'Page Type',
-			'Detected on',
-            'Status',
+		fputcsv(
+			$file,
+			array(
+				'Page',
+				'URL',
+				'Issue',
+				'Count',
+				'Author',
+				'Page Type',
+				'Detected on',
+				'Status',
+                'Edit',
 		) );
 
+		$admin = get_admin_url();
+
 		foreach ( $data as $result ) {
-			fputcsv( $file, array(
-                $result->page_title,
-                $result->page_url,
-				$test_name[ $result->result_key ],
-				$result->result_count,
-                $result->author,
-                $result->entity_type,
-                $result->created,
-                $result->post_status
-                )
-            );
+
+			fputcsv(
+					$file,
+					array(
+						$result->page_title,
+						$result->page_url,
+						$test_name[ $result->result_key ] ?? '',
+						$result->result_count,
+						$result->author,
+						$result->entity_type,
+						$result->created,
+						$result->post_status ?? 'publish',
+						0 < $result->post_status ?
+							$admin . 'post.php?post=' . $result->post_id . '&action=edit'
+							: $result->page_url
+				)
+			);
 		}
 
 		exit();

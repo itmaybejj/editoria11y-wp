@@ -711,12 +711,12 @@ class Ed1 {
                     false,
                     `${Ed1.url}author=${result['post_author']}`,
                 ),
-            )
+            );
           } else {
             row.insertAdjacentElement(
                 'beforeend',
                 Ed1.render.td('n/a', false, false, false, 'muted'),
-            )
+            );
           }
 
           let type = Ed1.render.td(result['entity_type'], false, `${Ed1.url}type=${result['entity_type']}`);
