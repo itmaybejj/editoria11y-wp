@@ -791,28 +791,29 @@ function ed11y_export_results_csv() {
 				'Page Type',
 				'Detected on',
 				'Status',
-                'Edit',
-		) );
+            	'Edit',
+		    )
+        );
 
 		$admin = get_admin_url();
 
 		foreach ( $data as $result ) {
 
 			fputcsv(
-					$file,
-					array(
-						$result->page_title,
-						$result->page_url,
-						$test_name[ $result->result_key ] ?? '',
-						$result->result_count,
-						$result->author,
-						$result->entity_type,
-						$result->created,
-						$result->post_status ?? 'publish',
-						0 < $result->post_status ?
-							$admin . 'post.php?post=' . $result->post_id . '&action=edit'
-							: $result->page_url
-				)
+                $file,
+                array(
+                    $result->page_title,
+                    $result->page_url,
+                    $test_name[ $result->result_key ] ?? '',
+                    $result->result_count,
+                    $result->author,
+                    $result->entity_type,
+                    $result->created,
+                    $result->post_status ?? 'publish',
+                    0 < $result->post_status ?
+                        $admin . 'post.php?post=' . $result->post_id . '&action=edit'
+                        : $result->page_url,
+                )
 			);
 		}
 
