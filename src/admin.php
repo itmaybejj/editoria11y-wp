@@ -800,8 +800,8 @@ function ed11y_export_results_csv() {
 		foreach ( $data as $result ) {
 
 			fputcsv(
-			 $file,
-			  array(
+				$file,
+				array(
 					$result->page_title,
 					$result->page_url,
 					$test_name[ $result->result_key ] ?? '',
@@ -813,7 +813,7 @@ function ed11y_export_results_csv() {
 					0 < $result->post_status ?
 						$admin . 'post.php?post=' . $result->post_id . '&action=edit'
 						: $result->page_url,
-				)
+					)
 			);
 		}
 

@@ -73,7 +73,6 @@ class Ed1 {
       Ed1.author = urlParams.get('author');
       Ed1.dismissor = urlParams.get('dismissor');
 
-      // Published status to filter by todo validate
       Ed1.post_status = urlParams.get('post_status') || false;
 
       Ed1.openDetails = !!Ed1.resultKey || !!Ed1.type || !!Ed1.author || !!Ed1.post_status;
@@ -652,8 +651,8 @@ class Ed1 {
           row.insertAdjacentElement('beforeend', type);
 
           let post_status = result['post_status'] ?
-              Ed1.render.td( prettyStatus( result['post_status'] ), false, `${Ed1.url}post_status=${result['post_status']}`)
-              : Ed1.render.td('n/a', false, false, false, 'muted');
+              Ed1.render.td( prettyStatus( result['post_status'] ), false, `${Ed1.url}post_status=${result['post_status']}` )
+              : Ed1.render.td('Published', false, `${Ed1.url}post_status=publish`);
           row.insertAdjacentElement('beforeend', post_status);
 
 
@@ -724,7 +723,7 @@ class Ed1 {
 
           let post_status = result['post_status'] ?
               Ed1.render.td( prettyStatus( result['post_status'] ), false, `${Ed1.url}post_status=${result['post_status']}` )
-              : Ed1.render.td('n/a', false, false, false, 'muted');
+              : Ed1.render.td('Published', false, `${Ed1.url}post_status=publish`);
           row.insertAdjacentElement('beforeend', post_status);
 
           let date = result['post_modified'] ?

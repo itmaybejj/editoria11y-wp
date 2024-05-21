@@ -141,14 +141,14 @@ Editoria11y began as a fork of the Toronto Metropolitan University's [Sa11y Acce
 == Changelog ==
 
 = 1.0.15
-* Fix for tables not provisioning on network activation for multi-site installs.
-* Fix for false positives on links titled only "Download," "Tab" or "Window."
-* Auto-opens detail/summary elements when jumping to a hidden alert.
-* Adds alert for WordPress button blocks that are not yet linked.
-* Better alert placement on hidden elements.
-* Basic support for inline highlighting in the Site Editor.
-* Backwards compatibility for Firefox 115 ESR.
-* Begins recording post ID with results, to support future filters and functionality.
+* [Begins recording post ID](https://github.com/itmaybejj/editoria11y-wp/issues/18) with results, which allows for filtering the dashboard by author and published status, and sorting pages by modified date.
+* [Adds author, publish status and edit URL](https://github.com/itmaybejj/editoria11y-wp/issues/17) to the results export CSV.
+* [Fix for tables not provisioning on network activation](https://github.com/itmaybejj/editoria11y-wp/issues/22) for multi-site installs.
+* [Fix for false positives on links](https://github.com/itmaybejj/editoria11y-wp/issues/28) titled only "Download," "Tab" or "Window."
+* [Auto-opens detail/summary elements](https://github.com/itmaybejj/editoria11y-wp/issues/27) when jumping to a hidden alert, and improves alert positioning on hidden elements.
+* [Adds alert for WordPress button blocks](https://github.com/itmaybejj/editoria11y-wp/issues/28) that are not yet linked.
+* [Basic support for inline highlighting in the Site Editor](https://github.com/itmaybejj/editoria11y-wp/issues/4).
+* [Backwards compatibility for Firefox 115 ESR](https://www.drupal.org/project/editoria11y/issues/3444920).
 
 = 1.0.14 =
 * Page URLs now have a slightly shorter limit for [Pantheon compatibility](https://docs.pantheon.io/guides/wordpressvip/troubleshooting#maximum-index-size)
