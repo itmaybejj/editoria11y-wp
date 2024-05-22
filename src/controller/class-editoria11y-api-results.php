@@ -115,7 +115,7 @@ class Editoria11y_Api_Results extends WP_REST_Controller {
 		global $wpdb;
 		require_once ED11Y_SRC . 'class-editoria11y-validate.php';
 		$validate = new Editoria11y_Validate();
-		$users = [];
+		$users    = array();
 
 		$utable     = $wpdb->prefix . 'ed11y_urls';
 		$rtable     = $wpdb->prefix . 'ed11y_results';
@@ -332,7 +332,6 @@ class Editoria11y_Api_Results extends WP_REST_Controller {
 				// phpcs:enable
 
 			} else {
-
 				/*
 				Complex counts and joins required a direct DB call.
 				Variables are all validated or sanitized.

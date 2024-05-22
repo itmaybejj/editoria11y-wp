@@ -153,7 +153,6 @@ class Editoria11y_Api_Dismissals extends WP_REST_Controller {
 		global $wpdb;
 		require_once ED11Y_SRC . 'class-editoria11y-validate.php';
 		$validate = new Editoria11y_Validate();
-		$users = [];
 
 		// Sanitize all params before use.
 		$params      = $request->get_params();
