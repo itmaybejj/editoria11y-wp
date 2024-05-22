@@ -38,11 +38,11 @@ class Ed1 {
         'count',
         'result_key',
         'dismissal_status',
-        'display_name',
+        //'display_name',
         'stale',
         'post_status',
         'post_modified',
-        'post_author',
+        //'post_author',
       ];
       let resultSort = urlParams.get('rsort');
       resultSort = !!resultSort && validSorts.includes(resultSort) ? resultSort : 'count';
@@ -466,10 +466,10 @@ class Ed1 {
       head.insertAdjacentElement('beforeend', Ed1.render.th('Issues', 'page_total', 'DESC'));
       head.insertAdjacentElement('beforeend', Ed1.render.th('Page', 'page_title'));
       head.insertAdjacentElement('beforeend', Ed1.render.th('Path', 'page_url'));
-      head.insertAdjacentElement('beforeend', Ed1.render.th('Author', 'post_author'));
       head.insertAdjacentElement('beforeend', Ed1.render.th('Type', 'entity_type'));
       head.insertAdjacentElement('beforeend', Ed1.render.th('Status', 'post_status'));
       head.insertAdjacentElement('beforeend', Ed1.render.th('Updated', 'post_modified'));
+      head.insertAdjacentElement('beforeend', Ed1.render.th('Author'));
       Ed1.tables['ed1page'].insertAdjacentElement('beforeend', head);
 
       loading.setAttribute('colspan', '6');
@@ -540,8 +540,8 @@ class Ed1 {
       head.insertAdjacentElement('beforeend', Ed1.render.th('Path', 'page_url'));
       head.insertAdjacentElement('beforeend', Ed1.render.th('Dismissed alert', 'result_key'));
       head.insertAdjacentElement('beforeend', Ed1.render.th('Marked', 'dismissal_status'));
-      head.insertAdjacentElement('beforeend', Ed1.render.th('By', 'display_name'));
       head.insertAdjacentElement('beforeend', Ed1.render.th('Current', 'stale'));
+      head.insertAdjacentElement('beforeend', Ed1.render.th('By'));
       Ed1.tables['ed1dismiss'].insertAdjacentElement('beforeend', head);
 
       loading.setAttribute('colspan', '6');
@@ -608,12 +608,19 @@ class Ed1 {
 
     };
 
+    Ed1.authorList = {};
+    Ed1.matchAuthors = function( author_query ) {
+      author_query?.forEach( ( author ) => {
+        Ed1.authorList[author.ID] = author.display_name;
+      })
+    }
+
     /**
-             * Renderer for viewing recent issues.
-             *
-             * @param {*} post
-             * @param {*} count
-             */
+     * Renderer for viewing recent issues.
+     *
+     * @param {*} post
+     * @param {*} count
+     */
     Ed1.render.ed1recent = function (post, count, announce) {
 
       Ed1.tables['ed1recent'].querySelectorAll('tr + tr').forEach(el => {
@@ -698,26 +705,6 @@ class Ed1 {
           path = Ed1.render.td( path ? path : '/' );
           row.insertAdjacentElement('beforeend', path);
 
-          let authored;
-          if ( Ed1.author && !authored) {
-            Ed1.h1.textContent = 'Issues on pages created by ' + result['nickname'];
-          }
-          if ( result['nickname'] ) {
-            row.insertAdjacentElement(
-                'beforeend',
-                Ed1.render.td(
-                    result['nickname'],
-                    false,
-                    `${Ed1.url}author=${result['post_author']}`,
-                ),
-            );
-          } else {
-            row.insertAdjacentElement(
-                'beforeend',
-                Ed1.render.td('n/a', false, false, false, 'muted'),
-            );
-          }
-
           let type = Ed1.render.td(result['entity_type'], false, `${Ed1.url}type=${result['entity_type']}`);
           row.insertAdjacentElement('beforeend', type);
 
@@ -731,6 +718,22 @@ class Ed1 {
               : Ed1.render.td('n/a', false, false, false, 'muted' );
 
           row.insertAdjacentElement('beforeend', date);
+
+          if ( result['post_author'] ) {
+            row.insertAdjacentElement(
+                'beforeend',
+                Ed1.render.td(
+                    Ed1.authorList[ result['post_author'] ] || result['post_author'],
+                    false,
+                    `${Ed1.url}author=${result['post_author']}`,
+                ),
+            );
+          } else {
+            row.insertAdjacentElement(
+                'beforeend',
+                Ed1.render.td('n/a', false, false, false, 'muted'),
+            );
+          }
 
           Ed1.tables['ed1page'].insertAdjacentElement('beforeend', row);
 
@@ -787,16 +790,16 @@ class Ed1 {
             let marked = Ed1.render.td(result['dismissal_status']);
             row.insertAdjacentElement('beforeend', marked);
 
-            let dismissor;
-            if ( Ed1.dismissor && !dismissor) {
-              Ed1.h1.textContent = 'Issues dismissed by ' + result['display_name'];
-            }
-            let by = Ed1.render.td(result['display_name'], false, Ed1.url + 'dismissor=' + result['user']);
-            row.insertAdjacentElement('beforeend', by);
-
             // Still on page?
             let stale = Ed1.render.td(!result['stale'] ? 'No' : 'Yes');
             row.insertAdjacentElement('beforeend', stale);
+
+            let dismissor;
+            if ( Ed1.dismissor && !dismissor) {
+              Ed1.h1.textContent = 'Issues dismissed by ' + Ed1.authorList[ Ed1.dismissor ];
+            }
+            let by = Ed1.render.td( Ed1.authorList[ result['user'] ] || result['user'] , false, Ed1.url + 'dismissor=' + result['user']);
+            row.insertAdjacentElement('beforeend', by);
 
             Ed1.tables['ed1dismiss'].insertAdjacentElement('beforeend', row);
           });
@@ -835,6 +838,10 @@ class Ed1 {
         if (post?.data?.status === 500) {
           console.error(post.data.status + ': ' + post.message);
         } else {
+          Ed1.matchAuthors( post[2] );
+          if ( Ed1.author && Ed1.authorList[ Ed1.author ]) {
+            Ed1.h1.textContent = 'Issues on pages created by ' + Ed1.authorList[ Ed1.author ]
+          }
           Ed1.render.ed1page(post[0], post[1], announce);
         }
       });
@@ -871,6 +878,7 @@ class Ed1 {
         if (post?.data?.status === 500) {
           console.error(post.data.status + ': ' + post.message);
         } else {
+          Ed1.matchAuthors( post[2] );
           Ed1.render.ed1dismiss(post[0], post[1], announce);
         }
       });

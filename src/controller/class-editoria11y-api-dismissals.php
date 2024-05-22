@@ -153,6 +153,7 @@ class Editoria11y_Api_Dismissals extends WP_REST_Controller {
 		global $wpdb;
 		require_once ED11Y_SRC . 'class-editoria11y-validate.php';
 		$validate = new Editoria11y_Validate();
+		$users = [];
 
 		// Sanitize all params before use.
 		$params      = $request->get_params();
@@ -165,7 +166,6 @@ class Editoria11y_Api_Dismissals extends WP_REST_Controller {
 		$dismissor   = is_numeric( $params['dismissor'] ) ? intval( $params['dismissor'] ) : false;
 		$utable      = $wpdb->prefix . 'ed11y_urls';
 		$dtable      = $wpdb->prefix . 'ed11y_dismissals';
-		$user_meta   = $wpdb->prefix . 'usermeta';
 
 		// Get top pages.
 
@@ -192,8 +192,6 @@ class Editoria11y_Api_Dismissals extends WP_REST_Controller {
 
 		if ( 'page_title' === $order_by ) {
 			$order_by = "{$utable}.{$order_by}";
-		} elseif ( 'display_name' === $order_by ) {
-			$order_by = "{$user_meta}.meta_value";
 		} else {
 			$order_by = "{$dtable}.{$order_by}";
 		}
@@ -205,7 +203,6 @@ class Editoria11y_Api_Dismissals extends WP_REST_Controller {
 					{$utable}.page_url,
 					{$utable}.page_title,
 					{$utable}.entity_type,
-					{$user_meta}.meta_value AS display_name,
 					{$dtable}.user,
 					{$dtable}.result_key,
 					{$dtable}.dismissal_status,
@@ -213,14 +210,12 @@ class Editoria11y_Api_Dismissals extends WP_REST_Controller {
 					{$dtable}.stale
 					FROM {$dtable}
 					LEFT JOIN {$utable} ON ({$dtable}.pid={$utable}.pid)
-					LEFT JOIN {$user_meta} ON ({$user_meta}.user_id={$dtable}.user) AND {$user_meta}.meta_key = 'nickname'
 					{$where}
 					GROUP BY
 					{$utable}.pid,
 					{$utable}.page_url,
 					{$utable}.page_title,
 					{$utable}.entity_type,
-					{$user_meta}.meta_value,
 					{$dtable}.user,
 					{$dtable}.result_key,
 					{$dtable}.dismissal_status,
@@ -248,8 +243,25 @@ class Editoria11y_Api_Dismissals extends WP_REST_Controller {
 		);
 		$rowcount   = $wpdb->num_rows;
 
+		// Get user display names.
+		$user_ids = [];
+		foreach ( $data as $value ) {
+			if ( $value->user && !in_array($value->user, $user_ids ) )
+				$user_ids[] = $value->user;
+		}
+		$user_query = new WP_User_Query(
+			array(
+				'include' => $user_ids,
+				'fields'  => array(
+					'ID',
+					'display_name',
+				),
+			)
+		);
+		$users = $user_query->get_results();
+
 		// phpcs:enable
-		return new WP_REST_Response( array( $data, $rowcount ), 200 );
+		return new WP_REST_Response( array( $data, $rowcount, $users ), 200 );
 	}
 
 	/**
