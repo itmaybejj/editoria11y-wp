@@ -769,15 +769,36 @@ function ed11y_export_results_csv() {
 			{$utable}.entity_type,
 			{$utable}.page_total,
 			{$utable}.post_id,
+			{$post_table}.post_author,
 			{$post_table}.post_status,
-			{$user_meta}.meta_value AS author,
 			{$rtable}.created as created
 			FROM {$rtable}
 		    LEFT JOIN {$utable} ON {$utable}.pid={$rtable}.pid
 			LEFT JOIN {$post_table} ON {$utable}.post_id={$post_table}.ID
-			LEFT JOIN {$user_meta} ON {$user_meta}.user_id={$post_table}.post_author AND {$user_meta}.meta_key = 'nickname'
 			ORDER BY page_url ASC;"
 		);
+
+		// Get user display names.
+		$user_ids = [];
+		foreach ( $data as $value ) {
+			if ( $value->post_author && !in_array($value->post_author, $user_ids ) )
+				$user_ids[] = $value->post_author;
+		}
+		$user_query = new WP_User_Query(
+			array(
+				'include' => $user_ids,
+				'fields'  => array(
+					'ID',
+					'display_name',
+				),
+			)
+		);
+		$users = $user_query->get_results();
+        $authors = [];
+        foreach ( $users as $value ) {
+            $authors[ $value->ID ] = $value->display_name;
+        }
+
 		// phpcs:enable
 
 		fputcsv(
@@ -806,7 +827,7 @@ function ed11y_export_results_csv() {
 					$result->page_url,
 					$test_name[ $result->result_key ] ?? '',
 					$result->result_count,
-					$result->author,
+					$result->author ?? $authors[ $result->post_author ] ?? '',
 					$result->entity_type,
 					$result->created,
 					$result->post_status ?? 'publish',
