@@ -115,10 +115,10 @@ class Editoria11y_Api_Results extends WP_REST_Controller {
 		global $wpdb;
 		require_once ED11Y_SRC . 'class-editoria11y-validate.php';
 		$validate = new Editoria11y_Validate();
+		$users    = array();
 
 		$utable     = $wpdb->prefix . 'ed11y_urls';
 		$rtable     = $wpdb->prefix . 'ed11y_results';
-		$user_meta  = $wpdb->prefix . 'usermeta';
 		$post_table = $wpdb->prefix . 'posts';
 
 		$got_ids = get_site_transient( 'ed11y_got_ids' );
@@ -192,12 +192,10 @@ class Editoria11y_Api_Results extends WP_REST_Controller {
 						$total_column AS page_total,
 						{$post_table}.post_status AS post_status,
 						{$post_table}.post_modified AS post_modified,
-						{$post_table}.post_author AS post_author,
-						{$user_meta}.meta_value AS nickname
+						{$post_table}.post_author AS post_author
 						FROM {$utable}
 						LEFT JOIN {$rtable} ON {$utable}.pid={$rtable}.pid
 						LEFT JOIN {$post_table} ON {$utable}.post_id={$post_table}.ID
-						LEFT JOIN {$user_meta} ON {$user_meta}.user_id={$post_table}.post_author AND {$user_meta}.meta_key = 'nickname'
 						{$where}
 						ORDER BY {$order_by} {$direction}
 						LIMIT {$count}
@@ -221,6 +219,23 @@ class Editoria11y_Api_Results extends WP_REST_Controller {
 				{$where};"
 				);
 			}
+
+			// Get user display names.
+			$user_ids = [];
+			foreach ( $data as $value ) {
+				if ( $value->post_author && !in_array($value->post_author, $user_ids ) )
+					$user_ids[] = $value->post_author;
+			}
+			$user_query = new WP_User_Query(
+				array(
+					'include' => $user_ids,
+					'fields'  => array(
+						'ID',
+						'display_name',
+					),
+				)
+			);
+			$users = $user_query->get_results();
 
 			// phpcs:enable
 
@@ -317,8 +332,6 @@ class Editoria11y_Api_Results extends WP_REST_Controller {
 				// phpcs:enable
 
 			} else {
-				$where = '';
-
 				/*
 				Complex counts and joins required a direct DB call.
 				Variables are all validated or sanitized.
@@ -352,7 +365,7 @@ class Editoria11y_Api_Results extends WP_REST_Controller {
 			}
 		}
 
-		return new WP_REST_Response( array( $data, $rowcount ), 200 );
+		return new WP_REST_Response( array( $data, $rowcount, $users ), 200 );
 	}
 
 

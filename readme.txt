@@ -1,7 +1,7 @@
 === Editoria11y Accessibility Checker ===
 Contributors: itmaybejj, partyka
 Tags: accessibility checker, automated testing, quality assurance, SEO
-Stable tag: 1.0.15
+Stable tag: 1.0.16
 Tested up to: 6.5
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -140,7 +140,10 @@ Editoria11y began as a fork of the Toronto Metropolitan University's [Sa11y Acce
 
 == Changelog ==
 
-= 1.0.15
+= 1.0.16 =
+* [ Display author name on dashboard ](https://github.com/itmaybejj/editoria11y-wp/issues/29) when user data is not stored in the default table.
+
+= 1.0.15 =
 * [Begins recording post ID](https://github.com/itmaybejj/editoria11y-wp/issues/18) with results, which allows for filtering the dashboard by author and published status, and sorting pages by modified date.
 * [Adds author, publish status and edit URL](https://github.com/itmaybejj/editoria11y-wp/issues/17) to the results export CSV.
 * [Fix for tables not provisioning on network activation](https://github.com/itmaybejj/editoria11y-wp/issues/22) for multi-site installs.

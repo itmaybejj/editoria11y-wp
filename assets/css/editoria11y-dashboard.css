@@ -50,24 +50,27 @@
     min-width: 45em;
     border-radius: 3px;
 }
+#ed1 th {
+    padding: 0 .5em;
+    text-align: left;
+    border: 0;
+    font-weight: 300;
+}
 
 #ed1 td {
     padding: 5px 7px 6px;
     text-align: left;
     border: 0;
 }
-
-#ed1 th {
-    padding: 0 .5em;
-    text-align: left;
-    border: 0;
+#ed1 td:last-child {
+    padding-right: 1em;
 }
 
 #ed1 td[colspan] {
     font-style: italic;
 }
 
-#ed1 td:nth-child(2), #ed1 td:nth-child(3), #ed1 td:nth-child(4) {
+#ed1 td:nth-child(2), #ed1 td:nth-child(3) {
     width: 25%;
 }
 
@@ -85,6 +88,7 @@
     padding-right: 2em;
     padding-left: .75em;
     font-weight: 500;
+    min-width: 6em;
     width: 6em;
     text-align: right;
 }
@@ -115,6 +119,7 @@
     color: #f0f0f1;
     padding: .5em 1em .5em 0;
     position: relative;
+    font-weight: 700;
 }
 #ed1 th button:not([aria-pressed]) {
     padding-right: 0;
