@@ -739,12 +739,11 @@ function ed11y_export_results_csv() {
 
 	$setting    = ed11y_get_plugin_settings( 'ed11y_report_restrict' );
 	$capability = '1' === $setting ? 'manage_options' : 'edit_others_posts';
-	if ( ! ( isset( $_GET['ed11y_export_results_csv'] ) && isset( $_REQUEST['_wpnonce'] ) && wp_verify_nonce( $_REQUEST['_wpnonce'], 'ed1ref' ) && current_user_can( $capability ) ) ) {
+	if ( ! ( isset( $_GET['ed11y_export_results_csv'] ) && isset( $_REQUEST['_wpnonce'] ) && wp_verify_nonce( $_REQUEST['_wpnonce'], 'ed1ref' ) && current_user_can( $capability ) ) ) { // phpcs:ignore
 		// Incorrect referrer, nonce or user role.
 		return;
 	}
 
-	// phpcs:ignore
 	$test_name = ed11y_test_nice_names();
 
 	header( 'Content-type: text/csv' );
