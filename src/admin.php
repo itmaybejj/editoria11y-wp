@@ -731,95 +731,118 @@ function ed11y_test_nice_names() {
 
 /**
  * Returns a CSV download of site results.
+ *
+ * @SuppressWarnings(PHPMD.MissingImport)
+ * @SuppressWarnings(PHPMD.CyclomaticComplexity)
  */
 function ed11y_export_results_csv() {
-	if ( isset( $_GET['ed11y_export_results_csv'] ) && isset( $_REQUEST['_wpnonce'] ) && wp_verify_nonce( $_REQUEST['_wpnonce'], 'ed1ref' ) ) { // phpcs:ignore
-		$setting    = ed11y_get_plugin_settings( 'ed11y_report_restrict' );
-		$capability = '1' === $setting ? 'manage_options' : 'edit_others_posts';
-		if ( ! current_user_can( $capability ) ) {
-			return;
-		}
-		$test_name = ed11y_test_nice_names();
 
-		header( 'Content-type: text/csv' );
-		header( 'Content-Disposition: attachment; filename="Recent_accessibility_issues.csv"' );
-		header( 'Pragma: no-cache' );
-		header( 'Expires: 0' );
+	$setting    = ed11y_get_plugin_settings( 'ed11y_report_restrict' );
+	$capability = '1' === $setting ? 'manage_options' : 'edit_others_posts';
+	if ( ! ( isset( $_GET['ed11y_export_results_csv'] ) && isset( $_REQUEST['_wpnonce'] ) && wp_verify_nonce( $_REQUEST['_wpnonce'], 'ed1ref' ) && current_user_can( $capability ) ) ) { // phpcs:ignore
+		// Incorrect referrer, nonce or user role.
+		return;
+	}
 
-		$file = fopen( 'php://output', 'w' );
+	$test_name = ed11y_test_nice_names();
 
-		global $wpdb;
-		$utable     = $wpdb->prefix . 'ed11y_urls';
-		$rtable     = $wpdb->prefix . 'ed11y_results';
-		$user_meta  = $wpdb->prefix . 'usermeta';
-		$post_table = $wpdb->prefix . 'posts';
+	header( 'Content-type: text/csv' );
+	header( 'Content-Disposition: attachment; filename="Recent_accessibility_issues.csv"' );
+	header( 'Pragma: no-cache' );
+	header( 'Expires: 0' );
 
-		/*
-		Complex counts and joins required a direct DB call.
-		Variables are all validated or sanitized.
-		*/
-		// phpcs:disable
-		$data = $wpdb->get_results(
-			"SELECT
-			{$rtable}.result_key,
-			{$rtable}.result_count,
-			{$utable}.pid,
-			{$utable}.page_url,
-			{$utable}.page_title,
-			{$utable}.entity_type,
-			{$utable}.page_total,
-			{$utable}.post_id,
-			{$post_table}.post_status,
-			{$user_meta}.meta_value AS author,
-			{$rtable}.created as created
-			FROM {$rtable}
-		    LEFT JOIN {$utable} ON {$utable}.pid={$rtable}.pid
-			LEFT JOIN {$post_table} ON {$utable}.post_id={$post_table}.ID
-			LEFT JOIN {$user_meta} ON {$user_meta}.user_id={$post_table}.post_author AND {$user_meta}.meta_key = 'nickname'
-			ORDER BY page_url ASC;"
-		);
-		// phpcs:enable
+	$file = fopen( 'php://output', 'w' );
+
+	global $wpdb;
+	$utable     = $wpdb->prefix . 'ed11y_urls';
+	$rtable     = $wpdb->prefix . 'ed11y_results';
+	$post_table = $wpdb->prefix . 'posts';
+
+	/*
+	Complex counts and joins required a direct DB call.
+	Variables are all validated or sanitized.
+	*/
+	// phpcs:disable
+	$data = $wpdb->get_results(
+		"SELECT
+		{$rtable}.result_key,
+		{$rtable}.result_count,
+		{$utable}.pid,
+		{$utable}.page_url,
+		{$utable}.page_title,
+		{$utable}.entity_type,
+		{$utable}.page_total,
+		{$utable}.post_id,
+		{$post_table}.post_author,
+		{$post_table}.post_status,
+		{$rtable}.created as created
+		FROM {$rtable}
+		LEFT JOIN {$utable} ON {$utable}.pid={$rtable}.pid
+		LEFT JOIN {$post_table} ON {$utable}.post_id={$post_table}.ID
+		ORDER BY page_url ASC;"
+	);
+
+	// Get user display names.
+	$user_ids = [];
+	foreach ( $data as $value ) {
+		if ( $value->post_author && !in_array($value->post_author, $user_ids ) )
+			$user_ids[] = $value->post_author;
+	}
+	$user_query = new WP_User_Query(
+		array(
+			'include' => $user_ids,
+			'fields'  => array(
+				'ID',
+				'display_name',
+			),
+		)
+	);
+	$users = $user_query->get_results();
+	$authors = [];
+	foreach ( $users as $value ) {
+		$authors[ $value->ID ] = $value->display_name;
+	}
+
+	// phpcs:enable
+
+	fputcsv(
+		$file,
+		array(
+			'Page',
+			'URL',
+			'Issue',
+			'Count',
+			'Author',
+			'Page Type',
+			'Detected on',
+			'Status',
+			'Edit',
+		)
+	);
+
+	$admin = get_admin_url();
+
+	foreach ( $data as $result ) {
 
 		fputcsv(
 			$file,
 			array(
-				'Page',
-				'URL',
-				'Issue',
-				'Count',
-				'Author',
-				'Page Type',
-				'Detected on',
-				'Status',
-				'Edit',
+				$result->page_title,
+				$result->page_url,
+				$test_name[ $result->result_key ] ?? '',
+				$result->result_count,
+				$result->author ?? $authors[ $result->post_author ] ?? '',
+				$result->entity_type,
+				$result->created,
+				$result->post_status ?? 'publish',
+				0 < $result->post_status ?
+					$admin . 'post.php?post=' . $result->post_id . '&action=edit'
+					: $result->page_url,
 			)
 		);
-
-		$admin = get_admin_url();
-
-		foreach ( $data as $result ) {
-
-			fputcsv(
-				$file,
-				array(
-					$result->page_title,
-					$result->page_url,
-					$test_name[ $result->result_key ] ?? '',
-					$result->result_count,
-					$result->author,
-					$result->entity_type,
-					$result->created,
-					$result->post_status ?? 'publish',
-					0 < $result->post_status ?
-						$admin . 'post.php?post=' . $result->post_id . '&action=edit'
-						: $result->page_url,
-				)
-			);
-		}
-
-		exit();
-
 	}
+
+	exit(); // @SuppressWarnings(ExitExpression)
 }
 
 add_action( 'admin_init', 'ed11y_export_results_csv' );

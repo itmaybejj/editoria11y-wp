@@ -1,7 +1,7 @@
 === Editoria11y Accessibility Checker ===
 Contributors: itmaybejj, partyka
 Tags: accessibility checker, automated testing, quality assurance, SEO
-Stable tag: 1.0.16
+Stable tag: 1.0.17
 Tested up to: 6.5
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -139,6 +139,10 @@ Editoria11y began as a fork of the Toronto Metropolitan University's [Sa11y Acce
 4. Checker set to dark theme, showing a table header alert
 
 == Changelog ==
+
+= 1.0.17 =
+* Fix for table structure updates failing in MariaDB
+* [ Display author name in CSV export ](https://github.com/itmaybejj/editoria11y-wp/issues/29) when user data is not stored in the default table.
 
 = 1.0.16 =
 * [ Display author name on dashboard ](https://github.com/itmaybejj/editoria11y-wp/issues/29) when user data is not stored in the default table.
