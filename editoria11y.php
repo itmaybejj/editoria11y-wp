@@ -168,19 +168,7 @@ class Editoria11y {
 		maybe_create_table( $table_results, $sql_results );
 		maybe_create_table( $table_dismissals, $sql_dismissals );
 
-	}
-
-	/**
-	 * Provides DB table schema.
-	 */
-	public static function update_database_1(): void {
-		global $wpdb;
-
-		$table_urls       = $wpdb->prefix . 'ed11y_urls';
-		$table_results    = $wpdb->prefix . 'ed11y_results';
-		$table_dismissals = $wpdb->prefix . 'ed11y_dismissals';
-
-		// Add post_id column for db versions < 1.1
+		// Add post_id column for db versions < 1.0
 		$url_columns = $wpdb->get_results( "DESC $table_urls" );
 		if( count($url_columns) !== 6) {
 			$wpdb->query("ALTER TABLE $table_urls
@@ -259,19 +247,16 @@ class Editoria11y {
 
 	}
 
-
 	/**
 	 * Make sure tables are in place and up to date.
 	 */
 	public static function check_tables(): void {
-		// Lazy-create DB if network activation failed.
 		$tableCheck = get_option( "editoria11y_db_version" );
 
-		if ( $tableCheck !== 1.2) {
+		if ( $tableCheck !== 1.0 ) {
 			// Lazy DB creation
 			self::create_database();
-			self::update_database_1();
-			update_option( "editoria11y_db_version", "1.2" );
+			update_option( "editoria11y_db_version", "1.0" );
 		}
 
 	}
@@ -312,7 +297,7 @@ class Editoria11y {
 				$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}ed11y_urls" ); // phpcs:ignore
 
 				delete_option( 'ed11y_plugin_settings' );
-				delete_site_option( 'editoria11y_db_version' );
+				delete_option( 'editoria11y_db_version' );
 				delete_site_transient( 'editoria11y_settings' );
 
 				restore_current_blog();
@@ -326,7 +311,7 @@ class Editoria11y {
 			$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}ed11y_urls" ); // phpcs:ignore
 
 			delete_option( 'ed11y_plugin_settings' );
-			delete_site_option( 'editoria11y_db_version' );
+			delete_option( 'editoria11y_db_version' );
 			delete_site_transient( 'editoria11y_settings' );
 
 		}
@@ -334,7 +319,6 @@ class Editoria11y {
 	}
 
 }
-
 
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -347,4 +331,3 @@ register_deactivation_hook( __FILE__, array( 'Editoria11y', 'uninstall' ) );
 register_uninstall_hook( __FILE__, array( 'Editoria11y', 'uninstall' ) );
 
 new Editoria11y();
-
