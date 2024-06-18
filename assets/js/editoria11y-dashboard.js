@@ -612,8 +612,8 @@ class Ed1 {
     Ed1.matchAuthors = function( author_query ) {
       author_query?.forEach( ( author ) => {
         Ed1.authorList[author.ID] = author.display_name;
-      })
-    }
+      });
+    };
 
     /**
      * Renderer for viewing recent issues.
@@ -840,7 +840,7 @@ class Ed1 {
         } else {
           Ed1.matchAuthors( post[2] );
           if ( Ed1.author && Ed1.authorList[ Ed1.author ]) {
-            Ed1.h1.textContent = 'Issues on pages created by ' + Ed1.authorList[ Ed1.author ]
+            Ed1.h1.textContent = 'Issues on pages created by ' + Ed1.authorList[ Ed1.author ];
           }
           Ed1.render.ed1page(post[0], post[1], announce);
         }
