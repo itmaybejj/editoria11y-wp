@@ -245,7 +245,7 @@ function ed11y_get_params( $user ) {
 	$ed1vals['alertMode'] = $page_edited && $page_edited < 600 ? 'assertive' : 'polite';
 
 	// Lazy-create DB if network activation failed.
-	if (!Editoria11y::check_tables()) {
+	if ( ! Editoria11y::check_tables() ) {
 		// No DB available.
 		$ed1vals['syncedDismissals'] = false;
 		return $ed1vals;

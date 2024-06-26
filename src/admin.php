@@ -659,10 +659,10 @@ function ed11y_plugin_settings_validate( $settings ) {
 function editoria11y_dashboard() {
 
 	// Lazy-create DB if network activation failed.
-	if ( !Editoria11y::check_tables() ) {
+	if ( ! Editoria11y::check_tables() ) {
 		echo '<div class="notice notice-error notice-alt notice-large"><p><strong>Error:</strong> Editoria11y database tables are missing.</p>
-        <p>Try deactivating and reactivating the plugin to reset config and recreate the tables, or <a href="https://github.com/itmaybejj/editoria11y-wp/issues">post a bug report</a>  with the information from the WordPress, Server and Database sections on your <a href="' . esc_attr(get_admin_url() . 'site-health.php?tab=debug') . '">site health page</a>.</p></div>';
-        return false;
+        <p>Try deactivating and reactivating the plugin to reset config and recreate the tables, or <a href="https://github.com/itmaybejj/editoria11y-wp/issues">post a bug report</a>  with the information from the WordPress, Server and Database sections on your <a href="' . esc_attr( get_admin_url() . 'site-health.php?tab=debug' ) . '">site health page</a>.</p></div>';
+		return false;
 	}
 
 	wp_enqueue_script( 'editoria11y-js', trailingslashit( ED11Y_ASSETS ) . 'lib/editoria11y.min.js', array( 'wp-api' ), true, Editoria11y::ED11Y_VERSION, false );
