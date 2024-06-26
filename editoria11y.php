@@ -256,16 +256,15 @@ class Editoria11y {
 	 * Make sure tables are in place and up to date.
 	 */
 	public static function check_tables(): bool {
-		$tableCheck = get_option( "editoria11y_db_version" );
+		// Lazy DB creation
 
+		$tableCheck = get_option( "editoria11y_db_version" );
 		if ( $tableCheck === '1.1-failed' ) {
-			// tables broken
+			// Tables are broken, don't try again until next release
 			return false;
 		} else if ( $tableCheck !== '1.1' ) {
-			// Lazy DB creation
-			// We only try to create the tables once
+			// Create DB and set option based on success
 			update_option( "editoria11y_db_version", '1.1-failed' );
-			// todo: disable dashboard on failed update.
 			self::create_database();
 			update_option( "editoria11y_db_version", '1.1' );
 		}
