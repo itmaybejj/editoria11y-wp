@@ -266,7 +266,7 @@ class Editoria11y {
 		if ( $tableCheck === '1.1-failed' ) {
 			// Tables are broken, don't try again until next release
 			return false;
-		} else if ( $tableCheck !== '1.2' ) {
+		} else if ( $tableCheck !== '1.1' ) {
 			// Create DB and set option based on success
 			update_option( "editoria11y_db_version", '1.1-failed' );
 			self::create_database();
