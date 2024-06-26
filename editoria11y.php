@@ -179,6 +179,8 @@ class Editoria11y {
 		}
 
 		// Add foreign keys not reliably handled by maybe_create_table
+		$results_constraint = $wpdb->prefix . 'ed11y_results_pid';
+		$dismissal_constraint = $wpdb->prefix . 'ed11y_dismissal_pid';
 		$result_foreign_key = $wpdb->get_var( // phpcs:ignore
 			"SELECT b.constraint_name
           FROM information_schema.table_constraints a
@@ -200,15 +202,17 @@ class Editoria11y {
         		DROP CONSTRAINT %1s;", array( $result_foreign_key ) )
 				);
 			} finally {
+				// Add replacement constraint
 				$wpdb->get_var( // phpcs:ignore
-					"ALTER TABLE $table_results
-        		ADD CONSTRAINT ed11y_results_pid FOREIGN KEY(pid) REFERENCES $table_urls (pid) ON DELETE CASCADE"
+					$wpdb->prepare( "ALTER TABLE $table_results
+        		ADD CONSTRAINT %1s FOREIGN KEY(pid) REFERENCES $table_urls (pid) ON DELETE CASCADE", $results_constraint)
 				);
 			}
 		} else {
+			// Add new constraint
 			$wpdb->get_var( // phpcs:ignore
-				"ALTER TABLE $table_results
-        		ADD CONSTRAINT ed11y_results_pid FOREIGN KEY(pid) REFERENCES $table_urls (pid) ON DELETE CASCADE"
+				$wpdb->prepare( "ALTER TABLE $table_results
+        		ADD CONSTRAINT %1s FOREIGN KEY(pid) REFERENCES $table_urls (pid) ON DELETE CASCADE", $results_constraint)
 			);
 		}
 
@@ -233,15 +237,16 @@ class Editoria11y {
 					DROP CONSTRAINT %1s;", array( $dismissal_key ) )
 				);
 			} finally {
+				// Add new constraint
 				$wpdb->get_var( // phpcs:ignore
-					"ALTER TABLE $table_dismissals
-        		ADD CONSTRAINT ed11y_dismissal_pid FOREIGN KEY(pid) REFERENCES $table_urls (pid) ON DELETE CASCADE"
+					$wpdb->prepare( "ALTER TABLE $table_dismissals
+        			ADD CONSTRAINT %1s FOREIGN KEY(pid) REFERENCES $table_urls (pid) ON DELETE CASCADE", $dismissal_constraint)
 				);
 			}
 		} else {
 			$wpdb->get_var( // phpcs:ignore
-				"ALTER TABLE $table_dismissals
-        		ADD CONSTRAINT ed11y_dismissal_pid FOREIGN KEY(pid) REFERENCES $table_urls (pid) ON DELETE CASCADE"
+				$wpdb->prepare( "ALTER TABLE $table_dismissals
+        			ADD CONSTRAINT %1s FOREIGN KEY(pid) REFERENCES $table_urls (pid) ON DELETE CASCADE", $dismissal_constraint)
 			);
 		}
 
@@ -250,14 +255,21 @@ class Editoria11y {
 	/**
 	 * Make sure tables are in place and up to date.
 	 */
-	public static function check_tables(): void {
+	public static function check_tables(): bool {
 		$tableCheck = get_option( "editoria11y_db_version" );
 
-		if ( $tableCheck !== 1.0 ) {
+		if ( $tableCheck === '1.1-failed' ) {
+			// tables broken
+			return false;
+		} else if ( $tableCheck !== '1.1' ) {
 			// Lazy DB creation
+			// We only try to create the tables once
+			update_option( "editoria11y_db_version", '1.1-failed' );
+			// todo: disable dashboard on failed update.
 			self::create_database();
-			update_option( "editoria11y_db_version", "1.0" );
+			update_option( "editoria11y_db_version", '1.1' );
 		}
+		return true;
 
 	}
 
