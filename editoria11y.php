@@ -5,7 +5,7 @@
  *
  * Plugin Name:       Editoria11y Accessibility Checker
  * Plugin URI:        https://wordpress.org/plugins/editoria11y-accessibility-checker/
- * Version:           1.0.17
+ * Version:           1.0.18
  * Requires PHP:      7.2
  * Requires at least: 6.0
  * Tested up to:      6.5
@@ -20,7 +20,7 @@
  * @package         Editoria11y
  * @link            https://wordpress.org/plugins/editoria11y-accessibility-checker/
  * @author          John Jameson, Princeton University
- * @copyright       2023 The Trustees of Princeton University
+ * @copyright       2024 The Trustees of Princeton University
  * @license         GPL v2 or later
  */
 
@@ -182,11 +182,13 @@ class Editoria11y {
 		$results_constraint = $wpdb->prefix . 'ed11y_results_pid';
 		$dismissal_constraint = $wpdb->prefix . 'ed11y_dismissal_pid';
 		$result_foreign_key = $wpdb->get_var( // phpcs:ignore
-			"SELECT b.constraint_name
-          FROM information_schema.table_constraints a
-          JOIN information_schema.key_column_usage b
-          ON a.table_schema = b.table_schema AND a.constraint_name = b.constraint_name
-          WHERE a.table_schema=database() AND a.constraint_type='FOREIGN KEY' AND b.table_name = 'wp_ed11y_results'"
+			$wpdb->prepare( "SELECT b.constraint_name
+	          FROM information_schema.table_constraints a
+	          JOIN information_schema.key_column_usage b
+	          ON a.table_schema = b.table_schema AND a.constraint_name = b.constraint_name
+	          WHERE a.table_schema=database() AND a.constraint_type='FOREIGN KEY' AND b.table_name = %s;",
+				array( $table_results )
+			)
 		);
 		if ( $result_foreign_key ) {
 			try {
@@ -217,11 +219,13 @@ class Editoria11y {
 		}
 
 		$dismissal_key = $wpdb->get_var( // phpcs:ignore
-			"SELECT b.constraint_name
-			FROM information_schema.table_constraints a
-			JOIN information_schema.key_column_usage b
-			ON a.table_schema = b.table_schema AND a.constraint_name = b.constraint_name
-			WHERE a.table_schema=database() AND a.constraint_type='FOREIGN KEY' AND b.table_name = 'wp_ed11y_dismissals'"
+			$wpdb->prepare( "SELECT b.constraint_name
+	          FROM information_schema.table_constraints a
+	          JOIN information_schema.key_column_usage b
+	          ON a.table_schema = b.table_schema AND a.constraint_name = b.constraint_name
+	          WHERE a.table_schema=database() AND a.constraint_type='FOREIGN KEY' AND b.table_name = %s;",
+				array( $table_dismissals )
+			)
 		);
 		if ( $dismissal_key ) {
 			try {
