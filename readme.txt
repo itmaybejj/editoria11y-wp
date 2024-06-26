@@ -1,7 +1,7 @@
 === Editoria11y Accessibility Checker ===
 Contributors: itmaybejj, partyka
 Tags: accessibility checker, automated testing, quality assurance, SEO
-Stable tag: 1.0.17
+Stable tag: 1.0.18
 Tested up to: 6.5
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -139,6 +139,9 @@ Editoria11y began as a fork of the Toronto Metropolitan University's [Sa11y Acce
 4. Checker set to dark theme, showing a table header alert
 
 == Changelog ==
+
+= 1.0.18 =
+* Fix for [table constraints failing in MySQL 8 multisites](https://github.com/itmaybejj/editoria11y-wp/issues/32).
 
 = 1.0.17 =
 * Fix for table structure updates failing in MariaDB

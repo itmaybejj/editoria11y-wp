@@ -239,8 +239,17 @@ function ed11y_get_params( $user ) {
 		$ed1vals['currentPage'] = home_url( $wp->request );
 	}
 
+	// Mode is assertive from 0ms to 10minutes after a post is modified.
+	$page_edited          = get_post_modified_time( 'U', true );
+	$page_edited          = $page_edited ? abs( 1 + $page_edited - time() ) : false;
+	$ed1vals['alertMode'] = $page_edited && $page_edited < 600 ? 'assertive' : 'polite';
+
 	// Lazy-create DB if network activation failed.
-	Editoria11y::check_tables();
+	if ( ! Editoria11y::check_tables() ) {
+		// No DB available.
+		$ed1vals['syncedDismissals'] = false;
+		return $ed1vals;
+	}
 
 	// Get dismissals for route. Complex joins require manual DB call.
 	// OR for permalink during transition to new DB structure.
@@ -291,10 +300,6 @@ function ed11y_get_params( $user ) {
 		$ed1vals['syncedDismissals'][ $value->result_key ][ $value->element_id ] = $value->dismissal_status;
 	}
 
-	// Mode is assertive from 0ms to 10minutes after a post is modified.
-	$page_edited          = get_post_modified_time( 'U', true );
-	$page_edited          = $page_edited ? abs( 1 + $page_edited - time() ) : false;
-	$ed1vals['alertMode'] = $page_edited && $page_edited < 600 ? 'assertive' : 'polite';
 	return( $ed1vals );
 }
 

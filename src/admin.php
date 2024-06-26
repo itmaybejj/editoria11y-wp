@@ -657,14 +657,20 @@ function ed11y_plugin_settings_validate( $settings ) {
  * @SuppressWarnings(PHPMD.StaticAccess)
  */
 function editoria11y_dashboard() {
+
 	// Lazy-create DB if network activation failed.
-	Editoria11y::check_tables();
+	if ( ! Editoria11y::check_tables() ) {
+		echo '<div class="notice notice-error notice-alt notice-large"><p><strong>Error:</strong> Editoria11y database tables are missing.</p>
+        <p>Try deactivating and reactivating the plugin to reset config and recreate the tables, or <a href="https://github.com/itmaybejj/editoria11y-wp/issues">post a bug report</a>  with the information from the WordPress, Server and Database sections on your <a href="' . esc_attr( get_admin_url() . 'site-health.php?tab=debug' ) . '">site health page</a>.</p></div>';
+		return false;
+	}
 
 	wp_enqueue_script( 'editoria11y-js', trailingslashit( ED11Y_ASSETS ) . 'lib/editoria11y.min.js', array( 'wp-api' ), true, Editoria11y::ED11Y_VERSION, false );
 	wp_enqueue_script( 'editoria11y-js-dash', trailingslashit( ED11Y_ASSETS ) . 'js/editoria11y-dashboard.js', array( 'wp-api' ), true, Editoria11y::ED11Y_VERSION, false );
 	wp_enqueue_style( 'editoria11y-lib-css', trailingslashit( ED11Y_ASSETS ) . 'lib/editoria11y.min.css', null, Editoria11y::ED11Y_VERSION );
 	wp_enqueue_style( 'editoria11y-css', trailingslashit( ED11Y_ASSETS ) . 'css/editoria11y-dashboard.css', null, Editoria11y::ED11Y_VERSION );
 	$nonce = wp_create_nonce( 'ed1ref' );
+
 	echo '<div id="ed1">
 			<h1>Editoria11y accessibility checker</h1>
 			<div id="ed1-recent-wrapper"></div>

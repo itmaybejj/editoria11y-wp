@@ -5,7 +5,7 @@
  *
  * Plugin Name:       Editoria11y Accessibility Checker
  * Plugin URI:        https://wordpress.org/plugins/editoria11y-accessibility-checker/
- * Version:           1.0.17
+ * Version:           1.0.18
  * Requires PHP:      7.2
  * Requires at least: 6.0
  * Tested up to:      6.5
@@ -20,7 +20,7 @@
  * @package         Editoria11y
  * @link            https://wordpress.org/plugins/editoria11y-accessibility-checker/
  * @author          John Jameson, Princeton University
- * @copyright       2023 The Trustees of Princeton University
+ * @copyright       2024 The Trustees of Princeton University
  * @license         GPL v2 or later
  */
 
@@ -179,12 +179,16 @@ class Editoria11y {
 		}
 
 		// Add foreign keys not reliably handled by maybe_create_table
+		$results_constraint = $wpdb->prefix . 'ed11y_results_pid';
+		$dismissal_constraint = $wpdb->prefix . 'ed11y_dismissal_pid';
 		$result_foreign_key = $wpdb->get_var( // phpcs:ignore
-			"SELECT b.constraint_name
-          FROM information_schema.table_constraints a
-          JOIN information_schema.key_column_usage b
-          ON a.table_schema = b.table_schema AND a.constraint_name = b.constraint_name
-          WHERE a.table_schema=database() AND a.constraint_type='FOREIGN KEY' AND b.table_name = 'wp_ed11y_results'"
+			$wpdb->prepare( "SELECT b.constraint_name
+	          FROM information_schema.table_constraints a
+	          JOIN information_schema.key_column_usage b
+	          ON a.table_schema = b.table_schema AND a.constraint_name = b.constraint_name
+	          WHERE a.table_schema=database() AND a.constraint_type='FOREIGN KEY' AND b.table_name = %s;",
+				array( $table_results )
+			)
 		);
 		if ( $result_foreign_key ) {
 			try {
@@ -200,24 +204,28 @@ class Editoria11y {
         		DROP CONSTRAINT %1s;", array( $result_foreign_key ) )
 				);
 			} finally {
+				// Add replacement constraint
 				$wpdb->get_var( // phpcs:ignore
-					"ALTER TABLE $table_results
-        		ADD CONSTRAINT ed11y_results_pid FOREIGN KEY(pid) REFERENCES $table_urls (pid) ON DELETE CASCADE"
+					$wpdb->prepare( "ALTER TABLE $table_results
+        		ADD CONSTRAINT %1s FOREIGN KEY(pid) REFERENCES $table_urls (pid) ON DELETE CASCADE", $results_constraint)
 				);
 			}
 		} else {
+			// Add new constraint
 			$wpdb->get_var( // phpcs:ignore
-				"ALTER TABLE $table_results
-        		ADD CONSTRAINT ed11y_results_pid FOREIGN KEY(pid) REFERENCES $table_urls (pid) ON DELETE CASCADE"
+				$wpdb->prepare( "ALTER TABLE $table_results
+        		ADD CONSTRAINT %1s FOREIGN KEY(pid) REFERENCES $table_urls (pid) ON DELETE CASCADE", $results_constraint)
 			);
 		}
 
 		$dismissal_key = $wpdb->get_var( // phpcs:ignore
-			"SELECT b.constraint_name
-			FROM information_schema.table_constraints a
-			JOIN information_schema.key_column_usage b
-			ON a.table_schema = b.table_schema AND a.constraint_name = b.constraint_name
-			WHERE a.table_schema=database() AND a.constraint_type='FOREIGN KEY' AND b.table_name = 'wp_ed11y_dismissals'"
+			$wpdb->prepare( "SELECT b.constraint_name
+	          FROM information_schema.table_constraints a
+	          JOIN information_schema.key_column_usage b
+	          ON a.table_schema = b.table_schema AND a.constraint_name = b.constraint_name
+	          WHERE a.table_schema=database() AND a.constraint_type='FOREIGN KEY' AND b.table_name = %s;",
+				array( $table_dismissals )
+			)
 		);
 		if ( $dismissal_key ) {
 			try {
@@ -233,15 +241,16 @@ class Editoria11y {
 					DROP CONSTRAINT %1s;", array( $dismissal_key ) )
 				);
 			} finally {
+				// Add new constraint
 				$wpdb->get_var( // phpcs:ignore
-					"ALTER TABLE $table_dismissals
-        		ADD CONSTRAINT ed11y_dismissal_pid FOREIGN KEY(pid) REFERENCES $table_urls (pid) ON DELETE CASCADE"
+					$wpdb->prepare( "ALTER TABLE $table_dismissals
+        			ADD CONSTRAINT %1s FOREIGN KEY(pid) REFERENCES $table_urls (pid) ON DELETE CASCADE", $dismissal_constraint)
 				);
 			}
 		} else {
 			$wpdb->get_var( // phpcs:ignore
-				"ALTER TABLE $table_dismissals
-        		ADD CONSTRAINT ed11y_dismissal_pid FOREIGN KEY(pid) REFERENCES $table_urls (pid) ON DELETE CASCADE"
+				$wpdb->prepare( "ALTER TABLE $table_dismissals
+        			ADD CONSTRAINT %1s FOREIGN KEY(pid) REFERENCES $table_urls (pid) ON DELETE CASCADE", $dismissal_constraint)
 			);
 		}
 
@@ -250,14 +259,20 @@ class Editoria11y {
 	/**
 	 * Make sure tables are in place and up to date.
 	 */
-	public static function check_tables(): void {
-		$tableCheck = get_option( "editoria11y_db_version" );
+	public static function check_tables(): bool {
+		// Lazy DB creation
 
-		if ( $tableCheck !== 1.0 ) {
-			// Lazy DB creation
+		$tableCheck = get_option( "editoria11y_db_version" );
+		if ( $tableCheck === '1.1-failed' ) {
+			// Tables are broken, don't try again until next release
+			return false;
+		} else if ( $tableCheck !== '1.1' ) {
+			// Create DB and set option based on success
+			update_option( "editoria11y_db_version", '1.1-failed' );
 			self::create_database();
-			update_option( "editoria11y_db_version", "1.0" );
+			update_option( "editoria11y_db_version", '1.1' );
 		}
+		return true;
 
 	}
 
