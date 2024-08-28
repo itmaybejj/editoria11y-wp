@@ -268,17 +268,23 @@ class Editoria11y {
 		// Lazy DB creation
 
 		$tableCheck = get_option( "editoria11y_db_version" );
-		if ( $tableCheck === '1.1-failed' ) {
+
+		if ( '-failed' === substr( $tableCheck, -7 ) ) {
 			// Tables are broken, don't try again until next release
 			return false;
-		} else if ( $tableCheck !== '1.1' ) {
-			// Create DB and set option based on success
-			update_option( "editoria11y_db_version", '1.1-failed' );
-			self::create_database();
-			update_option( "editoria11y_db_version", '1.1' );
 		}
-		return true;
 
+		if ( version_compare( $tableCheck, '1.2', '>=' ) ) {
+			// Tables are up to date
+			return true;
+		}
+
+		// Create DB and set option based on success
+		update_option( 'editoria11y_db_version', '1.2-failed' );
+		self::create_database();
+		update_option( 'editoria11y_db_version', '1.2' );
+
+		return true;
 	}
 
 	/**
