@@ -304,43 +304,13 @@ class Editoria11y {
 
 		global $wpdb;
 
-		if ( $network ) {
+		$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}ed11y_dismissals" ); // phpcs:ignore
+		$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}ed11y_results" ); // phpcs:ignore
+		$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}ed11y_urls" ); // phpcs:ignore
 
-			$sites = get_sites(
-				array(
-					'number'     => 10000,
-					'fields'     =>'ids',
-					'network_id' => get_current_network_id(),
-				)
-			);
-
-			foreach ( $sites as $siteid ) {
-
-				switch_to_blog( $siteid );
-
-				$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}ed11y_dismissals" ); // phpcs:ignore
-				$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}ed11y_results" ); // phpcs:ignore
-				$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}ed11y_urls" ); // phpcs:ignore
-
-				delete_option( 'ed11y_plugin_settings' );
-				delete_option( 'editoria11y_db_version' );
-				delete_site_transient( 'editoria11y_settings' );
-
-				restore_current_blog();
-
-			}
-
-		} else {
-
-			$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}ed11y_dismissals" ); // phpcs:ignore
-			$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}ed11y_results" ); // phpcs:ignore
-			$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}ed11y_urls" ); // phpcs:ignore
-
-			delete_option( 'ed11y_plugin_settings' );
-			delete_option( 'editoria11y_db_version' );
-			delete_site_transient( 'editoria11y_settings' );
-
-		}
+		delete_option( 'ed11y_plugin_settings' );
+		delete_option( 'editoria11y_db_version' );
+		delete_site_transient( 'editoria11y_settings' );
 
 	}
 
