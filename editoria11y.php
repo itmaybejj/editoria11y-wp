@@ -353,7 +353,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 // Manage DB tables.
 register_activation_hook( __FILE__, array( 'Editoria11y', 'activate' ) );
-register_deactivation_hook( __FILE__, array( 'Editoria11y', 'uninstall' ) );
 register_uninstall_hook( __FILE__, array( 'Editoria11y', 'uninstall' ) );
 
 new Editoria11y();
