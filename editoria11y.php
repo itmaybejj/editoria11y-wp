@@ -5,7 +5,7 @@
  *
  * Plugin Name:       Editoria11y Accessibility Checker
  * Plugin URI:        https://wordpress.org/plugins/editoria11y-accessibility-checker/
- * Version:           1.0.19
+ * Version:           1.0.20
  * Requires PHP:      7.2
  * Requires at least: 6.0
  * Tested up to:      6.6
@@ -290,14 +290,14 @@ class Editoria11y {
 	/**
 	 * Plugin Activation
 	 */
-	public static function activate( $network = false ) {
+	public static function activate() {
 		// No action needed.
 	}
 
 	/**
 	 * Remove DB tables on uninstall
 	 */
-	public static function uninstall( $network = false ) {
+	public static function uninstall() {
 		if ( ! current_user_can( 'activate_plugins' ) ) {
 			return;
 		}
