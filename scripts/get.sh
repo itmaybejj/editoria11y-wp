@@ -2,7 +2,8 @@
 
 # This is a simple script to pull down the specified version of editoria11y from github
 
-GIT_REF="main"
+#GIT_REF="main"
+GIT_REF="contenteditable"
 
 mkdir -p tmp/
 cd tmp/

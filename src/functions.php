@@ -160,8 +160,60 @@ function ed11y_enqueue_editor_content_assets() {
 		}
 	}
 }
-add_action( 'enqueue_block_assets', 'ed11y_enqueue_editor_content_assets' );
 
+
+/**
+ * Enqueue content assets but only in the Editor.
+ */
+function ed11y_enqueue_classic_editor_assets() {
+
+  if ( is_admin() ) {
+
+    // Allowed roles.
+    $user               = wp_get_current_user();
+    $allowed_roles      = array( 'editor', 'administrator', 'author', 'contributor' );
+    $allowed_user_roles = array_intersect( $allowed_roles, $user->roles );
+    if ( ( $allowed_user_roles || current_user_can( 'edit_posts' ) || current_user_can( 'edit_pages' ) ) && 'none' !== ed11y_get_plugin_settings( 'ed11y_livecheck', false ) ) {
+      wp_enqueue_script(
+        'editoria11y-js',
+        trailingslashit( ED11Y_ASSETS ) . 'lib/editoria11y.min.js',
+        null,
+        Editoria11y::ED11Y_VERSION,
+        false
+      );/*
+      wp_enqueue_script(
+        'editoria11y-editor',
+        trailingslashit( ED11Y_ASSETS ) . 'js/editoria11y-editor.js',
+        null,
+        Editoria11y::ED11Y_VERSION,
+        false
+      );*/
+      wp_enqueue_script(
+        'editoria11y-editor-worker',
+        trailingslashit( ED11Y_ASSETS ) . 'js/editoria11y-editor-worker.js',
+        null,
+        Editoria11y::ED11Y_VERSION,
+        false
+      );
+      wp_localize_script(
+        'editoria11y-editor',
+        'ed11yVars',
+        array(
+          'worker'  => trailingslashit( ED11Y_ASSETS ) . 'js/editoria11y-editor.js?ver=' . Editoria11y::ED11Y_VERSION,
+          'options' => ed11y_get_params( wp_get_current_user() ),
+        )
+      );
+      wp_enqueue_style(
+        'editoria11y-lib-css',
+        trailingslashit( ED11Y_ASSETS ) . 'lib/editoria11y.min.css',
+        null,
+        Editoria11y::ED11Y_VERSION
+      );
+    }
+  }
+}
+add_action( 'enqueue_block_assets', 'ed11y_enqueue_editor_content_assets' );
+add_action( 'admin_enqueue_scripts', 'ed11y_enqueue_editor_content_assets' );
 
 /**
  * Returns page-specific config for the Editoria11y library.
