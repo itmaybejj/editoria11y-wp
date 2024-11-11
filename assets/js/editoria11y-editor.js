@@ -1,12 +1,12 @@
 
 
 /*let ed11yInit.options = ed11yInit ? ed11yInit.options : false;
-let ed11yWorkerURL = ed11yInit ? ed11yInit.worker : false;
+let workerURL = ed11yInit ? ed11yInit.innerWorker : false;
 if (!ed11yInit.options) {
   const ed11yVarPile = document.getElementById("ed11yVarPile");
   const parsed  = JSON.parse(ed11yVarPile.textContent);
   ed11yInit.options = parsed.options;
-  ed11yWorkerURL = parsed.worker;
+  workerURL = parsed.worker;
 }*/
 const ed11yInit = {};
 // eslint-disable-next-line no-undef
@@ -14,9 +14,8 @@ ed11yInit.options = ed11yVars.options;
 ed11yInit.ed11yReadyCount = 0;
 ed11yInit.editorType = false; // onPage, inIframe, outsideIframe
 // Prevent multiple inits in modules that re-trigger the document context.
-ed11yInit.ed11yOnce = false;
-ed11yInit.ed11yWorker = window.SharedWorker ? new SharedWorker(ed11yVars.worker) : false;
-ed11yInit.ed11yNoRun = '.editor-styles-wrapper > .is-root-container.wp-site-blocks, .edit-site-visual-editor__editor-canvas';
+ed11yInit.once = false;
+ed11yInit.noRun = '.editor-styles-wrapper > .is-root-container.wp-site-blocks, .edit-site-visual-editor__editor-canvas';
 ed11yInit.editRoot = '.editor-styles-wrapper > .is-root-container:not(.wp-site-blocks)';
 ed11yInit.scrollRoot = false;
 
@@ -29,7 +28,7 @@ ed11yInit.getOptions = function() {
     /window|\stab|download/g;
   ed11yInit.options['inlineAlerts'] = false;
   ed11yInit.options.checkRoots = ed11yInit.editRoot;
-  ed11yInit.options['preventCheckingIfPresent'] = ed11yInit.ed11yNoRun;
+  ed11yInit.options['preventCheckingIfPresent'] = ed11yInit.noRun;
   ed11yInit.options['ignoreAllIfAbsent'] = ed11yInit.editRoot;
   if (ed11yInit.scrollRoot) {
     ed11yInit.options['editableContent'] = ed11yInit.scrollRoot;
@@ -65,33 +64,44 @@ ed11yInit.ed11yReady = (fn) => {
 }
 
 ed11yInit.firstCheck = function() {
-  if (!ed11yInit.ed11yOnce) {
-    ed11yInit.ed11yOnce = true;
+  if (!ed11yInit.once) {
+    ed11yInit.once = true;
     const ed11y = new Ed11y(ed11yInit.options); // eslint-disable-line
   }
 };
 
-ed11yInit.nextCheck = 0;
+ed11yInit.nextCheck = Date.now();
 ed11yInit.waiting = false;
+ed11yInit.lastText = '';
 ed11yInit.recheck = () => {
   // Debouncing to 1x per second.
-  if (Date.now() < ed11yInit.nextCheck + 1000 + Ed11y.browserLag) {
+  let nextRun = ed11yInit.nextCheck + Ed11y.browserLag - Date.now();
+  if (nextRun > 0) {
+    // Not time to go yet.
     if (!ed11yInit.waiting) {
+      // Wait and start debouncing.
       ed11yInit.waiting = true;
-      window.setTimeout(ed11yInit.recheck, 1000 + Ed11y.browserLag);
+      window.setTimeout(ed11yInit.recheck, nextRun);
     }
   } else {
+    // Check now.
     ed11yInit.nextCheck = Date.now() + 1000 + Ed11y.browserLag;
-    if (Ed11y.openTip.button) {
-      // Don't force recheck while a tip is open.
-      return;
-    }
-    if (ed11yInit.ed11yOnce && Ed11y.panel && Ed11y.roots) {
-      Ed11y.forceFullCheck = true;
-      Ed11y.incrementalAlign();
-      Ed11y.alignPending = false;
-      window.setTimeout(() => {Ed11y.incrementalCheck() }, 1001 + Ed11y.browserLag);
+    ed11yInit.waiting = false;
+    if (ed11yInit.once && Ed11y.panel && Ed11y.roots) {
+      window.setTimeout(() => {
+        Ed11y.incrementalAlign();
+        Ed11y.alignPending = false;
+      }, 0 + Ed11y.browserLag);
+      window.setTimeout(() => {
+        Ed11y.forceFullCheck = true;
+        Ed11y.incrementalCheck()
+      }, 250 + Ed11y.browserLag);
+      window.setTimeout(() => {
+        Ed11y.forceFullCheck = true;
+        Ed11y.incrementalCheck()
+      }, 1250 + Ed11y.browserLag);
     } else {
+      console.log('Editoria11y debug: fallback full check');
       Ed11y.checkAll();
     }
   }
@@ -100,7 +110,7 @@ ed11yInit.recheck = () => {
 ed11yInit.ed11yShutMenu = () => {
   if (Ed11y.openTip.button) {
     if (ed11yInit.editorType === 'inIframe') {
-      ed11yInit.ed11yWorker.port.postMessage([ed11yInit.editorType]);
+      ed11yInit.innerWorker.port.postMessage([true, false]);
     } else {
       wp.data.dispatch('core/block-editor').clearSelectedBlock()
     }
@@ -112,32 +122,88 @@ document.addEventListener('ed11yPop', function() {
   }, 1000);
 });
 
+ed11yInit.interaction = false;
 ed11yInit.createObserver = function () {
   // Ed11y misses many Gutenberg changes without help.
-  const ed11yTargetNode = document.querySelector(ed11yInit.editRoot);
-  // Observe for class changes and typing.
-  const ed11yObserverConfig = { attributeFilter: ['class'], characterData: true, subtree: true };
-  const ed11yMutationCallback = (callback) => {
-    if (callback[0].type !== 'characterData') {
-      // Could get blockID via Web worker to check less often.
-      // let newBlockId = wp.data.select( 'core/block-editor' ).getSelectedBlockClientId();
+
+  // Recheck inner when something was clicked outside the iframe.
+  ed11yInit.innerWorker.port.onmessage = (message) => {
+    // Something was clicked outside the iframe.
+    if (message.data[1]) {
+      ed11yInit.recheck();
+      ed11yInit.interaction = false;
+    }
+  }
+  ed11yInit.innerWorker.port.start();
+
+  // Listen for events that may modify content without triggering a mutation.
+  /*window.addEventListener('keyup', (e) => {
+    if (!e.target.closest('.ed11y-wrapper, p, table, li, h1, h2, h3, h4')) {
       ed11yInit.recheck();
     }
+  });
+  window.addEventListener('click', (e) => {
+    if (!e.target.closest('.ed11y-wrapper')) {
+      ed11yInit.recheck();
+    }
+  });*/
+  /*addEventListener("dragend", (event) => {
+    window.setTimeout(() => ed11yInit.recheck(), 1000);
+    ed11yInit.interaction = false;
+  });*/
+
+  // Observe for DOM mutations.
+  /*
+  const ed11yTargetNode = document.querySelector(ed11yInit.editRoot);
+  const ed11yObserverConfig = { attributeFilter: ['class'], characterData: true, subtree: true };
+  const ed11yMutationCallback = (callback) => {
+    // Ignore mutations that do not result from user interactions.
+    if (callback[0].type !== 'characterData') {
+      //ed11yInit.recheck();
+      //ed11yInit.interaction = false;
+      // Could get blockID via Web worker to check less often.
+      // let newBlockId = wp.data.select( 'core/block-editor' ).getSelectedBlockClientId();
+    }
   };
-  // Create an observer instance linked to the callback function
   const ed11yObserver = new MutationObserver(ed11yMutationCallback);
-  // Start observing the target node for configured mutations
-  ed11yObserver.observe(ed11yTargetNode, ed11yObserverConfig)
+  ed11yObserver.observe(ed11yTargetNode, ed11yObserverConfig)*/
 };
 
 ed11yInit.ed11yOuterInit = function() {
-  ed11yInit.ed11yWorker.port.onmessage = () => {
-    wp.data.dispatch('core/block-editor').clearSelectedBlock();
+
+  // Tell iframe if block editor might be up to something.
+  ed11yInit.outerWorker = window.SharedWorker ? new SharedWorker(ed11yVars.worker) : false;
+  window.addEventListener('keyup', (e) => {
+    if (!e.target.closest('.ed11y-wrapper')) {
+      ed11yInit.outerWorker.port.postMessage([false, true])
+    }
+  });
+  window.addEventListener('click', (e) => {
+    if (!e.target.closest('.ed11y-wrapper')) {
+      ed11yInit.outerWorker.port.postMessage([false, true])
+    }
+  });
+
+  // Clear active block selection when a tip opens to hide floating menup.
+  ed11yInit.outerWorker.port.onmessage = (message) => {
+    if (message.data[0]) {
+      wp.data.dispatch('core/block-editor').clearSelectedBlock();
+    }
   }
+
+  ed11yInit.outerWorker.port.onmessageerror = (data) => {
+    console.warn(data);
+  }
+  ed11yInit.outerWorker.port.onerror = (data) => {
+    console.warn(data);
+  }
+  ed11yInit.outerWorker.port.start();
 };
 
 /*
-// This failed. The Tiny MCE iframe has editable elements touching <body>.
+// Classic editor watching failed.
+// The Tiny MCE iframe has editable elements touching <body>.
+// In theory I could bring back the outlines.
 // Leaving code in case I get any bright ideas down the road.
 const ed11yClassicInsertScripts = function() {
   //"https://editoria11y-wp.ddev.site/wp-content/plugins/editoria11y-wp/assets/lib/editoria11y.min.css"
@@ -148,7 +214,7 @@ const ed11yClassicInsertScripts = function() {
   varPile.setAttribute('id', 'ed11yVarPile');
   varPile.innerHTML = 'var ed11yInit = ' + JSON.stringify({
     options: ed11yInit.options,
-    worker: ed11yWorkerURL,
+    worker: workerURL,
   });
   editorInit.src = ed11yInit.options.cssLocation.replace('lib/editoria11y.min.css', 'js/editoria11y-editor.js');
   const workerScript = document.createElement('script');
@@ -183,16 +249,13 @@ const ed11yClassicInsertScripts = function() {
 
 // Initiate Editoria11y create alert link, initiate content change watcher.
 ed11yInit.ed11yPageInit = function () {
+  ed11yInit.innerWorker = window.SharedWorker ? new SharedWorker(ed11yVars.worker) : false;
   window.setTimeout(() => {
     ed11yInit.getOptions();
     ed11yInit.firstCheck();
   },1000)
   window.setTimeout(() => {
     ed11yInit.createObserver();
-    if (Ed11y.openTip && Ed11y.openTip.button) {
-      // Don't force recheck while a tip is open.
-      return;
-    }
     ed11yInit.recheck();
   }, 2500);
 };
@@ -201,25 +264,25 @@ ed11yInit.ed11yPageInit = function () {
 // Possible todo: add checks/markup for other common editors.
 ed11yInit.findCompatibleEditor = function () {
   if (ed11yInit.editorType) {
-    return;
-  } else if (document.querySelector(ed11yInit.ed11yNoRun)) {
+    // Do nothing.
+  } else if (document.querySelector(ed11yInit.noRun)) {
     ed11yInit.editorType = 'forbidden';
   } else if (document.querySelector('body' + ed11yInit.editRoot)) {
     // inside iFrame
     ed11yInit.editorType = 'inIframe';
+    ed11yInit.scrollRoot = 'body';
     ed11yInit.ed11yPageInit();
   } else if (document.querySelector('[class*="-visual-editor"] iframe')) {
     ed11yInit.editorType = 'outsideIframe';
-    ed11yInit.scrollRoot = 'body';
     ed11yInit.ed11yOuterInit();
   } else if ( document.querySelector('#editor .editor-styles-wrapper')) {
     ed11yInit.editorType = 'onPage';
-    ed11yInit.editRoot = '#editor .is-root-container';
+    ed11yInit.editRoot = '#editor .is-root-container, #editor .editor-post-title'; // todo: title in headings panel is always "add title?"
     ed11yInit.scrollRoot = '.interface-interface-skeleton__content';
     ed11yInit.ed11yPageInit();
   } else if (document.getElementById('content_ifr')) {
     ed11yInit.editorType = 'mce';
-  } else if (ed11yInit.ed11yReadyCount < 600 && ed11yInit.editorType !== 'mce') {
+  } else if (ed11yInit.ed11yReadyCount < 60) {
     window.setTimeout(function () {
       ed11yInit.ed11yReadyCount++;
       ed11yInit.findCompatibleEditor();
@@ -227,8 +290,6 @@ ed11yInit.findCompatibleEditor = function () {
   } else {
     console.log('Editoria11y: no block editor found');
   }
-  console.log(ed11yInit.editorType);
-
 };
 
 // Call callback, scan page for compatible editors.
