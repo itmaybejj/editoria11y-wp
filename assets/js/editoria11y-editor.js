@@ -123,6 +123,7 @@ document.addEventListener('ed11yPop', function() {
 });
 
 ed11yInit.interaction = false;
+
 ed11yInit.createObserver = function () {
   // Ed11y misses many Gutenberg changes without help.
 
@@ -135,38 +136,39 @@ ed11yInit.createObserver = function () {
     }
   }
   ed11yInit.innerWorker.port.start();
+  if (ed11yInit.editorType === 'inIframe') {
+    return;
+  }
 
   // Listen for events that may modify content without triggering a mutation.
-  /*window.addEventListener('keyup', (e) => {
-    if (!e.target.closest('.ed11y-wrapper, p, table, li, h1, h2, h3, h4')) {
-      ed11yInit.recheck();
+  window.addEventListener('keyup', (e) => {
+    if (!e.target.closest('.ed11y-wrapper, [contenteditable="true"]')) {
+      // Arrow changes of radio and select controls.
+      ed11yInit.interaction = true;
     }
   });
   window.addEventListener('click', (e) => {
+    // Click covers mouse, keyboard and touch.
     if (!e.target.closest('.ed11y-wrapper')) {
-      ed11yInit.recheck();
+      ed11yInit.interaction = true;
     }
-  });*/
-  /*addEventListener("dragend", (event) => {
-    window.setTimeout(() => ed11yInit.recheck(), 1000);
-    ed11yInit.interaction = false;
-  });*/
+  });
 
   // Observe for DOM mutations.
-  /*
-  const ed11yTargetNode = document.querySelector(ed11yInit.editRoot);
+
+  const ed11yTargetNode = document.querySelector(ed11yInit.scrollRoot);
   const ed11yObserverConfig = { attributeFilter: ['class'], characterData: true, subtree: true };
   const ed11yMutationCallback = (callback) => {
     // Ignore mutations that do not result from user interactions.
-    if (callback[0].type !== 'characterData') {
-      //ed11yInit.recheck();
-      //ed11yInit.interaction = false;
+    if (callback[0].type !== 'characterData' && ed11yInit.interaction) {
+      ed11yInit.recheck();
+      ed11yInit.interaction = false;
       // Could get blockID via Web worker to check less often.
       // let newBlockId = wp.data.select( 'core/block-editor' ).getSelectedBlockClientId();
     }
   };
   const ed11yObserver = new MutationObserver(ed11yMutationCallback);
-  ed11yObserver.observe(ed11yTargetNode, ed11yObserverConfig)*/
+  ed11yObserver.observe(ed11yTargetNode, ed11yObserverConfig)
 };
 
 ed11yInit.ed11yOuterInit = function() {
@@ -174,14 +176,11 @@ ed11yInit.ed11yOuterInit = function() {
   // Tell iframe if block editor might be up to something.
   ed11yInit.outerWorker = window.SharedWorker ? new SharedWorker(ed11yVars.worker) : false;
   window.addEventListener('keyup', (e) => {
-    if (!e.target.closest('.ed11y-wrapper')) {
-      ed11yInit.outerWorker.port.postMessage([false, true])
-    }
+    // Arrow changes of radio and select controls.
+    ed11yInit.outerWorker.port.postMessage([false, true])
   });
   window.addEventListener('click', (e) => {
-    if (!e.target.closest('.ed11y-wrapper')) {
-      ed11yInit.outerWorker.port.postMessage([false, true])
-    }
+    ed11yInit.outerWorker.port.postMessage([false, true])
   });
 
   // Clear active block selection when a tip opens to hide floating menup.
