@@ -33,16 +33,14 @@ ed11yInit.getOptions = function() {
   if (ed11yInit.scrollRoot) {
     ed11yInit.options['editableContent'] = ed11yInit.scrollRoot;
   }
-  // todo heading level
   ed11yInit.options['ignoreByKey'] = { img: '' };
-  //ed11yInit.options['ignoreByKey']['h'] = '.wp-block-post-title';
   ed11yInit.options['altPlaceholder'] = 'This image has an empty alt attribute;';
 
   // WordPress does not render empty post titles, so we don't need to flag them.
   ed11yInit.options['originalIgnore'] = ed11yInit.options['ignoreElements'];
 
   ed11yInit.options['showResults'] = true;
-  ed11yInit.options['alertMode'] = 'active';
+  ed11yInit.options['alertMode'] = ed11yInit.options['liveCheck'] &&  ed11yInit.options['liveCheck'] === 'errors' ? 'userPreference' : 'active';
   ed11yInit.options['editorHeadingLevel'] = [{
     selector: '.editor-styles-wrapper> .is-root-container',
     previousHeading: 1,
@@ -101,8 +99,7 @@ ed11yInit.recheck = () => {
         Ed11y.incrementalCheck()
       }, 1250 + Ed11y.browserLag);
     } else {
-      console.log('Editoria11y debug: fallback full check');
-      Ed11y.checkAll();
+      Ed11y.checkAll(); // this case should never be reached.
     }
   }
 }
@@ -287,7 +284,7 @@ ed11yInit.findCompatibleEditor = function () {
       ed11yInit.findCompatibleEditor();
     }, 1000);
   } else {
-    console.log('Editoria11y: no block editor found');
+    console.log('Editoria11y called on page, but no block editor found');
   }
 };
 
