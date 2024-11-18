@@ -260,7 +260,7 @@ function ed11y_livecheck_field() {
 
 	<select name="ed11y_plugin_settings[ed11y_livecheck]" id="ed11y-livecheck" name="ed11y_livecheck" class="form-select" aria-describedby="livecheck_description">
 		<option <?php echo 'all' === $settings ? 'selected="true"' : ''; ?>value="all">Check while editing, and always show tips</option>
-        <option <?php echo 'errors' === $settings ? 'selected="true"' : ''; ?>value="errors">Check while editing</option>
+		<option <?php echo 'errors' === $settings ? 'selected="true"' : ''; ?>value="errors">Check while editing</option>
 		<option <?php echo 'none' === $settings ? 'selected="true"' : ''; ?>value="none">Do not check while editing</option>
 	</select>
 	<p id="livecheck_description">
