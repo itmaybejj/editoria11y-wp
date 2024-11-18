@@ -1,7 +1,7 @@
 === Editoria11y Accessibility Checker ===
 Contributors: itmaybejj, partyka
 Tags: accessibility checker, automated testing, quality assurance, SEO
-Stable tag: 1.1.0
+Stable tag: 2.0.0
 Tested up to: 6.7
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -140,9 +140,9 @@ Editoria11y began as a fork of the Toronto Metropolitan University's [Sa11y Acce
 
 Note that work is proceeding on the [UI rewrite](https://editoria11y.princeton.edu/next/), and feedback would be much appreciated.
 
-= 1.1.0
-* Significant redesign of the tips and panel. The new interface can be tested on the [Editoria11y library demo site](https://editoria11y.princeton.edu/next/).
-* New interface for the in-editor checker eliminates compatibility issues with other plugins.
+= 2.0.0
+* Updates to the 2.3 branch of the checker library. This is a significant redesign of the tips and panel, so please do test before sending to production on complex sites. The new interface can be tested on the [Editoria11y library demo site](https://editoria11y.princeton.edu/next/).
+* New interface for the in-editor checker brings in the full tooltip rather than a simple outline, and eliminates [compatibility issues with other plugins](https://github.com/itmaybejj/editoria11y-wp/issues/37) that were also modifying the Gutenberg interface.
 
 = 1.0.21 =
 * [Fix for live checker not showing in WP 6.6+](https://github.com/itmaybejj/editoria11y-wp/issues/36).
