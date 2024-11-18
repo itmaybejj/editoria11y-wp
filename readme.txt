@@ -1,7 +1,7 @@
 === Editoria11y Accessibility Checker ===
 Contributors: itmaybejj, partyka
 Tags: accessibility checker, automated testing, quality assurance, SEO
-Stable tag: 1.0.21
+Stable tag: 1.1.0
 Tested up to: 6.7
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -142,6 +142,10 @@ Editoria11y began as a fork of the Toronto Metropolitan University's [Sa11y Acce
 
 Note that work is proceeding on the [UI rewrite](https://editoria11y.princeton.edu/next/), and feedback would be much appreciated.
 
+= 1.1.0
+* Significant redesign of the tips and panel. The new interface can be tested on the [Editoria11y library demo site](https://editoria11y.princeton.edu/next/).
+* New interface for the in-editor checker eliminates compatibility issues with other plugins.
+
 = 1.0.21 =
 * [Fix for live checker not showing in WP 6.6+](https://github.com/itmaybejj/editoria11y-wp/issues/36).
 
@@ -157,29 +161,3 @@ Note that work is proceeding on the [UI rewrite](https://editoria11y.princeton.e
 = 1.0.17 =
 * Fix for table structure updates failing in MariaDB
 * [ Display author name in CSV export ](https://github.com/itmaybejj/editoria11y-wp/issues/29) when user data is not stored in the default table.
-
-= 1.0.16 =
-* [ Display author name on dashboard ](https://github.com/itmaybejj/editoria11y-wp/issues/29) when user data is not stored in the default table.
-
-= 1.0.15 =
-* [Begins recording post ID](https://github.com/itmaybejj/editoria11y-wp/issues/18) with results, which allows for filtering the dashboard by author and published status, and sorting pages by modified date.
-* [Adds author, publish status and edit URL](https://github.com/itmaybejj/editoria11y-wp/issues/17) to the results export CSV.
-* [Fix for tables not provisioning on network activation](https://github.com/itmaybejj/editoria11y-wp/issues/22) for multi-site installs.
-* [Fix for false positives on links](https://github.com/itmaybejj/editoria11y-wp/issues/28) titled only "Download," "Tab" or "Window."
-* [Auto-opens detail/summary elements](https://github.com/itmaybejj/editoria11y-wp/issues/27) when jumping to a hidden alert, and improves alert positioning on hidden elements.
-* [Adds alert for WordPress button blocks](https://github.com/itmaybejj/editoria11y-wp/issues/28) that are not yet linked.
-* [Basic support for inline highlighting in the Site Editor](https://github.com/itmaybejj/editoria11y-wp/issues/4).
-* [Backwards compatibility for Firefox 115 ESR](https://www.drupal.org/project/editoria11y/issues/3444920).
-
-= 1.0.14 =
-* Page URLs now have a slightly shorter limit for [Pantheon compatibility](https://docs.pantheon.io/guides/wordpressvip/troubleshooting#maximum-index-size)
-* Update library to [2.1.2](https://github.com/itmaybejj/editoria11y/releases/tag/2.1.2)
-
-= 1.0.13 =
-* Themes and plugins can now provide [custom results](https://editoria11y.princeton.edu/configuration/#customtests).
-* Old results will clear from the dashboard when clicking through to a page with checking disabled.
-* More accurate accessible name calculation for complex situations involving CSS generated content, nested SVG or aria-labelledby references.
-* Headings are now clickable in the outline panel.
-* Experimental inline checker now highlights specific links with issues within a block.
-* Bugfix: Experimental inline checker was not appearing in some contexts.
-* Bugfix: two consecutive paragraphs starting with "A " could throw a false positive on the possible link test.

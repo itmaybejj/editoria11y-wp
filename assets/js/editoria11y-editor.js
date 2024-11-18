@@ -20,6 +20,42 @@ ed11yInit.editRoot = '.editor-styles-wrapper > .is-root-container:not(.wp-site-b
 ed11yInit.scrollRoot = false;
 
 
+ed11yInit.syncDismissals = function () {
+  let postData = async function (action, data) {
+    fetch(wpApiSettings.root + 'ed11y/v1/' + action, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'accept': 'application/json',
+        'X-WP-Nonce': wpApiSettings.nonce,
+      },
+      body: JSON.stringify({
+        data,
+      })
+    }).then(function (response) {
+      return response.json();
+    });
+  };
+
+  let sendDismissal = function (detail) {
+    if (detail) {
+      let data = {
+        page_url: Ed11y.options.currentPage,
+        result_key: detail.dismissTest, // which test is sending a result
+        element_id: detail.dismissKey, // some recognizable attribute of the item marked
+        dismissal_status: detail.dismissAction, // ok, ignore or reset
+        post_id: ed11yInit.options.post_id ? ed11yInit.options.post_id : 0,
+      };
+      postData('dismiss', data);
+    }
+  };
+  document.addEventListener('ed11yDismissalUpdate', function (e) {
+    sendDismissal(e.detail);
+  }, false);
+
+}
+
+
 ed11yInit.getOptions = function() {
   // Initiate Ed11y with admin options.
 
@@ -249,6 +285,7 @@ ed11yInit.ed11yPageInit = function () {
   window.setTimeout(() => {
     ed11yInit.getOptions();
     ed11yInit.firstCheck();
+    ed11yInit.syncDismissals();
   },1000)
   window.setTimeout(() => {
     ed11yInit.createObserver();
@@ -294,3 +331,4 @@ ed11yInit.ed11yReady(
     ed11yInit.findCompatibleEditor();
   }
 );
+
