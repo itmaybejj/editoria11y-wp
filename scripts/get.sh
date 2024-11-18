@@ -2,7 +2,7 @@
 
 # This is a simple script to pull down the specified version of editoria11y from github
 
-GIT_REF="main"
+GIT_REF="2.3.x"
 
 mkdir -p tmp/
 cd tmp/
