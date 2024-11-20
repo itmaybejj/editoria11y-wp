@@ -140,16 +140,16 @@ Editoria11y began as a fork of the Toronto Metropolitan University's [Sa11y Acce
 
 Note that work is proceeding on the [UI rewrite](https://editoria11y.princeton.edu/next/), and feedback would be much appreciated.
 
-= 2.0.3
+= 2.0.3 =
 * Fixes alignment of issue count in tooltip when there is exactly 1 issue.
 
-= 2.0.2
+= 2.0.2 =
 * Improved tip placement logic, and some visual refinements.
 
-= 2.0.1
+= 2.0.1 =
 * Fixes some alignment and display bugs, especially in Safari.
 
-= 2.0.0
+= 2.0.0 =
 * Updates to the 2.3 branch of the checker library. This is a significant redesign of the tips and panel, so please do test before sending to production on complex sites. The new interface can be tested on the [Editoria11y library demo site](https://editoria11y.princeton.edu/next/).
 * New interface for the in-editor checker brings in the full tooltip rather than a simple outline, and eliminates [compatibility issues with other plugins](https://github.com/itmaybejj/editoria11y-wp/issues/37) that were also modifying the Gutenberg interface.
 
