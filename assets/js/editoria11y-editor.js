@@ -76,6 +76,7 @@ ed11yInit.getOptions = function() {
   ed11yInit.options['originalIgnore'] = ed11yInit.options['ignoreElements'];
 
   ed11yInit.options['showResults'] = true;
+  ed11yInit.options['buttonZIndex'] = 99999;
   ed11yInit.options['alertMode'] = ed11yInit.options['liveCheck'] &&  ed11yInit.options['liveCheck'] === 'errors' ? 'userPreference' : 'active';
   ed11yInit.options['editorHeadingLevel'] = [{
     selector: '.editor-styles-wrapper> .is-root-container',
