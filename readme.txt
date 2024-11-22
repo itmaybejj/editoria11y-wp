@@ -1,7 +1,7 @@
 === Editoria11y Accessibility Checker ===
 Contributors: itmaybejj, partyka
 Tags: accessibility checker, automated testing, quality assurance, SEO
-Stable tag: 2.0.3
+Stable tag: 2.0.4
 Tested up to: 6.7
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -139,6 +139,10 @@ Editoria11y began as a fork of the Toronto Metropolitan University's [Sa11y Acce
 == Changelog ==
 
 Note that work is proceeding on the [UI rewrite](https://editoria11y.princeton.edu/next/), and feedback would be much appreciated.
+
+= 2.0.4 =
+* Fixes race condition that caused the checker to not always appear in the block editor.
+* Adds color highlighting inside the headings panel.
 
 = 2.0.3 =
 * Fixes alignment of issue count in tooltip when there is exactly 1 issue.

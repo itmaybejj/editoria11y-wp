@@ -1,13 +1,4 @@
 
-
-/*let ed11yInit.options = ed11yInit ? ed11yInit.options : false;
-let workerURL = ed11yInit ? ed11yInit.innerWorker : false;
-if (!ed11yInit.options) {
-  const ed11yVarPile = document.getElementById("ed11yVarPile");
-  const parsed  = JSON.parse(ed11yVarPile.textContent);
-  ed11yInit.options = parsed.options;
-  workerURL = parsed.worker;
-}*/
 const ed11yInit = {};
 // eslint-disable-next-line no-undef
 ed11yInit.options = ed11yVars.options;
@@ -64,16 +55,19 @@ ed11yInit.getOptions = function() {
     /window|\stab|download/g;
   ed11yInit.options['inlineAlerts'] = false;
   ed11yInit.options.checkRoots = ed11yInit.editRoot;
-  ed11yInit.options['preventCheckingIfPresent'] = ed11yInit.noRun;
+  ed11yInit.options['preventCheckingIfPresent'] = !!ed11yInit.noRun ?
+    ed11yInit.noRun + ', .block-editor-block-preview__content-iframe' :
+    '.block-editor-block-preview__content-iframe';
+  ;
   ed11yInit.options['ignoreAllIfAbsent'] = ed11yInit.editRoot;
   if (ed11yInit.scrollRoot) {
     ed11yInit.options['editableContent'] = ed11yInit.scrollRoot;
   }
   ed11yInit.options['ignoreByKey'] = { img: '' };
+  ed11yInit.options['headingsOnlyFromCheckRoots'] = true;
   ed11yInit.options['altPlaceholder'] = 'This image has an empty alt attribute;';
 
   // WordPress does not render empty post titles, so we don't need to flag them.
-  ed11yInit.options['originalIgnore'] = ed11yInit.options['ignoreElements'];
 
   ed11yInit.options['showResults'] = true;
   ed11yInit.options['buttonZIndex'] = 99999;
@@ -83,20 +77,6 @@ ed11yInit.getOptions = function() {
     previousHeading: 1,
   }];
 };
-
-// Create callback to see if document is ready.
-ed11yInit.ed11yReady = (fn) => {
-  if (document.readyState !== 'loading') {
-    fn();
-  } else if (document.addEventListener) {
-    document.addEventListener('DOMContentLoaded', fn);
-  } else {
-    document.attachEvent('onreadystatechange', function () {
-      if (document.readyState !== 'loading')
-        fn();
-    });
-  }
-}
 
 ed11yInit.firstCheck = function() {
   if (!ed11yInit.once) {
@@ -108,7 +88,7 @@ ed11yInit.firstCheck = function() {
 ed11yInit.nextCheck = Date.now();
 ed11yInit.waiting = false;
 ed11yInit.lastText = '';
-ed11yInit.recheck = () => {
+ed11yInit.recheck = (forceFull) => {
   // Debouncing to 1x per second.
   let nextRun = ed11yInit.nextCheck + Ed11y.browserLag - Date.now();
   if (nextRun > 0) {
@@ -116,27 +96,40 @@ ed11yInit.recheck = () => {
     if (!ed11yInit.waiting) {
       // Wait and start debouncing.
       ed11yInit.waiting = true;
-      window.setTimeout(ed11yInit.recheck, nextRun);
+      window.setTimeout(() => {ed11yInit.recheck(forceFull)}, nextRun, forceFull);
     }
   } else {
     // Check now.
     ed11yInit.nextCheck = Date.now() + 1000 + Ed11y.browserLag;
     ed11yInit.waiting = false;
-    if (ed11yInit.once && Ed11y.panel && Ed11y.roots) {
-      window.setTimeout(() => {
+    if (ed11yInit.once && !Ed11y.running && Ed11y.panel && Ed11y.roots) {
+      window.setTimeout((forceFull) => {
+        // Quick align.
         Ed11y.incrementalAlign();
         Ed11y.alignPending = false;
       }, 0 + Ed11y.browserLag);
-      window.setTimeout(() => {
-        Ed11y.forceFullCheck = true;
-        Ed11y.incrementalCheck()
-      }, 250 + Ed11y.browserLag);
-      window.setTimeout(() => {
-        Ed11y.forceFullCheck = true;
-        Ed11y.incrementalCheck()
-      }, 1250 + Ed11y.browserLag);
+      window.setTimeout((forceFull) => {
+        // Then recheck.
+        if (!Ed11y.running) {
+          if (forceFull) {
+            Ed11y.forceFullCheck = true;
+          }
+          Ed11y.incrementalCheck()
+        }
+      }, 250 + Ed11y.browserLag, forceFull);
+      window.setTimeout((forceFull) => {
+        if (!Ed11y.running && !ed11yInit.waiting) {
+          // Recheck unless another cycle has begun.
+          if (forceFull) {
+            Ed11y.forceFullCheck = true;
+          }
+          Ed11y.incrementalCheck()
+        }
+      }, 1250 + Ed11y.browserLag, forceFull);
     } else {
-      Ed11y.checkAll(); // this case should never be reached.
+      if (!Ed11y.running) {
+        Ed11y.checkAll(); // this case should never be reached.
+      }
     }
   }
 }
@@ -165,8 +158,7 @@ ed11yInit.createObserver = function () {
   ed11yInit.innerWorker.port.onmessage = (message) => {
     // Something was clicked outside the iframe.
     if (message.data[1]) {
-      ed11yInit.recheck();
-      ed11yInit.interaction = false;
+      ed11yInit.recheck(false);
     }
   }
   ed11yInit.innerWorker.port.start();
@@ -174,7 +166,7 @@ ed11yInit.createObserver = function () {
     return;
   }
 
-  // Listen for events that may modify content without triggering a mutation.
+  // Listen for events outside checkRoot that may modify content without triggering a mutation.
   window.addEventListener('keyup', (e) => {
     if (!e.target.closest('.ed11y-wrapper, [contenteditable="true"]')) {
       // Arrow changes of radio and select controls.
@@ -194,9 +186,8 @@ ed11yInit.createObserver = function () {
   const ed11yObserverConfig = { attributeFilter: ['class'], characterData: true, subtree: true };
   const ed11yMutationCallback = (callback) => {
     // Ignore mutations that do not result from user interactions.
-    if (callback[0].type !== 'characterData' && ed11yInit.interaction) {
-      ed11yInit.recheck();
-      ed11yInit.interaction = false;
+    if (callback[0].type !== 'characterData' && ed11yInit.interaction && !Ed11y.running) {
+      ed11yInit.recheck(false);
       // Could get blockID via Web worker to check less often.
       // let newBlockId = wp.data.select( 'core/block-editor' ).getSelectedBlockClientId();
     }
@@ -290,7 +281,7 @@ ed11yInit.ed11yPageInit = function () {
   },1000)
   window.setTimeout(() => {
     ed11yInit.createObserver();
-    ed11yInit.recheck();
+    ed11yInit.recheck(true);
   }, 2500);
 };
 
@@ -311,7 +302,8 @@ ed11yInit.findCompatibleEditor = function () {
     ed11yInit.ed11yOuterInit();
   } else if ( document.querySelector('#editor .editor-styles-wrapper')) {
     ed11yInit.editorType = 'onPage';
-    ed11yInit.editRoot = '#editor .is-root-container, #editor .editor-post-title'; // todo: title in headings panel is always "add title?"
+    // Todo: H1 is missing because .editor-visual-editor__post-title-wrapper always computes to "add title" due to aria label.
+    ed11yInit.editRoot = '#editor .is-root-container';
     ed11yInit.scrollRoot = '.interface-interface-skeleton__content';
     ed11yInit.ed11yPageInit();
   } else if (document.getElementById('content_ifr')) {
@@ -326,10 +318,17 @@ ed11yInit.findCompatibleEditor = function () {
   }
 };
 
-// Call callback, scan page for compatible editors.
-ed11yInit.ed11yReady(
-  function () {
+// Scan page for compatible editors once page has loaded.
+window.addEventListener("load", () => {
+  window.setTimeout(() => {
+    if (!ed11yInit.editorType) {
+      ed11yInit.findCompatibleEditor();
+    }
+    });
+  }, 0);
+// Belt & suspenders if load never fires.
+window.setTimeout(() => {
+  if (!ed11yInit.editorType) {
     ed11yInit.findCompatibleEditor();
   }
-);
-
+}, 2500);
