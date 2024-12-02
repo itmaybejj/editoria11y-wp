@@ -7,7 +7,7 @@ ed11yInit.editorType = false; // onPage, inIframe, outsideIframe
 // Prevent multiple inits in modules that re-trigger the document context.
 ed11yInit.once = false;
 ed11yInit.noRun = '.editor-styles-wrapper > .is-root-container.wp-site-blocks, .edit-site-visual-editor__editor-canvas';
-ed11yInit.editRoot = '.editor-styles-wrapper > .is-root-container:not(.wp-site-blocks)';
+ed11yInit.editRoot = '.editor-styles-wrapper > .is-root-container:not(.wp-site-blocks)'; // differentiate page from iframe
 ed11yInit.scrollRoot = false;
 
 
@@ -63,8 +63,9 @@ ed11yInit.getOptions = function() {
   if (ed11yInit.scrollRoot) {
     ed11yInit.options['editableContent'] = ed11yInit.scrollRoot;
   }
-  ed11yInit.options['ignoreByKey'] = { img: '' };
+  //ed11yInit.options['ignoreByKey'] = { img: '' }; Restore default ignores.
   ed11yInit.options['headingsOnlyFromCheckRoots'] = true;
+  ed11yInit.options['ignoreAriaOnElements'] = 'h1,h2,h3,h4,h5,h6';
   ed11yInit.options['altPlaceholder'] = 'This image has an empty alt attribute;';
 
   // WordPress does not render empty post titles, so we don't need to flag them.
@@ -73,7 +74,7 @@ ed11yInit.getOptions = function() {
   ed11yInit.options['buttonZIndex'] = 99999;
   ed11yInit.options['alertMode'] = ed11yInit.options['liveCheck'] &&  ed11yInit.options['liveCheck'] === 'errors' ? 'userPreference' : 'active';
   ed11yInit.options['editorHeadingLevel'] = [{
-    selector: '.editor-styles-wrapper> .is-root-container',
+    selector: '.editor-styles-wrapper > .is-root-container',
     previousHeading: 1,
   }];
 };
@@ -295,6 +296,7 @@ ed11yInit.findCompatibleEditor = function () {
   } else if (document.querySelector('body' + ed11yInit.editRoot)) {
     // inside iFrame
     ed11yInit.editorType = 'inIframe';
+    ed11yInit.editRoot = '.editor-visual-editor__post-title-wrapper:not(:has([data-rich-text-placeholder])), .editor-styles-wrapper > .is-root-container:not(.wp-site-blocks)'; // include title
     ed11yInit.scrollRoot = 'body';
     ed11yInit.ed11yPageInit();
   } else if (document.querySelector('[class*="-visual-editor"] iframe')) {
@@ -302,8 +304,8 @@ ed11yInit.findCompatibleEditor = function () {
     ed11yInit.ed11yOuterInit();
   } else if ( document.querySelector('#editor .editor-styles-wrapper')) {
     ed11yInit.editorType = 'onPage';
-    // Todo: H1 is missing because .editor-visual-editor__post-title-wrapper always computes to "add title" due to aria label.
-    ed11yInit.editRoot = '#editor .is-root-container';
+    // Todo: Is this still being called?
+    ed11yInit.editRoot = '.editor-visual-editor__post-title-wrapper:not(:has([data-rich-text-placeholder])), #editor .is-root-container'; // include title
     ed11yInit.scrollRoot = '.interface-interface-skeleton__content';
     ed11yInit.ed11yPageInit();
   } else if (document.getElementById('content_ifr')) {
