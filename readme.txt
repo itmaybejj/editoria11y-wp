@@ -1,8 +1,8 @@
 === Editoria11y Accessibility Checker ===
 Contributors: itmaybejj, partyka
 Tags: accessibility checker, automated testing, quality assurance, SEO
-Stable tag: 2.0.6
-Tested up to: 6.7
+Stable tag: 2.0.7
+Tested up to: 6.7.1
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -25,12 +25,11 @@ Check out a [demo of the checker itself](https://editoria11y.princeton.edu/next)
 * When **logged-in authors and editors** are viewing pages, Editoria11y inserts tooltips marking any issues present on the current page. Issues are also highlighted while editing in the Block Editor / Gutenberg.
 * Tooltips explain each problem and what actions are needed to resolve it. Some issues are "manual checks," which have buttons to ignore the check or mark the content as OK.
 * Clicking the main toggle shows and hides the tooltips.
-* The main toggle also allows authors to jump to the next issue, restore previously dismissed alerts, visualize text alternatives for images on the page ("alts"), and view the document's heading outline.
-* Optionally, the checker can also outline blocks with issues while the author is editing the content.
+* The main toggle also allows authors to jump to the next issue, restore previously dismissed alerts, visualize text alternatives for images on the page ("alts"), view the document's heading outline, and view site-wide detection lists.
 
 ## The admin experience
 
-* Filterable reports let you explore recent issues, which pages have the most issues, which issues are most common, and which issues have been dismissed. These populate and update as content is viewed and updated.
+* Filterable reports let you explore recent issues, which pages have the most issues, which issues are most common, and which issues have been dismissed. These populate and update when published content is viewed by logged-in authors.
 * Various settings are available to constrain checks to specific parts of the page and tweak the sensitivity of several tests.
 
 ## The tests
@@ -39,7 +38,7 @@ Check out a [demo of the checker itself](https://editoria11y.princeton.edu/next)
     * Images with no alt text
     * Images with a filename as alt text
     * Images with very long alt text
-    * Images with fake alt text to get around field validation -- e.g., "TBD," "placeholder" or "."
+    * Images with fake alt text to get around field validation (e.g. "TBD")
     * Alt text that contains redundant text like “image of” or “photo of”
     * Images in links with alt text that appears to be describing the image instead of the link destination
     * Embedded visualizations that usually require a text alternative
@@ -138,6 +137,11 @@ Editoria11y began as a fork of the Toronto Metropolitan University's [Sa11y Acce
 4. Checker set to dark theme, showing a table header alert
 
 == Changelog ==
+
+= 2.0.7 =
+Updates to [version 2.3.8 of the library](https://github.com/itmaybejj/editoria11y/compare/2.3.6...2.3.8):
+* Add shortcut link to edit page on tips.
+* Compatibility with Windows High Contrast display modes.
 
 = 2.0.6 =
 Updates to [version 2.3.5 of the library](https://github.com/itmaybejj/editoria11y/compare/2.3.3...2.3.5):
