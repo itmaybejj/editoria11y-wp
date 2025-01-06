@@ -1,8 +1,8 @@
 === Editoria11y Accessibility Checker ===
 Contributors: itmaybejj, partyka
 Tags: accessibility checker, automated testing, quality assurance, SEO
-Stable tag: 2.0.7
-Tested up to: 6.7.1
+Stable tag: 2.0.8
+Tested up to: 6.8
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -138,7 +138,7 @@ Editoria11y began as a fork of the Toronto Metropolitan University's [Sa11y Acce
 
 == Changelog ==
 
-= 2.0.7 =
+= 2.0.8 =
 Updates to [version 2.3.8 of the library](https://github.com/itmaybejj/editoria11y/compare/2.3.6...2.3.8):
 * Add shortcut link to edit page on tips.
 * Compatibility with Windows High Contrast display modes.
