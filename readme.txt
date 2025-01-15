@@ -1,7 +1,7 @@
 === Editoria11y Accessibility Checker ===
 Contributors: itmaybejj, partyka
 Tags: accessibility checker, automated testing, quality assurance, SEO
-Stable tag: 2.0.8
+Stable tag: 2.0.9
 Tested up to: 6.8
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -137,6 +137,11 @@ Editoria11y began as a fork of the Toronto Metropolitan University's [Sa11y Acce
 4. Checker set to dark theme, showing a table header alert
 
 == Changelog ==
+
+= 2.0.9 =
+Updates to [version 2.3.9 of the library](https://github.com/itmaybejj/editoria11y/compare/2.3.8...2.3.9):
+* Fixes icon sizing on Safari
+* Adds some missing strings to the translation object
 
 = 2.0.8 =
 Updates to [version 2.3.8 of the library](https://github.com/itmaybejj/editoria11y/compare/2.3.6...2.3.8):
