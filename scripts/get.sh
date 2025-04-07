@@ -11,9 +11,11 @@ git checkout $GIT_REF
 rm ../assets/lib/editoria11y.min.js
 rm ../assets/lib/editoria11y.min.js.map
 rm ../assets/lib/editoria11y.min.css
+rm ../assets/lib/editoria11y.min.css.map
 mv dist/editoria11y.min.js ../assets/lib/
 mv dist/editoria11y.min.js.map ../assets/lib/
 mv dist/editoria11y.min.css ../assets/lib/
+mv dist/editoria11y.min.css.map ../assets/lib/
 
 cd ../
 rm -rf tmp

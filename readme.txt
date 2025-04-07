@@ -1,7 +1,7 @@
 === Editoria11y Accessibility Checker ===
 Contributors: itmaybejj, partyka
 Tags: accessibility checker, automated testing, quality assurance, SEO
-Stable tag: 2.0.9
+Stable tag: 2.0.10
 Tested up to: 6.8
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -137,6 +137,15 @@ Editoria11y began as a fork of the Toronto Metropolitan University's [Sa11y Acce
 4. Checker set to dark theme, showing a table header alert
 
 == Changelog ==
+
+= 2.0.10
+Updates to [version 2.3.10 of the library](https://github.com/itmaybejj/editoria11y/compare/2.3.9...2.3.10):
+* Adds dismiss-all buttons when there are several of the same issue type on a page.
+* [Adds "Edit Media" link](https://github.com/itmaybejj/editoria11y-wp/issues/12) to the tooltips for alt text error messages (hat tip [cbirdsong](https://profiles.wordpress.org/cbirdsong/)).
+* Adds auto shadow DOM detection for the frontend checker, and automatically inserts buttons outside shadow host nodes. This is disabled in the as-you-type checker at the moment; reach out if you need it while editing. It adds ~20ms to test runs, so I am waiting to see if somebody actually needs it first, since performance matters much more there.
+* Empty first table header cell is now a manual check.
+* Name calculation better handles [null aria labels](https://wordpress.org/support/topic/block-button-link-warning-link-with-no-accessible-text/), title attributes and pseudoContent.
+* Various bugfixes and [typo corrections](https://github.com/itmaybejj/editoria11y-wp/issues/40).
 
 = 2.0.9 =
 Updates to [version 2.3.9 of the library](https://github.com/itmaybejj/editoria11y/compare/2.3.8...2.3.9):

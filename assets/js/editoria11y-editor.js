@@ -44,7 +44,7 @@ ed11yInit.syncDismissals = function () {
     sendDismissal(e.detail);
   }, false);
 
-}
+};
 
 
 ed11yInit.getOptions = function() {
@@ -54,11 +54,12 @@ ed11yInit.getOptions = function() {
     new RegExp(ed11yInit.options.linkStringsNewWindows, 'g') :
     /window|\stab|download/g;
   ed11yInit.options['inlineAlerts'] = false;
+  ed11yInit.autoDetectShadowComponents = false; // too slow for editor.
   ed11yInit.options.checkRoots = ed11yInit.editRoot;
-  ed11yInit.options['preventCheckingIfPresent'] = !!ed11yInit.noRun ?
+  ed11yInit.options['preventCheckingIfPresent'] = ed11yInit.noRun ?
     ed11yInit.noRun + ', .block-editor-block-preview__content-iframe' :
     '.block-editor-block-preview__content-iframe';
-  ;
+
   ed11yInit.options['ignoreAllIfAbsent'] = ed11yInit.editRoot;
   if (ed11yInit.scrollRoot) {
     ed11yInit.options['editableContent'] = ed11yInit.scrollRoot;
@@ -97,14 +98,14 @@ ed11yInit.recheck = (forceFull) => {
     if (!ed11yInit.waiting) {
       // Wait and start debouncing.
       ed11yInit.waiting = true;
-      window.setTimeout(() => {ed11yInit.recheck(forceFull)}, nextRun, forceFull);
+      window.setTimeout(() => {ed11yInit.recheck(forceFull);}, nextRun, forceFull);
     }
   } else {
     // Check now.
     ed11yInit.nextCheck = Date.now() + 1000 + Ed11y.browserLag;
     ed11yInit.waiting = false;
     if (ed11yInit.once && !Ed11y.running && Ed11y.panel && Ed11y.roots) {
-      window.setTimeout((forceFull) => {
+      window.setTimeout(() => {
         // Quick align.
         Ed11y.incrementalAlign();
         Ed11y.alignPending = false;
@@ -115,7 +116,7 @@ ed11yInit.recheck = (forceFull) => {
           if (forceFull) {
             Ed11y.forceFullCheck = true;
           }
-          Ed11y.incrementalCheck()
+          Ed11y.incrementalCheck();
         }
       }, 250 + Ed11y.browserLag, forceFull);
       window.setTimeout((forceFull) => {
@@ -124,7 +125,7 @@ ed11yInit.recheck = (forceFull) => {
           if (forceFull) {
             Ed11y.forceFullCheck = true;
           }
-          Ed11y.incrementalCheck()
+          Ed11y.incrementalCheck();
         }
       }, 1250 + Ed11y.browserLag, forceFull);
     } else {
@@ -133,21 +134,30 @@ ed11yInit.recheck = (forceFull) => {
       }
     }
   }
-}
+};
 
 ed11yInit.ed11yShutMenu = () => {
   if (Ed11y.openTip.button) {
     if (ed11yInit.editorType === 'inIframe') {
       ed11yInit.innerWorker.port.postMessage([true, false]);
     } else {
-      wp.data.dispatch('core/block-editor').clearSelectedBlock()
+      // eslint-disable-next-line no-undef
+      wp.data.dispatch('core/block-editor').clearSelectedBlock();
     }
   }
-}
+};
 document.addEventListener('ed11yPop', function() {
   window.setTimeout(() => {
     ed11yInit.ed11yShutMenu();
   }, 1000);
+});
+document.addEventListener('ed11yPop', (e) => {
+  const alreadyDecorated = e.detail.tip.dataset.alreadyDecorated;
+  if (e.detail.result.element.matches('img') && !alreadyDecorated) {
+    const transferFocus = e.detail.tip.shadowRoot.querySelector('.ed11y-transfer-focus');
+    transferFocus?.parentNode.style.setProperty('display', 'none');
+  }
+  e.detail.tip.dataset.alreadyDecorated = 'true';
 });
 
 ed11yInit.interaction = false;
@@ -161,7 +171,7 @@ ed11yInit.createObserver = function () {
     if (message.data[1]) {
       ed11yInit.recheck(false);
     }
-  }
+  };
   ed11yInit.innerWorker.port.start();
   if (ed11yInit.editorType === 'inIframe') {
     return;
@@ -194,19 +204,20 @@ ed11yInit.createObserver = function () {
     }
   };
   const ed11yObserver = new MutationObserver(ed11yMutationCallback);
-  ed11yObserver.observe(ed11yTargetNode, ed11yObserverConfig)
+  ed11yObserver.observe(ed11yTargetNode, ed11yObserverConfig);
 };
 
 ed11yInit.ed11yOuterInit = function() {
 
   // Tell iframe if block editor might be up to something.
+  // eslint-disable-next-line no-undef
   ed11yInit.outerWorker = window.SharedWorker ? new SharedWorker(ed11yVars.worker) : false;
-  window.addEventListener('keyup', (e) => {
+  window.addEventListener('keyup', () => {
     // Arrow changes of radio and select controls.
-    ed11yInit.outerWorker.port.postMessage([false, true])
+    ed11yInit.outerWorker.port.postMessage([false, true]);
   });
-  window.addEventListener('click', (e) => {
-    ed11yInit.outerWorker.port.postMessage([false, true])
+  window.addEventListener('click', () => {
+    ed11yInit.outerWorker.port.postMessage([false, true]);
   });
 
   // Clear active block selection when a tip opens to hide floating menup.
@@ -214,14 +225,14 @@ ed11yInit.ed11yOuterInit = function() {
     if (message.data[0]) {
       wp.data.dispatch('core/block-editor').clearSelectedBlock();
     }
-  }
+  };
 
   ed11yInit.outerWorker.port.onmessageerror = (data) => {
     console.warn(data);
-  }
+  };
   ed11yInit.outerWorker.port.onerror = (data) => {
     console.warn(data);
-  }
+  };
   ed11yInit.outerWorker.port.start();
 };
 
@@ -274,12 +285,13 @@ const ed11yClassicInsertScripts = function() {
 
 // Initiate Editoria11y create alert link, initiate content change watcher.
 ed11yInit.ed11yPageInit = function () {
+  // eslint-disable-next-line no-undef
   ed11yInit.innerWorker = window.SharedWorker ? new SharedWorker(ed11yVars.worker) : false;
   window.setTimeout(() => {
     ed11yInit.getOptions();
     ed11yInit.firstCheck();
     ed11yInit.syncDismissals();
-  },1000)
+  },1000);
   window.setTimeout(() => {
     ed11yInit.createObserver();
     ed11yInit.recheck(true);
@@ -321,7 +333,7 @@ ed11yInit.findCompatibleEditor = function () {
 };
 
 // Scan page for compatible editors once page has loaded.
-window.addEventListener("load", () => {
+window.addEventListener('load', () => {
   window.setTimeout(() => {
     if (!ed11yInit.editorType) {
       ed11yInit.findCompatibleEditor();
