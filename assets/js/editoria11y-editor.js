@@ -223,6 +223,7 @@ ed11yInit.ed11yOuterInit = function() {
   // Clear active block selection when a tip opens to hide floating menup.
   ed11yInit.outerWorker.port.onmessage = (message) => {
     if (message.data[0]) {
+      // eslint-disable-next-line no-undef
       wp.data.dispatch('core/block-editor').clearSelectedBlock();
     }
   };
