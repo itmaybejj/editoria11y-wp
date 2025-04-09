@@ -337,7 +337,7 @@ add_action( 'wp_footer', 'ed11y_init' );
  * @return Object
  */
 function ed11y_add_attachment_id_on_images( $attr, $attachment ) {
-	if ( ! $attr['data-id'] && $attachment->ID ) {
+	if ( ! isset( $attr['data-id'] ) && $attachment->ID ) {
 		$attr['data-id'] = $attachment->ID;
 	}
 	return $attr;

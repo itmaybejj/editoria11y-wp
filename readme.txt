@@ -1,7 +1,7 @@
 === Editoria11y Accessibility Checker ===
 Contributors: itmaybejj, partyka
 Tags: accessibility checker, automated testing, quality assurance, SEO
-Stable tag: 2.0.10
+Stable tag: 2.0.11
 Tested up to: 6.8
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -138,8 +138,10 @@ Editoria11y began as a fork of the Toronto Metropolitan University's [Sa11y Acce
 
 == Changelog ==
 
-= 2.0.10
-Updates to [version 2.3.10 of the library](https://github.com/itmaybejj/editoria11y/compare/2.3.9...2.3.10):
+= 2.0.11 =
+* Resolves PHP error when image ID is not set.
+
+= 2.0.10 =
 * Adds dismiss-all buttons when there are several of the same issue type on a page.
 * [Adds "Edit Media" link](https://github.com/itmaybejj/editoria11y-wp/issues/12) to the tooltips for alt text error messages (hat tip [cbirdsong](https://profiles.wordpress.org/cbirdsong/)).
 * Adds auto shadow DOM detection for the frontend checker, and automatically inserts buttons outside shadow host nodes. This is disabled in the as-you-type checker at the moment; reach out if you need it while editing. It adds ~20ms to test runs, so I am waiting to see if somebody actually needs it first, since performance matters much more there.
@@ -148,17 +150,14 @@ Updates to [version 2.3.10 of the library](https://github.com/itmaybejj/editoria
 * Various bugfixes and [typo corrections](https://github.com/itmaybejj/editoria11y-wp/issues/40).
 
 = 2.0.9 =
-Updates to [version 2.3.9 of the library](https://github.com/itmaybejj/editoria11y/compare/2.3.8...2.3.9):
 * Fixes icon sizing on Safari
 * Adds some missing strings to the translation object
 
 = 2.0.8 =
-Updates to [version 2.3.8 of the library](https://github.com/itmaybejj/editoria11y/compare/2.3.6...2.3.8):
 * Add shortcut link to edit page on tips.
 * Compatibility with Windows High Contrast display modes.
 
 = 2.0.6 =
-Updates to [version 2.3.5 of the library](https://github.com/itmaybejj/editoria11y/compare/2.3.3...2.3.5):
 * Changes to make icons and labels more intuitive in response to user testing.
 * Improvements to the tip placing script to better handle tips on hidden content.
 * Page title included in heading outline while editing.
@@ -167,31 +166,6 @@ Updates to [version 2.3.5 of the library](https://github.com/itmaybejj/editoria1
 * Fixes race condition that caused the checker to not always appear in the block editor.
 * Adds color highlighting inside the headings panel.
 
-= 2.0.3 =
-* Fixes alignment of issue count in tooltip when there is exactly 1 issue.
-
-= 2.0.2 =
-* Improved tip placement logic, and some visual refinements.
-
-= 2.0.1 =
-* Fixes some alignment and display bugs, especially in Safari.
-
 = 2.0.0 =
 * Updates to the 2.3 branch of the checker library. This is a significant redesign of the tips and panel, so please do test before sending to production on complex sites. The new interface can be tested on the [Editoria11y library demo site](https://editoria11y.princeton.edu/next/).
 * New interface for the in-editor checker brings in the full tooltip rather than a simple outline, and eliminates [compatibility issues with other plugins](https://github.com/itmaybejj/editoria11y-wp/issues/37) that were also modifying the Gutenberg interface.
-
-= 1.0.21 =
-* [Fix for live checker not showing in WP 6.6+](https://github.com/itmaybejj/editoria11y-wp/issues/36).
-
-= 1.0.20 =
-* [Don't drop tables on deactivation or network uninstall](https://github.com/itmaybejj/editoria11y-wp/issues/35).
-
-= 1.0.19 =
-* Fix for [expensive DB queries when updating module on large multisites](https://github.com/itmaybejj/editoria11y-wp/issues/34). Thank you [@boone](https://profiles.wordpress.org/boonebgorges/).
-
-= 1.0.18 =
-* Fix for [table constraints failing in MySQL 8 multisites](https://github.com/itmaybejj/editoria11y-wp/issues/32).
-
-= 1.0.17 =
-* Fix for table structure updates failing in MariaDB
-* [ Display author name in CSV export ](https://github.com/itmaybejj/editoria11y-wp/issues/29) when user data is not stored in the default table.
