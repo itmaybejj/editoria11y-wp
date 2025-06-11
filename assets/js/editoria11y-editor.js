@@ -67,7 +67,7 @@ ed11yInit.getOptions = function() {
   //ed11yInit.options['ignoreByKey'] = { img: '' }; Restore default ignores.
   ed11yInit.options['ignoreByKey'] = {
     table: '.is-selected.wp-block-table table, [role="presentation"]',
-  }
+  };
   ed11yInit.options['headingsOnlyFromCheckRoots'] = true;
   ed11yInit.options['ignoreAriaOnElements'] = 'h1,h2,h3,h4,h5,h6,.wp-element-button,.block-editor-rich-text__editable,.wp-block-table';
   ed11yInit.options['altPlaceholder'] = 'This image has an empty alt attribute;';
