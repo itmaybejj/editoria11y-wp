@@ -1,5 +1,8 @@
+console.log('ed11y editor loaded');
 
 const ed11yInit = {};
+window.ed11yInit = ed11yInit; // export for iframes.
+
 // eslint-disable-next-line no-undef
 ed11yInit.options = ed11yVars.options;
 ed11yInit.ed11yReadyCount = 0;
@@ -9,7 +12,6 @@ ed11yInit.once = false;
 ed11yInit.noRun = '.editor-styles-wrapper > .is-root-container.wp-site-blocks, .edit-site-visual-editor__editor-canvas';
 ed11yInit.editRoot = '.editor-styles-wrapper > .is-root-container:not(.wp-site-blocks)'; // differentiate page from iframe
 ed11yInit.scrollRoot = false;
-
 
 ed11yInit.syncDismissals = function () {
   let postData = async function (action, data) {
@@ -85,6 +87,8 @@ ed11yInit.getOptions = function() {
 };
 
 ed11yInit.firstCheck = function() {
+  console.log(ed11yInit.once);
+  console.log(ed11yInit.options);
   if (!ed11yInit.once) {
     ed11yInit.once = true;
     const ed11y = new Ed11y(ed11yInit.options); // eslint-disable-line
@@ -384,6 +388,43 @@ ed11yInit.ed11yOuterInit = function() {
   ed11yInit.outerWorker.port.start();
 };
 
+
+ed11yInit.ed11yOuterClassicInit = function() {
+  /*
+  // Tell iframe if block editor might be up to something.
+  // eslint-disable-next-line no-undef
+  ed11yInit.outerWorker = window.SharedWorker ? new SharedWorker(ed11yVars.worker) : false;
+
+  // Clear active block selection when a tip opens to hide floating menup.
+  ed11yInit.outerWorker.port.onmessage = (message) => {
+    console.log(message)
+  };
+
+  ed11yInit.outerWorker.port.onmessageerror = (data) => {
+    console.warn(data);
+  };
+  ed11yInit.outerWorker.port.onerror = (data) => {
+    console.warn(data);
+  };
+  ed11yInit.outerWorker.port.start();
+
+  // eslint-disable-next-line no-undef
+  ed11yInit.innerWorker = window.SharedWorker ? new SharedWorker(ed11yVars.worker) : false;*/
+  window.setTimeout(() => {
+    ed11yInit.getOptions();
+    ed11yInit.options['checkRoots'] = '#wp-content-editor-tools';
+    ed11yInit.firstCheck()
+  },0);
+
+  window.ed11yIframeResults = function (data) {
+    console.log('I heard that');
+    console.log(data);
+    Ed11y.results = data.results;
+    Ed11y.forceFullCheck = data.forceFullCheck;
+    Ed11y.updatePanel();
+  }
+}
+
 // Initiate Editoria11y create alert link, initiate content change watcher.
 ed11yInit.ed11yPageInit = function () {
   // eslint-disable-next-line no-undef
@@ -399,10 +440,22 @@ ed11yInit.ed11yPageInit = function () {
   }, 2500);
 };
 
+// Initiate Editoria11y create alert link, initiate content change watcher.
+ed11yInit.ed11yClassicInit = function () {
+  alert('classic');
+  // eslint-disable-next-line no-undef
+  window.setTimeout(() => {
+    ed11yInit.getOptions();
+    ed11yInit.firstCheck();
+    ed11yInit.syncDismissals();
+  },1000);
+};
+
 // Look to see if Gutenberg has loaded.
 // Possible todo: add checks/markup for other common editors.
 ed11yInit.findCompatibleEditor = function () {
   if (ed11yInit.editorType) {
+    console.log('prevent rerun');
     // Do nothing.
   } else if (document.querySelector(ed11yInit.noRun)) {
     ed11yInit.editorType = 'forbidden';
@@ -423,6 +476,8 @@ ed11yInit.findCompatibleEditor = function () {
     ed11yInit.ed11yPageInit();
   } else if (document.getElementById('content_ifr')) {
     ed11yInit.editorType = 'mce';
+    ed11yInit.ed11yOuterClassicInit();
+    console.log('MCE frame detected');
   } else if (ed11yInit.ed11yReadyCount < 60) {
     window.setTimeout(function () {
       ed11yInit.ed11yReadyCount++;

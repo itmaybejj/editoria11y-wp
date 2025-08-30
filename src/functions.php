@@ -362,7 +362,6 @@ add_filter( 'old_slug_redirect_url', 'ed11y_old_slug_redirect_url_filter' );
 
 /**
  * Load live checker when editor is present.
- * THIS IS NOT WORKING FOR NEW EDITOR
  * */
 function ed11y_editor_init() {
 	if ( 'none' !== ed11y_get_plugin_settings( 'ed11y_livecheck', false ) ) {
@@ -371,3 +370,36 @@ function ed11y_editor_init() {
 	}
 }
 add_action( 'wp_enqueue_editor', 'ed11y_editor_init' );
+
+/**
+ * Adds assets to TinyMCE.
+ *
+ * @param array $plugins An array of all plugins.
+ * @return array
+ */
+function ed11y_custom_plugins( $plugins ) {
+  //$plugins['ed11y'] = trailingslashit( ED11Y_ASSETS ) . 'lib/editoria11y.min.js';
+  $plugins['ed11y'] = trailingslashit( ED11Y_ASSETS ) . 'js/editoria11y-mce.js';
+  //$plugins['noneditable'] = trailingslashit( ED11Y_ASSETS ) . 'js/tinymce4.5noneditable.js';
+  return $plugins;
+}
+add_filter( 'mce_external_plugins', 'ed11y_custom_plugins' );
+
+function ed11y_mce_options( $init ) {
+  /*$init['theme_advanced_blockformats'] = 'p,address,pre,code,h3,h4,h5,h6';
+  $init['theme_advanced_disable'] = 'forecolor';
+  $init['paste_remove_spans'] = true;*/
+  /*
+   *   editor.settings.external_plugins = {
+    'noneditable': 'https://editoria11y-wp.ddev.site/wp-content/plugins/editoria11y-wp/assets/js/tinymce4.5noneditable.js'
+  }
+  editor.settings.plugins += ',noneditable';
+  editor.settings.noneditable_noneditable_class = 'mceNonEditable'; // need to check for others?
+  //editor.settings.noneditable_noneditable_class = 'ed11y-element'; // need to check for others?
+*/
+  //$init['noneditable_noneditable_class'] = 'mceNonEditable';
+  //$init['invalid_elements'] = 'ed11y-element-result, ed11y-element-panel';
+  //$init['invalid_elements'] += 'ed11y-element-result, ed11y-element-panel';
+  return $init;
+}
+add_filter('tiny_mce_before_init', 'ed11y_mce_options');
