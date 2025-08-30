@@ -1,4 +1,8 @@
+window.setTimeout(() => {
+  parent.startMCEEd11y(document.body);
+},100);
 
+/*
 const ed11yFramed = {};
 ed11yFramed.options = Object.assign(parent.ed11yInit.options);
 ed11yFramed.options.checkRoots = 'body';
@@ -49,3 +53,4 @@ window.setTimeout(() => {
   const ed11y = new Ed11y(ed11yFramed.options);
 },100);
 
+*/

@@ -86,6 +86,33 @@ ed11yInit.getOptions = function() {
   }];
 };
 
+ed11yInit.shutMenusOnPop = function() {
+
+  ed11yInit.ed11yShutMenu = () => {
+    if (Ed11y.openTip.button) {
+      if (ed11yInit.editorType === 'inIframe') {
+        ed11yInit.innerWorker.port.postMessage([true, false]);
+      } else {
+        // eslint-disable-next-line no-undef
+        wp.data.dispatch('core/block-editor').clearSelectedBlock();
+      }
+    }
+  };
+  document.addEventListener('ed11yPop', function() {
+    window.setTimeout(() => {
+      ed11yInit.ed11yShutMenu();
+    }, 1000);
+  });
+  document.addEventListener('ed11yPop', (e) => {
+    const alreadyDecorated = e.detail.tip.dataset.alreadyDecorated;
+    if (e.detail.result.element.matches('img') && !alreadyDecorated) {
+      const transferFocus = e.detail.tip.shadowRoot.querySelector('.ed11y-transfer-focus');
+      transferFocus?.parentNode.style.setProperty('display', 'none');
+    }
+    e.detail.tip.dataset.alreadyDecorated = 'true';
+  });
+}
+
 ed11yInit.firstCheck = function() {
   console.log(ed11yInit.once);
   console.log(ed11yInit.options);
@@ -144,29 +171,6 @@ ed11yInit.recheck = (forceFull) => {
   }
 };
 
-ed11yInit.ed11yShutMenu = () => {
-  if (Ed11y.openTip.button) {
-    if (ed11yInit.editorType === 'inIframe') {
-      ed11yInit.innerWorker.port.postMessage([true, false]);
-    } else {
-      // eslint-disable-next-line no-undef
-      wp.data.dispatch('core/block-editor').clearSelectedBlock();
-    }
-  }
-};
-document.addEventListener('ed11yPop', function() {
-  window.setTimeout(() => {
-    ed11yInit.ed11yShutMenu();
-  }, 1000);
-});
-document.addEventListener('ed11yPop', (e) => {
-  const alreadyDecorated = e.detail.tip.dataset.alreadyDecorated;
-  if (e.detail.result.element.matches('img') && !alreadyDecorated) {
-    const transferFocus = e.detail.tip.shadowRoot.querySelector('.ed11y-transfer-focus');
-    transferFocus?.parentNode.style.setProperty('display', 'none');
-  }
-  e.detail.tip.dataset.alreadyDecorated = 'true';
-});
 document.addEventListener('ed11yRunCustomTests', function() {
 
   Ed11y.findElements('wpButtonBlock','.wp-element-button:not(.is-selected .wp-element-button)');
@@ -410,23 +414,57 @@ ed11yInit.ed11yOuterClassicInit = function() {
 
   // eslint-disable-next-line no-undef
   ed11yInit.innerWorker = window.SharedWorker ? new SharedWorker(ed11yVars.worker) : false;*/
-  window.setTimeout(() => {
+  /*window.setTimeout(() => {
     ed11yInit.getOptions();
     ed11yInit.options['checkRoots'] = '#wp-content-editor-tools';
+    ed11yInit.options['alertMode'] = 'active';
+    ed11yInit.options['ignoreAllIfAbsent'] = false;
+    ed11yInit.options['watchForChanges'] = false;
     ed11yInit.firstCheck()
-  },0);
+  },0);*/
+  ed11yInit.getOptions();
+  ed11yInit.options['alertMode'] = 'active';
+  ed11yInit.options['ignoreAllIfAbsent'] = false;
+  ed11yInit.options['watchForChanges'] = false;
+  ed11yInit.options['editorHeadingLevel'] = [];
+  ed11yInit.options.autoDetectShadowComponents = false;
+  ed11yInit.options.watchForChanges = 'checkRoots';
+  ed11yInit.options.editorHeadingLevel = [
+    {
+      selector: 'body',
+      previousHeading: 1,
+    },
+    {
+      selector: '*',
+      previousHeading: 0,
+    },
+  ];
+
+  // This is exported to global for use by the MCE iframe.
+  window.startMCEEd11y = function(root) {
+    ed11yInit.options['checkRoots'] = '#tinymce, #wp-content-editor-tools';
+    ed11yInit.options.fixedRoots = [root];
+    ed11yInit.options.editableContent = [root];
+    // TODO is this selector right? What if there are several?
+    ed11yInit.options.framePositioner = document.querySelector('#content_ifr');
+
+    ed11yInit.firstCheck()
+  }
 
   window.ed11yIframeResults = function (data) {
     console.log('I heard that');
     console.log(data);
     Ed11y.results = data.results;
     Ed11y.forceFullCheck = data.forceFullCheck;
+    Ed11y.incremental = true;
     Ed11y.updatePanel();
   }
+
 }
 
 // Initiate Editoria11y create alert link, initiate content change watcher.
 ed11yInit.ed11yPageInit = function () {
+  ed11yInit.shutMenusOnPop();
   // eslint-disable-next-line no-undef
   ed11yInit.innerWorker = window.SharedWorker ? new SharedWorker(ed11yVars.worker) : false;
   window.setTimeout(() => {
@@ -438,17 +476,6 @@ ed11yInit.ed11yPageInit = function () {
     ed11yInit.createObserver();
     ed11yInit.recheck(true);
   }, 2500);
-};
-
-// Initiate Editoria11y create alert link, initiate content change watcher.
-ed11yInit.ed11yClassicInit = function () {
-  alert('classic');
-  // eslint-disable-next-line no-undef
-  window.setTimeout(() => {
-    ed11yInit.getOptions();
-    ed11yInit.firstCheck();
-    ed11yInit.syncDismissals();
-  },1000);
 };
 
 // Look to see if Gutenberg has loaded.
