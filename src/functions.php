@@ -189,7 +189,9 @@ function ed11y_get_params( $user ) {
 		$ed1vals['preventCheckingIfPresent'] = $settings['ed11y_no_run'];
 		$ed1vals['liveCheck']                = $settings['ed11y_livecheck'];
 		$ed1vals['customTests']              = $settings['ed11y_custom_tests'];
-		$ed1vals['cssLocation']              = trailingslashit( ED11Y_ASSETS ) . 'lib/editoria11y.min.css';
+		$ed1vals['cssLocation']              = trailingslashit( ED11Y_ASSETS ) . 'lib/editoria11y.min.css'; // add version?
+    $ed1vals['mceInnerJS']              = trailingslashit( ED11Y_ASSETS ) . 'js/editoria11y-mce-inner.js?ver=' . Editoria11y::ED11Y_VERSION;
+
 		$ed1vals['adminUrl']                 = get_admin_url();
 		set_site_transient( 'editoria11y_settings', $ed1vals, 360 );
 	}
@@ -370,36 +372,3 @@ function ed11y_editor_init() {
 	}
 }
 add_action( 'wp_enqueue_editor', 'ed11y_editor_init' );
-
-/**
- * Adds assets to TinyMCE.
- *
- * @param array $plugins An array of all plugins.
- * @return array
- */
-function ed11y_custom_plugins( $plugins ) {
-  //$plugins['ed11y'] = trailingslashit( ED11Y_ASSETS ) . 'lib/editoria11y.min.js';
-  $plugins['ed11y'] = trailingslashit( ED11Y_ASSETS ) . 'js/editoria11y-mce.js';
-  //$plugins['noneditable'] = trailingslashit( ED11Y_ASSETS ) . 'js/tinymce4.5noneditable.js';
-  return $plugins;
-}
-add_filter( 'mce_external_plugins', 'ed11y_custom_plugins' );
-
-function ed11y_mce_options( $init ) {
-  /*$init['theme_advanced_blockformats'] = 'p,address,pre,code,h3,h4,h5,h6';
-  $init['theme_advanced_disable'] = 'forecolor';
-  $init['paste_remove_spans'] = true;*/
-  /*
-   *   editor.settings.external_plugins = {
-    'noneditable': 'https://editoria11y-wp.ddev.site/wp-content/plugins/editoria11y-wp/assets/js/tinymce4.5noneditable.js'
-  }
-  editor.settings.plugins += ',noneditable';
-  editor.settings.noneditable_noneditable_class = 'mceNonEditable'; // need to check for others?
-  //editor.settings.noneditable_noneditable_class = 'ed11y-element'; // need to check for others?
-*/
-  //$init['noneditable_noneditable_class'] = 'mceNonEditable';
-  //$init['invalid_elements'] = 'ed11y-element-result, ed11y-element-panel';
-  //$init['invalid_elements'] += 'ed11y-element-result, ed11y-element-panel';
-  return $init;
-}
-add_filter('tiny_mce_before_init', 'ed11y_mce_options');

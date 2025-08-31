@@ -31,7 +31,7 @@
  */
 class Editoria11y {
 	// Library version; used as cache buster.
-	const ED11Y_VERSION = '2.0.12';
+	const ED11Y_VERSION = '2.0.13-dev';
 
 	/**
 	 * Attachs functions to loop.

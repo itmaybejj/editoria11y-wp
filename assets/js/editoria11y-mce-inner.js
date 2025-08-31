@@ -1,63 +1,44 @@
+
+let readyCount = 0;
 const letsGo = function() {
   if (typeof parent.startMCEEd11y === 'function') {
+
+    // Both parent and iframe are ready; init Ed11y.
     parent.startMCEEd11y(document.body);
-  } else {
-    window.setTimeout(letsGo, 2000);
+
+    /*
+    * Local copies of Editoria11y functions that don't work across frames.
+    * */
+    document.addEventListener('keydown', () => {
+      parent.Ed11y.interaction = true;
+    });
+    document.addEventListener('click', () => {
+      parent.Ed11y.interaction = true;
+    });
+    const debounce = (callback, wait) => {
+      let timeoutId = null;
+      return (...args) => {
+        window.clearTimeout(timeoutId);
+        timeoutId = window.setTimeout(() => {
+          callback.apply(null, args);
+        }, wait);
+      };
+    };
+    const selectionChanged = debounce(() => {
+      if (!parent.Ed11y.running && parent.Ed11y.rangeChange(window.getSelection()?.anchorNode)) {
+        parent.Ed11y.updateTipLocations();
+        parent.Ed11y.checkEditableIntersects(true);
+      }
+    }, 100);
+    document.addEventListener('selectionchange', function() {
+      selectionChanged()
+    });
+
+  } else if (readyCount < 60) {
+    readyCount++;
+    window.setTimeout(letsGo, 1000);
   }
 }
 window.setTimeout(() => {
   letsGo();
 },100);
-
-/*
-const ed11yFramed = {};
-ed11yFramed.options = Object.assign(parent.ed11yInit.options);
-ed11yFramed.options.checkRoots = 'body';
-ed11yFramed.options.customTests = 1;
-ed11yFramed.options['alertMode'] = 'customUI'
-ed11yFramed.options.editableContent = 'body';
-ed11yFramed.options.autoDetectShadowComponents = false;
-ed11yFramed.options.watchForChanges = true;
-ed11yFramed.options.editorHeadingLevel = [
-  {
-    selector: 'body',
-    previousHeading: 1,
-  },
-  {
-    selector: '*',
-    previousHeading: 0,
-  },
-];
-ed11yFramed.forceFullCheck = false;
-
-console.log(ed11yFramed.options);
-document.addEventListener('ed11yRunCustomTests', function() {
-    ed11yFramed.forceFullCheck = true;
-    let allDone = new CustomEvent('ed11yResume');
-    document.dispatchEvent(allDone);
-  }
-);
-
-const ed11ySync = {}
-//console.log(parent.ed11yIframeCommunication);
-window.setTimeout(function() {
-  //console.log(parent.ed11yIframeCommunication);
-},100)
-//ed11ySync.worker = window.SharedWorker ? new SharedWorker(ed11yVars.worker) : false;
-//ed11ySync.innerWorker.port.start();
-
-const newResults = function() {
-  console.log('results!');
-  parent.ed11yIframeResults({
-    results: Ed11y.results,
-    forceFullCheck: ed11yFramed.forceFullCheck,
-  }
-  );
-}
-
-document.addEventListener('ed11yResults', newResults);
-window.setTimeout(() => {
-  const ed11y = new Ed11y(ed11yFramed.options);
-},100);
-
-*/
