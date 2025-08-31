@@ -394,39 +394,21 @@ ed11yInit.ed11yOuterInit = function() {
 
 
 ed11yInit.ed11yOuterClassicInit = function() {
-  /*
-  // Tell iframe if block editor might be up to something.
-  // eslint-disable-next-line no-undef
-  ed11yInit.outerWorker = window.SharedWorker ? new SharedWorker(ed11yVars.worker) : false;
-
-  // Clear active block selection when a tip opens to hide floating menup.
-  ed11yInit.outerWorker.port.onmessage = (message) => {
-    console.log(message)
-  };
-
-  ed11yInit.outerWorker.port.onmessageerror = (data) => {
-    console.warn(data);
-  };
-  ed11yInit.outerWorker.port.onerror = (data) => {
-    console.warn(data);
-  };
-  ed11yInit.outerWorker.port.start();
-
-  // eslint-disable-next-line no-undef
-  ed11yInit.innerWorker = window.SharedWorker ? new SharedWorker(ed11yVars.worker) : false;*/
-  /*window.setTimeout(() => {
-    ed11yInit.getOptions();
-    ed11yInit.options['checkRoots'] = '#wp-content-editor-tools';
-    ed11yInit.options['alertMode'] = 'active';
-    ed11yInit.options['ignoreAllIfAbsent'] = false;
-    ed11yInit.options['watchForChanges'] = false;
-    ed11yInit.firstCheck()
-  },0);*/
   ed11yInit.getOptions();
   ed11yInit.options['alertMode'] = 'active';
   ed11yInit.options['ignoreAllIfAbsent'] = false;
   ed11yInit.options['watchForChanges'] = false;
   ed11yInit.options['editorHeadingLevel'] = [];
+  ed11yInit.options['headingsOnlyFromCheckRoots'] = true;
+  // Todo: preventChecking is better than ignore all, but fails to restore at the moment.
+  // ed11yInit.options['preventCheckingIfPresent'] = '#content-html[aria-pressed="true"]';
+  ed11yInit.options['ignoreAllIfPresent'] = '#content-html[aria-pressed="true"]';
+
+  const hideOnCode = document.createElement('style');
+  hideOnCode.setAttribute('hidden', 'true');
+  hideOnCode.textContent = 'body:has(#content-html[aria-pressed="true"]) .ed11y-element {display: none;}';
+  document.body.appendChild(hideOnCode);
+
   ed11yInit.options.autoDetectShadowComponents = false;
   ed11yInit.options.watchForChanges = 'checkRoots';
   ed11yInit.options.editorHeadingLevel = [
@@ -448,11 +430,11 @@ ed11yInit.ed11yOuterClassicInit = function() {
     // TODO is this selector right? What if there are several?
     ed11yInit.options.framePositioner = document.querySelector('#content_ifr');
 
-    ed11yInit.firstCheck()
+    ed11yInit.firstCheck();
+    ed11yInit.syncDismissals();
   }
 
   window.ed11yIframeResults = function (data) {
-    console.log('I heard that');
     console.log(data);
     Ed11y.results = data.results;
     Ed11y.forceFullCheck = data.forceFullCheck;

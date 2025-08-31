@@ -1,5 +1,12 @@
+const letsGo = function() {
+  if (typeof parent.startMCEEd11y === 'function') {
+    parent.startMCEEd11y(document.body);
+  } else {
+    window.setTimeout(letsGo, 2000);
+  }
+}
 window.setTimeout(() => {
-  parent.startMCEEd11y(document.body);
+  letsGo();
 },100);
 
 /*
