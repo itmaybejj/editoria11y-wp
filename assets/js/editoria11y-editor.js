@@ -431,6 +431,15 @@ ed11yInit.ed11yOuterClassicInit = function() {
       ed11yInit.options.fixedRoots = [];
       ed11yInit.options.editableContent = [];
 
+      // Listen for event
+      document.addEventListener('ed11yPop', e => {
+        // Use event details to get the marked element
+        const cantFocus = e.detail.tip.shadowRoot.querySelector('.ed11y-transfer-focus');
+        if (cantFocus) {
+          cantFocus.remove();
+        }
+      });
+
       iframes.forEach(iframe => {
         ed11yInit.options.fixedRoots.push({
           fixedRoot: iframe.contentWindow.document.body,
