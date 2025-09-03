@@ -391,7 +391,7 @@ ed11yInit.ed11yOuterInit = function() {
 ed11yInit.ed11yOuterClassicInit = function() {
 
   // todo: do we want to expose this to config? same string used in call.
-  const iframes = document.querySelectorAll('.mce-edit-area iframe');
+  const iframes = document.querySelectorAll(`.mce-edit-area iframe:not(${ed11yInit.options['ignoreElements']})`);
 
   let readyCount = 0;
   const iframesReady = function() {
@@ -399,7 +399,7 @@ ed11yInit.ed11yOuterClassicInit = function() {
     if (ready) {
 
       ed11yInit.getOptions();
-      ed11yInit.options['alertMode'] = 'active';
+      //ed11yInit.options['alertMode'] = 'active';
       ed11yInit.options['ignoreAllIfAbsent'] = false;
       ed11yInit.options['watchForChanges'] = false;
       ed11yInit.options['editorHeadingLevel'] = [];
