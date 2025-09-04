@@ -111,7 +111,7 @@ If you notice anything amiss, experiment with these settings:
 
 1. Pick a "Theme for tooltips" that looks nice with your site's colors.
 2. If the checker is flagging issues that are not relevant to content editors, either use "Check content in these containers" to constrain checks to the parts of the page with editable content, or "Exclude these elements from checks" to skip over certain elements, regions or widgets.
-3. Editoria11y also provides an "as-you-type" issue highlighter that works inside the editor. If you find live correction annoying rather than helpful, change "Check inside the block editor" to unset "always show tips," or chose "Do not check while editing."
+3. Editoria11y also provides an "as-you-type" issue highlighter that works inside the editor. If you find live correction annoying rather than helpful, change "Check while editing content" to unset "always show tips," or chose "Do not check while editing."
 4. If you do not want PDF or other document types flagged for manual checks, provide a shorter selector list or set "Document types that need manual review" to `false`
 5. If your theme has done something very unusual with its layout, such as setting the height of the content container to 0px, you may see confusing alerts when opening Editoria11y tips saying that the highlighted element may be off-screen or invisible. If that happens, disable "Check if elements are visible when using panel navigation buttons." This is disabled by defaults on any WordPress themes we have noticed this on, so if you find a theme
 
@@ -131,10 +131,10 @@ Editoria11y's WordPress plugin is maintained by Princeton University's [Web Deve
 Editoria11y began as a fork of the Toronto Metropolitan University's [Sa11y Accessibility Checker](https://sa11y.netlify.app/), and our teams regularly pass new code and ideas back and forth.
 
 == Screenshots ==
-1. Checker with an open "manual check" request
-2. Optional feature: highlighting live in the block editor
-3. Site-wide reporting dashboard
-4. Checker set to dark theme, showing a table header alert
+1. Checker with an open "manual check" request, for an image without alt text.
+2. The same issue shown while editing the page, this time using the dark theme.
+3. The site-wide reporting dashboard.
+4. Checker set to dark theme, asking if the whole sentence needs to be in caps lock.
 
 == Changelog ==
 

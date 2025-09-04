@@ -390,7 +390,6 @@ ed11yInit.ed11yOuterInit = function() {
 
 ed11yInit.ed11yOuterClassicInit = function() {
 
-  // todo: do we want to expose this to config? same string used in call.
   const iframes = document.querySelectorAll(`.mce-edit-area iframe:not(${ed11yInit.options['ignoreElements']})`);
 
   let readyCount = 0;
