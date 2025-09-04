@@ -108,7 +108,7 @@ ed11yInit.shutMenusOnPop = function() {
     }
     e.detail.tip.dataset.alreadyDecorated = 'true';
   });
-}
+};
 
 ed11yInit.firstCheck = function() {
   if (!ed11yInit.once) {
@@ -444,18 +444,18 @@ ed11yInit.ed11yOuterClassicInit = function() {
         ed11yInit.options.fixedRoots.push({
           fixedRoot: iframe.contentWindow.document.body,
           framePositioner: iframe,
-        })
+        });
         ed11yInit.options.editableContent.push(iframe.contentWindow.document.body);
         const head = iframe.contentWindow.document.getElementsByTagName('head')[0];
         const script = iframe.contentWindow.document.createElement('script');
         script.src = ed11yInit.options.mceInnerJS;
         script.type = 'text/javascript';
         head.appendChild(script);
-      })
+      });
 
       let once = false;
       // This is exported to global for use by the MCE iframe.
-      window.startMCEEd11y = function(root) {
+      window.startMCEEd11y = function() {
         if (once) {
           return;
         }
@@ -464,18 +464,18 @@ ed11yInit.ed11yOuterClassicInit = function() {
         ed11yInit.firstCheck();
         ed11yInit.syncDismissals();
         window.Ed11y = Ed11y; // Export for direct calls by iFrame
-      }
+      };
 
     } else if (readyCount < 60) {
       readyCount++;
       window.setTimeout(iframesReady, 1000);
     }
-  }
+  };
   window.setTimeout(() => {
     iframesReady();
   },100);
 
-}
+};
 
 // Initiate Editoria11y create alert link, initiate content change watcher.
 ed11yInit.ed11yPageInit = function () {

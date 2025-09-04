@@ -39,14 +39,14 @@ const letsGo = function() {
       }
     }, 100);
     document.addEventListener('selectionchange', function() {
-      selectionChanged()
+      selectionChanged();
     });
 
   } else if (readyCount < 60) {
     readyCount++;
     window.setTimeout(letsGo, 1000);
   }
-}
+};
 window.setTimeout(() => {
   letsGo();
 },100);
