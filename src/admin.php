@@ -114,7 +114,7 @@ function ed11y_setting_sections_fields() {
 	// Add live check field.
 	add_settings_field(
 		'ed11y_livecheck',
-		esc_html__( 'Check inside the block editor', 'editoria11y' ),
+		esc_html__( 'Check while editing content', 'editoria11y' ),
 		'ed11y_livecheck_field',
 		'ed11y',
 		'ed11y_basic',
@@ -264,7 +264,7 @@ function ed11y_livecheck_field() {
 		<option <?php echo 'none' === $settings ? 'selected="true"' : ''; ?>value="none">Do not check while editing</option>
 	</select>
 	<p id="livecheck_description">
-		Activates when editing posts or pages in the default block editor (Gutenberg).
+		Shows tips while editing post and page content (not templates or layouts).
 	</p>
 	<?php
 }
@@ -522,7 +522,7 @@ function ed11y_plugin_settings_render_page() {
 						Getting started
 					</h2>
 					<p>Editoria11y should work out of the box in most themes (view a
-						<a href="https://jjameson.mycpanel.princeton.edu/editoria11y/">demo of the authoring experience</a>).
+						<a href="https://editoria11y.princeton.edu/demo/">demo of the authoring experience</a>).
 						<ol>
 							<li>If authors do not see the checker toggle, check your <a href="https://developer.mozilla.org/en-US/docs/Tools/Browser_Console" class="ext" data-extlink="">browser console</a> for errors, and make sure the theme is not hiding <code>ed11y-element-panel</code>.</li>
 							<li>If the checker toggle is <strong>present</strong> but not finding much: make sure your content areas are listed in "Check content in these containers". It is not uncommon for themes to insert editable content outside the <code>main</code> element.</li></ol>

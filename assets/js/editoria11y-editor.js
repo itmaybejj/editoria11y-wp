@@ -1,5 +1,5 @@
-
 const ed11yInit = {};
+
 // eslint-disable-next-line no-undef
 ed11yInit.options = ed11yVars.options;
 ed11yInit.ed11yReadyCount = 0;
@@ -9,7 +9,6 @@ ed11yInit.once = false;
 ed11yInit.noRun = '.editor-styles-wrapper > .is-root-container.wp-site-blocks, .edit-site-visual-editor__editor-canvas';
 ed11yInit.editRoot = '.editor-styles-wrapper > .is-root-container:not(.wp-site-blocks)'; // differentiate page from iframe
 ed11yInit.scrollRoot = false;
-
 
 ed11yInit.syncDismissals = function () {
   let postData = async function (action, data) {
@@ -84,6 +83,33 @@ ed11yInit.getOptions = function() {
   }];
 };
 
+ed11yInit.shutMenusOnPop = function() {
+
+  ed11yInit.ed11yShutMenu = () => {
+    if (Ed11y.openTip.button) {
+      if (ed11yInit.editorType === 'inIframe') {
+        ed11yInit.innerWorker.port.postMessage([true, false]);
+      } else {
+        // eslint-disable-next-line no-undef
+        wp.data.dispatch('core/block-editor').clearSelectedBlock();
+      }
+    }
+  };
+  document.addEventListener('ed11yPop', function() {
+    window.setTimeout(() => {
+      ed11yInit.ed11yShutMenu();
+    }, 1000);
+  });
+  document.addEventListener('ed11yPop', (e) => {
+    const alreadyDecorated = e.detail.tip.dataset.alreadyDecorated;
+    if (e.detail.result.element.matches('img') && !alreadyDecorated) {
+      const transferFocus = e.detail.tip.shadowRoot.querySelector('.ed11y-transfer-focus');
+      transferFocus?.parentNode.style.setProperty('display', 'none');
+    }
+    e.detail.tip.dataset.alreadyDecorated = 'true';
+  });
+};
+
 ed11yInit.firstCheck = function() {
   if (!ed11yInit.once) {
     ed11yInit.once = true;
@@ -140,29 +166,6 @@ ed11yInit.recheck = (forceFull) => {
   }
 };
 
-ed11yInit.ed11yShutMenu = () => {
-  if (Ed11y.openTip.button) {
-    if (ed11yInit.editorType === 'inIframe') {
-      ed11yInit.innerWorker.port.postMessage([true, false]);
-    } else {
-      // eslint-disable-next-line no-undef
-      wp.data.dispatch('core/block-editor').clearSelectedBlock();
-    }
-  }
-};
-document.addEventListener('ed11yPop', function() {
-  window.setTimeout(() => {
-    ed11yInit.ed11yShutMenu();
-  }, 1000);
-});
-document.addEventListener('ed11yPop', (e) => {
-  const alreadyDecorated = e.detail.tip.dataset.alreadyDecorated;
-  if (e.detail.result.element.matches('img') && !alreadyDecorated) {
-    const transferFocus = e.detail.tip.shadowRoot.querySelector('.ed11y-transfer-focus');
-    transferFocus?.parentNode.style.setProperty('display', 'none');
-  }
-  e.detail.tip.dataset.alreadyDecorated = 'true';
-});
 document.addEventListener('ed11yRunCustomTests', function() {
 
   Ed11y.findElements('wpButtonBlock','.wp-element-button:not(.is-selected .wp-element-button)');
@@ -384,8 +387,98 @@ ed11yInit.ed11yOuterInit = function() {
   ed11yInit.outerWorker.port.start();
 };
 
+
+ed11yInit.ed11yOuterClassicInit = function() {
+
+  const iframes = document.querySelectorAll(`.mce-edit-area iframe:not(${ed11yInit.options['ignoreElements']})`);
+
+  let readyCount = 0;
+  const iframesReady = function() {
+    const ready = Array.from(iframes).every((frame) => typeof frame.contentWindow?.document === 'object');
+    if (ready) {
+
+      ed11yInit.getOptions();
+      //ed11yInit.options['alertMode'] = 'active';
+      ed11yInit.options['ignoreAllIfAbsent'] = false;
+      ed11yInit.options['watchForChanges'] = false;
+      ed11yInit.options['editorHeadingLevel'] = [];
+      ed11yInit.options['headingsOnlyFromCheckRoots'] = true;
+      ed11yInit.options['buttonZIndex'] = 998;
+      // Todo: preventChecking would be better than ignore all, but fails to restore at the moment.
+      // ed11yInit.options['preventCheckingIfPresent'] = '#content-html[aria-pressed="true"]';
+      ed11yInit.options['ignoreAllIfPresent'] = '#content-html[aria-pressed="true"]';
+
+      const hideOnCode = document.createElement('style');
+      hideOnCode.setAttribute('hidden', 'true');
+      hideOnCode.textContent = 'div.mce-toolbar-grp {z-index:999;} body:has(#content-html[aria-pressed="true"]) .ed11y-element {display: none;}';
+      document.body.appendChild(hideOnCode);
+
+      ed11yInit.options.autoDetectShadowComponents = false;
+      ed11yInit.options.watchForChanges = 'checkRoots';
+      ed11yInit.options.editorHeadingLevel = [
+        // need to set this up per frame
+        {
+          selector: '.mce-content-body',
+          previousHeading: 1,
+        },
+        {
+          selector: '*',
+          previousHeading: 0,
+        },
+      ];
+      ed11yInit.options['checkRoots'] = '#tinymce, #wp-content-editor-tools';
+      ed11yInit.options.fixedRoots = [];
+      ed11yInit.options.editableContent = [];
+
+      // Listen for event
+      document.addEventListener('ed11yPop', e => {
+        // Use event details to get the marked element
+        const cantFocus = e.detail.tip.shadowRoot.querySelector('.ed11y-transfer-focus');
+        if (cantFocus) {
+          cantFocus.remove();
+        }
+      });
+
+      iframes.forEach(iframe => {
+        ed11yInit.options.fixedRoots.push({
+          fixedRoot: iframe.contentWindow.document.body,
+          framePositioner: iframe,
+        });
+        ed11yInit.options.editableContent.push(iframe.contentWindow.document.body);
+        const head = iframe.contentWindow.document.getElementsByTagName('head')[0];
+        const script = iframe.contentWindow.document.createElement('script');
+        script.src = ed11yInit.options.mceInnerJS;
+        script.type = 'text/javascript';
+        head.appendChild(script);
+      });
+
+      let once = false;
+      // This is exported to global for use by the MCE iframe.
+      window.startMCEEd11y = function() {
+        if (once) {
+          return;
+        }
+        once = true;
+        //ed11yInit.options.fixedRoots = [root];
+        ed11yInit.firstCheck();
+        ed11yInit.syncDismissals();
+        window.Ed11y = Ed11y; // Export for direct calls by iFrame
+      };
+
+    } else if (readyCount < 60) {
+      readyCount++;
+      window.setTimeout(iframesReady, 1000);
+    }
+  };
+  window.setTimeout(() => {
+    iframesReady();
+  },100);
+
+};
+
 // Initiate Editoria11y create alert link, initiate content change watcher.
 ed11yInit.ed11yPageInit = function () {
+  ed11yInit.shutMenusOnPop();
   // eslint-disable-next-line no-undef
   ed11yInit.innerWorker = window.SharedWorker ? new SharedWorker(ed11yVars.worker) : false;
   window.setTimeout(() => {
@@ -417,12 +510,13 @@ ed11yInit.findCompatibleEditor = function () {
     ed11yInit.ed11yOuterInit();
   } else if ( document.querySelector('#editor .editor-styles-wrapper')) {
     ed11yInit.editorType = 'onPage';
-    // Todo: Is this still being called?
+    // Todo: Is this still reachable by anything?
     ed11yInit.editRoot = '.editor-visual-editor__post-title-wrapper:not(:has([data-rich-text-placeholder])), #editor .is-root-container'; // include title
     ed11yInit.scrollRoot = '.interface-interface-skeleton__content';
     ed11yInit.ed11yPageInit();
-  } else if (document.getElementById('content_ifr')) {
+  } else if (document.querySelector('.mce-edit-area iframe') && window.innerWidth > 600) {
     ed11yInit.editorType = 'mce';
+    ed11yInit.ed11yOuterClassicInit();
   } else if (ed11yInit.ed11yReadyCount < 60) {
     window.setTimeout(function () {
       ed11yInit.ed11yReadyCount++;

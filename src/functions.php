@@ -189,7 +189,8 @@ function ed11y_get_params( $user ) {
 		$ed1vals['preventCheckingIfPresent'] = $settings['ed11y_no_run'];
 		$ed1vals['liveCheck']                = $settings['ed11y_livecheck'];
 		$ed1vals['customTests']              = $settings['ed11y_custom_tests'];
-		$ed1vals['cssLocation']              = trailingslashit( ED11Y_ASSETS ) . 'lib/editoria11y.min.css';
+		$ed1vals['cssLocation']              = trailingslashit( ED11Y_ASSETS ) . 'lib/editoria11y.min.css?ver=' . Editoria11y::ED11Y_VERSION;
+		$ed1vals['mceInnerJS']               = trailingslashit( ED11Y_ASSETS ) . 'js/editoria11y-mce-inner.js?ver=' . Editoria11y::ED11Y_VERSION;
 		$ed1vals['adminUrl']                 = get_admin_url();
 		set_site_transient( 'editoria11y_settings', $ed1vals, 360 );
 	}
@@ -362,7 +363,6 @@ add_filter( 'old_slug_redirect_url', 'ed11y_old_slug_redirect_url_filter' );
 
 /**
  * Load live checker when editor is present.
- * THIS IS NOT WORKING FOR NEW EDITOR
  * */
 function ed11y_editor_init() {
 	if ( 'none' !== ed11y_get_plugin_settings( 'ed11y_livecheck', false ) ) {
