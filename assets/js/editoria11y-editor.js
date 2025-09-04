@@ -411,7 +411,7 @@ ed11yInit.ed11yOuterClassicInit = function() {
 
       const hideOnCode = document.createElement('style');
       hideOnCode.setAttribute('hidden', 'true');
-      hideOnCode.textContent = 'body:has(#content-html[aria-pressed="true"]) .ed11y-element {display: none;}';
+      hideOnCode.textContent = 'div.mce-toolbar-grp {z-index:999;} body:has(#content-html[aria-pressed="true"]) .ed11y-element {display: none;}';
       document.body.appendChild(hideOnCode);
 
       ed11yInit.options.autoDetectShadowComponents = false;
@@ -515,7 +515,7 @@ ed11yInit.findCompatibleEditor = function () {
     ed11yInit.editRoot = '.editor-visual-editor__post-title-wrapper:not(:has([data-rich-text-placeholder])), #editor .is-root-container'; // include title
     ed11yInit.scrollRoot = '.interface-interface-skeleton__content';
     ed11yInit.ed11yPageInit();
-  } else if (document.querySelector('.mce-edit-area iframe')) {
+  } else if (document.querySelector('.mce-edit-area iframe') && window.innerWidth > 600) {
     ed11yInit.editorType = 'mce';
     ed11yInit.ed11yOuterClassicInit();
   } else if (ed11yInit.ed11yReadyCount < 60) {

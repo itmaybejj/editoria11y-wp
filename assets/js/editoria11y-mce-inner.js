@@ -15,6 +15,14 @@ const letsGo = function() {
     document.addEventListener('click', () => {
       parent.Ed11y.interaction = true;
     });
+    document.addEventListener('scroll', function() {
+      parent.Ed11y.scrollPending = parent.Ed11y.scrollPending < 2 ? parent.Ed11y.scrollPending + 1 : parent.Ed11y.scrollPending;
+      requestAnimationFrame(() => parent.Ed11y.updateTipLocations());
+      // Trigger on scrolling other containers, unless it will flicker a tip.
+      if (parent.Ed11y.openTip.button) {
+        parent.Ed11y.alignTip(parent.Ed11y.openTip.button.shadowRoot.querySelector('button'), parent.Ed11y.openTip.tip);
+      }
+    }, true);
     const debounce = (callback, wait) => {
       let timeoutId = null;
       return (...args) => {

@@ -189,7 +189,7 @@ function ed11y_get_params( $user ) {
 		$ed1vals['preventCheckingIfPresent'] = $settings['ed11y_no_run'];
 		$ed1vals['liveCheck']                = $settings['ed11y_livecheck'];
 		$ed1vals['customTests']              = $settings['ed11y_custom_tests'];
-		$ed1vals['cssLocation']              = trailingslashit( ED11Y_ASSETS ) . 'lib/editoria11y.min.css'; // add version?
+		$ed1vals['cssLocation']              = trailingslashit( ED11Y_ASSETS ) . 'lib/editoria11y.min.css?ver=' . Editoria11y::ED11Y_VERSION;
     $ed1vals['mceInnerJS']              = trailingslashit( ED11Y_ASSETS ) . 'js/editoria11y-mce-inner.js?ver=' . Editoria11y::ED11Y_VERSION;
 
 		$ed1vals['adminUrl']                 = get_admin_url();
