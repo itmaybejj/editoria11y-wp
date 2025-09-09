@@ -233,16 +233,15 @@ function ed11y_setting_sections_fields() {
 		array( 'label_for' => 'ed11y_no_run' )
 	);
 
-
-      // Add reports permission field.
-    add_settings_field(
-    'ed11y_hide_report_link',
-    esc_html__( 'Hide reports shortcut on toggle', 'editoria11y' ),
-    'ed11y_hide_report_link_field',
-    'ed11y',
-    'ed11y_compatibility_settings',
-    array( 'label_for' => 'ed11y_hide_report_link_field' )
-    );
+    // Add reports permission field.
+	add_settings_field(
+		'ed11y_hide_report_link',
+		esc_html__( 'Hide reports shortcut on toggle', 'editoria11y' ),
+		'ed11y_hide_report_link_field',
+		'ed11y',
+		'ed11y_compatibility_settings',
+		array( 'label_for' => 'ed11y_hide_report_link_field' )
+	);
 }
 add_action( 'admin_init', 'ed11y_setting_sections_fields' );
 
@@ -311,7 +310,7 @@ function ed11y_check_roots_field() {
 			echo wp_kses(
 				__(
 					'Editoria11y works best when it only checks content editors can...edit.
-			If it is flagging issues in your header or footer, put CSS selectors here for the elements 
+			If it is flagging issues in your header or footer, put CSS selectors here for the elements
 			that contain your editable content, e.g. <code>#content, footer</code>',
 					'editoria11y'
 				),
@@ -511,8 +510,9 @@ function ed11y_hide_report_link_field() {
     <input type="checkbox" aria-describedby="ed11y_hide_report_link_description" name="ed11y_plugin_settings[ed11y_hide_report_link]" id="ed11y_hide_report_link_field" value="1"<?php checked( '1', $settings ); ?> />
     <p id="ed11y_hide_report_link_description"><?php
       echo wp_kses( __( 'Reports will still be available on the WordPress admin dashboard.', 'editoria11y' ), ed11y_allowed_html() );
-      ?></p>
-  <?php
+      ?>
+    </p>
+	<?php
 }
 
 /**
