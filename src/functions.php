@@ -58,6 +58,7 @@ function ed11y_get_default_options( $option = false ) {
 		'ed11y_checkvisibility'     => $check_visibility,
 		'ed11y_no_run'              => false,
 		'ed11y_report_restrict'     => false,
+    'ed11y_hide_report_link'    => false,
 		'ed11y_custom_tests'        => 0,
 	);
 
@@ -189,6 +190,7 @@ function ed11y_get_params( $user ) {
 		$ed1vals['preventCheckingIfPresent'] = $settings['ed11y_no_run'];
 		$ed1vals['liveCheck']                = $settings['ed11y_livecheck'];
 		$ed1vals['customTests']              = $settings['ed11y_custom_tests'];
+    $ed1vals['hideReportShortcut']       = $settings['ed11y_hide_report_link'];
 		$ed1vals['cssLocation']              = trailingslashit( ED11Y_ASSETS ) . 'lib/editoria11y.min.css?ver=' . Editoria11y::ED11Y_VERSION;
 		$ed1vals['mceInnerJS']               = trailingslashit( ED11Y_ASSETS ) . 'js/editoria11y-mce-inner.js?ver=' . Editoria11y::ED11Y_VERSION;
 		$ed1vals['adminUrl']                 = get_admin_url();

@@ -232,6 +232,17 @@ function ed11y_setting_sections_fields() {
 		'ed11y_compatibility_settings',
 		array( 'label_for' => 'ed11y_no_run' )
 	);
+
+
+      // Add reports permission field.
+    add_settings_field(
+    'ed11y_hide_report_link',
+    esc_html__( 'Hide reports shortcut on toggle', 'editoria11y' ),
+    'ed11y_hide_report_link_field',
+    'ed11y',
+    'ed11y_compatibility_settings',
+    array( 'label_for' => 'ed11y_hide_report_link_field' )
+    );
 }
 add_action( 'admin_init', 'ed11y_setting_sections_fields' );
 
@@ -492,6 +503,19 @@ function ed11y_no_run_field() {
 }
 
 /**
+ * Dashboard shortcut for editors field
+ */
+function ed11y_hide_report_link_field() {
+  $settings = ed11y_get_plugin_settings( 'ed11y_hide_report_link');
+  ?>
+    <input type="checkbox" aria-describedby="ed11y_hide_report_link_description" name="ed11y_plugin_settings[ed11y_hide_report_link]" id="ed11y_hide_report_link_field" value="1"<?php checked( '1', $settings ); ?> />
+    <p id="ed11y_hide_report_link_description"><?php
+      echo wp_kses( __( 'Reports will still be available on the WordPress admin dashboard.', 'editoria11y' ), ed11y_allowed_html() );
+      ?></p>
+  <?php
+}
+
+/**
  * Render the plugin settings page.
  */
 function ed11y_plugin_settings_render_page() {
@@ -687,7 +711,7 @@ add_action( 'admin_menu', 'ed11y_dashboard_menu' );
 function ed11y_dashboard_menu() {
 	$setting    = ed11y_get_plugin_settings( 'ed11y_report_restrict' );
 	$capability = '1' === $setting ? 'manage_options' : 'edit_others_posts';
-	add_menu_page( esc_html__( 'Editoria11y', 'editoria11y' ), esc_html__( 'Editoria11y', 'editoria11y' ), $capability, ED11Y_SRC . 'admin.php', 'editoria11y_dashboard', 'dashicons-chart-bar', 90 );
+	add_menu_page( esc_html__( 'Editoria11y', 'editoria11y' ), esc_html__( 'Editoria11y', 'editoria11y' ), $capability, 'editoria11y', 'editoria11y_dashboard', 'dashicons-chart-bar', 90 );
 }
 
 /**

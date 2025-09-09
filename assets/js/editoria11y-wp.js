@@ -192,7 +192,7 @@ const ed11yInit = function() {
     ed11yOptions.customTests = 1;
     ed11yOptions.panelNoCover = '#edac-highlight-panel'; // Accessibility Checker module
 
-    ed11yOptions.reportsURL = ed11yOptions.adminUrl ? ed11yOptions.adminUrl + '?page=editoria11y-wp%2Fsrc%2Fadmin.php' : false;
+    ed11yOptions.reportsURL = !ed11yOptions.hideReportShortcut && ed11yOptions.adminUrl ? ed11yOptions.adminUrl + '?page=editoria11y' : false;
 
     ed11yOptions.linkStringsNewWindows = ed11yOptions.linkStringsNewWindows ? new RegExp(ed11yOptions.linkStringsNewWindows, 'g') : /window|\stab|download/g;
     if (ed11yOptions.title.length < 3) {
