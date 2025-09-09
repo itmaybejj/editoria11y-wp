@@ -512,8 +512,8 @@ function ed11y_hide_report_link_field() {
 	/>
 	<p id="ed11y_hide_report_link_description">
 		<?php
-		  echo wp_kses( __( 'Reports will still be available on the WordPress admin dashboard.', 'editoria11y' ), ed11y_allowed_html() );
-	  	?>
+		echo wp_kses( __( 'Reports will still be available on the WordPress admin dashboard.', 'editoria11y' ), ed11y_allowed_html() );
+		?>
 	</p>
 	<?php
 }
