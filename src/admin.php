@@ -233,7 +233,7 @@ function ed11y_setting_sections_fields() {
 		array( 'label_for' => 'ed11y_no_run' )
 	);
 
-    // Add reports permission field.
+	// Add reports permission field.
 	add_settings_field(
 		'ed11y_hide_report_link',
 		esc_html__( 'Hide reports shortcut on toggle', 'editoria11y' ),
@@ -507,10 +507,13 @@ function ed11y_no_run_field() {
 function ed11y_hide_report_link_field() {
 	$settings = ed11y_get_plugin_settings( 'ed11y_hide_report_link' );
 	?>
-	<input type="checkbox" aria-describedby="ed11y_hide_report_link_description" name="ed11y_plugin_settings[ed11y_hide_report_link]" id="ed11y_hide_report_link_field" value="1"<?php checked( '1', $settings ); ?> />
-	<p id="ed11y_hide_report_link_description"><?php
-	  echo wp_kses( __( 'Reports will still be available on the WordPress admin dashboard.', 'editoria11y' ), ed11y_allowed_html() );
-	  ?>
+	<input type="checkbox" aria-describedby="ed11y_hide_report_link_description" name="ed11y_plugin_settings[ed11y_hide_report_link]" id="ed11y_hide_report_link_field" value="1"
+		<?php checked( '1', $settings ); ?>
+	/>
+	<p id="ed11y_hide_report_link_description">
+		<?php
+		  echo wp_kses( __( 'Reports will still be available on the WordPress admin dashboard.', 'editoria11y' ), ed11y_allowed_html() );
+	  	?>
 	</p>
 	<?php
 }
