@@ -1,7 +1,7 @@
 === Editoria11y Accessibility Checker ===
 Contributors: itmaybejj, partyka
 Tags: accessibility checker, automated testing, quality assurance, SEO
-Stable tag: 2.1.2
+Stable tag: 2.1.3
 Tested up to: 6.9
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -138,8 +138,11 @@ Editoria11y began as a fork of the Toronto Metropolitan University's [Sa11y Acce
 
 == Changelog ==
 
+= 2.1.3 =
+* Fixes an intermittent false positive on anchor links in the Classic editor.
+
 = 2.1.2 =
-* Fixes a bug that crashed the Classic Editor checker when jumping to a tip on a recently fixed issue.
+* Fixes a bug that crashed the Classic editor checker when jumping to a tip on a recently fixed issue.
 
 = 2.1.1 =
 * Adds an option on the configuration page to hide the shortcut link to the dashboard reports. Hiding it makes the toggle smaller, and the link does not work in all configurations.
