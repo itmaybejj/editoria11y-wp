@@ -404,6 +404,8 @@ ed11yInit.ed11yOuterClassicInit = function() {
       ed11yInit.options['editorHeadingLevel'] = [];
       ed11yInit.options['headingsOnlyFromCheckRoots'] = true;
       ed11yInit.options['buttonZIndex'] = 998;
+	  ed11yInit.options['ignoreByKey']['a'] = '[aria-hidden][tabindex], .mce-item-anchor';
+
       // Todo: preventChecking would be better than ignore all, but fails to restore at the moment.
       // ed11yInit.options['preventCheckingIfPresent'] = '#content-html[aria-pressed="true"]';
       ed11yInit.options['ignoreAllIfPresent'] = '#content-html[aria-pressed="true"]';
