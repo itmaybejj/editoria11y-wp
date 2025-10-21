@@ -80,17 +80,17 @@ class Editoria11y_Api_Dismissals extends WP_REST_Controller {
 		global $wpdb;
 
 		// Get Page ID so we can avoid complex joins in subsequent queries.
-		$pid = $this->get_pid( $results['page_url'], $results['post_id'] );
+		$pid = $this->get_pid( $results );
 
 		if ( 'reset' === $results['dismissal_status'] ) {
 
 			// Delete URL if total is 0, record if it never existed.
 			$response = $wpdb->query( // phpcs:ignore
 				$wpdb->prepare(
-					"DELETE FROM {$wpdb->prefix}ed11y_dismissals 
+					"DELETE FROM {$wpdb->prefix}ed11y_dismissals
 					WHERE pid = %d
 					AND result_key = %s
-					AND element_ID = %s  
+					AND element_ID = %s
 					AND (
 						dismissal_status = 'ok'
 						OR
@@ -115,7 +115,7 @@ class Editoria11y_Api_Dismissals extends WP_REST_Controller {
 
 			$response = $wpdb->query( // phpcs:ignore
 				$wpdb->prepare(
-					"INSERT INTO {$wpdb->prefix}ed11y_dismissals 
+					"INSERT INTO {$wpdb->prefix}ed11y_dismissals
 						(pid,
 						result_key,
 						user,
@@ -124,7 +124,7 @@ class Editoria11y_Api_Dismissals extends WP_REST_Controller {
 						created,
 						updated,
 						stale)
-					VALUES (%s, %s, %d, %s, %s, %s, %s, %d) 
+					VALUES (%s, %s, %d, %s, %s, %s, %s, %d)
 						;",
 					array(
 						$pid,
@@ -147,9 +147,10 @@ class Editoria11y_Api_Dismissals extends WP_REST_Controller {
 	 * Get dashboard table data.
 	 *
 	 * @param WP_REST_Request $request Full data about the request.
-	 * @return WP_Error|WP_REST_Response
+	 * @return WP_REST_Response
 	 */
-	public function get_dismissals( $request ) {
+	public function get_dismissals(WP_REST_Request $request ): WP_REST_Response
+	{
 		global $wpdb;
 		require_once ED11Y_SRC . 'class-editoria11y-validate.php';
 		$validate = new Editoria11y_Validate();
@@ -266,11 +267,12 @@ class Editoria11y_Api_Dismissals extends WP_REST_Controller {
 	/**
 	 * Returns the pid from the URL table.
 	 *
-	 * @param string $url of the post.
-	 * @param string $post_id the WP post ID number.
+	 * @param array $results from request.
 	 */
-	public function get_pid( string $url, string $post_id ): ?string {
+	public function get_pid( $results ): ?string {
 		global $wpdb;
+		$post_id = $results['post_id'];
+		$url = $results['page_url'];
 		if ( $post_id > 0 ) {
 			$pid = $wpdb->get_var( // phpcs:ignore
 				$wpdb->prepare(
@@ -285,7 +287,7 @@ class Editoria11y_Api_Dismissals extends WP_REST_Controller {
 		// Not found by post ID, or post ID not provided.
 		if ( empty( $pid ) ) {
 			global $wpdb;
-			return $wpdb->get_var( // phpcs:ignore
+			$pid = $wpdb->get_var( // phpcs:ignore
 				$wpdb->prepare(
 					"SELECT pid FROM {$wpdb->prefix}ed11y_urls
 				WHERE page_url=%s;",
@@ -294,6 +296,29 @@ class Editoria11y_Api_Dismissals extends WP_REST_Controller {
 					)
 				)
 			);
+		}
+		if ( empty( $pid ) ) {
+			// Insert results.
+			$wpdb->query( // phpcs:ignore
+				$wpdb->prepare(
+					"INSERT INTO {$wpdb->prefix}ed11y_urls
+					(page_url,
+					 post_id,
+					entity_type,
+					page_title,
+					page_total)
+				VALUES (%s, %d, %s, %s, %d);",
+					array(
+						$results['page_url'],
+						$results['post_id'],
+						$results['entity_type'],
+						$results['page_title'],
+						$results['page_count'],
+					)
+				)
+			);
+			// Get new pid.
+			$pid = $this->get_pid($results);
 		}
 		return $pid;
 	}

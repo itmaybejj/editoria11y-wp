@@ -148,10 +148,10 @@ Editoria11y began as a fork of the Toronto Metropolitan University's [Sa11y Acce
 * Fixes a bug that crashed the Classic editor checker when jumping to a tip on a recently fixed issue.
 
 = 2.1.1 =
-* Adds an option on the configuratiogin page to hide the shortcut link to the dashboard reports. Hiding it makes the toggle smaller, and the link does not work in all configurations.
+* Adds an option on the configuration page to hide the shortcut link to the dashboard reports. Hiding it makes the toggle smaller, and the link does not work in all configurations.
 
 = 2.1.0 =
-* Adds support for live-checking in the the Classic editor (TinyMCE). _**Big thank you to [Ricardo](https://github.com/richard015ar) at PressBooks for showing me how to pass variables in and out of its iframe!**_
+* Adds support for live-checking in the Classic editor (TinyMCE). _**Big thank you to [Ricardo](https://github.com/richard015ar) at PressBooks for showing me how to pass variables in and out of its iframe!**_
 No configuration changes are needed for this to work. If you do _not_ want to check inside the classic editor, add a ".mce-edit-area iframe" selector to the "Do not flag these elements" field on the plugin configuration page.
 * Switches the position of the flag and number in the checker toggle in response to user feedback.
 
