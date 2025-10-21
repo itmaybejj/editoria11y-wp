@@ -73,7 +73,7 @@ class Editoria11y_Api_Dismissals extends WP_REST_Controller {
 	 *
 	 * @param WP_REST_Request $request Full data about the request.
 	 */
-	public function send_dismissal(WP_REST_Request $request ) {
+	public function send_dismissal( WP_REST_Request $request ) {
 		$params  = $request->get_params();
 		$results = $params['data'];
 		$now     = gmdate( 'Y-m-d H:i:s' );
@@ -270,12 +270,13 @@ class Editoria11y_Api_Dismissals extends WP_REST_Controller {
 	 * Returns the pid from the URL table.
 	 *
 	 * @param array $results from request.
+	 * @param bool $recursion if first pass.
 	 */
-	public function get_dismissal_pid(array $results, $recursion = FALSE ): ?string {
+	public function get_dismissal_pid(array $results, bool $recursion = false ): ?string {
 		$post_id = $results['post_id'];
-		$url 	 = $results['page_url'];
-		if ( empty( $post_id ) && empty( $url )) {
-			return FALSE;
+		$url     = $results['page_url'];
+		if ( empty( $post_id ) && empty( $url ) ) {
+			return false;
 		}
 		global $wpdb;
 		if ( $post_id > 0 ) {
@@ -290,7 +291,7 @@ class Editoria11y_Api_Dismissals extends WP_REST_Controller {
 			);
 		}
 		// Not found by post ID, or post ID not provided.
-		if ( empty( $pid ) && !$recursion ) {
+		if ( empty( $pid ) && ! $recursion ) {
 			global $wpdb;
 			$pid = $wpdb->get_var( // phpcs:ignore
 				$wpdb->prepare(
@@ -323,7 +324,7 @@ class Editoria11y_Api_Dismissals extends WP_REST_Controller {
 				)
 			);
 			// Get new pid.
-			$pid = $this->get_dismissal_pid( $results, TRUE );
+			$pid = $this->get_dismissal_pid( $results, true );
 		}
 		return $pid;
 	}
