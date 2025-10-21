@@ -270,9 +270,9 @@ class Editoria11y_Api_Dismissals extends WP_REST_Controller {
 	 * Returns the pid from the URL table.
 	 *
 	 * @param array $results from request.
-	 * @param bool $recursion if first pass.
+	 * @param bool  $recursion if first pass.
 	 */
-	public function get_dismissal_pid(array $results, bool $recursion = false ): ?string {
+	public function get_dismissal_pid( array $results, bool $recursion = false ): ?string {
 		$post_id = $results['post_id'];
 		$url     = $results['page_url'];
 		if ( empty( $post_id ) && empty( $url ) ) {
@@ -303,7 +303,7 @@ class Editoria11y_Api_Dismissals extends WP_REST_Controller {
 				)
 			);
 		}
-		if ( empty( $pid ) ) {
+		if ( empty( $pid ) && ! $recursion ) {
 			// Insert results.
 			$wpdb->query( // phpcs:ignore
 				$wpdb->prepare(

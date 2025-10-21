@@ -5,7 +5,7 @@
  *
  * Plugin Name:       Editoria11y Accessibility Checker
  * Plugin URI:        https://wordpress.org/plugins/editoria11y-accessibility-checker/
- * Version:           2.1.4
+ * Version:           2.1.5
  * Requires PHP:      7.2
  * Requires at least: 6.0
  * Tested up to:      6.9
@@ -31,7 +31,7 @@
  */
 class Editoria11y {
 	// Library version; used as cache buster.
-	const ED11Y_VERSION = '2.1.4';
+	const ED11Y_VERSION = '2.1.5';
 
 	/**
 	 * Attachs functions to loop.
