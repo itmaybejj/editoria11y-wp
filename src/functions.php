@@ -58,6 +58,7 @@ function ed11y_get_default_options( $option = false ) {
 		'ed11y_checkvisibility'     => $check_visibility,
 		'ed11y_no_run'              => false,
 		'ed11y_report_restrict'     => false,
+		'ed11y_hide_report_link'    => false,
 		'ed11y_custom_tests'        => 0,
 	);
 
@@ -139,7 +140,7 @@ function ed11y_enqueue_editor_content_assets() {
 			wp_enqueue_script(
 				'editoria11y-editor',
 				trailingslashit( ED11Y_ASSETS ) . 'js/editoria11y-editor.js',
-				null,
+				array( 'wp-api' ),
 				Editoria11y::ED11Y_VERSION,
 				false
 			);
@@ -147,7 +148,7 @@ function ed11y_enqueue_editor_content_assets() {
 				'editoria11y-editor',
 				'ed11yVars',
 				array(
-					'worker'  => trailingslashit( ED11Y_ASSETS ) . 'js/editoria11y-editor-worker.js',
+					'worker'  => trailingslashit( ED11Y_ASSETS ) . 'js/editoria11y-editor-worker.js?ver=' . Editoria11y::ED11Y_VERSION,
 					'options' => ed11y_get_params( wp_get_current_user() ),
 				)
 			);
@@ -161,7 +162,7 @@ function ed11y_enqueue_editor_content_assets() {
 	}
 }
 add_action( 'enqueue_block_assets', 'ed11y_enqueue_editor_content_assets' );
-
+add_action( 'admin_enqueue_scripts', 'ed11y_enqueue_editor_content_assets' );
 
 /**
  * Returns page-specific config for the Editoria11y library.
@@ -173,7 +174,7 @@ add_action( 'enqueue_block_assets', 'ed11y_enqueue_editor_content_assets' );
 function ed11y_get_params( $user ) {
 
 	// Get settings array from cache, if available.
-	$ed1vals = get_site_transient( 'editoria11y_settings' );
+	$ed1vals = get_site_transient( 'editoria11y_settinges' );
 	if ( false === $ed1vals ) {
 		$settings                            = ed11y_get_plugin_settings( false, true );
 		$ed1vals                             = array();
@@ -189,7 +190,10 @@ function ed11y_get_params( $user ) {
 		$ed1vals['preventCheckingIfPresent'] = $settings['ed11y_no_run'];
 		$ed1vals['liveCheck']                = $settings['ed11y_livecheck'];
 		$ed1vals['customTests']              = $settings['ed11y_custom_tests'];
-		$ed1vals['cssLocation']              = trailingslashit( ED11Y_ASSETS ) . 'lib/editoria11y.min.css';
+		$ed1vals['hideReportLink']           = $settings['ed11y_hide_report_link'];
+		$ed1vals['cssLocation']              = trailingslashit( ED11Y_ASSETS ) . 'lib/editoria11y.min.css?ver=' . Editoria11y::ED11Y_VERSION;
+		$ed1vals['mceInnerJS']               = trailingslashit( ED11Y_ASSETS ) . 'js/editoria11y-mce-inner.js?ver=' . Editoria11y::ED11Y_VERSION;
+		$ed1vals['adminUrl']                 = get_admin_url();
 		set_site_transient( 'editoria11y_settings', $ed1vals, 360 );
 	}
 
@@ -239,8 +243,17 @@ function ed11y_get_params( $user ) {
 		$ed1vals['currentPage'] = home_url( $wp->request );
 	}
 
+	// Mode is assertive from 0ms to 10minutes after a post is modified.
+	$page_edited          = get_post_modified_time( 'U', true );
+	$page_edited          = $page_edited ? abs( 1 + $page_edited - time() ) : false;
+	$ed1vals['alertMode'] = $page_edited && $page_edited < 600 ? 'assertive' : 'polite';
+
 	// Lazy-create DB if network activation failed.
-	Editoria11y::check_tables();
+	if ( ! Editoria11y::check_tables() ) {
+		// No DB available.
+		$ed1vals['syncedDismissals'] = false;
+		return $ed1vals;
+	}
 
 	// Get dismissals for route. Complex joins require manual DB call.
 	// OR for permalink during transition to new DB structure.
@@ -291,10 +304,6 @@ function ed11y_get_params( $user ) {
 		$ed1vals['syncedDismissals'][ $value->result_key ][ $value->element_id ] = $value->dismissal_status;
 	}
 
-	// Mode is assertive from 0ms to 10minutes after a post is modified.
-	$page_edited          = get_post_modified_time( 'U', true );
-	$page_edited          = $page_edited ? abs( 1 + $page_edited - time() ) : false;
-	$ed1vals['alertMode'] = $page_edited && $page_edited < 600 ? 'assertive' : 'polite';
 	return( $ed1vals );
 }
 
@@ -323,6 +332,22 @@ function ed11y_init() {
 add_action( 'wp_footer', 'ed11y_init' );
 
 /**
+ * Add id to images if absent for edit links.
+ *
+ * @param Object $attr Existing image tag attributes.
+ * @param Object $attachment Available metadata.
+ *
+ * @return Object
+ */
+function ed11y_add_attachment_id_on_images( $attr, $attachment ) {
+	if ( ! isset( $attr['data-id'] ) && $attachment->ID ) {
+		$attr['data-id'] = $attachment->ID;
+	}
+	return $attr;
+}
+add_filter( 'wp_get_attachment_image_attributes', 'ed11y_add_attachment_id_on_images', 10, 2 );
+
+/**
  * Preserve query Args
  *
  * @param string $link The redirect URL.
@@ -340,7 +365,6 @@ add_filter( 'old_slug_redirect_url', 'ed11y_old_slug_redirect_url_filter' );
 
 /**
  * Load live checker when editor is present.
- * THIS IS NOT WORKING FOR NEW EDITOR
  * */
 function ed11y_editor_init() {
 	if ( 'none' !== ed11y_get_plugin_settings( 'ed11y_livecheck', false ) ) {

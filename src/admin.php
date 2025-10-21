@@ -114,7 +114,7 @@ function ed11y_setting_sections_fields() {
 	// Add live check field.
 	add_settings_field(
 		'ed11y_livecheck',
-		esc_html__( 'Highlight issues while editing content', 'editoria11y' ),
+		esc_html__( 'Check while editing content', 'editoria11y' ),
 		'ed11y_livecheck_field',
 		'ed11y',
 		'ed11y_basic',
@@ -232,6 +232,16 @@ function ed11y_setting_sections_fields() {
 		'ed11y_compatibility_settings',
 		array( 'label_for' => 'ed11y_no_run' )
 	);
+
+	// Add reports permission field.
+	add_settings_field(
+		'ed11y_hide_report_link',
+		esc_html__( 'Hide reports shortcut on toggle', 'editoria11y' ),
+		'ed11y_hide_report_link_field',
+		'ed11y',
+		'ed11y_compatibility_settings',
+		array( 'label_for' => 'ed11y_hide_report_link_field' )
+	);
 }
 add_action( 'admin_init', 'ed11y_setting_sections_fields' );
 
@@ -259,15 +269,12 @@ function ed11y_livecheck_field() {
 	?>
 
 	<select name="ed11y_plugin_settings[ed11y_livecheck]" id="ed11y-livecheck" name="ed11y_livecheck" class="form-select" aria-describedby="livecheck_description">
-		<option <?php echo 'all' === $settings ? 'selected="true"' : ''; ?>value="all">All issues</option>
-		<option <?php echo 'errors' === $settings ? 'selected="true"' : ''; ?>value="errors">Only definite errors</option>
-		<option <?php echo 'none' === $settings ? 'selected="true"' : ''; ?>value="none">None</option>
+		<option <?php echo 'all' === $settings ? 'selected="true"' : ''; ?>value="all">Check while editing, and always show tips</option>
+		<option <?php echo 'errors' === $settings ? 'selected="true"' : ''; ?>value="errors">Check while editing</option>
+		<option <?php echo 'none' === $settings ? 'selected="true"' : ''; ?>value="none">Do not check while editing</option>
 	</select>
 	<p id="livecheck_description">
-		Editoria11y's full tips with details and dismissal options appear when viewing published or preview pages.
-	</p>
-	<p>
-		Simplified alerts can also be injected into the block editor, as highlights around the affected block. Adjust this to reduce or remove those highlights.
+		Shows tips while editing post and page content (not templates or layouts).
 	</p>
 	<?php
 }
@@ -303,7 +310,7 @@ function ed11y_check_roots_field() {
 			echo wp_kses(
 				__(
 					'Editoria11y works best when it only checks content editors can...edit.
-			If it is flagging issues in your header or footer, put CSS selectors here for the elements 
+			If it is flagging issues in your header or footer, put CSS selectors here for the elements
 			that contain your editable content, e.g. <code>#content, footer</code>',
 					'editoria11y'
 				),
@@ -495,6 +502,23 @@ function ed11y_no_run_field() {
 }
 
 /**
+ * Dashboard shortcut for editors field
+ */
+function ed11y_hide_report_link_field() {
+	$settings = ed11y_get_plugin_settings( 'ed11y_hide_report_link' );
+	?>
+	<input type="checkbox" aria-describedby="ed11y_hide_report_link_description" name="ed11y_plugin_settings[ed11y_hide_report_link]" id="ed11y_hide_report_link_field" value="1"
+		<?php checked( '1', $settings ); ?>
+	/>
+	<p id="ed11y_hide_report_link_description">
+		<?php
+		echo wp_kses( __( 'Reports will still be available on the WordPress admin dashboard.', 'editoria11y' ), ed11y_allowed_html() );
+		?>
+	</p>
+	<?php
+}
+
+/**
  * Render the plugin settings page.
  */
 function ed11y_plugin_settings_render_page() {
@@ -525,7 +549,7 @@ function ed11y_plugin_settings_render_page() {
 						Getting started
 					</h2>
 					<p>Editoria11y should work out of the box in most themes (view a
-						<a href="https://jjameson.mycpanel.princeton.edu/editoria11y/">demo of the authoring experience</a>).
+						<a href="https://editoria11y.princeton.edu/demo/">demo of the authoring experience</a>).
 						<ol>
 							<li>If authors do not see the checker toggle, check your <a href="https://developer.mozilla.org/en-US/docs/Tools/Browser_Console" class="ext" data-extlink="">browser console</a> for errors, and make sure the theme is not hiding <code>ed11y-element-panel</code>.</li>
 							<li>If the checker toggle is <strong>present</strong> but not finding much: make sure your content areas are listed in "Check content in these containers". It is not uncommon for themes to insert editable content outside the <code>main</code> element.</li></ol>
@@ -657,14 +681,20 @@ function ed11y_plugin_settings_validate( $settings ) {
  * @SuppressWarnings(PHPMD.StaticAccess)
  */
 function editoria11y_dashboard() {
+
 	// Lazy-create DB if network activation failed.
-	Editoria11y::check_tables();
+	if ( ! Editoria11y::check_tables() ) {
+		echo '<div class="notice notice-error notice-alt notice-large"><p><strong>Error:</strong> Editoria11y database tables are missing.</p>
+        <p>Try deactivating and reactivating the plugin to reset config and recreate the tables, or <a href="https://github.com/itmaybejj/editoria11y-wp/issues">post a bug report</a>  with the information from the WordPress, Server and Database sections on your <a href="' . esc_attr( get_admin_url() . 'site-health.php?tab=debug' ) . '">site health page</a>.</p></div>';
+		return false;
+	}
 
 	wp_enqueue_script( 'editoria11y-js', trailingslashit( ED11Y_ASSETS ) . 'lib/editoria11y.min.js', array( 'wp-api' ), true, Editoria11y::ED11Y_VERSION, false );
 	wp_enqueue_script( 'editoria11y-js-dash', trailingslashit( ED11Y_ASSETS ) . 'js/editoria11y-dashboard.js', array( 'wp-api' ), true, Editoria11y::ED11Y_VERSION, false );
 	wp_enqueue_style( 'editoria11y-lib-css', trailingslashit( ED11Y_ASSETS ) . 'lib/editoria11y.min.css', null, Editoria11y::ED11Y_VERSION );
 	wp_enqueue_style( 'editoria11y-css', trailingslashit( ED11Y_ASSETS ) . 'css/editoria11y-dashboard.css', null, Editoria11y::ED11Y_VERSION );
 	$nonce = wp_create_nonce( 'ed1ref' );
+
 	echo '<div id="ed1">
 			<h1>Editoria11y accessibility checker</h1>
 			<div id="ed1-recent-wrapper"></div>
@@ -684,7 +714,7 @@ add_action( 'admin_menu', 'ed11y_dashboard_menu' );
 function ed11y_dashboard_menu() {
 	$setting    = ed11y_get_plugin_settings( 'ed11y_report_restrict' );
 	$capability = '1' === $setting ? 'manage_options' : 'edit_others_posts';
-	add_menu_page( esc_html__( 'Editoria11y', 'editoria11y' ), esc_html__( 'Editoria11y', 'editoria11y' ), $capability, ED11Y_SRC . 'admin.php', 'editoria11y_dashboard', 'dashicons-chart-bar', 90 );
+	add_menu_page( esc_html__( 'Editoria11y', 'editoria11y' ), esc_html__( 'Editoria11y', 'editoria11y' ), $capability, 'editoria11y', 'editoria11y_dashboard', 'dashicons-chart-bar', 90 );
 }
 
 /**
@@ -731,95 +761,118 @@ function ed11y_test_nice_names() {
 
 /**
  * Returns a CSV download of site results.
+ *
+ * @SuppressWarnings(PHPMD.MissingImport)
+ * @SuppressWarnings(PHPMD.CyclomaticComplexity)
  */
 function ed11y_export_results_csv() {
-	if ( isset( $_GET['ed11y_export_results_csv'] ) && isset( $_REQUEST['_wpnonce'] ) && wp_verify_nonce( $_REQUEST['_wpnonce'], 'ed1ref' ) ) { // phpcs:ignore
-		$setting    = ed11y_get_plugin_settings( 'ed11y_report_restrict' );
-		$capability = '1' === $setting ? 'manage_options' : 'edit_others_posts';
-		if ( ! current_user_can( $capability ) ) {
-			return;
-		}
-		$test_name = ed11y_test_nice_names();
 
-		header( 'Content-type: text/csv' );
-		header( 'Content-Disposition: attachment; filename="Recent_accessibility_issues.csv"' );
-		header( 'Pragma: no-cache' );
-		header( 'Expires: 0' );
+	$setting    = ed11y_get_plugin_settings( 'ed11y_report_restrict' );
+	$capability = '1' === $setting ? 'manage_options' : 'edit_others_posts';
+	if ( ! ( isset( $_GET['ed11y_export_results_csv'] ) && isset( $_REQUEST['_wpnonce'] ) && wp_verify_nonce( $_REQUEST['_wpnonce'], 'ed1ref' ) && current_user_can( $capability ) ) ) { // phpcs:ignore
+		// Incorrect referrer, nonce or user role.
+		return;
+	}
 
-		$file = fopen( 'php://output', 'w' );
+	$test_name = ed11y_test_nice_names();
 
-		global $wpdb;
-		$utable     = $wpdb->prefix . 'ed11y_urls';
-		$rtable     = $wpdb->prefix . 'ed11y_results';
-		$user_meta  = $wpdb->prefix . 'usermeta';
-		$post_table = $wpdb->prefix . 'posts';
+	header( 'Content-type: text/csv' );
+	header( 'Content-Disposition: attachment; filename="Recent_accessibility_issues.csv"' );
+	header( 'Pragma: no-cache' );
+	header( 'Expires: 0' );
 
-		/*
-		Complex counts and joins required a direct DB call.
-		Variables are all validated or sanitized.
-		*/
-		// phpcs:disable
-		$data = $wpdb->get_results(
-			"SELECT
-			{$rtable}.result_key,
-			{$rtable}.result_count,
-			{$utable}.pid,
-			{$utable}.page_url,
-			{$utable}.page_title,
-			{$utable}.entity_type,
-			{$utable}.page_total,
-			{$utable}.post_id,
-			{$post_table}.post_status,
-			{$user_meta}.meta_value AS author,
-			{$rtable}.created as created
-			FROM {$rtable}
-		    LEFT JOIN {$utable} ON {$utable}.pid={$rtable}.pid
-			LEFT JOIN {$post_table} ON {$utable}.post_id={$post_table}.ID
-			LEFT JOIN {$user_meta} ON {$user_meta}.user_id={$post_table}.post_author AND {$user_meta}.meta_key = 'nickname'
-			ORDER BY page_url ASC;"
-		);
-		// phpcs:enable
+	$file = fopen( 'php://output', 'w' );
+
+	global $wpdb;
+	$utable     = $wpdb->prefix . 'ed11y_urls';
+	$rtable     = $wpdb->prefix . 'ed11y_results';
+	$post_table = $wpdb->prefix . 'posts';
+
+	/*
+	Complex counts and joins required a direct DB call.
+	Variables are all validated or sanitized.
+	*/
+	// phpcs:disable
+	$data = $wpdb->get_results(
+		"SELECT
+		{$rtable}.result_key,
+		{$rtable}.result_count,
+		{$utable}.pid,
+		{$utable}.page_url,
+		{$utable}.page_title,
+		{$utable}.entity_type,
+		{$utable}.page_total,
+		{$utable}.post_id,
+		{$post_table}.post_author,
+		{$post_table}.post_status,
+		{$rtable}.created as created
+		FROM {$rtable}
+		LEFT JOIN {$utable} ON {$utable}.pid={$rtable}.pid
+		LEFT JOIN {$post_table} ON {$utable}.post_id={$post_table}.ID
+		ORDER BY page_url ASC;"
+	);
+
+	// Get user display names.
+	$user_ids = [];
+	foreach ( $data as $value ) {
+		if ( $value->post_author && !in_array($value->post_author, $user_ids ) )
+			$user_ids[] = $value->post_author;
+	}
+	$user_query = new WP_User_Query(
+		array(
+			'include' => $user_ids,
+			'fields'  => array(
+				'ID',
+				'display_name',
+			),
+		)
+	);
+	$users = $user_query->get_results();
+	$authors = [];
+	foreach ( $users as $value ) {
+		$authors[ $value->ID ] = $value->display_name;
+	}
+
+	// phpcs:enable
+
+	fputcsv(
+		$file,
+		array(
+			'Page',
+			'URL',
+			'Issue',
+			'Count',
+			'Author',
+			'Page Type',
+			'Detected on',
+			'Status',
+			'Edit',
+		)
+	);
+
+	$admin = get_admin_url();
+
+	foreach ( $data as $result ) {
 
 		fputcsv(
 			$file,
 			array(
-				'Page',
-				'URL',
-				'Issue',
-				'Count',
-				'Author',
-				'Page Type',
-				'Detected on',
-				'Status',
-				'Edit',
+				$result->page_title,
+				$result->page_url,
+				$test_name[ $result->result_key ] ?? '',
+				$result->result_count,
+				$result->author ?? $authors[ $result->post_author ] ?? '',
+				$result->entity_type,
+				$result->created,
+				$result->post_status ?? 'publish',
+				0 < $result->post_status ?
+					$admin . 'post.php?post=' . $result->post_id . '&action=edit'
+					: $result->page_url,
 			)
 		);
-
-		$admin = get_admin_url();
-
-		foreach ( $data as $result ) {
-
-			fputcsv(
-				$file,
-				array(
-					$result->page_title,
-					$result->page_url,
-					$test_name[ $result->result_key ] ?? '',
-					$result->result_count,
-					$result->author,
-					$result->entity_type,
-					$result->created,
-					$result->post_status ?? 'publish',
-					0 < $result->post_status ?
-						$admin . 'post.php?post=' . $result->post_id . '&action=edit'
-						: $result->page_url,
-				)
-			);
-		}
-
-		exit();
-
 	}
+
+	exit(); // @SuppressWarnings(ExitExpression)
 }
 
 add_action( 'admin_init', 'ed11y_export_results_csv' );
