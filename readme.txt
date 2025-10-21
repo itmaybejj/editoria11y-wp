@@ -1,7 +1,7 @@
 === Editoria11y Accessibility Checker ===
 Contributors: itmaybejj, partyka
 Tags: accessibility checker, automated testing, quality assurance, SEO
-Stable tag: 2.1.4
+Stable tag: 2.1.5
 Tested up to: 6.9
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -138,6 +138,9 @@ Editoria11y began as a fork of the Toronto Metropolitan University's [Sa11y Acce
 
 == Changelog ==
 
+= 2.1.5 =
+* Fix for dismissals not saving when editing a page that was not previously tracked. Note that this only syncs if the page already exists in the database; dismissals on the "New Post" or "New Page" screen are only stored temporarily in your browser.
+
 = 2.1.4 =
 * Fix for text from alerts on headings being included in the heading text in the document outline visualizer.
 
@@ -151,7 +154,7 @@ Editoria11y began as a fork of the Toronto Metropolitan University's [Sa11y Acce
 * Adds an option on the configuration page to hide the shortcut link to the dashboard reports. Hiding it makes the toggle smaller, and the link does not work in all configurations.
 
 = 2.1.0 =
-* Adds support for live-checking in the the Classic editor (TinyMCE). _**Big thank you to [Ricardo](https://github.com/richard015ar) at PressBooks for showing me how to pass variables in and out of its iframe!**_
+* Adds support for live-checking in the Classic editor (TinyMCE). _**Big thank you to [Ricardo](https://github.com/richard015ar) at PressBooks for showing me how to pass variables in and out of its iframe!**_
 No configuration changes are needed for this to work. If you do _not_ want to check inside the classic editor, add a ".mce-edit-area iframe" selector to the "Do not flag these elements" field on the plugin configuration page.
 * Switches the position of the flag and number in the checker toggle in response to user feedback.
 

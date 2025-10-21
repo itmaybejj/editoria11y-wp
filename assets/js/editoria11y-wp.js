@@ -189,7 +189,7 @@ const ed11yInit = function() {
   let ed11yOpts = document.getElementById('editoria11y-init');
   if (!!ed11yOpts && window.location.href.indexOf('elementor-preview') === -1) {
     ed11yOptions = JSON.parse(ed11yOpts.innerHTML);
-    ed11yOptions.customTests = 1;
+    ed11yOptions.customTests = Number.parseInt(ed11yOptions.customTests) + 1;
     ed11yOptions.panelNoCover = '#edac-highlight-panel'; // Accessibility Checker module
 
     ed11yOptions.reportsURL = !ed11yOptions.hideReportLink && ed11yOptions.adminUrl ? ed11yOptions.adminUrl + '?page=editoria11y' : false;
