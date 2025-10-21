@@ -73,14 +73,17 @@ class Editoria11y_Api_Dismissals extends WP_REST_Controller {
 	 *
 	 * @param WP_REST_Request $request Full data about the request.
 	 */
-	public function send_dismissal( $request ) {
+	public function send_dismissal(WP_REST_Request $request ) {
 		$params  = $request->get_params();
 		$results = $params['data'];
 		$now     = gmdate( 'Y-m-d H:i:s' );
 		global $wpdb;
 
 		// Get Page ID so we can avoid complex joins in subsequent queries.
-		$pid = $this->get_pid( $results );
+		$pid = $this->get_dismissal_pid( $results );
+		if ( empty( $pid ) ) {
+			return null;
+		}
 
 		if ( 'reset' === $results['dismissal_status'] ) {
 
@@ -149,8 +152,7 @@ class Editoria11y_Api_Dismissals extends WP_REST_Controller {
 	 * @param WP_REST_Request $request Full data about the request.
 	 * @return WP_REST_Response
 	 */
-	public function get_dismissals(WP_REST_Request $request ): WP_REST_Response
-	{
+	public function get_dismissals( WP_REST_Request $request ): WP_REST_Response {
 		global $wpdb;
 		require_once ED11Y_SRC . 'class-editoria11y-validate.php';
 		$validate = new Editoria11y_Validate();
@@ -269,10 +271,13 @@ class Editoria11y_Api_Dismissals extends WP_REST_Controller {
 	 *
 	 * @param array $results from request.
 	 */
-	public function get_pid( $results ): ?string {
-		global $wpdb;
+	public function get_dismissal_pid(array $results, $recursion = FALSE ): ?string {
 		$post_id = $results['post_id'];
-		$url = $results['page_url'];
+		$url 	 = $results['page_url'];
+		if ( empty( $post_id ) && empty( $url )) {
+			return FALSE;
+		}
+		global $wpdb;
 		if ( $post_id > 0 ) {
 			$pid = $wpdb->get_var( // phpcs:ignore
 				$wpdb->prepare(
@@ -285,7 +290,7 @@ class Editoria11y_Api_Dismissals extends WP_REST_Controller {
 			);
 		}
 		// Not found by post ID, or post ID not provided.
-		if ( empty( $pid ) ) {
+		if ( empty( $pid ) && !$recursion ) {
 			global $wpdb;
 			$pid = $wpdb->get_var( // phpcs:ignore
 				$wpdb->prepare(
@@ -318,7 +323,7 @@ class Editoria11y_Api_Dismissals extends WP_REST_Controller {
 				)
 			);
 			// Get new pid.
-			$pid = $this->get_pid($results);
+			$pid = $this->get_dismissal_pid( $results, TRUE );
 		}
 		return $pid;
 	}
