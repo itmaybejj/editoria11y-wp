@@ -1,7 +1,7 @@
 === Editoria11y Accessibility Checker ===
 Contributors: itmaybejj, partyka
 Tags: accessibility checker, automated testing, quality assurance, SEO
-Stable tag: 2.1.6
+Stable tag: 2.1.7
 Tested up to: 6.9
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -138,7 +138,7 @@ Editoria11y began as a fork of the Toronto Metropolitan University's [Sa11y Acce
 
 == Changelog ==
 
-= 2.1.6 =
+= 2.1.7 =
 * Adds option on the plugin settings page to select between the library's various assertiveness levels: start open for any issues, start open for new issues, always start open, start minimized.
 * Adds "editoria11y_viewing_params" and "editoria11y_editing_params" filters for developers to modify configuration sent to the browser at runtime.
 

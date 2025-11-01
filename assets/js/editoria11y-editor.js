@@ -434,8 +434,6 @@ ed11yInit.ed11yOuterClassicInit = function() {
     if (ready) {
 
       ed11yInit.getOptions();
-		console.log(ed11yInit.options);
-
 		ed11yInit.options['ignoreAllIfAbsent'] = false;
       ed11yInit.options['watchForChanges'] = false;
       ed11yInit.options['editorHeadingLevel'] = [];
