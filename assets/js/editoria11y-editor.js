@@ -90,8 +90,6 @@ ed11yInit.getOptions = function() {
 
   ed11yInit.options['showResults'] = true;
   ed11yInit.options['buttonZIndex'] = 99999;
-  console.log(ed11yInit.options['liveCheck']);
-  console.log(ed11yInit.options['alertMode']);
   if (ed11yInit.options['liveCheck'] && ed11yInit.options['liveCheck'] === 'errors') {
 	  ed11yInit.options['alertMode'] =  'userPreference';
   } else if (ed11yInit.options['liveCheck'] && ed11yInit.options['liveCheck'] === 'minimized') {
@@ -99,8 +97,6 @@ ed11yInit.getOptions = function() {
   } else {
 	  ed11yInit.options['alertMode'] = 'active';
   }
-
-	console.log(ed11yInit.options['alertMode']);
   ed11yInit.options['editorHeadingLevel'] = [{
     selector: '.editor-styles-wrapper > .is-root-container',
     previousHeading: 1,
@@ -140,8 +136,7 @@ ed11yInit.shutMenusOnPop = function() {
 
 ed11yInit.firstCheck = function() {
   if (!ed11yInit.once) {
-    ed11yInit.once = true;	console.log(ed11yInit.options);
-
+    ed11yInit.once = true;
 	  const ed11y = new Ed11y(ed11yInit.options); // eslint-disable-line
   }
 };

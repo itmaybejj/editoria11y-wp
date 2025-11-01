@@ -273,10 +273,10 @@ function ed11y_theme_field() {
 
 
 /**
- * alert_mode field
+ * Alert_mode field
  */
 function ed11y_alert_mode_field() {
-	$settings = ed11y_get_plugin_settings( 'ed11y_alert_mode');
+	$settings = ed11y_get_plugin_settings( 'ed11y_alert_mode' );
 	?>
 
 	<select name="ed11y_plugin_settings[ed11y_alert_mode]" id="ed11y-alert_mode" name="ed11y_alert_mode" class="form-select" aria-describedby="alert_mode_description">
@@ -295,7 +295,7 @@ function ed11y_alert_mode_field() {
  * Livecheck field
  */
 function ed11y_livecheck_field() {
-	$settings = ed11y_get_plugin_settings( 'ed11y_livecheck');
+	$settings = ed11y_get_plugin_settings( 'ed11y_livecheck' );
 	?>
 
 	<select name="ed11y_plugin_settings[ed11y_livecheck]" id="ed11y-livecheck" name="ed11y_livecheck" class="form-select" aria-describedby="livecheck_description">
@@ -661,7 +661,7 @@ function ed11y_plugin_settings_validate( $settings ) {
 	// Allowed characters: , . : empty space.
 	$special_chars = '/[^.,:a-zA-Z0-9 ]/';
 
-	$settings['ed11y_livecheck'] = preg_replace(
+	$settings['ed11y_livecheck']  = preg_replace(
 		$special_chars,
 		'',
 		sanitize_text_field( $settings['ed11y_livecheck'] )
@@ -671,7 +671,7 @@ function ed11y_plugin_settings_validate( $settings ) {
 		'',
 		sanitize_text_field( $settings['ed11y_alert_mode'] )
 	);
-	$settings['ed11y_theme']     = preg_replace(
+	$settings['ed11y_theme']      = preg_replace(
 		$special_chars,
 		'',
 		sanitize_text_field( $settings['ed11y_theme'] )

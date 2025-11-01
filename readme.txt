@@ -140,6 +140,7 @@ Editoria11y began as a fork of the Toronto Metropolitan University's [Sa11y Acce
 
 = 2.1.6 =
 * Adds option on the plugin settings page to select between the library's various assertiveness levels: start open for any issues, start open for new issues, always start open, start minimized.
+* Adds "editoria11y_viewing_params" and "editoria11y_editing_params" filters for developers to modify configuration sent to the browser at runtime.
 
 = 2.1.5 =
 * Fix for dismissals not saving when editing a page that was not previously tracked. Note that this only syncs if the page already exists in the database; dismissals on the "New Post" or "New Page" screen are only stored temporarily in your browser.
