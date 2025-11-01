@@ -113,8 +113,18 @@ function ed11y_setting_sections_fields() {
 
 	// Add live check field.
 	add_settings_field(
+		'ed11y_alert_mode',
+		esc_html__( 'Checker mode on page', 'editoria11y' ),
+		'ed11y_alert_mode_field',
+		'ed11y',
+		'ed11y_basic',
+		array( 'label_for' => 'ed11y_alert_mode' )
+	);
+
+	// Add live check field.
+	add_settings_field(
 		'ed11y_livecheck',
-		esc_html__( 'Check while editing content', 'editoria11y' ),
+		esc_html__( 'Checker mode inside editor', 'editoria11y' ),
 		'ed11y_livecheck_field',
 		'ed11y',
 		'ed11y_basic',
@@ -261,17 +271,38 @@ function ed11y_theme_field() {
 	<?php
 }
 
+
+/**
+ * alert_mode field
+ */
+function ed11y_alert_mode_field() {
+	$settings = ed11y_get_plugin_settings( 'ed11y_alert_mode');
+	?>
+
+	<select name="ed11y_plugin_settings[ed11y_alert_mode]" id="ed11y-alert_mode" name="ed11y_alert_mode" class="form-select" aria-describedby="alert_mode_description">
+		<option <?php echo 'polite' === $settings ? 'selected="true"' : ''; ?>value="polite">Start open if there are alerts (recommended)</option>
+		<option <?php echo 'assertive' === $settings ? 'selected="true"' : ''; ?>value="assertive">Start open if there are new alerts</option>
+		<option <?php echo 'active' === $settings ? 'selected="true"' : ''; ?>value="active">Always start open</option>
+		<option <?php echo 'minimized' === $settings ? 'selected="true"' : ''; ?>value="minimized">Start minimized</option>
+	</select>
+	<p id="alert_mode_description">
+		Automatically open the control panel while viewing posts and pages.
+	</p>
+	<?php
+}
+
 /**
  * Livecheck field
  */
 function ed11y_livecheck_field() {
-	$settings = ed11y_get_plugin_settings( 'ed11y_livecheck' );
+	$settings = ed11y_get_plugin_settings( 'ed11y_livecheck');
 	?>
 
 	<select name="ed11y_plugin_settings[ed11y_livecheck]" id="ed11y-livecheck" name="ed11y_livecheck" class="form-select" aria-describedby="livecheck_description">
-		<option <?php echo 'all' === $settings ? 'selected="true"' : ''; ?>value="all">Check while editing, and always show tips</option>
-		<option <?php echo 'errors' === $settings ? 'selected="true"' : ''; ?>value="errors">Check while editing</option>
-		<option <?php echo 'none' === $settings ? 'selected="true"' : ''; ?>value="none">Do not check while editing</option>
+		<option <?php echo 'all' === $settings ? 'selected="true"' : ''; ?>value="all">Start open (recommended)</option>
+		<option <?php echo 'errors' === $settings ? 'selected="true"' : ''; ?>value="errors">Remember user preference</option>
+		<option <?php echo 'minimized' === $settings ? 'selected="true"' : ''; ?>value="minimized">Start minimized</option>
+		<option <?php echo 'none' === $settings ? 'selected="true"' : ''; ?>value="none">Do not show checker while editing</option>
 	</select>
 	<p id="livecheck_description">
 		Shows tips while editing post and page content (not templates or layouts).
@@ -634,6 +665,11 @@ function ed11y_plugin_settings_validate( $settings ) {
 		$special_chars,
 		'',
 		sanitize_text_field( $settings['ed11y_livecheck'] )
+	);
+	$settings['ed11y_alert_mode'] = preg_replace(
+		$special_chars,
+		'',
+		sanitize_text_field( $settings['ed11y_alert_mode'] )
 	);
 	$settings['ed11y_theme']     = preg_replace(
 		$special_chars,

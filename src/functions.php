@@ -46,6 +46,7 @@ function ed11y_get_default_options( $option = false ) {
 		'ed11y_theme'               => 'sleekTheme',
 		'ed11y_checkRoots'          => false,
 		'ed11y_livecheck'           => 'all',
+		'ed11y_alert_mode'			=> 'polite',
 
 		'ed11y_ignore_elements'     => '#comments *, .wp-block-post-comments *, img.avatar',
 		'ed11y_link_ignore_strings' => false,
@@ -191,6 +192,7 @@ function ed11y_get_params( $user ) {
 		$ed1vals['liveCheck']                = $settings['ed11y_livecheck'];
 		$ed1vals['customTests']              = $settings['ed11y_custom_tests'];
 		$ed1vals['hideReportLink']           = $settings['ed11y_hide_report_link'];
+		$ed1vals['alertMode']		         = $settings['ed11y_alert_mode'];
 		$ed1vals['cssLocation']              = trailingslashit( ED11Y_ASSETS ) . 'lib/editoria11y.min.css?ver=' . Editoria11y::ED11Y_VERSION;
 		$ed1vals['mceInnerJS']               = trailingslashit( ED11Y_ASSETS ) . 'js/editoria11y-mce-inner.js?ver=' . Editoria11y::ED11Y_VERSION;
 		$ed1vals['adminUrl']                 = get_admin_url();
@@ -246,7 +248,9 @@ function ed11y_get_params( $user ) {
 	// Mode is assertive from 0ms to 10minutes after a post is modified.
 	$page_edited          = get_post_modified_time( 'U', true );
 	$page_edited          = $page_edited ? abs( 1 + $page_edited - time() ) : false;
-	$ed1vals['alertMode'] = $page_edited && $page_edited < 600 ? 'assertive' : 'polite';
+	if ($ed1vals['alertMode'] === 'polite' && $page_edited && $page_edited < 600) {
+		$ed1vals['alertMode'] =  'assertive';
+	}
 
 	// Lazy-create DB if network activation failed.
 	if ( ! Editoria11y::check_tables() ) {
