@@ -280,13 +280,13 @@ function ed11y_alert_mode_field() {
 	?>
 
 	<select name="ed11y_plugin_settings[ed11y_alert_mode]" id="ed11y-alert_mode" name="ed11y_alert_mode" class="form-select" aria-describedby="alert_mode_description">
-		<option <?php echo 'polite' === $settings ? 'selected="true"' : ''; ?>value="polite">Start open if there are alerts (recommended)</option>
+		<option <?php echo 'polite' === $settings ? 'selected="true"' : ''; ?>value="polite">Start open if there are any alerts</option>
 		<option <?php echo 'assertive' === $settings ? 'selected="true"' : ''; ?>value="assertive">Start open if there are new alerts</option>
 		<option <?php echo 'active' === $settings ? 'selected="true"' : ''; ?>value="active">Always start open</option>
 		<option <?php echo 'minimized' === $settings ? 'selected="true"' : ''; ?>value="minimized">Start minimized</option>
 	</select>
 	<p id="alert_mode_description">
-		Automatically open the control panel while viewing posts and pages.
+		Choose when the control panel should open and show inline tips. "Start open if there are any alerts" is recommended, as it helps tips get noticed over time.
 	</p>
 	<?php
 }
@@ -299,13 +299,13 @@ function ed11y_livecheck_field() {
 	?>
 
 	<select name="ed11y_plugin_settings[ed11y_livecheck]" id="ed11y-livecheck" name="ed11y_livecheck" class="form-select" aria-describedby="livecheck_description">
-		<option <?php echo 'all' === $settings ? 'selected="true"' : ''; ?>value="all">Start open (recommended)</option>
-		<option <?php echo 'errors' === $settings ? 'selected="true"' : ''; ?>value="errors">Remember user preference</option>
-		<option <?php echo 'minimized' === $settings ? 'selected="true"' : ''; ?>value="minimized">Start minimized</option>
-		<option <?php echo 'none' === $settings ? 'selected="true"' : ''; ?>value="none">Do not show checker while editing</option>
+		<option <?php echo 'all' === $settings ? 'selected="true"' : ''; ?>value="all">Always start open</option>
+		<option <?php echo 'minimized' === $settings ? 'selected="true"' : ''; ?>value="minimized">Always start minimized</option>
+		<option <?php echo 'errors' === $settings ? 'selected="true"' : ''; ?>value="errors">Remember my preference</option>
+		<option <?php echo 'none' === $settings ? 'selected="true"' : ''; ?>value="none">Hide checker while editing</option>
 	</select>
 	<p id="livecheck_description">
-		Shows tips while editing post and page content (not templates or layouts).
+		Choose whether to show inline tips <strong><em>while editing</em></strong> post and page content. The checker always hides while editing templates and layouts.
 	</p>
 	<?php
 }
