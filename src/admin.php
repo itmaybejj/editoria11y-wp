@@ -730,10 +730,28 @@ function editoria11y_dashboard() {
 	wp_enqueue_style( 'editoria11y-lib-css', trailingslashit( ED11Y_ASSETS ) . 'lib/editoria11y.min.css', null, Editoria11y::ED11Y_VERSION );
 	wp_enqueue_style( 'editoria11y-css', trailingslashit( ED11Y_ASSETS ) . 'css/editoria11y-dashboard.css', null, Editoria11y::ED11Y_VERSION );
 	$nonce = wp_create_nonce( 'ed1ref' );
+	/**
+	 * Filter the dashboard page title.
+	 *
+	 * @since 2.2.0
+	 *
+	 * @param string $title The page title. Default 'Editoria11y accessibility checker'.
+	 */
+	$page_title = apply_filters( 'editoria11y_dashboard_title', __( 'Editoria11y accessibility checker', 'editoria11y' ) );
 
 	echo '<div id="ed1">
-			<h1>Editoria11y accessibility checker</h1>
-			<div id="ed1-recent-wrapper"></div>
+			<h1>' . esc_html( $page_title ) . '</h1>';
+
+	/**
+	 * Fires at the top of the Editoria11y dashboard page, after the title.
+	 *
+	 * Use this hook to inject custom content, forms, or UI elements at the top of the dashboard.
+	 *
+	 * @since 2.2.0
+	 */
+	do_action( 'editoria11y_dashboard_top' );
+
+	echo '<div id="ed1-recent-wrapper"></div>
 			<div id="ed1-page-wrapper"></div>
 			<div id="ed1-results-wrapper"></div>
 			<div id="ed1-dismissals-wrapper"></div>
