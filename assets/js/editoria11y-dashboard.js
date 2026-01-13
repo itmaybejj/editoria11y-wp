@@ -172,14 +172,14 @@ class Ed1 {
         Ed1.h1 = Ed1.wrapper.querySelector('#ed1 h1');
         let resetType = 'View all issues';
         if (Ed1.resultKey) {
-          Ed1.h1.textContent = 'Issue report: "' + ed11yLang.en[Ed1.resultKey].title + '"';
+          Ed1.h1.textContent = 'Alert report: "' + ed11yLang.en[Ed1.resultKey].title + '"';
         } else if ( Ed1.type ) {
-          Ed1.h1.textContent = 'Issues on pages of type "' + Ed1.type + '"';
+          Ed1.h1.textContent = 'Alerts on pages of type "' + Ed1.type + '"';
           resetType = 'View issues on all pages';
         } else if ( Ed1.author ) {
-          Ed1.h1.textContent = 'Issues on pages created by author';
+          Ed1.h1.textContent = 'Alerts on pages created by author';
         } else if ( Ed1.dismissor ) {
-          Ed1.h1.textContent = 'Issues dismissed by';
+          Ed1.h1.textContent = 'Alerts dismissed by';
         }
         else {
           Ed1.h1.textContent = prettyStatus( Ed1.post_status ) + ' pages';
@@ -463,7 +463,7 @@ class Ed1 {
       Ed1.tables['ed1page'].setAttribute('id', 'ed1page');
 
       head = document.createElement('tr');
-      head.insertAdjacentElement('beforeend', Ed1.render.th('Issues', 'page_total', 'DESC'));
+      head.insertAdjacentElement('beforeend', Ed1.render.th('Alerts', 'page_total', 'DESC'));
       head.insertAdjacentElement('beforeend', Ed1.render.th('Page', 'page_title'));
       head.insertAdjacentElement('beforeend', Ed1.render.th('Path', 'page_url'));
       head.insertAdjacentElement('beforeend', Ed1.render.th('Type', 'entity_type'));
@@ -474,7 +474,7 @@ class Ed1 {
 
       loading.setAttribute('colspan', '6');
       Ed1.tables['ed1page'].append(loadWrap.cloneNode('deep'));
-      let pageDetails = Ed1.render.details('Issues by page', 'ed1page-title', true);
+      let pageDetails = Ed1.render.details('Alerts by page', 'ed1page-title');
       Ed1.wrapPage.append(pageDetails);
       pageDetails.append(Ed1.tables['ed1page']);
       Ed1.tables['ed1page'].querySelectorAll('button').forEach((el) => {
@@ -492,7 +492,7 @@ class Ed1 {
       head.insertAdjacentElement('beforeend', Ed1.render.th('Detected', 'detected', 'DESC'));
       head.insertAdjacentElement('beforeend', Ed1.render.th('Page', 'page_title'));
       head.insertAdjacentElement('beforeend', Ed1.render.th('Path', 'page_url'));
-      head.insertAdjacentElement('beforeend', Ed1.render.th('Issue', 'result_key'));
+      head.insertAdjacentElement('beforeend', Ed1.render.th('Alert', 'result_key'));
       head.insertAdjacentElement('beforeend', Ed1.render.th('Count', 'result_count'));
       head.insertAdjacentElement('beforeend', Ed1.render.th('Type', 'entity_type'));
       head.insertAdjacentElement('beforeend', Ed1.render.th('Status', 'post_status'));
@@ -500,7 +500,7 @@ class Ed1 {
 
       loading.setAttribute('colspan', '6');
       Ed1.tables['ed1recent'].append(loadWrap.cloneNode('deep'));
-      let recentDetails = Ed1.render.details('Recent issues', 'ed1page-title', true);
+      let recentDetails = Ed1.render.details('Recent alerts', 'ed1page-title', false);
       Ed1.wrapRecent.append(recentDetails);
       recentDetails.append(Ed1.tables['ed1recent']);
       Ed1.tables['ed1recent'].querySelectorAll('button').forEach((el) => {
@@ -515,10 +515,10 @@ class Ed1 {
       Ed1.tables['ed1result'].setAttribute('id', 'ed1result');
       head = document.createElement('tr');
       head.insertAdjacentElement('beforeend', Ed1.render.th('Pages', 'count', 'DESC'));
-      head.insertAdjacentElement('beforeend', Ed1.render.th('Issue', 'result_key'));
+      head.insertAdjacentElement('beforeend', Ed1.render.th('Alert', 'result_key'));
       Ed1.tables['ed1result'].insertAdjacentElement('beforeend', head);
 
-      let resultDetails = Ed1.render.details('Issue types', 'ed1result-title');
+      let resultDetails = Ed1.render.details('Alert types', 'ed1result-title');
       Ed1.wrapResults.append(resultDetails);
       loading.setAttribute('colspan', '2');
       Ed1.tables['ed1result'].append(loadWrap.cloneNode('deep'));
@@ -796,7 +796,7 @@ class Ed1 {
 
             let dismissor;
             if ( Ed1.dismissor && !dismissor) {
-              Ed1.h1.textContent = 'Issues dismissed by ' + Ed1.authorList[ Ed1.dismissor ];
+              Ed1.h1.textContent = 'Alerts dismissed by ' + Ed1.authorList[ Ed1.dismissor ];
             }
             let by = Ed1.render.td( Ed1.authorList[ result['user'] ] || result['user'] , false, Ed1.url + 'dismissor=' + result['user']);
             row.insertAdjacentElement('beforeend', by);
@@ -840,7 +840,7 @@ class Ed1 {
         } else {
           Ed1.matchAuthors( post[2] );
           if ( Ed1.author && Ed1.authorList[ Ed1.author ]) {
-            Ed1.h1.textContent = 'Issues on pages created by ' + Ed1.authorList[ Ed1.author ];
+            Ed1.h1.textContent = 'Alerts on pages created by ' + Ed1.authorList[ Ed1.author ];
           }
           Ed1.render.ed1page(post[0], post[1], announce);
         }

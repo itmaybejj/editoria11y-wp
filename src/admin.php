@@ -737,7 +737,7 @@ function editoria11y_dashboard() {
 	 *
 	 * @param string $title The page title. Default 'Editoria11y accessibility checker'.
 	 */
-	$page_title = apply_filters( 'editoria11y_dashboard_title', __( 'Editoria11y accessibility checker', 'editoria11y' ) );
+	$page_title = apply_filters( 'editoria11y_dashboard_title', __( 'Editoria11y Content Accessibility Report', 'editoria11y' ) );
 
 	echo '<div id="ed1">
 			<h1>' . esc_html( $page_title ) . '</h1>';
@@ -768,7 +768,7 @@ add_action( 'admin_menu', 'ed11y_dashboard_menu' );
 function ed11y_dashboard_menu() {
 	$setting    = ed11y_get_plugin_settings( 'ed11y_report_restrict' );
 	$capability = '1' === $setting ? 'manage_options' : 'edit_others_posts';
-	add_menu_page( esc_html__( 'Editoria11y', 'editoria11y' ), esc_html__( 'Editoria11y', 'editoria11y' ), $capability, 'editoria11y', 'editoria11y_dashboard', 'dashicons-chart-bar', 90 );
+	add_menu_page( esc_html__( 'Editoria11y Content Accessibility Report', 'editoria11y' ), esc_html__( 'Editoria11y', 'editoria11y' ), $capability, 'editoria11y', 'editoria11y_dashboard', 'dashicons-chart-bar', 90 );
 }
 
 /**

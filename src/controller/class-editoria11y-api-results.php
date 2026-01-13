@@ -206,17 +206,16 @@ class Editoria11y_Api_Results extends WP_REST_Controller {
 			if ( empty($where) ) {
 				$rowcount = $wpdb->get_var(
 					"SELECT
-    			COUNT({$utable}.pid) 
+    			COUNT({$utable}.pid)
 				FROM {$utable}"
 				);
 			} else {
 				$rowcount = $wpdb->get_var(
-					"SELECT
-    			COUNT({$utable}.pid) 
-				FROM {$utable}
-				LEFT JOIN {$rtable} ON {$utable}.pid={$rtable}.pid
-				LEFT JOIN {$post_table} ON {$utable}.post_id={$post_table}.ID
-				{$where};"
+					"SELECT COUNT(DISTINCT {$utable}.pid) AS row_count
+							  FROM {$utable}
+							  LEFT JOIN {$rtable}      ON {$utable}.pid = {$rtable}.pid
+							  LEFT JOIN {$post_table}  ON {$utable}.post_id = {$post_table}.ID
+							  {$where};"
 				);
 			}
 
@@ -253,7 +252,7 @@ class Editoria11y_Api_Results extends WP_REST_Controller {
 			*/
 			// phpcs:disable
 			$rowcount = $wpdb->get_var(
-				"SELECT COUNT( result_key ) 
+				"SELECT COUNT( DISTINCT result_key ) AS row_count
 				FROM {$rtable};"
 			);
 
@@ -323,7 +322,7 @@ class Editoria11y_Api_Results extends WP_REST_Controller {
 				);
 
 				$rowcount = $wpdb->get_var(
-					"SELECT COUNT({$utable}.pid) 
+					"SELECT COUNT({$utable}.pid)
 					FROM {$rtable}
 					INNER JOIN {$utable} ON {$rtable}.pid={$utable}.pid
 					LEFT JOIN {$post_table} ON {$utable}.post_id={$post_table}.ID
@@ -349,7 +348,7 @@ class Editoria11y_Api_Results extends WP_REST_Controller {
 						{$post_table}.post_status,
 						{$rtable}.created as created
 					FROM {$rtable}
-					INNER JOIN {$utable} ON {$rtable}.pid={$utable}.pid    
+					INNER JOIN {$utable} ON {$rtable}.pid={$utable}.pid
 					LEFT JOIN {$post_table} ON {$utable}.post_id={$post_table}.ID
 					ORDER BY {$order_by} {$direction}
 					LIMIT {$count}
@@ -358,7 +357,7 @@ class Editoria11y_Api_Results extends WP_REST_Controller {
 				);
 
 				$rowcount = $wpdb->get_var(
-					"SELECT COUNT(pid) 
+					"SELECT COUNT(pid)
 					FROM {$utable};"
 				);
 				// phpcs:enable
