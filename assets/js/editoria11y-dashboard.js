@@ -285,7 +285,9 @@ class Ed1 {
       let href;
       if (url) {
         let sep = url.indexOf('?') === -1 ? '?' : '&';
-        url = encodeURI(url);
+        if(! pid) {
+          url = encodeURI(url);
+        }
         href = pid ? url + sep + 'ed1ref=' + parseInt(pid) + '&_wpnonce=' + Ed1.nonce : url;
       } else {
         href = '#' + encodeURIComponent(hash);
