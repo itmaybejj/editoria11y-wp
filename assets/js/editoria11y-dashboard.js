@@ -13,7 +13,7 @@ class Ed1 {
       let urlParams = new URLSearchParams(window.location.search);
       Ed1.url = new URL(window.location.pathname, window.location.origin);
       if (urlParams.has('page')) {
-				Ed1.url.searchParams.set('page', urlParams.get('page'));
+        Ed1.url.searchParams.set('page', urlParams.get('page'));
       }
       let nonceWrapper = document.getElementById('editoria11y-nonce');
       Ed1.nonce = JSON.parse(nonceWrapper.innerHTML);
@@ -833,8 +833,8 @@ class Ed1 {
     };
 
     /**
-	 * API calls.
-	 */
+   * API calls.
+   */
     Ed1.api = {
       method: 'GET',
       headers: {
@@ -901,8 +901,8 @@ class Ed1 {
 
 
     /**
-	 * User Interactions.
-	 */
+   * User Interactions.
+   */
     Ed1.reSort = function () {
       let el = document.activeElement;
       let table = el.closest('table');
