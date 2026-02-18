@@ -609,7 +609,7 @@ class Ed1 {
         });
 
         if (!Ed1.csvLink) {
-          Ed1.csvLink = Ed1.render.a('Download results as CSV', '' , Ed1.filterUrl({ed11y_export_results_csv: 'download', _wpnonce: Ed1.nonce}));
+          Ed1.csvLink = Ed1.render.a('Download results as CSV', '' , Ed1.buildUrl({ed11y_export_results_csv: 'download', _wpnonce: Ed1.nonce}));
           Ed1.csvLink.classList.add('ed11y-export');
           Ed1.wrapper.append( Ed1.csvLink );
         }
