@@ -10,11 +10,10 @@ class Ed1 {
       // Custom test names
       ed11yLang.en.emptyWpButton = {title: 'Empty Link'};
 
-      let queryString = window.location.search;
-      let urlParams = new URLSearchParams(queryString);
-      Ed1.url = '//' + window.location.host + window.location.pathname + '?';
-      if (urlParams.get('page')) {
-        Ed1.url += 'page=' + urlParams.get('page') + '&';
+      let urlParams = new URLSearchParams(window.location.search);
+      Ed1.url = new URL(window.location.pathname, window.location.origin);
+      if (urlParams.has('page')) {
+        Ed1.url.searchParams.set('page', urlParams.get('page'));
       }
       let nonceWrapper = document.getElementById('editoria11y-nonce');
       Ed1.nonce = JSON.parse(nonceWrapper.innerHTML);
@@ -142,6 +141,19 @@ class Ed1 {
     };
 
     /**
+     * Build a URL by extending Ed1.url with the given params.
+     * @param {Object} params Key/value pairs to set as search parameters.
+     * @returns string
+     */
+    Ed1.buildUrl = function (params) {
+      let url = new URL(Ed1.url);
+      for (const [key, value] of Object.entries(params)) {
+        url.searchParams.set(key, value);
+      }
+      return url.toString();
+    };
+
+    /**
      * Assemble request array into API call.
      * @param {*} request
      * @returns string
@@ -185,7 +197,7 @@ class Ed1 {
           Ed1.h1.textContent = prettyStatus( Ed1.post_status ) + ' pages';
           resetType = 'View issues on all pages';
         }
-        let reset = Ed1.render.a(resetType, false, Ed1.url);
+        let reset = Ed1.render.a(resetType, false, Ed1.url.toString());
         reset.classList.add('reset');
         let leftArrow = document.createElement('span');
         leftArrow.textContent = '< ';
@@ -284,13 +296,16 @@ class Ed1 {
       link.textContent = text;
       let href;
       if (url) {
-        let sep = url.indexOf('?') === -1 ? '?' : '&';
-        url = encodeURI(url);
-        href = pid ? url + sep + 'ed1ref=' + parseInt(pid) + '&_wpnonce=' + Ed1.nonce : url;
+        let parsedUrl = new URL(url, window.location.origin);
+        if (pid) {
+          parsedUrl.searchParams.set('ed1ref', parseInt(pid));
+          parsedUrl.searchParams.set('_wpnonce', Ed1.nonce);
+        }
+        href = parsedUrl.toString();
       } else {
         href = '#' + encodeURIComponent(hash);
       }
-      link.setAttribute('href', href);
+      link.href = href;
       return link;
     };
 
@@ -587,14 +602,14 @@ class Ed1 {
           let keyName = ed11yLang.en[result['result_key']] ? ed11yLang.en[result['result_key']].title : result['result_key'];
 
           // URL sanitized on build...
-          let key = Ed1.render.td(keyName, false, Ed1.url + 'rkey=' + result['result_key'], false, 'rkey');
+          let key = Ed1.render.td(keyName, false, Ed1.buildUrl({rkey: result['result_key']}), false, 'rkey');
           row.insertAdjacentElement('beforeend', key);
 
           Ed1.tables['ed1result'].insertAdjacentElement('beforeend', row);
         });
 
         if (!Ed1.csvLink) {
-          Ed1.csvLink = Ed1.render.a('Download results as CSV', '' , Ed1.url + '&ed11y_export_results_csv=download&_wpnonce=' + Ed1.nonce );
+          Ed1.csvLink = Ed1.render.a('Download results as CSV', '' , Ed1.buildUrl({ed11y_export_results_csv: 'download', _wpnonce: Ed1.nonce}));
           Ed1.csvLink.classList.add('ed11y-export');
           Ed1.wrapper.append( Ed1.csvLink );
         }
@@ -642,24 +657,24 @@ class Ed1 {
           let pageLink = Ed1.render.td(result['page_title'], false, result['page_url'], result['pid']);
           row.insertAdjacentElement('beforeend', pageLink);
 
-          let path = result['page_url'].replace(window.location.protocol + '//' + window.location.host, '');
+          let path = decodeURI(result['page_url'].replace(window.location.protocol + '//' + window.location.host, ''));
           path = Ed1.render.td( path ? path : '/' );
           row.insertAdjacentElement('beforeend', path);
 
           // need to sanitize URL in response?
           let keyName = ed11yLang.en[result['result_key']].title;
-          let key = Ed1.render.td(keyName, false, Ed1.url + 'rkey=' + result['result_key'], false, 'rkey');
+          let key = Ed1.render.td(keyName, false, Ed1.buildUrl({rkey: result['result_key']}), false, 'rkey');
           row.insertAdjacentElement('beforeend', key);
 
           let pageCount = Ed1.render.td(result['result_count']);
           row.insertAdjacentElement('beforeend', pageCount);
 
-          let type = Ed1.render.td(result['entity_type'], false, `${Ed1.url}type=${result['entity_type']}`);
+          let type = Ed1.render.td(result['entity_type'], false, Ed1.buildUrl({type: result['entity_type']}));
           row.insertAdjacentElement('beforeend', type);
 
           let post_status = result['post_status'] ?
-              Ed1.render.td( prettyStatus( result['post_status'] ), false, `${Ed1.url}post_status=${result['post_status']}` )
-              : Ed1.render.td('Published', false, `${Ed1.url}post_status=publish`);
+              Ed1.render.td( prettyStatus( result['post_status'] ), false, Ed1.buildUrl({post_status: result['post_status']}))
+              : Ed1.render.td('Published', false, Ed1.buildUrl({post_status: 'publish'}));
           row.insertAdjacentElement('beforeend', post_status);
 
 
@@ -701,16 +716,16 @@ class Ed1 {
           let pageLink = Ed1.render.td(result['page_title'], false, result['page_url'], result['pid']);
           row.insertAdjacentElement('beforeend', pageLink);
 
-          let path = result['page_url'].replace(window.location.protocol + '//' + window.location.host, '');
+          let path = decodeURI(result['page_url'].replace(window.location.protocol + '//' + window.location.host, ''));
           path = Ed1.render.td( path ? path : '/' );
           row.insertAdjacentElement('beforeend', path);
 
-          let type = Ed1.render.td(result['entity_type'], false, `${Ed1.url}type=${result['entity_type']}`);
+          let type = Ed1.render.td(result['entity_type'], false, Ed1.buildUrl({type: result['entity_type']}));
           row.insertAdjacentElement('beforeend', type);
 
           let post_status = result['post_status'] ?
-              Ed1.render.td( prettyStatus( result['post_status'] ), false, `${Ed1.url}post_status=${result['post_status']}` )
-              : Ed1.render.td('Published', false, `${Ed1.url}post_status=publish`);
+              Ed1.render.td( prettyStatus( result['post_status'] ), false, Ed1.buildUrl({post_status: result['post_status']}))
+              : Ed1.render.td('Published', false, Ed1.buildUrl({post_status: 'publish'}));
           row.insertAdjacentElement('beforeend', post_status);
 
           let date = result['post_modified'] ?
@@ -725,7 +740,7 @@ class Ed1 {
                 Ed1.render.td(
                     Ed1.authorList[ result['post_author'] ] || result['post_author'],
                     false,
-                    `${Ed1.url}author=${result['post_author']}`,
+                    Ed1.buildUrl({author: result['post_author']}),
                 ),
             );
           } else {
@@ -778,13 +793,13 @@ class Ed1 {
             let pageLink = Ed1.render.td(result['page_title'], false, result['page_url'], result['pid']);
             row.insertAdjacentElement('beforeend', pageLink);
 
-            let path = result['page_url'].replace(window.location.protocol + '//' + window.location.host, '');
+            let path = decodeURI(result['page_url'].replace(window.location.protocol + '//' + window.location.host, ''));
             path = Ed1.render.td( path ? path : '/' );
             row.insertAdjacentElement('beforeend', path);
 
             // need to sanitize URL in response?
             let keyName = ed11yLang.en[result['result_key']].title;
-            let key = Ed1.render.td(keyName, false, Ed1.url + 'rkey=' + result['result_key'], false, 'rkey');
+            let key = Ed1.render.td(keyName, false, Ed1.buildUrl({rkey: result['result_key']}), false, 'rkey');
             row.insertAdjacentElement('beforeend', key);
 
             let marked = Ed1.render.td(result['dismissal_status']);
@@ -798,7 +813,7 @@ class Ed1 {
             if ( Ed1.dismissor && !dismissor) {
               Ed1.h1.textContent = 'Alerts dismissed by ' + Ed1.authorList[ Ed1.dismissor ];
             }
-            let by = Ed1.render.td( Ed1.authorList[ result['user'] ] || result['user'] , false, Ed1.url + 'dismissor=' + result['user']);
+            let by = Ed1.render.td( Ed1.authorList[ result['user'] ] || result['user'] , false, Ed1.buildUrl({dismissor: result['user']}));
             row.insertAdjacentElement('beforeend', by);
 
             Ed1.tables['ed1dismiss'].insertAdjacentElement('beforeend', row);
@@ -818,8 +833,8 @@ class Ed1 {
     };
 
     /**
-	 * API calls.
-	 */
+   * API calls.
+   */
     Ed1.api = {
       method: 'GET',
       headers: {
@@ -886,8 +901,8 @@ class Ed1 {
 
 
     /**
-	 * User Interactions.
-	 */
+   * User Interactions.
+   */
     Ed1.reSort = function () {
       let el = document.activeElement;
       let table = el.closest('table');
@@ -910,5 +925,3 @@ class Ed1 {
 
 new Ed1();
 Ed1.init();
-
-
