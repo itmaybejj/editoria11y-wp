@@ -305,7 +305,7 @@ class Ed1 {
       } else {
         href = '#' + encodeURIComponent(hash);
       }
-      link.setAttribute('href', href);
+      link.href = href;
       return link;
     };
 
@@ -657,7 +657,7 @@ class Ed1 {
           let pageLink = Ed1.render.td(result['page_title'], false, result['page_url'], result['pid']);
           row.insertAdjacentElement('beforeend', pageLink);
 
-          let path = result['page_url'].replace(window.location.protocol + '//' + window.location.host, '');
+          let path = decodeURI(result['page_url'].replace(window.location.protocol + '//' + window.location.host, ''));
           path = Ed1.render.td( path ? path : '/' );
           row.insertAdjacentElement('beforeend', path);
 
@@ -716,7 +716,7 @@ class Ed1 {
           let pageLink = Ed1.render.td(result['page_title'], false, result['page_url'], result['pid']);
           row.insertAdjacentElement('beforeend', pageLink);
 
-          let path = result['page_url'].replace(window.location.protocol + '//' + window.location.host, '');
+          let path = decodeURI(result['page_url'].replace(window.location.protocol + '//' + window.location.host, ''));
           path = Ed1.render.td( path ? path : '/' );
           row.insertAdjacentElement('beforeend', path);
 
@@ -793,7 +793,7 @@ class Ed1 {
             let pageLink = Ed1.render.td(result['page_title'], false, result['page_url'], result['pid']);
             row.insertAdjacentElement('beforeend', pageLink);
 
-            let path = result['page_url'].replace(window.location.protocol + '//' + window.location.host, '');
+            let path = decodeURI(result['page_url'].replace(window.location.protocol + '//' + window.location.host, ''));
             path = Ed1.render.td( path ? path : '/' );
             row.insertAdjacentElement('beforeend', path);
 
