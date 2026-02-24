@@ -725,8 +725,8 @@ function editoria11y_dashboard() {
 		return false;
 	}
 
-	wp_enqueue_script( 'editoria11y-js', trailingslashit( ED11Y_ASSETS ) . 'lib/editoria11y.min.js', array( 'wp-api' ), Editoria11y::ED11Y_VERSION, array('in_footer' => true) );
-	wp_enqueue_script( 'editoria11y-js-dash', trailingslashit( ED11Y_ASSETS ) . 'js/editoria11y-dashboard.js', array( 'wp-api' ), Editoria11y::ED11Y_VERSION, array('in_footer' => true) );
+	wp_enqueue_script( 'editoria11y-js', trailingslashit( ED11Y_ASSETS ) . 'lib/editoria11y.min.js', array( 'wp-api' ), Editoria11y::ED11Y_VERSION, array( 'in_footer' => true ) );
+	wp_enqueue_script( 'editoria11y-js-dash', trailingslashit( ED11Y_ASSETS ) . 'js/editoria11y-dashboard.js', array( 'wp-api' ), Editoria11y::ED11Y_VERSION, array( 'in_footer' => true ) );
 	wp_enqueue_style( 'editoria11y-lib-css', trailingslashit( ED11Y_ASSETS ) . 'lib/editoria11y.min.css', null, Editoria11y::ED11Y_VERSION );
 	wp_enqueue_style( 'editoria11y-css', trailingslashit( ED11Y_ASSETS ) . 'css/editoria11y-dashboard.css', null, Editoria11y::ED11Y_VERSION );
 	$nonce = wp_create_nonce( 'ed1ref' );
