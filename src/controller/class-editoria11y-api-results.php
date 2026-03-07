@@ -134,7 +134,7 @@ class Editoria11y_Api_Results extends WP_REST_Controller {
 		$order_by    = ! empty( $params['sort'] ) && $validate->sort( $params['sort'] ) ? $params['sort'] : false;
 		$entity_type = ! empty( $params['entity_type'] ) && $validate->entity_type( $params['entity_type'] ) ? $params['entity_type'] : false;
 		$result_key  = ! empty( $params['result_key'] ) && 'false' !== $params['result_key'] ? esc_sql( $params['result_key'] ) : false;
-		$author      = is_numeric( $params['author'] ) ? intval( $params['author'] ) : false;
+		$author      = is_numeric( $params['p_author'] ) ? intval( $params['p_author'] ) : false;
 		$post_status = ! empty( $params['post_status'] ) && 'false' !== $params['post_status'] ? esc_sql( $params['post_status'] ) : false;
 
 		$post_status_filter = function ( $where, $post_status, $utable, $post_table ) {

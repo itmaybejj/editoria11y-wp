@@ -69,12 +69,12 @@ class Ed1 {
 
       // Page type to filter by; will be validated.
       Ed1.type = urlParams.get('type');
-      Ed1.author = urlParams.get('author');
+      Ed1.p_author = urlParams.get('p_author');
       Ed1.dismissor = urlParams.get('dismissor');
 
       Ed1.post_status = urlParams.get('post_status') || false;
 
-      Ed1.openDetails = !!Ed1.resultKey || !!Ed1.type || !!Ed1.author || !!Ed1.post_status;
+      Ed1.openDetails = !!Ed1.resultKey || !!Ed1.type || !!Ed1.p_author || !!Ed1.post_status;
 
       // Key arrays to be assembled into URLs on request.
       Ed1.requests = {};
@@ -88,7 +88,7 @@ class Ed1 {
         result_key: Ed1.resultKey,
         entity_type: Ed1.type,
         post_status: Ed1.post_status,
-        author: Ed1.author,
+        p_author: Ed1.p_author,
       };
       Ed1.requests['ed1recent'] = {
         base: 'dashboard',
@@ -100,7 +100,7 @@ class Ed1 {
         result_key: Ed1.resultKey,
         entity_type: Ed1.type,
         post_status: Ed1.post_status,
-        author: Ed1.author,
+        p_author: Ed1.p_author,
       };
       Ed1.requests['ed1result'] = {
         base: 'dashboard',
@@ -112,7 +112,7 @@ class Ed1 {
         result_key: Ed1.resultKey,
         entity_type: Ed1.type,
         post_status: Ed1.post_status,
-        author: Ed1.author,
+        p_author: Ed1.p_author,
       };
       Ed1.requests['ed1dismiss'] = {
         base: 'dismiss',
@@ -124,7 +124,7 @@ class Ed1 {
         result_key: Ed1.resultKey,
         entity_type: Ed1.type,
         post_status: Ed1.post_status,
-        author: Ed1.author,
+        p_author: Ed1.p_author,
         dismissor: Ed1.dismissor,
       };
     };
@@ -160,7 +160,8 @@ class Ed1 {
      */
     Ed1.buildRequest = function (request) {
       let q = Ed1.requests[request];
-      let req = `${q.base}?view=${q.view}&count=${q.count}&offset=${q.offset}&sort=${q.sort}&direction=${q.direction}&result_key=${q.result_key}&author=${q.author}&entity_type=${q.entity_type}&post_status=${q.post_status}&dismissor=${q.dismissor}&nocache=${Date.now()}`;
+	  // Can't use &author as param when author enumeration blocking is activated.
+      let req = `${q.base}?view=${q.view}&count=${q.count}&offset=${q.offset}&sort=${q.sort}&direction=${q.direction}&result_key=${q.result_key}&p_author=${q.p_author}&entity_type=${q.entity_type}&post_status=${q.post_status}&dismissor=${q.dismissor}&nocache=${Date.now()}`;
       return req;
     };
 
@@ -180,7 +181,7 @@ class Ed1 {
       Ed1.render.tableHeaders();
 
       // Only build result table if there is no result or type filter.
-      if (!!Ed1.resultKey || !!Ed1.type || !!Ed1.post_status || !! Ed1.author || !! Ed1.dismissor ) {
+      if (!!Ed1.resultKey || !!Ed1.type || !!Ed1.post_status || !! Ed1.p_author || !! Ed1.dismissor ) {
         Ed1.h1 = Ed1.wrapper.querySelector('#ed1 h1');
         let resetType = 'View all issues';
         if (Ed1.resultKey) {
@@ -188,7 +189,7 @@ class Ed1 {
         } else if ( Ed1.type ) {
           Ed1.h1.textContent = 'Alerts on pages of type "' + Ed1.type + '"';
           resetType = 'View issues on all pages';
-        } else if ( Ed1.author ) {
+        } else if ( Ed1.p_author ) {
           Ed1.h1.textContent = 'Alerts on pages created by author';
         } else if ( Ed1.dismissor ) {
           Ed1.h1.textContent = 'Alerts dismissed by';
@@ -625,8 +626,8 @@ class Ed1 {
 
     Ed1.authorList = {};
     Ed1.matchAuthors = function( author_query ) {
-      author_query?.forEach( ( author ) => {
-        Ed1.authorList[author.ID] = author.display_name;
+      author_query?.forEach( ( p_author ) => {
+        Ed1.authorList[p_author.ID] = p_author.display_name;
       });
     };
 
@@ -740,7 +741,7 @@ class Ed1 {
                 Ed1.render.td(
                     Ed1.authorList[ result['post_author'] ] || result['post_author'],
                     false,
-                    Ed1.buildUrl({author: result['post_author']}),
+                    Ed1.buildUrl({p_author: result['post_author']}),
                 ),
             );
           } else {
@@ -854,8 +855,8 @@ class Ed1 {
           console.error(post.data.status + ': ' + post.message);
         } else {
           Ed1.matchAuthors( post[2] );
-          if ( Ed1.author && Ed1.authorList[ Ed1.author ]) {
-            Ed1.h1.textContent = 'Alerts on pages created by ' + Ed1.authorList[ Ed1.author ];
+          if ( Ed1.p_author && Ed1.authorList[ Ed1.p_author ]) {
+            Ed1.h1.textContent = 'Alerts on pages created by ' + Ed1.authorList[ Ed1.p_author ];
           }
           Ed1.render.ed1page(post[0], post[1], announce);
         }
