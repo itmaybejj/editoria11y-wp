@@ -830,8 +830,20 @@ function ed11y_export_results_csv() {
 
 	$test_name = ed11y_test_nice_names();
 
+	// Generate filename with site name and current date.
+	$site_title = sanitize_file_name( get_bloginfo( 'name' ) );
+	$date       = gmdate( 'Y-m-d' );
+	$filename   = "{$site_title}_accessibility_issues_{$date}.csv";
+
+	/**
+	 * Filter the CSV export filename.
+	 *
+	 * @param string $filename The default filename.
+	 */
+	$filename = apply_filters( 'ed11y_csv_export_filename', $filename );
+
 	header( 'Content-type: text/csv' );
-	header( 'Content-Disposition: attachment; filename="Recent_accessibility_issues.csv"' );
+	header( 'Content-Disposition: attachment; filename="' . $filename . '"' );
 	header( 'Pragma: no-cache' );
 	header( 'Expires: 0' );
 
@@ -889,42 +901,81 @@ function ed11y_export_results_csv() {
 
 	// phpcs:enable
 
-	fputcsv(
-		$file,
-		array(
-			'Page',
-			'URL',
-			'Issue',
-			'Count',
-			'Author',
-			'Page Type',
-			'Detected on',
-			'Status',
-			'Edit',
-		)
+	/**
+	 * Filter the CSV export data rows.
+	 *
+	 * @param array $data The results from the database query.
+	 */
+	$data = apply_filters( 'ed11y_csv_export_data', $data );
+
+	/**
+	 * Action hook to add metadata rows before the header and data rows.
+	 * Hooked functions should write their own fputcsv() calls.
+	 *
+	 * @param resource $file The file handle for php://output.
+	 * @param array $data The export data.
+	 */
+	do_action( 'ed11y_csv_export_before_headers', $file, $data );
+
+	// Default CSV headers.
+	$headers = array(
+		'Page',
+		'URL',
+		'Issue',
+		'Count',
+		'Author',
+		'Page Type',
+		'Detected on',
+		'Status',
+		'Edit',
 	);
+
+	/**
+	 * Filter the CSV column headers.
+	 *
+	 * @param array $headers The default column headers.
+	 */
+	$headers = apply_filters( 'ed11y_csv_export_headers', $headers );
+
+	fputcsv( $file, $headers );
 
 	$admin = get_admin_url();
 
 	foreach ( $data as $result ) {
 
-		fputcsv(
-			$file,
-			array(
-				$result->page_title,
-				$result->page_url,
-				$test_name[ $result->result_key ] ?? '',
-				$result->result_count,
-				$result->author ?? $authors[ $result->post_author ] ?? '',
-				$result->entity_type,
-				$result->created,
-				$result->post_status ?? 'publish',
-				0 < $result->post_status ?
-					$admin . 'post.php?post=' . $result->post_id . '&action=edit'
-					: $result->page_url,
-			)
+		$row = array(
+			$result->page_title,
+			$result->page_url,
+			$test_name[ $result->result_key ] ?? '',
+			$result->result_count,
+			$result->author ?? $authors[ $result->post_author ] ?? '',
+			$result->entity_type,
+			$result->created,
+			$result->post_status ?? 'publish',
+			0 < $result->post_status ?
+				$admin . 'post.php?post=' . $result->post_id . '&action=edit'
+				: $result->page_url,
 		);
+
+		/**
+		 * Filter each CSV row before export.
+		 *
+		 * @param array $row The current row data.
+		 * @param object $result The current result object from the database.
+		 */
+		$row = apply_filters( 'ed11y_csv_export_row', $row, $result );
+
+		fputcsv( $file, $row );
 	}
+
+	/**
+	 * Action hook to add additional rows after the data.
+	 * Hooked functions should write their own fputcsv() calls.
+	 *
+	 * @param resource $file The file handle for php://output.
+	 * @param array $data The export data.
+	 */
+	do_action( 'ed11y_csv_export_after_data', $file, $data );
 
 	exit(); // @SuppressWarnings(ExitExpression)
 }
