@@ -38,7 +38,7 @@ function ed11ySync() {
     let total = 0;
     Ed11y.results.forEach(result => {
       /* let test = Ed11y.results[i][1];
-						  let dismissKey = Ed11y.results[i][4]; */
+              let dismissKey = Ed11y.results[i][4]; */
       let testName = result.test;
       if (result.dismissalStatus !== 'ok') {
         // log all items not marked as OK
@@ -68,49 +68,49 @@ function ed11ySync() {
 
   let sendResults = function () {
     window.setTimeout(function () {
-        if ( ed11yOptions.post_id && document.getElementsByClassName('post-password-form').length > 0 ) {
-            // Don't sync "0 results" if the post has been replaced by a login form.
-            return;
-        }
-		let results = extractResults();
-		let data = {
-			page_title: ed11yOptions.title,
-            post_id: ed11yOptions.post_id ? ed11yOptions.post_id : 0,
-			page_count: results[2],
-			entity_type: ed11yOptions.entity_type, // node or false
-			results: results[0],
-			dismissals: results[1],
-			page_url: url,
-			created: 0,
-			pid: ed11yResetID ? parseInt(ed11yResetID) : -1,
-		};
-		postData('result', data);
-		ed11yResetID = false;
+      if (ed11yOptions.post_id && document.getElementsByClassName('post-password-form').length > 0) {
+        // Don't sync "0 results" if the post has been replaced by a login form.
+        return;
+      }
+      let results = extractResults();
+      let data = {
+        page_title: ed11yOptions.title,
+        post_id: ed11yOptions.post_id ? ed11yOptions.post_id : 0,
+        page_count: results[2],
+        entity_type: ed11yOptions.entity_type, // node or false
+        results: results[0],
+        dismissals: results[1],
+        page_url: url,
+        created: 0,
+        pid: ed11yResetID ? parseInt(ed11yResetID) : -1,
+      };
+      postData('result', data);
+      ed11yResetID = false;
       // Short timeout to let execution queue clear.
     }, 100);
   };
 
   let resetResults = function () {
-	window.setTimeout(function () {
-		let results = {};
-		let data = {
-			page_title: ed11yOptions.title,
-			page_count: results[2],
-			entity_type: ed11yOptions.entity_type, // node or false
-			results: results[0],
-			dismissals: results[1],
-			page_url: url,
-			created: 0,
-			pid: ed11yResetID ? parseInt( ed11yResetID ) : -1,
-            post_id: ed11yOptions.post_id ? ed11yOptions.post_id : 0,
-		};
-		postData('result', data);
-		// Short timeout to let execution queue clear.
-	}, 100);
+    window.setTimeout(function () {
+      let results = {};
+      let data = {
+        page_title: ed11yOptions.title,
+        page_count: results[2],
+        entity_type: ed11yOptions.entity_type, // node or false
+        results: results[0],
+        dismissals: results[1],
+        page_url: url,
+        created: 0,
+        pid: ed11yResetID ? parseInt(ed11yResetID) : -1,
+        post_id: ed11yOptions.post_id ? ed11yOptions.post_id : 0,
+      };
+      postData('result', data);
+      // Short timeout to let execution queue clear.
+    }, 100);
   };
   if (ed11yResetID && ed11yOptions.preventCheckingIfPresent && !!document.querySelector(ed11yOptions.preventCheckingIfPresent)) {
-	// We just got here from the dashboard and there should not be results at this route.
-	resetResults();
+    // We just got here from the dashboard and there should not be results at this route.
+    resetResults();
   }
 
   document.addEventListener('ed11yResults', function () {
@@ -135,57 +135,57 @@ function ed11ySync() {
 
 }
 
-const ed11yCustomTests = function() {
-    document.addEventListener('ed11yRunCustomTests', function() {
+const ed11yCustomTests = function () {
+  document.addEventListener('ed11yRunCustomTests', function () {
 
-        // 1. Write your custom test.
-        // This can be anything you want.
-        //
-        // This example uses Ed11y.findElements(),
-        // which respects checkRoots and ignoreElements,
-        // to find links with a particular string in their URL.
-        Ed11y.findElements('emptyWpButton','a.wp-element-button:not([href], [tabindex])');
+    // 1. Write your custom test.
+    // This can be anything you want.
+    //
+    // This example uses Ed11y.findElements(),
+    // which respects checkRoots and ignoreElements,
+    // to find links with a particular string in their URL.
+    Ed11y.findElements('emptyWpButton', 'a.wp-element-button:not([href], [tabindex])');
 
-        // 2. Create a message for your tooltip.
-        // You'll need a title and some contents,
-        // as a value for the key you create for your test.
-        //
-        // Be sure to use the same key as the test name below.
+    // 2. Create a message for your tooltip.
+    // You'll need a title and some contents,
+    // as a value for the key you create for your test.
+    //
+    // Be sure to use the same key as the test name below.
 
-        Ed11y.M.emptyWpButton = {
-            title: 'Empty Link',
-            tip: () =>
-                '<p>The button style visually indicates a link, but this button is not linked.</p>',
-        };
+    Ed11y.M.emptyWpButton = {
+      title: 'Empty Link',
+      tip: () =>
+        '<p>The button style visually indicates a link, but this button is not linked.</p>',
+    };
 
-        // 3. Push each item you want flagged to Ed11y.results.
-        //
-        // You must provide:
-        //   el: The element
-        //   test: A key for your test
-        //   content: The tip you created above.
-        //   position: "beforebegin" for images and links,
-        //             "afterbegin" for paragraphs.
-        //   dismissalKey: false for errors,
-        //             a unique string for manual checks.
-        Ed11y.elements.emptyWpButton?.forEach((el) => {
-            Ed11y.results.push({
-                element: el,
-                test: 'emptyWpButton',
-                content: Ed11y.M.emptyWpButton.tip(),
-                position: 'beforebegin',
-                dismissalKey: false,
-            });
-        });
-
-        // 4. When you are done with all your custom tests,
-        // dispatch an "ed11yResume" event:
-        let allDone = new CustomEvent('ed11yResume');
-        document.dispatchEvent(allDone);
+    // 3. Push each item you want flagged to Ed11y.results.
+    //
+    // You must provide:
+    //   el: The element
+    //   test: A key for your test
+    //   content: The tip you created above.
+    //   position: "beforebegin" for images and links,
+    //             "afterbegin" for paragraphs.
+    //   dismissalKey: false for errors,
+    //             a unique string for manual checks.
+    Ed11y.elements.emptyWpButton?.forEach((el) => {
+      Ed11y.results.push({
+        element: el,
+        test: 'emptyWpButton',
+        content: Ed11y.M.emptyWpButton.tip(),
+        position: 'beforebegin',
+        dismissalKey: false,
+      });
     });
+
+    // 4. When you are done with all your custom tests,
+    // dispatch an "ed11yResume" event:
+    let allDone = new CustomEvent('ed11yResume');
+    document.dispatchEvent(allDone);
+  });
 };
 
-const ed11yInit = function() {
+const ed11yInit = function () {
   let ed11yOpts = document.getElementById('editoria11y-init');
   if (!!ed11yOpts && window.location.href.indexOf('elementor-preview') === -1) {
     ed11yOptions = JSON.parse(ed11yOpts.innerHTML);
@@ -223,7 +223,7 @@ const ed11yInit = function() {
         const editIcon = document.createElement('span');
         editIcon.classList.add('ed11y-custom-edit-icon');
         editIcon.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path fill="currentColor" d="M441 58.9L453.1 71c9.4 9.4 9.4 24.6 0 33.9L424 134.1 377.9 88 407 58.9c9.4-9.4 24.6-9.4 33.9 0zM209.8 256.2L344 121.9 390.1 168 255.8 302.2c-2.9 2.9-6.5 5-10.4 6.1l-58.5 16.7 16.7-58.5c1.1-3.9 3.2-7.5 6.1-10.4zM373.1 25L175.8 222.2c-8.7 8.7-15 19.4-18.3 31.1l-28.6 100c-2.4 8.4-.1 17.4 6.1 23.6s15.2 8.5 23.6 6.1l100-28.6c11.8-3.4 22.5-9.7 31.1-18.3L487 138.9c28.1-28.1 28.1-73.7 0-101.8L474.9 25C446.8-3.1 401.2-3.1 373.1 25zM88 64C39.4 64 0 103.4 0 152L0 424c0 48.6 39.4 88 88 88l272 0c48.6 0 88-39.4 88-88l0-112c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 112c0 22.1-17.9 40-40 40L88 464c-22.1 0-40-17.9-40-40l0-272c0-22.1 17.9-40 40-40l112 0c13.3 0 24-10.7 24-24s-10.7-24-24-24L88 64z"/></svg>';
-        const reLink = function(link, type) {
+        const reLink = function (link, type) {
           const linkButton = document.createElement('a');
           linkButton.href = link.href;
           linkButton.textContent = link.textContent;
@@ -287,8 +287,8 @@ const ed11yInit = function() {
 // Call callback, init Editoria11y.
 ed11yReady(
   function () {
-      window.setTimeout(()=>{
-        ed11yInit();
-      },0);
-    }
+    window.setTimeout(() => {
+      ed11yInit();
+    }, 0);
+  }
 );

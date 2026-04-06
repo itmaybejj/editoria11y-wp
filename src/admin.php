@@ -814,6 +814,26 @@ function ed11y_test_nice_names() {
 }
 
 /**
+ * Sanitize a value for safe CSV output, preventing CSV injection.
+ *
+ * @see https://owasp.org/www-community/attacks/CSV_Injection
+ *
+ * @param mixed $value The value to sanitize.
+ * @return mixed The sanitized value (strings are escaped, other types passed through).
+ */
+function ed11y_sanitize_csv_value( $value ) {
+	if ( ! is_string( $value ) ) {
+		return $value;
+	}
+	// Replace double quotes and control characters that could split cells.
+	$escaped = preg_replace( array( '/"/', '/[\t\n\r]/' ), array( '""', ' ' ), $value );
+	if ( preg_match( '/^[=\-@+"]/', $escaped ) ) {
+		return "'" . $escaped;
+	}
+	return $escaped;
+}
+
+/**
  * Returns a CSV download of site results.
  *
  * @SuppressWarnings(PHPMD.MissingImport)
@@ -965,6 +985,7 @@ function ed11y_export_results_csv() {
 		 */
 		$row = apply_filters( 'ed11y_csv_export_row', $row, $result );
 
+		$row = array_map( 'ed11y_sanitize_csv_value', $row );
 		fputcsv( $file, $row );
 	}
 
