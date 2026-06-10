@@ -127,7 +127,22 @@ final class FreemiusOverrides {
 			'connect-message'                            => array(
 				'original'    => 'Opt in to get email notifications for security & feature updates, educational content, and occasional offers, and to share some basic WordPress environment info. This will help us make the %s more compatible with your site and better at doing what you need it to.',
 				'replacement' => 'Opt in to allow Freemius to log your WordPress environment and activation status (this is only used to record and troubleshoot licensing), and to allow email notifications for security and feature updates.',
-				'note'        => 'Their wording asks for more permission than we need.',
+				'note'        => 'Fresh-install opt-in body (Freemius present from first activation; SDK connect.php "! is_plugin_update" branch). Users who instead update into a Freemius build see the connect-message_on-update* variants below.',
+			),
+			'connect-message_on-update_why'              => array(
+				'original'    => 'We have introduced this opt-in so you never miss an important update and help us make the %s more compatible with your site and better at doing what you need it to.',
+				'replacement' => 'Opt in to allow Freemius to log your WordPress environment and activation status (this is only used to record and troubleshoot licensing), and to allow email notifications for security and feature updates.',
+				'note'        => 'First paragraph of the opt-in body shown when Freemius is added during a plugin update; this is the path most existing free users hit. Carries the entire replacement; connect-message_on-update and _skip are blanked so the two-paragraph SDK message collapses to this single sentence. The SDK hardcodes <br><br> after this string (connect.php), so a small trailing gap before the buttons remains that i18n overrides cannot remove.',
+			),
+			'connect-message_on-update'                  => array(
+				'original'    => 'Opt in to get email notifications for security & feature updates, educational content, and occasional offers, and to share some basic WordPress environment info.',
+				'replacement' => '',
+				'note'        => 'Second paragraph of the on-update opt-in body. Blanked so the message collapses into connect-message_on-update_why above.',
+			),
+			'connect-message_on-update_skip'             => array(
+				'original'    => 'If you skip this, that\'s okay! %1$s will still work just fine.',
+				'replacement' => '',
+				'note'        => 'Trailing "you can skip this" sentence, appended only when anonymous mode is enabled. Blanked to collapse into connect-message_on-update_why above. Original keeps %1$s so the audit diff still matches the SDK source.',
 			),
 			'plan-activated-message'                     => array(
 				'original'    => 'Your plan was successfully activated.',

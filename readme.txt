@@ -193,64 +193,6 @@ New feature development is usually sponsored by grants from academic institution
 = 2.1.13 =
 * Add hooks for modifying CSV exports.
 
-<<<<<<< Updated upstream
-=======
-= 2.1.12 =
-* Dashboard compatibility with author enumeration blocking security plugins.
-
-= 2.1.11 =
-* Fixes cache buster for the dashboard.
-
-= 2.1.10 =
-* Fixes double-escaping of characters on the dashboard.
-
-= 2.1.9 =
-* Adds actions to allow sites to modify the reports page.
-
-= 2.1.8 =
-* No code changes, just improved wording for the assertiveness levels configuration settings.
-
-= 2.1.7 =
-* Adds option on the plugin settings page to select between the library's various assertiveness levels: start open for any issues, start open for new issues, always start open, start minimized.
-* Adds "editoria11y_viewing_params" and "editoria11y_editing_params" filters for developers to modify configuration sent to the browser at runtime.
-
-= 2.1.5 =
-* Fix for dismissals not saving when editing a page that was not previously tracked. Note that this only syncs if the page already exists in the database; dismissals on the "New Post" or "New Page" screen are only stored temporarily in your browser.
-
-= 2.1.4 =
-* Fix for text from alerts on headings being included in the heading text in the document outline visualizer.
-
-= 2.1.3 =
-* Fixes an intermittent false positive on anchor links in the Classic editor.
-
-= 2.1.2 =
-* Fixes a bug that crashed the Classic editor checker when jumping to a tip on a recently fixed issue.
-
-= 2.1.1 =
-* Adds an option on the configuration page to hide the shortcut link to the dashboard reports. Hiding it makes the toggle smaller, and the link does not work in all configurations.
-
-= 2.1.0 =
-* Adds support for live-checking in the Classic editor (TinyMCE). _**Big thank you to [Ricardo](https://github.com/richard015ar) at PressBooks for showing me how to pass variables in and out of its iframe!**_
-No configuration changes are needed for this to work. If you do _not_ want to check inside the classic editor, add a ".mce-edit-area iframe" selector to the "Do not flag these elements" field on the plugin configuration page.
-* Switches the position of the flag and number in the checker toggle in response to user feedback.
-
-= 2.0.12 =
-* Adds custom test for [Buttons without links not flagged in the block editor](https://github.com/itmaybejj/editoria11y-wp/issues/42)
-* Adds [images with role=presentation](https://github.com/itmaybejj/editoria11y/issues/34) to the default ignore list.
-* Fix issue with false positives for links containing both images and text when the link contains space characters.
-
-= 2.0.11 =
-* Resolves PHP error when image ID is not set.
-
-= 2.0.10 =
-* Adds dismiss-all buttons when there are several of the same issue type on a page.
-* [Adds "Edit Media" link](https://github.com/itmaybejj/editoria11y-wp/issues/12) to the tooltips for alt text error messages (hat tip [cbirdsong](https://profiles.wordpress.org/cbirdsong/)).
-* Adds auto shadow DOM detection for the frontend checker, and automatically inserts buttons outside shadow host nodes. This is disabled in the as-you-type checker at the moment; reach out if you need it while editing. It adds ~20ms to test runs, so I am waiting to see if somebody actually needs it first, since performance matters much more there.
-* Empty first table header cell is now a manual check.
-* Name calculation better handles [null aria labels](https://wordpress.org/support/topic/block-button-link-warning-link-with-no-accessible-text/), title attributes and pseudoContent.
-* Various bugfixes and [typo corrections](https://github.com/itmaybejj/editoria11y-wp/issues/40).
-
->>>>>>> Stashed changes
 == Upgrade Notice ==
 
 = 2.1.0 =
