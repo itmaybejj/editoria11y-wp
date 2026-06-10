@@ -1,0 +1,2313 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: editoria11y 3.0.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/editoria11y\n"
+"POT-Creation-Date: 2026-05-25T19:20:04-04:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Language-Team: Editoria11y\n"
+"Language: lv\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n != 0 ? 1 : 2);\n"
+
+#. Plugin Name of the plugin
+#: editoria11y.php
+msgid "Editoria11y Accessibility Checker"
+msgstr "Editoria11y pieejamības pārbaudītājs"
+
+#. Plugin URI of the plugin
+#: editoria11y.php
+msgid "https://wordpress.org/plugins/editoria11y-accessibility-checker/"
+msgstr "https://wordpress.org/plugins/editoria11y-accessibility-checker/"
+
+#. Description of the plugin
+#: editoria11y.php
+msgid "User friendly content quality assurance. Checks automatically, highlights issues inline, and provides straightforward, easy-to-understand tips."
+msgstr "Lietotājam draudzīga satura kvalitātes nodrošināšana. Automātiski pārbauda, izceļ problēmas tiešsaistē un sniedz vienkāršus, viegli saprotamus padomus."
+
+#. Author of the plugin
+#: editoria11y.php
+msgid "Princeton University, WDS"
+msgstr "Princeton University, WDS"
+
+#. Author URI of the plugin
+#: editoria11y.php
+msgid "https://editoria11y.com"
+msgstr "https://editoria11y.com"
+
+#: editoria11y.php:58
+msgid "Editoria11y is missing its vendored dependencies. Run \"composer install\" inside the plugin directory or reinstall the plugin from a complete release archive."
+msgstr "Editoria11y trūkst piegādātāju atkarību. Palaižiet \"composer install\" spraudņa direktorijā vai pārinstalējiet spraudni no pilna izlaides arhīva."
+
+#: editoria11y.php:214
+msgid "Every fifteen minutes (Editoria11y rehash)"
+msgstr "Ik piecpadsmit minūtes (Editoria11y pārrēķins)"
+
+#: src/Admin/Dashboard.php:36 src/Admin/Dashboard.php:54
+#: src/Admin/Dashboard.php:196
+msgid "Editoria11y Accessibility Report"
+msgstr "Editoria11y pieejamības pārskats"
+
+#: src/Admin/Dashboard.php:37
+msgid "Accessibility"
+msgstr "Pieejamība"
+
+#: src/Admin/Dashboard.php:120
+msgid "View all issues"
+msgstr "Skatīt visus jautājumus"
+
+#: src/Admin/Dashboard.php:121
+msgid "View issues on all pages"
+msgstr "Skatīt jautājumus visās lapās"
+
+#. translators: %s: name of an alert/test, e.g. "Image is missing alt text".
+#: src/Admin/Dashboard.php:123
+#, php-format
+msgid "Alert report: \"%s\""
+msgstr "Brīdinājumu pārskats: „%s\""
+
+#. translators: %s: post type slug, e.g. "page" or "post".
+#: src/Admin/Dashboard.php:125
+#, php-format
+msgid "Alerts on pages of type \"%s\""
+msgstr "Brīdinājumi lapās ar tipu „%s\""
+
+#: src/Admin/Dashboard.php:126
+msgid "Alerts on pages created by author"
+msgstr "Brīdinājumi lapās, kuras izveidojis autors"
+
+#. translators: %s: author display name.
+#: src/Admin/Dashboard.php:128
+#, php-format
+msgid "Alerts on pages created by %s"
+msgstr "Brīdinājumi lapās, kuras izveidojis %s"
+
+#: src/Admin/Dashboard.php:129
+msgid "Alerts dismissed by"
+msgstr "Brīdinājumi, kurus noraidījis"
+
+#. translators: %s: user display name of the dismissor.
+#: src/Admin/Dashboard.php:131
+#, php-format
+msgid "Alerts dismissed by %s"
+msgstr "Brīdinājumi, kurus noraidījis %s"
+
+#. translators: %s: post-status label, e.g. "Published" or "Draft".
+#: src/Admin/Dashboard.php:133
+#, php-format
+msgid "%s pages"
+msgstr "%s lapas"
+
+#: src/Admin/Dashboard.php:134
+msgid "API error."
+msgstr "API kļūda."
+
+#: src/Admin/Dashboard.php:135
+msgid "loading..."
+msgstr "ielādē..."
+
+#. translators: %d: pagination page number.
+#: src/Admin/Dashboard.php:137
+#, php-format
+msgid "Page %d"
+msgstr "Lapa %d"
+
+#: src/Admin/Dashboard.php:138
+msgid "Alerts"
+msgstr "Brīdinājumi"
+
+#: src/Admin/Dashboard.php:139
+msgid "Dev alerts"
+msgstr "Izstrādātāju brīdinājumi"
+
+#: src/Admin/Dashboard.php:140
+msgid "Page"
+msgstr "Lapa"
+
+#: src/Admin/Dashboard.php:141
+msgid "Path"
+msgstr "Ceļš"
+
+#: src/Admin/Dashboard.php:142
+msgid "Type"
+msgstr "Tips"
+
+#: src/Admin/Dashboard.php:143 src/Form/CrawlerPage.php:205
+#: src/Form/CustomRulesPage.php:194 src/Form/NetworkCustomRulesPage.php:154
+msgid "Status"
+msgstr "Statuss"
+
+#: src/Admin/Dashboard.php:144
+msgid "Updated"
+msgstr "Atjaunināts"
+
+#: src/Admin/Dashboard.php:145
+msgid "Author"
+msgstr "Autors"
+
+#: src/Admin/Dashboard.php:146
+msgid "Detected"
+msgstr "Konstatēts"
+
+#: src/Admin/Dashboard.php:147
+msgid "Alert"
+msgstr "Brīdinājums"
+
+#: src/Admin/Dashboard.php:148
+msgid "Count"
+msgstr "Skaits"
+
+#: src/Admin/Dashboard.php:149
+msgid "Pages"
+msgstr "Lapas"
+
+#: src/Admin/Dashboard.php:150
+msgid "On"
+msgstr "Ieslēgts"
+
+#: src/Admin/Dashboard.php:151
+msgid "Dismissed alert"
+msgstr "Noraidīts brīdinājums"
+
+#: src/Admin/Dashboard.php:152
+msgid "Marked"
+msgstr "Atzīmēts"
+
+#: src/Admin/Dashboard.php:153
+msgid "Current"
+msgstr "Pašreizējais"
+
+#: src/Admin/Dashboard.php:154
+msgid "By"
+msgstr "Autors"
+
+#: src/Admin/Dashboard.php:155
+msgid "Alerts by page"
+msgstr "Brīdinājumi pa lapām"
+
+#: src/Admin/Dashboard.php:156
+msgid "Recent alerts"
+msgstr "Nesenie brīdinājumi"
+
+#: src/Admin/Dashboard.php:157
+msgid "Alert types"
+msgstr "Brīdinājumu tipi"
+
+#: src/Admin/Dashboard.php:158
+msgid "Dismissals"
+msgstr "Noraidījumi"
+
+#: src/Admin/Dashboard.php:159
+msgid "Recent dismissals"
+msgstr "Nesenie noraidījumi"
+
+#: src/Admin/Dashboard.php:160
+msgid "Download results as CSV"
+msgstr "Lejupielādēt rezultātus CSV formātā"
+
+#: src/Admin/Dashboard.php:161
+msgid "None"
+msgstr "Nav"
+
+#: src/Admin/Dashboard.php:162
+msgid "No"
+msgstr "Nē"
+
+#: src/Admin/Dashboard.php:163
+msgid "Yes"
+msgstr "Jā"
+
+#: src/Admin/Dashboard.php:164
+msgid "n/a"
+msgstr "nav pieejams"
+
+#: src/Admin/Dashboard.php:165
+msgid "Empty Link"
+msgstr "Tukša saite"
+
+#. translators: tooltip on a column header that's currently sorted descending.
+#: src/Admin/Dashboard.php:167
+msgid "descending"
+msgstr "dilstošā secībā"
+
+#. translators: tooltip on a column header that's currently sorted ascending.
+#: src/Admin/Dashboard.php:169
+msgid "ascending"
+msgstr "augošā secībā"
+
+#. translators: %d: number of result rows returned (singular form).
+#: src/Admin/Dashboard.php:172
+#, php-format
+msgid "%d result"
+msgstr "%d rezultāts"
+
+#. translators: %d: number of result rows returned (plural form).
+#: src/Admin/Dashboard.php:174
+#, php-format
+msgid "%d results"
+msgstr "%d rezultāti"
+
+#: src/Admin/Dashboard.php:179
+msgid "Published"
+msgstr "Publicēts"
+
+#: src/Admin/Dashboard.php:180
+msgid "Scheduled"
+msgstr "Ieplānots"
+
+#: src/Admin/Dashboard.php:181
+msgid "Draft"
+msgstr "Melnraksts"
+
+#: src/Admin/Dashboard.php:182
+msgid "Pending"
+msgstr "Gaida apstiprinājumu"
+
+#: src/Admin/Dashboard.php:183
+msgid "Private"
+msgstr "Privāts"
+
+#: src/Admin/Dashboard.php:184
+msgid "Trash"
+msgstr "Miskaste"
+
+#: src/Controller/ApiCrawler.php:122
+msgid "The crawler is a premium feature."
+msgstr "Rāpulis ir premium funkcija."
+
+#: src/Controller/ApiCrawler.php:129
+msgid "Editoria11y database upgrade did not complete; the crawler is paused until an administrator retries the upgrade."
+msgstr "Editoria11y datu bāzes jaunināšana nebija pabeigta; rāpulis ir apturēts, līdz administrators mēģinās jaunināt atkārtoti."
+
+#: src/Controller/ApiDismissals.php:83
+msgid "Results not recorded"
+msgstr "Rezultāti nav ierakstīti"
+
+#: src/Controller/ApiDismissals.php:411 src/Controller/ApiResults.php:687
+msgid "Editoria11y database upgrade did not complete; writes are paused until an administrator retries the upgrade."
+msgstr "Editoria11y datu bāzes jaunināšana nebija pabeigta; rakstīšana ir apturēta, līdz administrators mēģinās jaunināt atkārtoti."
+
+#: src/Controller/ApiResults.php:712
+msgid "Editoria11y database upgrade did not complete; the dashboard is paused until an administrator retries the upgrade."
+msgstr "Editoria11y datu bāzes jaunināšana nebija pabeigta; panelis ir apturēts, līdz administrators mēģinās jaunināt atkārtoti."
+
+#: src/CustomRules.php:349
+msgid "Machine name is required."
+msgstr "Tehniski nosaukums ir obligāts."
+
+#: src/CustomRules.php:352
+msgid "Machine name must be lowercase letters, digits, and underscores, starting with a letter."
+msgstr "Tehniskajam nosaukumam jābūt mazo burtu, ciparu un apakšsvītru kombinācijai, sākot ar burtu."
+
+#: src/CustomRules.php:357
+msgid "Admin label is required."
+msgstr "Administratora iezīme ir obligāta."
+
+#: src/CustomRules.php:362
+msgid "Test grouping ID is required."
+msgstr "Testu grupēšanas ID ir obligāts."
+
+#: src/CustomRules.php:369
+msgid "Test grouping ID may only contain letters, digits, and underscores."
+msgstr "Testu grupēšanas ID var saturēt tikai burtus, ciparus un apakšsvītras."
+
+#. translators: %s is a reserved test key like TABLES_SEMANTIC_HEADING.
+#: src/CustomRules.php:374
+#, php-format
+msgid "Test grouping ID \"%s\" is reserved by the v3 migration drop list and cannot be used."
+msgstr "Testu grupēšanas ID „%s\" ir rezervēts v3 migrācijas sarakstā un nevar tikt izmantots."
+
+#: src/CustomRules.php:381
+msgid "Tip title is required."
+msgstr "Padoma virsraksts ir obligāts."
+
+#: src/CustomRules.php:388
+msgid "Tip details must contain some visible text."
+msgstr "Padoma detaļām jāsatur redzams teksts."
+
+#: src/CustomRules.php:393
+msgid "Alert type must be Error or Manual check."
+msgstr "Brīdinājuma tipam jābūt „Kļūda\" vai „Manuāla pārbaude\"."
+
+#: src/CustomRules.php:399
+msgid "Dismiss key must be Text content or Attributes."
+msgstr "Noraidīšanas atslēgai jābūt „Teksta saturs\" vai „Atribūti\"."
+
+#: src/CustomRules.php:405
+msgid "Filter selector looks like a CSS rule block, not a selector. Remove the curly braces."
+msgstr "Filtra selektors izskatās kā CSS noteikumu bloks, nevis selektors. Noņemiet cirtainās iekavas."
+
+#: src/CustomRules.php:415
+msgid "At least one rule criterion is required: a filter selector OR one or more include-text strings."
+msgstr "Nepieciešams vismaz viens kārtulas kritērijs: filtra selektors VAI viens vai vairāki iekļaušanas teksta virknes."
+
+#. translators: %s is an unknown element-set value.
+#: src/CustomRules.php:425
+#, php-format
+msgid "Element set \"%s\" is not one of the recognized element categories."
+msgstr "Elementu kopa „%s\" nav viena no atpazītajām elementu kategorijām."
+
+#: src/Form/CrawlerPage.php:59 src/Form/CrawlerPage.php:60
+msgid "Editoria11y Crawler"
+msgstr "Editoria11y rāpulis"
+
+#: src/Form/CrawlerPage.php:126
+msgid "You do not have permission to use the crawler."
+msgstr "Jums nav atļaujas izmantot rāpuli."
+
+#: src/Form/CrawlerPage.php:130 src/Form/CustomRulesPage.php:111
+#: src/Form/SettingsPage.php:188 src/Form/SettingsPage.php:189
+msgid "Editoria11y"
+msgstr "Editoria11y"
+
+#: src/Form/CrawlerPage.php:146 src/Form/SettingsPage.php:251
+msgid "Crawler"
+msgstr "Rāpulis"
+
+#: src/Form/CrawlerPage.php:149
+msgid "The crawler is a CSA feature. Activate CSA to schedule sitewide accessibility scans across posts, pages, and custom post types."
+msgstr "Rāpulis ir CSA funkcija. Aktivizējiet CSA, lai ieplānotu pieejamības skenēšanu visā vietnē — ziņās, lapās un pielāgotos ierakstu tipos."
+
+#: src/Form/CrawlerPage.php:162
+msgid "Manual crawl"
+msgstr "Manuāla skenēšana"
+
+#: src/Form/CrawlerPage.php:166
+msgid "Editoria11y reports populate and update in real time as editors work, so a manual crawl is generally only helpful when first installing the plugin or after making major theme or configuration changes."
+msgstr "Editoria11y pārskati tiek aizpildīti un atjaunināti reāllaikā, kad redaktori strādā, tāpēc manuāla skenēšana parasti ir noderīga tikai tad, kad pirmo reizi instalē spraudni vai pēc nozīmīgām motīva vai konfigurācijas izmaiņām."
+
+#: src/Form/CrawlerPage.php:175 src/Form/CustomRulesPage.php:501
+#: src/Form/NetworkCustomRulesPage.php:288 src/Form/NetworkLicensePage.php:393
+msgid "Cancel"
+msgstr "Atcelt"
+
+#: src/Form/CrawlerPage.php:180
+msgid "This tab needs to remain open and in the foreground during the crawl."
+msgstr "Šai cilnei jāpaliek atvērtai un priekšplānā skenēšanas laikā."
+
+#: src/Form/CrawlerPage.php:187
+msgid "Browsers pause API operations in background tabs."
+msgstr "Pārlūkprogrammas aptur API darbības fona cilnēs."
+
+#: src/Form/CrawlerPage.php:195
+msgid "Filter which pages will be crawled"
+msgstr "Filtrēt, kuras lapas tiks skenētas"
+
+#: src/Form/CrawlerPage.php:199
+msgid "Content type"
+msgstr "Satura tips"
+
+#: src/Form/CrawlerPage.php:217
+msgid "Filter by"
+msgstr "Filtrēt pēc"
+
+#: src/Form/CrawlerPage.php:220 src/Form/CrawlerPage.php:253
+msgid "Date created"
+msgstr "Izveides datums"
+
+#: src/Form/CrawlerPage.php:221 src/Form/CrawlerPage.php:254
+msgid "Date modified"
+msgstr "Izmaiņu datums"
+
+#: src/Form/CrawlerPage.php:223
+msgid "From"
+msgstr "No"
+
+#: src/Form/CrawlerPage.php:225
+msgid "To"
+msgstr "Līdz"
+
+#: src/Form/CrawlerPage.php:230
+msgid "Content alerts"
+msgstr "Satura brīdinājumi"
+
+#: src/Form/CrawlerPage.php:233 src/Form/CrawlerPage.php:243
+msgid "Any"
+msgstr "Jebkurš"
+
+#: src/Form/CrawlerPage.php:234
+msgid "Has alerts"
+msgstr "Ir brīdinājumi"
+
+#: src/Form/CrawlerPage.php:235
+msgid "No alerts"
+msgstr "Nav brīdinājumu"
+
+#: src/Form/CrawlerPage.php:240
+msgid "Developer alerts"
+msgstr "Izstrādātāju brīdinājumi"
+
+#: src/Form/CrawlerPage.php:244
+msgid "Has dev alerts"
+msgstr "Ir izstrādātāju brīdinājumi"
+
+#: src/Form/CrawlerPage.php:245
+msgid "No dev alerts"
+msgstr "Nav izstrādātāju brīdinājumu"
+
+#: src/Form/CrawlerPage.php:250
+msgid "Sort by"
+msgstr "Kārtot pēc"
+
+#: src/Form/CrawlerPage.php:255
+msgid "Title"
+msgstr "Nosaukums"
+
+#: src/Form/CrawlerPage.php:258
+msgid "Newest first"
+msgstr "Vispirms jaunākais"
+
+#: src/Form/CrawlerPage.php:259
+msgid "Oldest first"
+msgstr "Vispirms vecākais"
+
+#: src/Form/CrawlerPage.php:265
+msgid "Apply filters"
+msgstr "Lietot filtrus"
+
+#: src/Form/CrawlerPage.php:268
+msgid "Crawl preview"
+msgstr "Skenēšanas priekšskatījums"
+
+#: src/Form/CrawlerPage.php:287
+msgid "Crawl delay"
+msgstr "Skenēšanas aizkave"
+
+#. translators: %d: number of milliseconds between iframe loads.
+#: src/Form/CrawlerPage.php:289
+#, php-format
+msgid "%d ms"
+msgstr "%d ms"
+
+#: src/Form/CrawlerPage.php:290
+msgid "Start crawling"
+msgstr "Sākt skenēšanu"
+
+#: src/Form/CrawlerPage.php:291
+msgid "Pause crawl"
+msgstr "Apturēt skenēšanu"
+
+#: src/Form/CrawlerPage.php:292
+msgid "Resume crawl"
+msgstr "Atsākt skenēšanu"
+
+#: src/Form/CrawlerPage.php:293
+msgid "Back to dashboard"
+msgstr "Atpakaļ uz paneli"
+
+#: src/Form/CrawlerPage.php:294
+msgid "No matching content. Adjust the filters and apply."
+msgstr "Nav atbilstošā satura. Pielāgojiet filtrus un lietojiet."
+
+#. translators: %s: human-readable duration like "30 seconds" or "5 minutes".
+#: src/Form/CrawlerPage.php:296
+#, php-format
+msgid "Estimated time: %s"
+msgstr "Paredzamais laiks: %s"
+
+#. translators: 1: number of URLs shown in this batch, 2: total matching URLs across all batches (singular form).
+#: src/Form/CrawlerPage.php:299
+#, php-format
+msgid "Showing %1$d of %2$d matching page."
+msgstr "Rāda %1$d no %2$d atbilstošajām lapām."
+
+#. translators: 1: number of URLs shown in this batch, 2: total matching URLs across all batches (plural form).
+#: src/Form/CrawlerPage.php:301
+#, php-format
+msgid "Showing %1$d of %2$d matching pages."
+msgstr "Rāda %1$d no %2$d atbilstošajām lapām."
+
+#. translators: %d: whole-number count of seconds remaining (singular form).
+#: src/Form/CrawlerPage.php:305
+#, php-format
+msgid "%d second"
+msgstr "%d sekunde"
+
+#. translators: %d: whole-number count of seconds remaining (plural form).
+#: src/Form/CrawlerPage.php:307
+#, php-format
+msgid "%d seconds"
+msgstr "%d sekundes"
+
+#. translators: %d: whole-number count of minutes remaining (singular form).
+#: src/Form/CrawlerPage.php:311
+#, php-format
+msgid "%d minute"
+msgstr "%d minūte"
+
+#. translators: %d: whole-number count of minutes remaining (plural form).
+#: src/Form/CrawlerPage.php:313
+#, php-format
+msgid "%d minutes"
+msgstr "%d minūtes"
+
+#. translators: %s: hours remaining as a decimal, e.g. "2.5" (singular form).
+#: src/Form/CrawlerPage.php:317
+#, php-format
+msgid "%s hour"
+msgstr "%s stunda"
+
+#. translators: %s: hours remaining as a decimal, e.g. "2.5" (plural form).
+#: src/Form/CrawlerPage.php:319
+#, php-format
+msgid "%s hours"
+msgstr "%s stundas"
+
+#: src/Form/CustomRulesPage.php:84 src/Form/CustomRulesPage.php:85
+msgid "Editoria11y Custom Rules"
+msgstr "Editoria11y pielāgotas kārtulas"
+
+#: src/Form/CustomRulesPage.php:104 src/Form/CustomRulesPage.php:338
+#: src/Form/CustomRulesPage.php:880 src/Form/CustomRulesPage.php:1030
+msgid "You do not have permission to manage custom rules."
+msgstr "Jums nav atļaujas pārvaldīt pielāgotas kārtulas."
+
+#: src/Form/CustomRulesPage.php:143 src/Form/CustomRulesPage.php:174
+msgid "Custom Rules"
+msgstr "Pielāgotas kārtulas"
+
+#: src/Form/CustomRulesPage.php:146
+msgid "Custom rules are a CSA feature. Activate CSA to add and edit rules; existing rules remain stored and become editable again on reactivation."
+msgstr "Pielāgotas kārtulas ir CSA funkcija. Aktivizējiet CSA, lai pievienotu un rediģētu kārtulas; esošās kārtulas paliek saglabātas un kļūst atkal rediģējamas pēc atkārtotas aktivizēšanas."
+
+#: src/Form/CustomRulesPage.php:176 src/Form/NetworkCustomRulesPage.php:136
+msgid "Add New"
+msgstr "Pievienot jaunu"
+
+#: src/Form/CustomRulesPage.php:181
+msgid "Each rule pairs a CSS selector (and/or text-content match) with an alert shown to users. Rules ship over the cached static config alongside built-in tests."
+msgstr "Katra kārtula saista CSS selektoru (un/vai teksta satura atbilsmi) ar brīdinājumu, kas tiek rādīts lietotājiem. Kārtulas tiek piegādātas ar kešotās statiskās konfigurācijas palīdzību kopā ar iebūvētajiem testiem."
+
+#: src/Form/CustomRulesPage.php:191 src/Form/NetworkCustomRulesPage.php:151
+msgid "Test"
+msgstr "Tests"
+
+#: src/Form/CustomRulesPage.php:192
+msgid "Source"
+msgstr "Avots"
+
+#: src/Form/CustomRulesPage.php:193 src/Form/NetworkCustomRulesPage.php:152
+msgid "Elements"
+msgstr "Elementi"
+
+#: src/Form/CustomRulesPage.php:201
+msgid "No custom rules defined yet."
+msgstr "Vēl nav definētas pielāgotas kārtulas."
+
+#: src/Form/CustomRulesPage.php:202 src/Form/NetworkCustomRulesPage.php:162
+msgid "Add your first rule"
+msgstr "Pievienojiet savu pirmo kārtulu"
+
+#: src/Form/CustomRulesPage.php:239
+msgid "Active (enforced)"
+msgstr "Aktīvs (piespiedu kārtā)"
+
+#: src/Form/CustomRulesPage.php:241
+msgid "Disabled on this site"
+msgstr "Atspējots šajā vietnē"
+
+#: src/Form/CustomRulesPage.php:243
+msgid "Overridden by a site rule with the same ID"
+msgstr "Pārrakstīts ar vietnes kārtulu ar tādu pašu ID"
+
+#: src/Form/CustomRulesPage.php:245 src/Form/CustomRulesPage.php:304
+#: src/Form/CustomRulesPage.php:600 src/Form/CustomRulesPage.php:604
+#: src/Form/NetworkCustomRulesPage.php:176 src/Form/SettingsFields.php:742
+msgid "Active"
+msgstr "Aktīvs"
+
+#: src/Form/CustomRulesPage.php:248
+msgid "Disabled in network defaults"
+msgstr "Atspējots tīkla noklusējumos"
+
+#: src/Form/CustomRulesPage.php:252
+msgid "From network (locked)"
+msgstr "No tīkla (bloķēts)"
+
+#: src/Form/CustomRulesPage.php:253
+msgid "From network"
+msgstr "No tīkla"
+
+#: src/Form/CustomRulesPage.php:256
+msgid "Enable on this site"
+msgstr "Iespējot šajā vietnē"
+
+#: src/Form/CustomRulesPage.php:257
+msgid "Disable on this site"
+msgstr "Atspējot šajā vietnē"
+
+#: src/Form/CustomRulesPage.php:277
+msgid "Locked by network admin"
+msgstr "Bloķēts tīkla administratora"
+
+#: src/Form/CustomRulesPage.php:305 src/Form/NetworkCustomRulesPage.php:177
+msgid "Disabled"
+msgstr "Atspējots"
+
+#: src/Form/CustomRulesPage.php:317 src/Form/NetworkCustomRulesPage.php:192
+msgid "Edit"
+msgstr "Rediģēt"
+
+#: src/Form/CustomRulesPage.php:322
+msgid "This site"
+msgstr "Šī vietne"
+
+#: src/Form/CustomRulesPage.php:353
+msgid "No matching network rule found to toggle."
+msgstr "Nav atrasta atbilstoša tīkla kārtula pārslēgšanai."
+
+#: src/Form/CustomRulesPage.php:360
+msgid "This rule is locked by the network admin and cannot be disabled per-site."
+msgstr "Šo kārtulu ir bloķējis tīkla administrators, un to nevar atspējot katrā vietnē atsevišķi."
+
+#: src/Form/CustomRulesPage.php:369
+msgid "Network rule disabled on this site."
+msgstr "Tīkla kārtula atspējota šajā vietnē."
+
+#: src/Form/CustomRulesPage.php:370
+msgid "Network rule re-enabled on this site."
+msgstr "Tīkla kārtula atkārtoti iespējota šajā vietnē."
+
+#: src/Form/CustomRulesPage.php:398
+msgid "(text match only)"
+msgstr "(tikai teksta atbilsme)"
+
+#: src/Form/CustomRulesPage.php:435
+msgid "Custom rule not found"
+msgstr "Pielāgota kārtula nav atrasta"
+
+#: src/Form/CustomRulesPage.php:438
+msgid "Return to the rules list"
+msgstr "Atgriezties kārtulu sarakstā"
+
+#: src/Form/CustomRulesPage.php:483
+msgid "Edit custom rule"
+msgstr "Rediģēt pielāgoto kārtulu"
+
+#: src/Form/CustomRulesPage.php:484 src/Form/SettingsFields.php:225
+msgid "Add custom rule"
+msgstr "Pievienot pielāgotu kārtulu"
+
+#: src/Form/CustomRulesPage.php:489
+msgid "All custom rules"
+msgstr "Visas pielāgotas kārtulas"
+
+#: src/Form/CustomRulesPage.php:499 src/Form/NetworkCustomRulesPage.php:286
+msgid "Save rule"
+msgstr "Saglabāt kārtulu"
+
+#: src/Form/CustomRulesPage.php:499 src/Form/NetworkCustomRulesPage.php:286
+msgid "Create rule"
+msgstr "Izveidot kārtulu"
+
+#: src/Form/CustomRulesPage.php:507
+msgid "Delete this custom rule?"
+msgstr "Dzēst šo pielāgoto kārtulu?"
+
+#: src/Form/CustomRulesPage.php:508 src/Form/NetworkCustomRulesPage.php:295
+msgid "Delete"
+msgstr "Dzēst"
+
+#: src/Form/CustomRulesPage.php:551
+msgid "Admin label for the configuration page"
+msgstr "Administratora iezīme konfigurācijas lapai"
+
+#: src/Form/CustomRulesPage.php:564
+msgid "Test grouping ID"
+msgstr "Testu grupēšanas ID"
+
+#: src/Form/CustomRulesPage.php:576
+msgid "Letters, numbers and underscores only.<br>Rules that share an ID will be grouped on dashboard reports."
+msgstr "Tikai burti, cipari un apakšsvītras.<br>Kārtulas, kurām ir viens un tas pats ID, tiks grupētas paneļa pārskatos."
+
+#: src/Form/CustomRulesPage.php:585
+msgid "Machine name"
+msgstr "Tehniskais nosaukums"
+
+#: src/Form/CustomRulesPage.php:595
+msgid "Lowercase letters, digits, and underscores only. Cannot be changed after creation."
+msgstr "Tikai mazie burti, cipari un apakšsvītras. Pēc izveides nevar mainīt."
+
+#: src/Form/CustomRulesPage.php:609
+msgid "Disabled rules stay in network storage but are not sent to any site."
+msgstr "Atspējotas kārtulas paliek tīkla atmiņā, bet netiek nosūtītas uz nevienu vietni."
+
+#: src/Form/CustomRulesPage.php:611
+msgid "Disabled rules stay in storage but are not sent to the browser."
+msgstr "Atspējotas kārtulas paliek atmiņā, bet netiek nosūtītas uz pārlūkprogrammu."
+
+#: src/Form/CustomRulesPage.php:619 src/Form/NetworkCustomRulesPage.php:153
+msgid "Lock"
+msgstr "Bloķēt"
+
+#: src/Form/CustomRulesPage.php:623
+msgid "Lock this rule across the network"
+msgstr "Bloķēt šo kārtulu visā tīklā"
+
+#: src/Form/CustomRulesPage.php:627
+msgid "Locked rules are enforced on every site: per-site admins cannot disable them, and a per-site rule sharing this ID is suppressed in favor of this one. Unlocked rules can be disabled per-site."
+msgstr "Bloķētās kārtulas tiek ieviestas visās vietnēs: katras vietnes administratori tās nevar atspējot, un vietnes kārtula ar tādu pašu ID tiek apspiedta šīs kārtulas labā. Atbloķētās kārtulas var atspējot katrā vietnē atsevišķi."
+
+#: src/Form/CustomRulesPage.php:639
+msgid "Alert content"
+msgstr "Brīdinājuma saturs"
+
+#: src/Form/CustomRulesPage.php:643
+msgid "Tip title"
+msgstr "Padoma virsraksts"
+
+#: src/Form/CustomRulesPage.php:654
+msgid "Tip details"
+msgstr "Padoma detaļas"
+
+#. translators: %s is the comma-separated list of allowed HTML tags.
+#: src/Form/CustomRulesPage.php:663
+#, php-format
+msgid "HTML displayed in the tooltip. The provided template is optional.<br>Allowed tags: %s."
+msgstr "HTML, kas tiek rādīts rīkjoslas padomā. Nodrošinātā veidne nav obligāta.<br>Atļautie tagi: %s."
+
+#: src/Form/CustomRulesPage.php:677
+msgid "Alert type"
+msgstr "Brīdinājuma tips"
+
+#: src/Form/CustomRulesPage.php:682
+msgid "Error"
+msgstr "Kļūda"
+
+#: src/Form/CustomRulesPage.php:685
+msgid "Manual check"
+msgstr "Manuāla pārbaude"
+
+#: src/Form/CustomRulesPage.php:691
+msgid "Dismiss key"
+msgstr "Noraidīšanas atslēga"
+
+#: src/Form/CustomRulesPage.php:696
+msgid "Text content"
+msgstr "Teksta saturs"
+
+#: src/Form/CustomRulesPage.php:699
+msgid "Attributes on tag (e.g. href and src)"
+msgstr "Taga atribūti (piemēram, href un src)"
+
+#: src/Form/CustomRulesPage.php:703
+msgid "How dismissals are tracked. 'Text' uses its text content, 'Attributes' uses its attributes (href, id, class, src)."
+msgstr "Kā noraidījumi tiek izsekoti. „Teksts“ izmanto teksta saturu, „Atribūti“ izmanto tā atribūtus (href, id, class, src)."
+
+#: src/Form/CustomRulesPage.php:712
+msgid "Elements to check"
+msgstr "Elementi, ko pārbaudīt"
+
+#: src/Form/CustomRulesPage.php:715
+msgid "These sets contain elements that match your check area and skip over configuration."
+msgstr "Šīs kopas satur elementus, kas atbilst jūsu pārbaudes apgabalam un izlaiž konfigurāciju."
+
+#: src/Form/CustomRulesPage.php:724
+msgid "Common choices"
+msgstr "Bieži izvēles"
+
+#: src/Form/CustomRulesPage.php:728
+msgid "All text elements: Headings, Paragraphs, Blockquotes and Lists"
+msgstr "Visi teksta elementi: Virsraksti, Rindkopas, Blokātes un Saraksti"
+
+#: src/Form/CustomRulesPage.php:729 src/TestNames.php:376
+msgid "Links"
+msgstr "Saites"
+
+#: src/Form/CustomRulesPage.php:730
+msgid "Paragraphs"
+msgstr "Rindkopas"
+
+#: src/Form/CustomRulesPage.php:731 src/TestNames.php:379
+msgid "Headings"
+msgstr "Virsraksti"
+
+#: src/Form/CustomRulesPage.php:732 src/TestNames.php:378
+msgid "Images"
+msgstr "Attēli"
+
+#: src/Form/CustomRulesPage.php:733
+msgid "All elements"
+msgstr "Visi elementi"
+
+#: src/Form/CustomRulesPage.php:734
+msgid "...other..."
+msgstr "...cits..."
+
+#: src/Form/CustomRulesPage.php:739
+msgid "Specific elements and combinations"
+msgstr "Specifiski elementi un kombinācijas"
+
+#: src/Form/CustomRulesPage.php:751
+msgid "Note: combining Links with Paragraphs and other text containers can lead to duplicate alerts."
+msgstr "Piezīme: saišu apvienošana ar Rindkopām un citiem teksta konteineriem var radīt dublētus brīdinājumus."
+
+#: src/Form/CustomRulesPage.php:761
+msgid "When tip should appear"
+msgstr "Kad padomam jāparādās"
+
+#: src/Form/CustomRulesPage.php:764
+msgid "This test builder allows for simple text and attribute tests."
+msgstr "Šis testu veidotājs ļauj veikt vienkāršus teksta un atribūtu testus."
+
+#: src/Form/CustomRulesPage.php:773
+msgid "Select by attributes"
+msgstr "Atlasīt pēc atribūtiem"
+
+#: src/Form/CustomRulesPage.php:783
+msgid "Match using CSS selectors.<br>Use :not() to skip elements, e.g. <code>:is(.check1, .check2):not(.ignore, .ignore *)</code>.<br>Use attribute selectors for URLs, e.g. <code>[href*=\".dev/\"]</code>."
+msgstr "Atbilsmi veikt, izmantojot CSS selektorus.<br>Izmantojiet :not(), lai izlaistu elementus, piem. <code>:is(.check1, .check2):not(.ignore, .ignore *)</code>.<br>Izmantojiet atribūtu selektorus URL, piem. <code>[href*=\".dev/\"]</code>."
+
+#: src/Form/CustomRulesPage.php:795
+msgid "Select by text"
+msgstr "Atlasīt pēc teksta"
+
+#: src/Form/CustomRulesPage.php:800
+msgid "Flag elements containing any of these text strings. One per line."
+msgstr "Atzīmēt elementus, kas satur kādu no šīm teksta virknēm. Viena katrā rindā."
+
+#: src/Form/CustomRulesPage.php:805 src/Form/CustomRulesPage.php:809
+msgid "Case sensitive"
+msgstr "Reģistrjutīgs"
+
+#: src/Form/CustomRulesPage.php:815
+msgid "Exclude elements that match this text"
+msgstr "Izslēgt elementus, kas atbilst šim tekstam"
+
+#: src/Form/CustomRulesPage.php:820
+msgid "Don't flag elements if they contain any of these words or phrases. E.g., a link to a development server is ok if it contains \"dev.\" One per line."
+msgstr "Neatzīmēt elementus, ja tie satur kādu no šiem vārdiem vai frāzēm. Piem., saite uz izstrādes serveri ir pieļaujama, ja tā satur „dev\". Viena katrā rindā."
+
+#: src/Form/CustomRulesPage.php:952
+msgid "Custom rule saved."
+msgstr "Pielāgotā kārtula saglabāta."
+
+#: src/Form/CustomRulesPage.php:1041
+msgid "No matching custom rule found to delete."
+msgstr "Nav atrasta atbilstoša pielāgota kārtula dzēšanai."
+
+#: src/Form/CustomRulesPage.php:1048
+msgid "Custom rule deleted."
+msgstr "Pielāgotā kārtula dzēsta."
+
+#: src/Form/MigrationPanel.php:77
+msgid "Editoria11y needs to upgrade its database tables."
+msgstr "Editoria11y ir jāatjaunina savās datu bāzes tabulas."
+
+#: src/Form/MigrationPanel.php:81
+msgid "Editoria11y database upgrade encountered an error during finalization."
+msgstr "Editoria11y datu bāzes jaunināšana saskārās ar kļūdu finalizācijas laikā."
+
+#: src/Form/MigrationPanel.php:82
+msgid "Editoria11y is upgrading existing dismissal records in the background."
+msgstr "Editoria11y fonā jaunina esošos noraidījumu ierakstus."
+
+#: src/Form/MigrationPanel.php:85
+msgid "Editoria11y database upgrade failed and writes are paused."
+msgstr "Editoria11y datu bāzes jaunināšana neizdevās un rakstīšana ir apturēta."
+
+#: src/Form/MigrationPanel.php:94
+msgid "Open Editoria11y settings"
+msgstr "Atvērt Editoria11y iestatījumus"
+
+#: src/Form/MigrationPanel.php:121
+msgid "Upgrade failed. Please retry."
+msgstr "Jaunināšana neizdevās. Lūdzu, mēģiniet vēlreiz."
+
+#. translators: 1: number of legacy dismissals already migrated, 2: total count detected at start.
+#: src/Form/MigrationPanel.php:123
+#, php-format
+msgid "Migrating dismissals: %1$d of %2$d processed."
+msgstr "Noraidījumu migrācija: %1$d no %2$d apstrādāti."
+
+#: src/Form/MigrationPanel.php:124
+msgid "Database upgrade complete."
+msgstr "Datu bāzes jaunināšana pabeigta."
+
+#: src/Form/MigrationPanel.php:125
+msgid "Working…"
+msgstr "Strādā…"
+
+#: src/Form/MigrationPanel.php:126
+msgid "A previous upgrade attempt did not finish."
+msgstr "Iepriekšējs jaunināšanas mēģinājums netika pabeigts."
+
+#: src/Form/MigrationPanel.php:127
+msgid "A schema upgrade is required."
+msgstr "Nepieciešama shēmas jaunināšana."
+
+#: src/Form/MigrationPanel.php:128
+msgid "Background data rewrite is in progress. Click below to drive it to completion now."
+msgstr "Fona datu pārrakstīšana notiek. Noklikšķiniet zemāk, lai to pabeigtu tūlīt."
+
+#: src/Form/MigrationPanel.php:132
+msgid "Database upgrade"
+msgstr "Datu bāzes jaunināšana"
+
+#: src/Form/MigrationPanel.php:134
+msgid "Checking schema state…"
+msgstr "Pārbauda shēmas stāvokli…"
+
+#: src/Form/MigrationPanel.php:138
+msgid "Run upgrade now"
+msgstr "Veikt jaunināšanu tagad"
+
+#: src/Form/MigrationPanel.php:141
+msgid "Retry"
+msgstr "Mēģināt vēlreiz"
+
+#: src/Form/MigrationPanel.php:256 src/Form/NetworkLicensePage.php:195
+msgid "Insufficient permissions."
+msgstr "Nepietiekamas tiesības."
+
+#: src/Form/NetworkCustomRulesPage.php:70
+#: src/Form/NetworkCustomRulesPage.php:71
+#: src/Form/NetworkCustomRulesPage.php:114
+msgid "Editoria11y network custom rules"
+msgstr "Editoria11y tīkla pielāgotas kārtulas"
+
+#: src/Form/NetworkCustomRulesPage.php:107
+#: src/Form/NetworkCustomRulesPage.php:311
+#: src/Form/NetworkCustomRulesPage.php:384 src/Form/NetworkSettingsPage.php:134
+#: src/Form/NetworkSettingsPage.php:466
+msgid "Insufficient privileges."
+msgstr "Nepietiekamas tiesības."
+
+#: src/Form/NetworkCustomRulesPage.php:134
+msgid "Network custom rules"
+msgstr "Tīkla pielāgotas kārtulas"
+
+#: src/Form/NetworkCustomRulesPage.php:141
+msgid "Rules defined here apply to every site on the network. Locked rules cannot be disabled per-site."
+msgstr "Šeit definētās kārtulas attiecas uz katru vietni tīklā. Bloķētās kārtulas nevar atspējot katrā vietnē atsevišķi."
+
+#: src/Form/NetworkCustomRulesPage.php:161
+msgid "No network rules defined yet."
+msgstr "Vēl nav definētas tīkla kārtulas."
+
+#: src/Form/NetworkCustomRulesPage.php:179
+msgid "Locked"
+msgstr "Bloķēts"
+
+#: src/Form/NetworkCustomRulesPage.php:180
+msgid "Unlocked"
+msgstr "Atbloķēts"
+
+#: src/Form/NetworkCustomRulesPage.php:224
+msgid "Network rule not found"
+msgstr "Tīkla kārtula nav atrasta"
+
+#: src/Form/NetworkCustomRulesPage.php:227
+msgid "Return to the network rules list"
+msgstr "Atgriezties tīkla kārtulu sarakstā"
+
+#: src/Form/NetworkCustomRulesPage.php:270
+msgid "Edit network custom rule"
+msgstr "Rediģēt tīkla pielāgoto kārtulu"
+
+#: src/Form/NetworkCustomRulesPage.php:271 src/Form/SettingsFields.php:188
+msgid "Add network custom rule"
+msgstr "Pievienot tīkla pielāgotu kārtulu"
+
+#: src/Form/NetworkCustomRulesPage.php:276
+msgid "All network rules"
+msgstr "Visas tīkla kārtulas"
+
+#: src/Form/NetworkCustomRulesPage.php:294
+msgid "Delete this network rule? Every site on the network will stop receiving it."
+msgstr "Dzēst šo tīkla kārtulu? Katras vietnes tīklā saņemšana tiks pārtraukta."
+
+#: src/Form/NetworkCustomRulesPage.php:369
+msgid "Network custom rule saved."
+msgstr "Tīkla pielāgotā kārtula saglabāta."
+
+#: src/Form/NetworkCustomRulesPage.php:395
+msgid "No matching network rule found to delete."
+msgstr "Nav atrasta atbilstoša tīkla kārtula dzēšanai."
+
+#: src/Form/NetworkCustomRulesPage.php:402
+msgid "Network custom rule deleted."
+msgstr "Tīkla pielāgotā kārtula dzēsta."
+
+#: src/Form/NetworkDefaultsWorker.php:432
+msgid "Tests + roles assignment"
+msgstr "Testu un lomu piešķiršana"
+
+#: src/Form/NetworkLicensePage.php:58 src/Form/NetworkLicensePage.php:59
+msgid "Editoria11y license"
+msgstr "Editoria11y licence"
+
+#: src/Form/NetworkLicensePage.php:83 src/FreemiusAccessControl.php:281
+msgid "Only network administrators can manage the Editoria11y license."
+msgstr "Tikai tīkla administratori var pārvaldīt Editoria11y licenci."
+
+#: src/Form/NetworkLicensePage.php:94
+msgid "Starting…"
+msgstr "Sāk…"
+
+#: src/Form/NetworkLicensePage.php:95
+msgid "Cancelling…"
+msgstr "Atceļ…"
+
+#: src/Form/NetworkLicensePage.php:96
+msgid "Resetting…"
+msgstr "Atiestata…"
+
+#. translators: 1: sites processed, 2: total sites in network.
+#: src/Form/NetworkLicensePage.php:98
+#, php-format
+msgid "Activated %1$d of %2$d sites."
+msgstr "Aktivizēts %1$d no %2$d vietnēm."
+
+#. translators: 1: sites processed, 2: total sites in network.
+#: src/Form/NetworkLicensePage.php:100
+#, php-format
+msgid "Deactivated %1$d of %2$d sites."
+msgstr "Deaktivizēts %1$d no %2$d vietnēm."
+
+#: src/Form/NetworkLicensePage.php:101
+msgid "License activated on every site in the network."
+msgstr "Licence aktivizēta katrā tīkla vietnē."
+
+#: src/Form/NetworkLicensePage.php:102
+msgid "License deactivated on every site in the network."
+msgstr "Licence deaktivizēta katrā tīkla vietnē."
+
+#: src/Form/NetworkLicensePage.php:103
+msgid "Activation cancelled. Already-activated sites keep their license."
+msgstr "Aktivizācija atcelta. Jau aktivizētās vietnes saglabā savu licenci."
+
+#: src/Form/NetworkLicensePage.php:104
+msgid "Deactivation cancelled. Already-deactivated sites stay deactivated."
+msgstr "Deaktivizācija atcelta. Jau deaktivizētās vietnes paliek deaktivizētas."
+
+#. translators: %d: number of sites that errored.
+#: src/Form/NetworkLicensePage.php:106
+#, php-format
+msgid "Activation finished with %d sites in error. Review the list below and retry once the cause is fixed."
+msgstr "Aktivizācija pabeigta ar %d kļūdainām vietnēm. Pārskatiet zemāk esošo sarakstu un mēģiniet vēlreiz pēc cēloņa novēršanas."
+
+#. translators: %d: number of sites that errored.
+#: src/Form/NetworkLicensePage.php:108
+#, php-format
+msgid "Deactivation finished with %d sites in error. Review the list below and retry once the cause is fixed."
+msgstr "Deaktivizācija pabeigta ar %d kļūdainām vietnēm. Pārskatiet zemāk esošo sarakstu un mēģiniet vēlreiz pēc cēloņa novēršanas."
+
+#: src/Form/NetworkLicensePage.php:109
+msgid "An unknown error occurred."
+msgstr "Radās nezināma kļūda."
+
+#: src/Form/NetworkLicensePage.php:110
+msgid "Paste your Editoria11y CSA license key to begin."
+msgstr "Ielīmējiet savu Editoria11y CSA licences atslēgu, lai sāktu."
+
+#: src/Form/NetworkLicensePage.php:111
+msgid "Deactivate the Editoria11y CSA license on every site in this network? Each site's license slot will be returned to your Freemius account."
+msgstr "Deaktivizēt Editoria11y CSA licenci katrā šī tīkla vietnē? Katras vietnes licences vieta tiks atgriezta jūsu Freemius kontā."
+
+#: src/Form/NetworkLicensePage.php:112
+msgid "Activate your license"
+msgstr "Aktivizēt savu licenci"
+
+#: src/Form/NetworkLicensePage.php:113 src/Form/NetworkLicensePage.php:366
+msgid "Deactivate license network-wide"
+msgstr "Deaktivizēt licenci visā tīklā"
+
+#: src/Form/NetworkLicensePage.php:114
+msgid "Activation in progress"
+msgstr "Aktivizācija notiek"
+
+#: src/Form/NetworkLicensePage.php:115
+msgid "Deactivation in progress"
+msgstr "Deaktivizācija notiek"
+
+#: src/Form/NetworkLicensePage.php:119
+msgid "Editoria11y CSA license"
+msgstr "Editoria11y CSA licence"
+
+#: src/Form/NetworkLicensePage.php:122
+msgid "Activate your Editoria11y CSA license on every site in this network. Activation runs in the background via WP-Cron; you can leave this page open or come back later."
+msgstr "Aktivizējiet savu Editoria11y CSA licenci katrā šī tīkla vietnē. Aktivizācija darbojas fonā, izmantojot WP-Cron; varat atstāt šo lapu atvērtu vai atgriezties vēlāk."
+
+#: src/Form/NetworkLicensePage.php:137
+msgid "JavaScript is required to use this page."
+msgstr "Šīs lapas lietošanai nepieciešams JavaScript."
+
+#: src/Form/NetworkLicensePage.php:170
+msgid "DISABLE_WP_CRON is enabled on this site. The activation worker depends on WP-Cron firing — make sure your system cron is hitting wp-cron.php, or activation will not progress."
+msgstr "Šajā vietnē ir iespējots DISABLE_WP_CRON. Aktivizācijas darbinieks ir atkarīgs no WP-Cron darbības — pārliecinieties, ka jūsu sistēmas cron sasniedz wp-cron.php, pretējā gadījumā aktivizācija neturpināsies."
+
+#: src/Form/NetworkLicensePage.php:333
+msgid "sk_••••••••••••••••"
+msgstr "sk_••••••••••••••••"
+
+#: src/Form/NetworkLicensePage.php:340
+msgid "Activate on every site in this network"
+msgstr "Aktivizēt katrā šī tīkla vietnē"
+
+#: src/Form/NetworkLicensePage.php:355
+msgid "License key"
+msgstr "Licences atslēga"
+
+#: src/Form/NetworkLicensePage.php:378
+msgid "Removes the Editoria11y CSA license from every site on the network. Each site's install record stays in place; only the license link is cleared."
+msgstr "Noņem Editoria11y CSA licenci no katras tīkla vietnes. Katras vietnes instalācijas ieraksts paliek vietā; tiek dzēsta tikai licences saite."
+
+#: src/Form/NetworkLicensePage.php:437
+msgid "Retry failed sites"
+msgstr "Mēģināt vēlreiz neveiksmīgās vietnes"
+
+#: src/Form/NetworkLicensePage.php:450
+msgid "Start a new activation"
+msgstr "Sākt jaunu aktivizāciju"
+
+#: src/Form/NetworkLicensePage.php:469
+msgid "Back"
+msgstr "Atpakaļ"
+
+#: src/Form/NetworkLicensePage.php:480
+msgid "Done"
+msgstr "Gatavs"
+
+#: src/Form/NetworkLicensePage.php:487
+msgid "Cancelled"
+msgstr "Atcelts"
+
+#: src/Form/NetworkLicensePage.php:495
+msgid "Errors"
+msgstr "Kļūdas"
+
+#: src/Form/NetworkLicenseWorker.php:138
+msgid "License key is required."
+msgstr "Licences atslēga ir obligāta."
+
+#: src/Form/NetworkLicenseWorker.php:146 src/Form/NetworkLicenseWorker.php:197
+msgid "An activation run is already in progress."
+msgstr "Aktivizācijas process jau notiek."
+
+#: src/Form/NetworkLicenseWorker.php:262
+msgid "No previous errors to retry."
+msgstr "Nav iepriekšējo kļūdu, ko atkārtoti mēģināt."
+
+#: src/Form/NetworkLicenseWorker.php:272
+msgid "License key is no longer stored. Start a new activation."
+msgstr "Licences atslēga vairs nav saglabāta. Sāciet jaunu aktivizāciju."
+
+#: src/Form/NetworkLicenseWorker.php:348
+msgid "Freemius SDK wrapper unavailable."
+msgstr "Freemius SDK apvalks nav pieejams."
+
+#: src/Form/NetworkLicenseWorker.php:455
+msgid "SDK _deactivate_license() method unavailable."
+msgstr "SDK _deactivate_license() metode nav pieejama."
+
+#: src/Form/NetworkLicenseWorker.php:503
+msgid "Deactivation API call did not clear the install license."
+msgstr "Deaktivizācijas API izsaukums nedzēsa instalācijas licenci."
+
+#: src/Form/NetworkLicenseWorker.php:562
+msgid "No valid sites in batch."
+msgstr "Partijā nav derīgu vietņu."
+
+#: src/Form/NetworkLicenseWorker.php:668
+msgid "Activation API returned an unspecified error."
+msgstr "Aktivizācijas API atgrieza nenoteiktu kļūdu."
+
+#: src/Form/NetworkLicenseWorker.php:670
+msgid "Install record not created after API call."
+msgstr "Instalācijas ieraksts netika izveidots pēc API izsaukuma."
+
+#: src/Form/NetworkSettingsPage.php:77 src/Form/NetworkSettingsPage.php:78
+msgid "Editoria11y defaults"
+msgstr "Editoria11y noklusējumi"
+
+#: src/Form/NetworkSettingsPage.php:103
+msgid "Defaults"
+msgstr "Noklusējumi"
+
+#: src/Form/NetworkSettingsPage.php:110 src/Form/SettingsPage.php:250
+msgid "Custom rules"
+msgstr "Pielāgotas kārtulas"
+
+#: src/Form/NetworkSettingsPage.php:156
+msgid "Editoria11y default or locked network settings"
+msgstr "Editoria11y noklusējuma vai bloķētie tīkla iestatījumi"
+
+#: src/Form/NetworkSettingsPage.php:160
+msgid "Network defaults saved."
+msgstr "Tīkla noklusējumi saglabāti."
+
+#: src/Form/NetworkSettingsPage.php:166
+msgid "Network defaults were not saved."
+msgstr "Tīkla noklusējumi netika saglabāti."
+
+#: src/Form/NetworkSettingsPage.php:167
+msgid "You changed the following settings, but their propagation dropdown is still set to \"No network default\" — your change would not reach any site. Set the dropdown to \"Default for new sites\", \"Default for all sites\", or \"Lock for all sites\" — or revert the value — and save again."
+msgstr "Jūs mainījāt tālāk norādītos iestatījumus, bet to izplatīšanas nolaižamā izvēlne joprojām ir iestatīta uz „Nav tīkla noklusējuma“ — jūsu izmaiņas nesasniegtu nevienu vietni. Iestatiet nolaižamo izvēlni uz „Noklusējums jaunajām vietnēm“, „Noklusējums visām vietnēm“ vai „Bloķēt visām vietnēm“ — vai atjaunojiet vērtību — un saglabājiet vēlreiz."
+
+#: src/Form/NetworkSettingsPage.php:191
+msgid "Save network defaults"
+msgstr "Saglabāt tīkla noklusējumus"
+
+#. translators: 1: processed sites, 2: total sites, 3: sites updated
+#: src/Form/NetworkSettingsPage.php:289
+#, php-format
+msgid "%1$s of %2$s sites visited (%3$s updated)."
+msgstr "%1$s no %2$s vietnēm apmeklētas (%3$s atjauninātas)."
+
+#. translators: %s: human-readable duration estimate
+#: src/Form/NetworkSettingsPage.php:305
+#, php-format
+msgid "Estimated %s remaining."
+msgstr "Aptuveni atlikušais laiks: %s."
+
+#. translators: %s: number of errors recorded
+#: src/Form/NetworkSettingsPage.php:318
+#, php-format
+msgid "Errors: %s (most recent retained). Check server logs for details."
+msgstr "Kļūdas: %s (saglabāta jaunākā). Skatiet servera žurnālus sīkākai informācijai."
+
+#: src/Form/NetworkSettingsPage.php:327
+msgid "Saving the form now will restart propagation with the new settings."
+msgstr "Saglabājot veidlapu tagad, propagācija tiks restartēta ar jaunajiem iestatījumiem."
+
+#: src/Form/NetworkSettingsPage.php:390
+msgid "Propagating network defaults to existing sites…"
+msgstr "Izplata tīkla noklusējumus uz esošajām vietnēm…"
+
+#: src/Form/NetworkSettingsPage.php:393
+msgid "Network defaults propagated."
+msgstr "Tīkla noklusējumi izplatīti."
+
+#: src/Form/NetworkSettingsPage.php:396
+msgid "Network defaults propagation failed."
+msgstr "Tīkla noklusējumu izplatīšana neizdevās."
+
+#: src/Form/NetworkSettingsPage.php:399
+msgid "Network defaults propagation idle."
+msgstr "Tīkla noklusējumu izplatīšana dīkstāvē."
+
+#: src/Form/SettingsContext.php:181
+msgid "Managed at the network level by the super-admin."
+msgstr "Pārvaldīts tīkla līmenī ar super-administratoru."
+
+#: src/Form/SettingsContext.php:250 src/Form/SettingsContext.php:285
+msgid "— No network default —"
+msgstr "— Nav tīkla noklusējuma —"
+
+#: src/Form/SettingsContext.php:251 src/Form/SettingsContext.php:286
+msgid "New sites only"
+msgstr "Tikai jaunās vietnes"
+
+#: src/Form/SettingsContext.php:252 src/Form/SettingsContext.php:287
+msgid "All sites"
+msgstr "Visas vietnes"
+
+#: src/Form/SettingsContext.php:253 src/Form/SettingsContext.php:288
+msgid "All sites, locked"
+msgstr "Visas vietnes, bloķēts"
+
+#: src/Form/SettingsContext.php:293
+msgid "Default on:"
+msgstr "Noklusējums:"
+
+#: src/Form/SettingsFields.php:68
+msgid "Include all parts of the page that contain your theme and content."
+msgstr "Iekļaujiet visas lapas daļas, kas satur jūsu motīvu un saturu."
+
+#: src/Form/SettingsFields.php:69
+msgid "Exclude elements that show unhelpful, repetitive, or inaccurate alerts."
+msgstr "Izslēdziet elementus, kas rāda nelietderīgus, atkārtotus vai neprecīzus brīdinājumus."
+
+#: src/Form/SettingsFields.php:71
+msgid "If you need help:"
+msgstr "Ja jums nepieciešama palīdzība:"
+
+#: src/Form/SettingsFields.php:72
+msgid "Configuration Guide"
+msgstr "Konfigurācijas ceļvedis"
+
+#: src/Form/SettingsFields.php:73
+msgid "Issue Queue"
+msgstr "Problēmu rinda"
+
+#: src/Form/SettingsFields.php:74
+msgid "Support contacts"
+msgstr "Atbalsta kontakti"
+
+#: src/Form/SettingsFields.php:84
+msgid "Define the parts of each page Editoria11y checks. Activating CSA unlocks an additional \"developer area\" superset that runs more checks and routes alerts to the roles you choose."
+msgstr "Definējiet lapas daļas, kuras Editoria11y pārbauda. Aktivizējot CSA, tiek atbloķēts papildu „izstrādātāju apgabala\" supersets, kas veic vairāk pārbaužu un novirza brīdinājumus izvēlētajām lomām."
+
+#: src/Form/SettingsFields.php:98
+msgid "These tests detect issues content editors can fix. Toggle a test off to remove it from the page-level checker; the test still runs and is available for re-enabling at any time."
+msgstr "Šie testi atklāj problēmas, ko satura redaktori var labot. Izslēdziet testu, lai to noņemtu no lapas līmeņa pārbaudītāja; tests joprojām darbojas un to var atkārtoti iespējot jebkurā laikā."
+
+#: src/Form/SettingsFields.php:113
+msgid "Apply this tests + roles assignment to"
+msgstr "Piemērot šo testu un lomu piešķiršanu"
+
+#: src/Form/SettingsFields.php:122
+msgid "These tests detect issues that usually need template or theme changes. In free mode they appear here for visibility but are not editable; activate CSA to route them per role."
+msgstr "Šie testi atklāj problēmas, kam parasti nepieciešamas veidnes vai motīva izmaiņas. Bezmaksas režīmā tie tiek rādīti šeit pārskatāmībai, bet nav rediģējami; aktivizējiet CSA, lai tos novirzītu pa lomām."
+
+#: src/Form/SettingsFields.php:132
+msgid "The \"tests + roles assignment\" propagation setting under \"Modify content tests\" above also governs the template-test selection — both are stored together."
+msgstr "Propagācijas iestatījums „Testu un lomu piešķiršana“ sadaļā „Mainīt satura testus“ augstāk reizē pārvalda arī veidnes testu atlasi — abi tiek saglabāti kopā."
+
+#: src/Form/SettingsFields.php:171
+msgid "Network-level custom rules apply to every site in the network."
+msgstr "Tīkla līmeņa pielāgotas kārtulas attiecas uz katru vietni tīklā."
+
+#. translators: %d is the number of network custom rules defined (active + inactive).
+#: src/Form/SettingsFields.php:182
+#, php-format
+msgid "Manage network custom rules (%d defined)"
+msgid_plural "Manage network custom rules (%d defined)"
+msgstr[0] "Pārvaldīt tīkla pielāgotas kārtulas (%d definēta)"
+msgstr[1] "Pārvaldīt tīkla pielāgotas kārtulas (%d definētas)"
+msgstr[2] "Pārvaldīt tīkla pielāgotas kārtulas (%d definētu)"
+
+#: src/Form/SettingsFields.php:208
+msgid "Define your own accessibility tests. Each rule pairs a CSS selector with a tip shown to users; rules ship over the cached static config alongside the built-in test catalog."
+msgstr "Definējiet savus pieejamības testus. Katra kārtula saista CSS selektoru ar padomu, kas tiek rādīts lietotājiem; kārtulas tiek piegādātas ar kešotās statiskās konfigurācijas palīdzību kopā ar iebūvēto testu katalogu."
+
+#. translators: %d is the number of custom rules active on this site (per-site rules plus network rules not disabled here).
+#: src/Form/SettingsFields.php:219
+#, php-format
+msgid "Manage custom rules (%d active)"
+msgid_plural "Manage custom rules (%d active)"
+msgstr[0] "Pārvaldīt pielāgotas kārtulas (%d aktīva)"
+msgstr[1] "Pārvaldīt pielāgotas kārtulas (%d aktīvas)"
+msgstr[2] "Pārvaldīt pielāgotas kārtulas (%d aktīvu)"
+
+#: src/Form/SettingsFields.php:235
+msgid "Custom rules let CSA admins register additional accessibility tests with their own selectors, labels, and tip content. Activate CSA to manage them here."
+msgstr "Pielāgotas kārtulas ļauj CSA administratoriem reģistrēt papildu pieejamības testus ar saviem selektoriem, iezīmēm un padoma saturu. Aktivizējiet CSA, lai tos pārvaldītu šeit."
+
+#: src/Form/SettingsFields.php:271
+msgid "Choose when the control panel should open and show inline tips. \"Start open if there are any alerts\" is recommended, as it helps tips get noticed over time."
+msgstr "Izvēlieties, kad vadības panelim jāatver un jārāda iekļautie padomi. Ieteicams ir „Sākt atvērtu, ja ir kādi brīdinājumi“, jo tas palīdz padomiem tikt pamanītiem laika gaitā."
+
+#: src/Form/SettingsFields.php:289
+msgid "Choose whether to show inline tips while editing post and page content. The checker always hides while editing templates and layouts."
+msgstr "Izvēlieties, vai rādīt iekļautos padomus, rediģējot ierakstu un lapu saturu. Pārbaudītājs vienmēr tiek paslēpts, rediģējot veidnes un izkārtojumus."
+
+#: src/Form/SettingsFields.php:310
+msgid "Provide CSS selectors. Content authors will only see the alerts within these parts of the page. Do not provide selectors that nest within each other, or the inner content will be checked twice."
+msgstr "Nodrošiniet CSS selektorus. Satura autori redzēs brīdinājumus tikai šajās lapas daļās. Nesniedz selektorus, kas ligzdo cits citā, pretējā gadījumā iekšējais saturs tiks pārbaudīts divreiz."
+
+#: src/Form/SettingsFields.php:320
+msgid "The default is <code>main</code> or <code>body</code>, depending on theme."
+msgstr "Noklusējums ir <code>main</code> vai <code>body</code>, atkarībā no motīva."
+
+#: src/Form/SettingsFields.php:343
+msgid ""
+"If Editoria11y is flagging things editors cannot fix, e.g., theme-generated \"read more\" links or social media widgets,\n"
+"\t\t\t\tprovide CSS selectors for elements you would like it to ignore. Be specific, e.g. <code>.read-more a, .wp-block-post-excerpt__more-link, #comments h3</code>"
+msgstr ""
+"Ja Editoria11y atzīmē lietas, ko redaktori nevar labot, piem., motīva ģenerētas „lasīt tālāk\" saites vai sociālo tīklu logrīki,\n"
+"\t\t\t\tnodrošiniet CSS selektorus elementiem, kurus vēlaties ignorēt. Esiet konkrēts, piem. <code>.read-more a, .wp-block-post-excerpt__more-link, #comments h3</code>"
+
+#: src/Form/SettingsFields.php:354
+msgid "If you are new at this, start by opening your browser's developer tools, inspecting the element you do not want flagged, and looking for unique-looking CSS selectors."
+msgstr "Ja esat jauns šajā jomā, sāciet, atverot pārlūkprogrammas izstrādātāju rīkus, pārbaudot elementu, kuru nevēlaties atzīmēt, un meklējot unikāli izskatošus CSS selektorus."
+
+#: src/Form/SettingsFields.php:418
+msgid "Set to the number of other themes or plugins that will be injecting custom result JS events. Editoria11y will wait until it receives this number of <code>ed11yResume</code> notifications before showing results."
+msgstr "Iestatiet uz to motīvu vai spraudņu skaitu, kas injicēs pielāgotos rezultātu JS notikumus. Editoria11y gaidīs, līdz saņems šo skaitu <code>ed11yResume</code> paziņojumu, pirms rādīt rezultātus."
+
+#: src/Form/SettingsFields.php:440
+msgid "Used to block checking on site sections or admin pages."
+msgstr "Izmanto, lai bloķētu pārbaudi vietnes sadaļās vai administratora lapās."
+
+#: src/Form/SettingsFields.php:469
+msgid "Autodetect"
+msgstr "Automātiski noteikt"
+
+#: src/Form/SettingsFields.php:470
+msgid "Only user-editable content"
+msgstr "Tikai lietotāja rediģējams saturs"
+
+#: src/Form/SettingsFields.php:471
+msgid "Other"
+msgstr "Cits"
+
+#: src/Form/SettingsFields.php:475
+msgid "Developer scan area"
+msgstr "Izstrādātāja skenēšanas apgabals"
+
+#: src/Form/SettingsFields.php:493
+msgid "\"Autodetect\" selects:<br><em><code>body &gt; *:not(#wpadminbar, script, style, .ed11y-element)</code></em>"
+msgstr "„Automātiski noteikt\" izvēlas:<br><em><code>body &gt; *:not(#wpadminbar, script, style, .ed11y-element)</code></em>"
+
+#: src/Form/SettingsFields.php:510
+msgid "Specify regions to check"
+msgstr "Norādīt reģionus pārbaudei"
+
+#: src/Form/SettingsFields.php:524
+msgid "Alerts in these regions will be shown to both developers and editors. One selector per line."
+msgstr "Brīdinājumi šajos reģionos tiks rādīti gan izstrādātājiem, gan redaktoriem. Viens selektors katrā rindā."
+
+#: src/Form/SettingsFields.php:559
+msgid "These parts of the page will be ignored entirely."
+msgstr "Šīs lapas daļas tiks pilnībā ignorētas."
+
+#: src/Form/SettingsFields.php:593
+msgid "Developer roles"
+msgstr "Izstrādātāju lomas"
+
+#: src/Form/SettingsFields.php:611
+msgid "Unchecked roles only see content checks."
+msgstr "Neatzīmētās lomas redz tikai satura pārbaudes."
+
+#: src/Form/SettingsFields.php:634
+msgid "Start open if there are new alerts"
+msgstr "Sākt atvērtu, ja ir jauni brīdinājumi"
+
+#: src/Form/SettingsFields.php:635
+msgid "Start open if there are any alerts"
+msgstr "Sākt atvērtu, ja ir kādi brīdinājumi"
+
+#: src/Form/SettingsFields.php:636
+msgid "Always start open"
+msgstr "Vienmēr sākt atvērtu"
+
+#: src/Form/SettingsFields.php:637
+msgid "Start minimized"
+msgstr "Sākt minimizētu"
+
+#: src/Form/SettingsFields.php:736
+msgid "Rule"
+msgstr "Kārtula"
+
+#: src/Form/SettingsFields.php:740
+msgid "Show to"
+msgstr "Rādīt"
+
+#: src/Form/SettingsFields.php:780
+msgid "Everyone"
+msgstr "Visi"
+
+#: src/Form/SettingsFields.php:781
+msgid "Developers only"
+msgstr "Tikai izstrādātāji"
+
+#: src/Form/SettingsFields.php:782
+msgid "Off"
+msgstr "Izslēgts"
+
+#: src/Form/SettingsFields.php:798
+msgid "(Part of CSA suite)"
+msgstr "(CSA komplekta daļa)"
+
+#: src/Form/SettingsFields.php:836
+msgid "Remind the editor that these linked documents need a manual check"
+msgstr "Atgādināt redaktoram, ka šie saistītie dokumenti ir jāpārbauda manuāli"
+
+#: src/Form/SettingsFields.php:837
+msgid "Add or remove filetypes. Set to \"false\" to disable the test altogether. Providing any value will override the default."
+msgstr "Pievienot vai noņemt failu tipus. Iestatiet uz „false\", lai pilnībā atspējotu testu. Jebkuras vērtības norādīšana ignorēs noklusējumu."
+
+#: src/Form/SettingsFields.php:841
+msgid "Remove elements that match these selectors before testing link text"
+msgstr "Noņemt elementus, kas atbilst šiem selektoriem, pirms testa saites tekstu"
+
+#: src/Form/SettingsFields.php:842
+msgid "Provide a CSS selector for elements your themes or plugins programmatically add to links (usually external or open-in-new-window markers), so they can be ignored when the link text is checked for the \"link has no text\" and \"link text is not meaningful\" tests."
+msgstr "Nodrošiniet CSS selektoru elementiem, kurus jūsu motīvi vai spraudņi programmatiski pievieno saitēm (parasti ārējie vai jaunā logā atveramie marķieri), lai tos varētu ignorēt, pārbaudot saites tekstu testiem „saitei nav teksta\" un „saites teksts nav jēgpilns\"."
+
+#: src/Form/SettingsFields.php:846
+msgid "Remove these strings before testing link text"
+msgstr "Noņemt šīs virknes pirms saites teksta testēšanas"
+
+#: src/Form/SettingsFields.php:847
+msgid "Provide a pipe-separated (\"|\") list of phrases your themes or plugins programmatically add to links to hint a purpose (external, mail, phone, open-in-new-window), so they can be ignored when the link text is checked for the \"link has no text\" and \"link text is not meaningful\" tests; e.g.: (link is external)|(link sends email)."
+msgstr "Nodrošiniet ar vertikālo svītru (\"|\") atdalītu frāžu sarakstu, ko jūsu motīvi vai spraudņi programmatiski pievieno saitēm, lai norādītu nolūku (ārējais, pasts, tālrunis, atverties jaunā logā), lai tos varētu ignorēt, pārbaudot saites tekstu testiem „saitei nav teksta\" un „saites teksts nav jēgpilns\"; piem.: (saite ir ārēja)|(saite sūta e-pastu)."
+
+#: src/Form/SettingsFields.php:851
+msgid "Strings in links that indicate new tabs"
+msgstr "Virknes saitēs, kas norāda jaunas cilnes"
+
+#: src/Form/SettingsFields.php:852
+msgid "Provide a pipe-separated list of phrases your site uses to warn users a link opens in a new tab; e.g.: new tab|new window|external."
+msgstr "Nodrošiniet ar vertikālo svītru atdalītu frāžu sarakstu, ko jūsu vietne izmanto, lai brīdinātu lietotājus, ka saite tiek atvērta jaunā cilnē; piem.: jauna cilne|jauns logs|ārējs."
+
+#: src/Form/SettingsFields.php:860
+msgid "Embeds flagged as needing manual review"
+msgstr "Iestrādājumi, kas atzīmēti kā jāpārbauda manuāli"
+
+#: src/Form/SettingsFields.php:864
+msgid "Videos flagged as needing a manual check for captions"
+msgstr "Video, kas atzīmēti kā jāpārbauda manuāli titriem"
+
+#: src/Form/SettingsFields.php:868
+msgid "Audio flagged as needing a manual check for transcripts"
+msgstr "Audio, kas atzīmēts kā jāpārbauda manuāli transkripcijām"
+
+#: src/Form/SettingsFields.php:872
+msgid "Remind editor that content in these embeds needs manual review"
+msgstr "Atgādināt redaktoram, ka saturs šajos iestrādājumos ir jāpārbauda manuāli"
+
+#: src/Form/SettingsFields.php:873
+msgid "Provide a comma-separated list of selectors you wish to flag for the editor, e.g.: .my-embedded-feed, #my-social-link-block."
+msgstr "Nodrošiniet ar komatu atdalītu selektoru sarakstu, ko vēlaties atzīmēt redaktoram, piem.: .my-embedded-feed, #my-social-link-block."
+
+#: src/Form/SettingsFields.php:885
+msgid "Do not check contrast for these elements"
+msgstr "Nepārbaudīt kontrastu šiem elementiem"
+
+#: src/Form/SettingsFields.php:898
+msgid "Provide a comma-separated list of selectors for elements to ignore for all users."
+msgstr "Nodrošiniet ar komatu atdalītu selektoru sarakstu elementiem, kurus ignorēt visiem lietotājiem."
+
+#: src/Form/SettingsFields.php:928
+msgid "Assertiveness"
+msgstr "Uzstājība"
+
+#: src/Form/SettingsFields.php:930
+msgid "Checker mode for content roles"
+msgstr "Pārbaudītāja režīms satura lomām"
+
+#: src/Form/SettingsFields.php:938
+msgid "Checker mode for developer roles"
+msgstr "Pārbaudītāja režīms izstrādātāju lomām"
+
+#: src/Form/SettingsFields.php:946
+msgid "Checker mode inside editor"
+msgstr "Pārbaudītāja režīms redaktorā"
+
+#: src/Form/SettingsFields.php:952
+msgid "Theme and plugin compatibility"
+msgstr "Motīvu un spraudņu saderība"
+
+#: src/Form/SettingsFields.php:954
+msgid "Editoria11y theme"
+msgstr "Editoria11y motīvs"
+
+#: src/Form/SettingsFields.php:959
+msgid "Pin panel to"
+msgstr "Piespraust paneli pie"
+
+#: src/Form/SettingsFields.php:964
+msgid "Right"
+msgstr "Pa labi"
+
+#: src/Form/SettingsFields.php:965
+msgid "Left"
+msgstr "Pa kreisi"
+
+#: src/Form/SettingsFields.php:970
+msgid "Shift panel position if it overlaps these elements"
+msgstr "Pārbīdīt paneļa pozīciju, ja tas pārklājas ar šiem elementiem"
+
+#: src/Form/SettingsFields.php:971
+msgid "Comma-separated selectors for competing widgets, e.g. .interface-interface-skeleton__sidebar."
+msgstr "Ar komatu atdalīti selektori konkurējošajiem logrīkiem, piem. .interface-interface-skeleton__sidebar."
+
+#: src/Form/SettingsFields.php:978
+msgid "Do not check on pages with these elements"
+msgstr "Nepārbaudīt lapās ar šiem elementiem"
+
+#: src/Form/SettingsFields.php:982
+msgid "JS injected custom rules"
+msgstr "JS injicētas pielāgotas kārtulas"
+
+#: src/Form/SettingsFields.php:988
+msgid "Don't show edit links on tips in these containers"
+msgstr "Nerādīt rediģēšanas saites padomos šajos konteineros"
+
+#: src/Form/SettingsFields.php:989
+msgid "Provide a comma-separated list of page sections where edit links should not show. To hide the links everywhere, set this field to an asterisk (*)."
+msgstr "Nodrošiniet ar komatu atdalītu lapas sadaļu sarakstu, kurās rediģēšanas saites nedrīkst rādīt. Lai slēptu saites visur, iestatiet šo lauku uz zvaigznīti (*)."
+
+#: src/Form/SettingsFields.php:1008
+msgid "Handling tips on hidden content"
+msgstr "Padomi par slēpto saturu"
+
+#: src/Form/SettingsFields.php:1010
+msgid "Warn users if elements might not be visible when jumping to tips"
+msgstr "Brīdināt lietotājus, ja elementi var nebūt redzami, pārejot uz padomiem"
+
+#: src/Form/SettingsFields.php:1017
+msgid "Elements with overflow hidden"
+msgstr "Elementi ar slēpto pārplūdi"
+
+#: src/Form/SettingsFields.php:1018
+msgid "Sometimes buttons get drawn and visually truncated outside the bounds of a positioned element. Provide a selector list."
+msgstr "Dažreiz pogas tiek zīmētas un vizuāli saīsinātas ārpus pozicionētā elementa robežām. Nodrošiniet selektoru sarakstu."
+
+#: src/Form/SettingsFields.php:1023
+msgid "Theme JS will handle revealing hidden tooltips inside these containers"
+msgstr "Motīva JS apstrādās slēpto rīkjoslas padomu atklāšanu šajos konteineros"
+
+#: src/Form/SettingsFields.php:1024
+msgid "Editoria11y detects hidden tooltips and warns the user when they try to jump to them from the panel. For elements on this list, Editoria11y will dispatch a JS event instead of a warning, so custom JS in your theme can first reveal the hidden tip (e.g., open an accordion or tab panel)."
+msgstr "Editoria11y atklāj slēptos rīkjoslas padomus un brīdina lietotāju, kad viņi mēģina uz tiem pāriet no paneļa. Elementiem šajā sarakstā Editoria11y izsūtīs JS notikumu brīdinājuma vietā, lai jūsu motīva pielāgotais JS varētu vispirms atklāt slēpto padomu (piem., atvērt akordeonu vai cilņu paneli)."
+
+#: src/Form/SettingsFields.php:1035
+msgid "Detecting dynamic and shadow content"
+msgstr "Dinamiskā un ēnu satura noteikšana"
+
+#: src/Form/SettingsFields.php:1038
+msgid "Dynamically refresh if new content appears"
+msgstr "Dinamiski atsvaidzināt, ja parādās jauns saturs"
+
+#: src/Form/SettingsFields.php:1043
+msgid "Watch for changes anywhere on the page"
+msgstr "Sekot izmaiņām jebkur lapā"
+
+#: src/Form/SettingsFields.php:1044
+msgid "Only watch for changes to content containers present on load"
+msgstr "Sekot tikai izmaiņām satura konteineros, kas ir klāt ielādē"
+
+#: src/Form/SettingsFields.php:1045
+msgid "Do not watch for changes"
+msgstr "Nesekot izmaiņām"
+
+#: src/Form/SettingsFields.php:1049
+msgid "Set to \"anywhere\" if changes are being missed; set to \"do not watch\" if you notice performance issues."
+msgstr "Iestatiet uz „jebkur\", ja izmaiņas netiek pamanītas; iestatiet uz „nesekot izmaiņām\", ja pamanāt veiktspējas problēmas."
+
+#: src/Form/SettingsFields.php:1053
+msgid "Check inside these specific Web components"
+msgstr "Pārbaudīt šajos specifiskajos tīmekļa komponentos"
+
+#: src/Form/SettingsFields.php:1054
+msgid "Provide selectors for elements with shadow DOM you want tested. E.g.: my-fancy-accordion-widget, my-magical-slideshow."
+msgstr "Nodrošiniet selektorus elementiem ar ēnu DOM, ko vēlaties testēt. Piem.: my-fancy-accordion-widget, my-magical-slideshow."
+
+#: src/Form/SettingsFields.php:1058
+msgid "Auto-detect any Web components"
+msgstr "Automātiski noteikt visus tīmekļa komponentus"
+
+#: src/Form/SettingsFields.php:1059
+msgid "This is easier to configure than specifying components, but may slow test runs on very complicated pages."
+msgstr "To ir vieglāk konfigurēt nekā norādīt komponentus, bet tas var palēnināt testu izpildi ļoti sarežģītās lapās."
+
+#: src/Form/SettingsFields.php:1070
+msgid "Syncing results to reports"
+msgstr "Sinhronizēt rezultātus ar pārskatiem"
+
+#: src/Form/SettingsFields.php:1086
+msgid "Only admins can view reports"
+msgstr "Tikai administratori var skatīt pārskatus"
+
+#: src/Form/SettingsFields.php:1092
+msgid "By default both admins and editors can view reports."
+msgstr "Pēc noklusējuma gan administratori, gan redaktori var skatīt pārskatus."
+
+#: src/Form/SettingsFields.php:1104
+msgid "Hide reports shortcut on toggle"
+msgstr "Slēpt pārskatu saīsni pārslēgšanas pogā"
+
+#: src/Form/SettingsFields.php:1112
+msgid "Reports will still be available on the WordPress admin dashboard."
+msgstr "Pārskati joprojām būs pieejami WordPress administratora panelī."
+
+#: src/Form/SettingsFields.php:1122
+msgid "Remove redundant base url from URLs"
+msgstr "Noņemt lieko bāzes URL no URL"
+
+#: src/Form/SettingsFields.php:1134
+msgid "Provide base URL (\"/mysite\") if your site is installed in a subdirectory. Subdirectories tend to get duplicated (/mysite/mysite/mypage) and throw errors from the API."
+msgstr "Nodrošiniet bāzes URL (\"/mysite\"), ja jūsu vietne ir instalēta apakšdirektorijā. Apakšdirektorijas mēdz tikt dublētas (/mysite/mysite/mypage) un radīt kļūdas no API."
+
+#: src/Form/SettingsFields.php:1139
+msgid "Preserve query parameters"
+msgstr "Saglabāt vaicājuma parametrus"
+
+#: src/Form/SettingsFields.php:1140
+msgid "The dashboard ignores most parameters: results for both /news?f=1 and /news?f=2 will show up as just /news. Provide a comma-separated list of parameters that are meaningful and should appear as separate pages in results."
+msgstr "Panelis ignorē lielāko daļu parametru: rezultāti gan par /news?f=1, gan par /news?f=2 tiks rādīti tikai kā /news. Nodrošiniet ar komatu atdalītu jēgpilnu parametru sarakstu, kas jāparāda kā atsevišķas lapas rezultātos."
+
+#: src/Form/SettingsFields.php:1144
+msgid "Disable sync altogether"
+msgstr "Pilnībā atspējot sinhronizāciju"
+
+#: src/Form/SettingsFields.php:1145
+msgid "Syncing test results is required for the issue dashboard, dismissal dashboard, and \"mark OK\" buttons."
+msgstr "Testu rezultātu sinhronizācija ir nepieciešama problēmu panelim, noraidījumu panelim un pogām „atzīmēt kā OK\"."
+
+#: src/Form/SettingsFields.php:1156
+msgid "Heading outline position of editable content"
+msgstr "Virsrakstu struktūras pozīcija rediģējamā saturā"
+
+#: src/Form/SettingsFields.php:1158
+msgid "To check headings while editing, Editoria11y needs to know what the first heading level should be in each editable field. Body fields should generally be at the H2 level."
+msgstr "Lai pārbaudītu virsrakstus rediģēšanas laikā, Editoria11y jāzina, kādam jābūt pirmajam virsrakstu līmenim katrā rediģējamajā laukā. Pamatteksta laukiem parasti jābūt H2 līmenī."
+
+#: src/Form/SettingsFields.php:1163
+msgid "H2 level content (body content)"
+msgstr "H2 līmeņa saturs (pamatteksta saturs)"
+
+#: src/Form/SettingsFields.php:1164
+msgid "Body fields are preceded by an H1 (the post or page title), so their highest heading level should be H2."
+msgstr "Pamatteksta laukiem pirms tiem ir H1 (ieraksta vai lapas nosaukums), tāpēc to augstākajam virsrakstu līmenim jābūt H2."
+
+#: src/Form/SettingsFields.php:1168
+msgid "H3 level content (blocks or widgets with separate titles)"
+msgstr "H3 līmeņa saturs (bloki vai logrīki ar atsevišķiem nosaukumiem)"
+
+#: src/Form/SettingsFields.php:1169
+msgid "The highest heading level should be H3."
+msgstr "Augstākajam virsrakstu līmenim jābūt H3."
+
+#: src/Form/SettingsFields.php:1173
+msgid "H4 level content (deeply nested blocks or widgets)"
+msgstr "H4 līmeņa saturs (dziļi ligzdoti bloki vai logrīki)"
+
+#: src/Form/SettingsFields.php:1174
+msgid "The highest heading level should be H4."
+msgstr "Augstākajam virsrakstu līmenim jābūt H4."
+
+#: src/Form/SettingsPage.php:107
+msgid "free version at WordPress.org"
+msgstr "bezmaksas versija vietnē WordPress.org"
+
+#: src/Form/SettingsPage.php:112
+msgid "becoming a supporter"
+msgstr "kļūstot par atbalstītāju"
+
+#. translators: %s: link reading "free version at WordPress.org".
+#: src/Form/SettingsPage.php:121
+#, php-format
+msgid "This site has the community-supported \"CSA\" version of Editoria11y installed rather than the %s."
+msgstr "Šajā vietnē ir instalēta kopienas atbalstītā „CSA“ Editoria11y versija, nevis %s."
+
+#. translators: %s: link reading "becoming a supporter".
+#: src/Form/SettingsPage.php:130
+#, php-format
+msgid "To activate the community-supported features and continue receiving updates, either enter your existing license key below or view options for %s."
+msgstr "Lai aktivizētu kopienas atbalstītās funkcijas un turpinātu saņemt atjauninājumus, ievadiet savu esošo licences atslēgu zemāk vai apskatiet iespējas: %s."
+
+#: src/Form/SettingsPage.php:155
+msgid "Editoria11y License & Account"
+msgstr "Editoria11y licence un konts"
+
+#: src/Form/SettingsPage.php:240
+msgid "Settings"
+msgstr "Iestatījumi"
+
+#: src/Form/SettingsPage.php:241 src/Form/SettingsPage.php:253
+msgid "License & Account"
+msgstr "Licence un konts"
+
+#: src/Form/SettingsPage.php:252
+msgid "Contact us"
+msgstr "Sazināties ar mums"
+
+#: src/Form/SettingsPage.php:491
+msgid "Getting started"
+msgstr "Sākšana"
+
+#: src/Form/SettingsPage.php:500
+msgid "Modify content tests"
+msgstr "Mainīt satura testus"
+
+#: src/Form/SettingsPage.php:506 src/Form/SettingsPage.php:520
+msgid "Tests by group"
+msgstr "Testi pa grupām"
+
+#: src/Form/SettingsPage.php:514
+msgid "Modify template tests"
+msgstr "Mainīt veidņu testus"
+
+#: src/Form/SettingsPage.php:531
+msgid "Custom rules (CSA)"
+msgstr "Pielāgotas kārtulas (CSA)"
+
+#: src/Form/SettingsPage.php:546
+msgid "Parts of the page to test"
+msgstr "Lapas daļas, ko testēt"
+
+#: src/Form/SettingsPage.php:554
+msgid "Do not check for any errors inside these elements"
+msgstr "Nepārbaudīt nevienu kļūdu šajos elementos"
+
+#: src/Form/SettingsPage.php:565
+msgid "Page regions with user-editable content"
+msgstr "Lapas reģioni ar lietotāja rediģējamu saturu"
+
+#: src/Form/SettingsPage.php:575
+msgid "Do not check for content errors inside these elements"
+msgstr "Nepārbaudīt satura kļūdas šajos elementos"
+
+#: src/Form/SettingsPage.php:578
+msgid "Errors in these elements should only be shown to developers"
+msgstr "Kļūdas šajos elementos jārāda tikai izstrādātājiem"
+
+#: src/Form/SettingsPage.php:594
+msgid "Roles that will see developer alerts"
+msgstr "Lomas, kas redzēs izstrādātāju brīdinājumus"
+
+#: src/Form/SettingsPage.php:609
+msgid "Advanced settings"
+msgstr "Papildu iestatījumi"
+
+#: src/Form/SettingsPage.php:627
+msgid "Editoria11y Settings"
+msgstr "Editoria11y iestatījumi"
+
+#: src/Form/SettingsPage.php:642
+msgid "Save Settings"
+msgstr "Saglabāt iestatījumus"
+
+#: src/FreemiusAccessControl.php:220
+msgid "unknown"
+msgstr "nezināms"
+
+#. translators: 1: loaded SDK version, 2: highest tested SDK version
+#: src/FreemiusAccessControl.php:225
+#, php-format
+msgid "Editoria11y CSA: the loaded Freemius SDK (version %1$s) is newer than the highest tested version (%2$s). Another Freemius-using plugin on this site has bundled a newer SDK build. The network license activation page may not behave as expected; review release notes or contact support if you hit issues."
+msgstr "Editoria11y CSA: ielādētais Freemius SDK (versija %1$s) ir jaunāks par augstāko testēto versiju (%2$s). Cits šajā vietnē esošais spraudnis, kas izmanto Freemius, ir iekļāvis jaunāku SDK versiju. Tīkla licences aktivizācijas lapa var nedarboties kā paredzēts; pārskatiet izlaides piezīmes vai sazinieties ar atbalstu, ja rodas problēmas."
+
+#: src/FreemiusAccessControl.php:442
+msgid "Editoria11y network licenses are activated from a dedicated page that walks every site in the network in cron-driven batches. This avoids the SDK's 1,000-site limit and keeps the page responsive on large multisites."
+msgstr "Editoria11y tīkla licences tiek aktivizētas no īpašas lapas, kas apstrādā katru tīkla vietni ar cron virzītās partijās. Tas izvairās no SDK 1000 vietņu ierobežojuma un saglabā lapas atsaucību lielos vairākvietņu uzstādījumos."
+
+#: src/FreemiusAccessControl.php:448
+msgid "Open Editoria11y license page"
+msgstr "Atvērt Editoria11y licences lapu"
+
+#: src/FreemiusAccessControl.php:504
+msgid "Per-site license rows are not shown to keep this page responsive on large networks. The license you choose below applies to every site in the network. To activate or deactivate on individual sites, visit each site's per-site Settings → Editoria11y → License & Account."
+msgstr "Katras vietnes licences rindas netiek rādītas, lai saglabātu lapas atsaucību lielos tīklos. Zemāk izvēlētā licence attiecas uz katru tīkla vietni. Lai aktivizētu vai deaktivizētu atsevišķās vietnēs, apmeklējiet katras vietnes iestatījumus Iestatījumi → Editoria11y → Licence un konts."
+
+#: src/TestNames.php:46
+msgid "This alt text is a filename, not a description"
+msgstr "Šis alternatīvais teksts ir faila nosaukums, nevis apraksts"
+
+#: src/TestNames.php:47 src/TestNames.php:48
+msgid "Is this a clear and concise description of the image?"
+msgstr "Vai šis ir skaidrs un kodolīgs attēla apraksts?"
+
+#: src/TestNames.php:49
+msgid "This alt text may be a placeholder"
+msgstr "Šis alternatīvais teksts var būt vietturis"
+
+#: src/TestNames.php:50
+msgid "This alt text is unpronounceable"
+msgstr "Šis alternatīvais teksts nav izrunājams"
+
+#: src/TestNames.php:51
+msgid "This custom input field is missing a label"
+msgstr "Šim pielāgotajam ievades laukam trūkst etiķetes"
+
+#: src/TestNames.php:52
+msgid "Button is missing an accessible label"
+msgstr "Pogai trūkst piekļūstama nosaukuma"
+
+#: src/TestNames.php:53
+msgid "Button has an invalid ARIA label"
+msgstr "Pogai ir nederīga ARIA etiķete"
+
+#: src/TestNames.php:54
+msgid "Button name repeats the word \"button\""
+msgstr "Pogas nosaukumā atkārtojas vārds \"button\""
+
+#: src/TestNames.php:55
+msgid "Text does not have enough contrast to be easily legible"
+msgstr "Tekstam nav pietiekama kontrasta, lai to varētu viegli lasīt"
+
+#: src/TestNames.php:56
+msgid "Graphic or icon does not have enough contrast"
+msgstr "Grafikam vai ikonai nav pietiekama kontrasta"
+
+#: src/TestNames.php:57
+msgid "Input does not provide enough contrast to be easily legible"
+msgstr "Ievades laukam nav pietiekama kontrasta, lai to varētu viegli lasīt"
+
+#: src/TestNames.php:58
+msgid "Placeholder text does not have enough contrast to be easily legible"
+msgstr "Viettura tekstam nav pietiekama kontrasta, lai to varētu viegli lasīt"
+
+#: src/TestNames.php:59
+msgid "Does this placeholder text have enough contrast?"
+msgstr "Vai šim viettura tekstam ir pietiekams kontrasts?"
+
+#: src/TestNames.php:60
+msgid "Does this text have enough contrast?"
+msgstr "Vai šim tekstam ir pietiekams kontrasts?"
+
+#: src/TestNames.php:61
+msgid "Does this graphic or icon have enough contrast?"
+msgstr "Vai šim grafikam vai ikonai ir pietiekams kontrasts?"
+
+#: src/TestNames.php:62
+msgid "Duplicate ID attribute"
+msgstr "Dublēts ID atribūts"
+
+#: src/TestNames.php:63
+msgid "This link has a tooltip with the same text as the link"
+msgstr "Šai saitei ir rīkpadome ar tādu pašu tekstu kā saitei"
+
+#: src/TestNames.php:64
+msgid "Does this audio have a transcript?"
+msgstr "Vai šim audio ir atšifrējums?"
+
+#: src/TestNames.php:65
+msgid "Is this visualization accessible?"
+msgstr "Vai šī vizualizācija ir piekļūstama?"
+
+#: src/TestNames.php:66
+msgid "Embedded iframes need manual checks"
+msgstr "Iegultajiem iframe elementiem nepieciešamas manuālas pārbaudes"
+
+#: src/TestNames.php:67
+msgid "Frame missing \"title\" attribute"
+msgstr "Rāmim trūkst \"title\" atribūta"
+
+#: src/TestNames.php:68
+msgid "Frame with tabindex=\"-1\" will not be keyboard accessible."
+msgstr "Rāmis ar tabindex=\"-1\" nebūs pieejams ar tastatūru."
+
+#: src/TestNames.php:69
+msgid "Is this video accurately captioned?"
+msgstr "Vai šim video ir precīzi subtitri?"
+
+#: src/TestNames.php:70
+msgid "This heading has no text"
+msgstr "Šim virsrakstam nav teksta"
+
+#: src/TestNames.php:71
+msgid "This image is used as a heading, so it needs alt text"
+msgstr "Šis attēls tiek izmantots kā virsraksts, tāpēc tam nepieciešams alternatīvais teksts"
+
+#: src/TestNames.php:72
+msgid "The first heading on this page is a subheading"
+msgstr "Pirmais virsraksts šajā lapā ir apakšvirsraksts"
+
+#: src/TestNames.php:73
+msgid "Can this heading be shorter?"
+msgstr "Vai šo virsrakstu var padarīt īsāku?"
+
+#: src/TestNames.php:74
+msgid "This page is missing a Heading 1"
+msgstr "Šajā lapā trūkst 1. līmeņa virsraksta"
+
+#: src/TestNames.php:75
+msgid "This heading is tagged at the wrong level"
+msgstr "Šis virsraksts ir atzīmēts nepareizā līmenī"
+
+#: src/TestNames.php:76
+msgid "This element cannot be described by screen readers"
+msgstr "Šo elementu ekrānlasītāji nevar aprakstīt"
+
+#: src/TestNames.php:77
+msgid "Can this alt text be shorter?"
+msgstr "Vai šo alternatīvo tekstu var padarīt īsāku?"
+
+#: src/TestNames.php:78
+msgid "Is this image actually meaningless?"
+msgstr "Vai šis attēls patiešām ir nenozīmīgs?"
+
+#: src/TestNames.php:79
+msgid "Image in a carousel or gallery marked as decorative"
+msgstr "Attēls karuselī vai galerijā atzīmēts kā dekoratīvs"
+
+#: src/TestNames.php:80
+msgid "This captioned image has no alt text"
+msgstr "Šim attēlam ar parakstu nav alternatīvā teksta"
+
+#: src/TestNames.php:81
+msgid "Alt text should not be the same as caption text"
+msgstr "Alternatīvajam tekstam nevajadzētu sakrist ar parakstu"
+
+#: src/TestNames.php:82
+msgid "Is there a visible label for this field?"
+msgstr "Vai šim laukam ir redzama etiķete?"
+
+#: src/TestNames.php:83
+msgid "Prefer visible labels to placeholders"
+msgstr "Priekšroku dodiet redzamām etiķetēm, nevis vietturiem"
+
+#: src/TestNames.php:84
+msgid "Is this reset button needed?"
+msgstr "Vai šī atiestatīšanas poga ir nepieciešama?"
+
+#: src/TestNames.php:85
+msgid "This input has an empty label"
+msgstr "Šim ievades laukam ir tukša etiķete"
+
+#: src/TestNames.php:86
+msgid "Visible label does not match invisible label"
+msgstr "Redzamā etiķete neatbilst neredzamajai etiķetei"
+
+#: src/TestNames.php:87
+msgid "This image input is missing alt text"
+msgstr "Šim attēla ievades laukam trūkst alternatīvā teksta"
+
+#: src/TestNames.php:88
+msgid "This input is not connected to a label"
+msgstr "Šis ievades lauks nav savienots ar etiķeti"
+
+#: src/TestNames.php:89
+msgid "Language tag does not match the content"
+msgstr "Valodas atzīme neatbilst saturam"
+
+#: src/TestNames.php:90
+msgid "This content appears to be in a different language"
+msgstr "Šķiet, ka šis saturs ir citā valodā"
+
+#: src/TestNames.php:91
+msgid "This alt text appears to be in a different language"
+msgstr "Šķiet, ka šis alternatīvais teksts ir citā valodā"
+
+#: src/TestNames.php:92
+msgid "Alt text used as a link should not be a URL"
+msgstr "Alternatīvais teksts, kas izmantots kā saite, nedrīkst būt URL"
+
+#: src/TestNames.php:93 src/TestNames.php:94
+msgid "This linked alt might not be clear and concise"
+msgstr "Šis saites alternatīvais teksts var nebūt skaidrs un kodolīgs"
+
+#: src/TestNames.php:95
+msgid "Linked images need pronounceable alt text"
+msgstr "Saistītajiem attēliem nepieciešams izrunājams alternatīvais teksts"
+
+#: src/TestNames.php:96
+msgid "Manual check: link contains \"click here\""
+msgstr "Šī saite satur \"klikšķiniet šeit\""
+
+#: src/TestNames.php:97
+msgid "Link article titles, not DOI numbers"
+msgstr "Veidojiet saiti uz raksta nosaukumu, nevis DOI numuru"
+
+#: src/TestNames.php:98
+msgid "This link contains no words"
+msgstr "Šī saite nesatur vārdus"
+
+#: src/TestNames.php:99
+msgid "Link with invalid \"aria-labelledby\" attribute"
+msgstr "Saitei ir nederīgs \"aria-labelledby\" atribūts"
+
+#: src/TestNames.php:100
+msgid "This link needs a label"
+msgstr "Šai saitei nepieciešama etiķete"
+
+#: src/TestNames.php:101
+msgid "Link points to a file without warning"
+msgstr "Saite norāda uz failu bez brīdinājuma"
+
+#: src/TestNames.php:102
+msgid "Links with the same text link to different pages"
+msgstr "Saites ar vienādu tekstu ved uz dažādām lapām"
+
+#: src/TestNames.php:103
+msgid "Does this alt text describe the link or the image?"
+msgstr "Vai šis alternatīvais teksts apraksta saiti vai attēlu?"
+
+#: src/TestNames.php:104
+msgid "Does this alt text make sense as part of this link?"
+msgstr "Vai šis alternatīvais teksts ir jēgpilns šīs saites kontekstā?"
+
+#: src/TestNames.php:105
+msgid "Can this linked alt text be shorter?"
+msgstr "Vai šo saistīto alternatīvo tekstu var padarīt īsāku?"
+
+#: src/TestNames.php:106
+msgid "This linked image needs alt text"
+msgstr "Šim saistītajam attēlam nepieciešams alternatīvais teksts"
+
+#: src/TestNames.php:107
+msgid "Does this linked image need a description?"
+msgstr "Vai šim saistītajam attēlam nepieciešams apraksts?"
+
+#: src/TestNames.php:108
+msgid "Is this link actually a button?"
+msgstr "Vai šī saite faktiski ir poga?"
+
+#: src/TestNames.php:109
+msgid "Does this link open a new tab without warning?"
+msgstr "Vai šī saite atver jaunu cilni bez brīdinājuma?"
+
+#: src/TestNames.php:110
+msgid "This linked alt text may be a placeholder"
+msgstr "Šis saistītais alternatīvais teksts var būt vietturis"
+
+#: src/TestNames.php:111
+msgid "This link only contains generic words"
+msgstr "Šī saite satur tikai vispārīgus vārdus"
+
+#: src/TestNames.php:112
+msgid "The purpose of this link is visually hidden"
+msgstr "Šīs saites mērķis ir vizuāli paslēpts"
+
+#: src/TestNames.php:113
+msgid "Does this image's alt describe the image or the link?"
+msgstr "Vai šī attēla alternatīvais teksts apraksta attēlu vai saiti?"
+
+#: src/TestNames.php:114
+msgid "Are the symbols or emoji in this link meaningful?"
+msgstr "Vai simboli vai emocijzīmes šajā saitē ir jēgpilni?"
+
+#: src/TestNames.php:115
+msgid "This link is unpronounceable"
+msgstr "Šī saite nav izrunājama"
+
+#: src/TestNames.php:116
+msgid "Link text should not be a URL"
+msgstr "Saites tekstam nevajadzētu būt URL"
+
+#: src/TestNames.php:117
+msgid "Meta tag for page language missing"
+msgstr "Trūkst meta atzīmes lapas valodai"
+
+#: src/TestNames.php:118
+msgid "Did you mean a different language code?"
+msgstr "Vai domājāt citu valodas kodu?"
+
+#: src/TestNames.php:119
+msgid "Invalid language code"
+msgstr "Nederīgs valodas kods"
+
+#: src/TestNames.php:120
+msgid "Page language may not match the content"
+msgstr "Lapas valoda var neatbilst saturam"
+
+#: src/TestNames.php:121
+msgid "Meta tag limits how much users can enlarge text"
+msgstr "Meta atzīme ierobežo teksta palielināšanu"
+
+#: src/TestNames.php:122
+msgid "Meta tag automatically refreshes page"
+msgstr "Meta atzīme automātiski atsvaidzina lapu"
+
+#: src/TestNames.php:123
+msgid "Meta tag prevents users from enlarging text"
+msgstr "Meta atzīme neļauj lietotājiem palielināt tekstu"
+
+#: src/TestNames.php:124
+msgid "Meta tag for page title missing"
+msgstr "Trūkst meta atzīmes lapas nosaukumam"
+
+#: src/TestNames.php:125
+msgid "Invalid HTML: image has no alt attribute"
+msgstr "Nederīgs HTML: attēlam nav alt atribūta"
+
+#: src/TestNames.php:126
+msgid "Invalid HTML: linked image missing alt attribute"
+msgstr "Nederīgs HTML: saistītajam attēlam trūkst alt atribūta"
+
+#: src/TestNames.php:127
+msgid "Invalid HTML: image in link missing alt attribute"
+msgstr "Nederīgs HTML: attēlam saitē trūkst alt atribūta"
+
+#: src/TestNames.php:128
+msgid "This link target may be invalid"
+msgstr "Šīs saites mērķis var būt nederīgs"
+
+#: src/TestNames.php:129
+msgid "Should this quote be a heading?"
+msgstr "Vai šim citātam vajadzētu būt virsrakstam?"
+
+#: src/TestNames.php:130
+msgid "Has this document been tagged for screen readers?"
+msgstr "Vai šis dokuments ir atzīmēts ekrānlasītājiem?"
+
+#: src/TestNames.php:131
+msgid "Should this bold text be a heading?"
+msgstr "Vai šim treknraksta tekstam vajadzētu būt virsrakstam?"
+
+#: src/TestNames.php:132
+msgid "Should this have list formatting?"
+msgstr "Vai tam vajadzētu būt saraksta formatējumam?"
+
+#: src/TestNames.php:133
+msgid "Broken same-page link"
+msgstr "Bojāta saite uz to pašu lapu"
+
+#: src/TestNames.php:134
+msgid "Do not justify text"
+msgstr "Neizmantojiet abpusēji izlīdzinātu tekstu"
+
+#: src/TestNames.php:135
+msgid "Nested interactive layout components"
+msgstr "Ligzdoti interaktīvi izkārtojuma komponenti"
+
+#: src/TestNames.php:136
+msgid "Is there an alternative for this PDF?"
+msgstr "Vai šim PDF ir alternatīva?"
+
+#: src/TestNames.php:137
+msgid "Text is too small"
+msgstr "Teksts ir pārāk mazs"
+
+#: src/TestNames.php:138
+msgid "Large blocks of emphasized text are harder to read"
+msgstr "Lieli izcelta teksta bloki ir grūtāk lasāmi"
+
+#: src/TestNames.php:139
+msgid "Do not use sub/superscript as visual formatting"
+msgstr "Nelietojiet apakšrakstu/augšrakstu kā vizuālu formatējumu"
+
+#: src/TestNames.php:140
+msgid "Only links should be underlined"
+msgstr "Tikai saites drīkst būt pasvītrotas"
+
+#: src/TestNames.php:141
+msgid "Is this uppercase text needed?"
+msgstr "Vai šis teksts ar lielajiem burtiem ir nepieciešams?"
+
+#: src/TestNames.php:142
+msgid "Are there redundant words in this alt text?"
+msgstr "Vai šajā alternatīvajā tekstā ir lieki vārdi?"
+
+#: src/TestNames.php:143
+msgid "Tabindex overrides interrupt the focus order"
+msgstr "Tabindex pārrakstīšana pārtrauc fokusa secību"
+
+#: src/TestNames.php:144
+msgid "This header cell needs text"
+msgstr "Šai galvenes šūnai nepieciešams teksts"
+
+#: src/TestNames.php:145
+msgid "This table has an invalid headers attribute"
+msgstr "Šai tabulai ir nederīgs galvenes atribūts"
+
+#: src/TestNames.php:146
+msgid "This table needs a header row and/or column"
+msgstr "Šai tabulai nepieciešama galvenes rinda un/vai kolonna"
+
+#: src/TestNames.php:147
+msgid "Content headings should not be used inside tables"
+msgstr "Satura virsrakstus nedrīkst lietot tabulās"
+
+#: src/TestNames.php:148
+msgid "Invalid HTML list"
+msgstr "Nederīgs HTML saraksts"
+
+#: src/TestNames.php:377
+msgid "Linked images"
+msgstr "Saistīti attēli"
+
+#: src/TestNames.php:380
+msgid "Tables"
+msgstr "Tabulas"
+
+#: src/TestNames.php:381
+msgid "Text formatting"
+msgstr "Teksta formatēšana"
+
+#: src/TestNames.php:382
+msgid "Video, audio, frames"
+msgstr "Video, audio, rāmji"
+
+#: src/TestNames.php:383
+msgid "Contrast"
+msgstr "Kontrasts"
+
+#: src/TestNames.php:384
+msgid "Forms"
+msgstr "Veidlapas"
+
+#: src/TestNames.php:385
+msgid "ARIA and focus"
+msgstr "ARIA un fokuss"
+
+#: src/TestNames.php:386
+msgid "Page metadata"
+msgstr "Lapas metadati"

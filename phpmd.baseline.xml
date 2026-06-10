@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<phpmd-baseline>
+  <violation rule="PHPMD\Rule\CleanCode\MissingImport" file="src/Controller/ApiDismissals.php"/>
+  <violation rule="PHPMD\Rule\CyclomaticComplexity" file="src/Controller/ApiDismissals.php" method="get_dismissals"/>
+  <violation rule="PHPMD\Rule\UnusedLocalVariable" file="src/Controller/ApiDismissals.php"/>
+  <violation rule="PHPMD\Rule\UnusedFormalParameter" file="src/Controller/ApiDismissals.php"/>
+  <violation rule="PHPMD\Rule\CyclomaticComplexity" file="src/Controller/ApiResults.php" method="get_results"/>
+  <violation rule="PHPMD\Rule\CleanCode\MissingImport" file="src/Controller/ApiResults.php"/>
+  <violation rule="PHPMD\Rule\CyclomaticComplexity" file="src/Controller/ApiResults.php" method="send_results"/>
+  <violation rule="PHPMD\Rule\UnusedFormalParameter" file="src/Controller/ApiResults.php"/>
+  <violation rule="PHPMD\Rule\CyclomaticComplexity" file="src/functions.php"/>
+  <violation rule="PHPMD\Rule\Naming\ShortVariable" file="src/functions.php"/>
+  <violation rule="PHPMD\Rule\UnusedLocalVariable" file="src/functions.php"/>
+  <violation rule="PHPMD\Rule\CyclomaticComplexity" file="src/Form/CustomRulesPage.php" method="shape_post_payload"/>
+  <violation rule="PHPMD\Rule\Naming\ShortVariable" file="src/Form/CustomRulesPage.php"/>
+  <violation rule="PHPMD\Rule\CyclomaticComplexity" file="src/Form/CrawlerPage.php" method="current_filters"/>
+  <violation rule="PHPMD\Rule\Naming\ShortVariable" file="src/Form/CrawlerPage.php"/>
+  <violation rule="PHPMD\Rule\CyclomaticComplexity" file="src/CrawlerQuery.php" method="query"/>
+  <violation rule="PHPMD\Rule\Naming\ShortVariable" file="src/CrawlerQuery.php"/>
+  <violation rule="PHPMD\Rule\UnusedFormalParameter" file="src/Controller/ApiCrawler.php"/>
+  <violation rule="PHPMD\Rule\Naming\ShortVariable" file="src/CustomRules.php"/>
+  <violation rule="PHPMD\Rule\CyclomaticComplexity" file="src/Installer.php" method="create_database"/>
+  <violation rule="PHPMD\Rule\CyclomaticComplexity" file="src/Installer.php" method="check_tables"/>
+  <violation rule="PHPMD\Rule\CyclomaticComplexity" file="src/Installer.php" method="rehash_batch_locked"/>
+  <violation rule="PHPMD\Rule\CyclomaticComplexity" file="src/Installer.php" method="migrate_to_1_3"/>
+  <violation rule="PHPMD\Rule\Naming\LongVariable" file="src/Installer.php"/>
+  <violation rule="PHPMD\Rule\CyclomaticComplexity" file="src/TestNames.php" method="group_for_key"/>
+  <violation rule="PHPMD\Rule\CyclomaticComplexity" file="src/Installer.php" method="normalize_options"/>
+  <violation rule="PHPMD\Rule\Naming\LongVariable" file="src/Form/SettingsPage.php"/>
+  <violation rule="PHPMD\Rule\Naming\LongVariable" file="src/Plugin.php"/>
+</phpmd-baseline>

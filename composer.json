@@ -1,0 +1,90 @@
+{
+    "prefer-stable": true,
+    "minimum-stability": "dev",
+    "scripts": {
+        "test": [
+            "bash scripts/test.sh"
+        ],
+        "dist": [
+            "bash scripts/dist.sh"
+        ],
+        "setup": [
+            "bash scripts/setup.sh"
+        ],
+        "phpcs": [
+            "./vendor/bin/phpcs"
+        ],
+        "phpcs-github": [
+            "mkdir -p ./build/test-results && ./vendor/bin/phpcs --report=junit --report-file=./build/test-results/report.xml"
+        ],
+        "phpcbf": [
+            "./vendor/bin/phpcbf"
+        ],
+        "phpmd": [
+            "php -d error_reporting=24575 ./vendor/bin/phpmd src text ./phpmd.xml --baseline-file ./phpmd.baseline.xml"
+        ],
+        "phpmd-github": [
+            "php -d error_reporting=24575 ./vendor/bin/phpmd src github ./phpmd.xml --baseline-file ./phpmd.baseline.xml"
+        ],
+        "phpunit": [
+            "./vendor/bin/phpunit"
+        ],
+        "plugin-check": [
+            "wp plugin check editoria11y-wp-csa --slug=editoria11y --severity=5 --include-experimental --error-severity=5"
+        ],
+        "cspell": [
+            "npx --yes cspell --config cspell.json --no-progress 'editoria11y.php' 'src/**/*.php' 'assets/js/*.js' 'README.md'"
+        ],
+        "eslint": [
+            "npx --no-install eslint assets/js/"
+        ],
+        "eslint-fix": [
+            "npx --no-install eslint --fix assets/js/"
+        ],
+        "install-test-suite": [
+            "bash scripts/install-wp-tests.sh wordpress_test root root db latest"
+        ],
+        "dist-csa": [
+            "bash scripts/build-dist.sh"
+        ],
+        "dist-free": [
+            "bash scripts/build-free.sh"
+        ],
+        "simulate-free-build": [
+            "bash scripts/simulate-free-build.sh"
+        ],
+        "audit-freemius-strings": [
+            "php scripts/audit-freemius-strings.php"
+        ],
+        "test-js": [
+            "npx --no-install vitest run"
+        ],
+        "test-js-watch": [
+            "npx --no-install vitest"
+        ],
+        "test-e2e": [
+            "npx --no-install playwright test"
+        ]
+    },
+    "require": {
+        "freemius/wordpress-sdk": "^2.13"
+    },
+    "require-dev": {
+        "dealerdirect/phpcodesniffer-composer-installer": "^1.0",
+        "wp-coding-standards/wpcs": "^3.0",
+        "phpmd/phpmd": "^2.15",
+        "phpunit/phpunit": "^9.6",
+        "yoast/phpunit-polyfills": "^1.1",
+        "wp-phpunit/wp-phpunit": "^6.0"
+    },
+    "config": {
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Editoria11y\\": "src/"
+        }
+    }
+}

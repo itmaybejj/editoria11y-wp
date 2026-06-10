@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<ruleset name="My first PHPMD rule set"
+         xmlns="http://pmd.sf.net/ruleset/1.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://pmd.sf.net/ruleset/1.0.0
+                     http://pmd.sf.net/ruleset_xml_schema.xsd"
+         xsi:noNamespaceSchemaLocation="
+                     http://pmd.sf.net/ruleset_xml_schema.xsd">
+    <description>
+        A Rule Set for Editoria11y-WP
+    </description>
+
+    <exclude-pattern>.*/vendor/.*</exclude-pattern>
+
+    <!-- Import the entire unused code rule set -->
+    <!-- FREE BUILD ONLY — injected by scripts/build-free.sh; the premium
+         ruleset imports rulesets/unusedcode.xml here. Dropped from the
+         generated free build: stripping __premium_only code inherently
+         leaves unused parameters, locals, and now-uncalled private
+         helpers (expected debris, not defects). Premium stays strict. -->
+
+    <!-- Import the entire cyclomatic complexity rule -->
+    <rule ref="rulesets/codesize.xml/CyclomaticComplexity" />
+
+
+    <!-- Import entire naming rule set, modify ShortVariable rule -->
+    <!-- The "wp" variable is clear in the context of WordPress. -->
+    <rule ref="rulesets/naming.xml">
+        <exclude name="ShortVariable" />
+    </rule>
+    <rule ref="rulesets/naming.xml/ShortVariable">
+        <properties>
+            <property name="exceptions">
+                <value>
+                    wp
+                </value>
+            </property>
+        </properties>
+    </rule>
+
+    <!-- Import the clean code rule -->
+    <rule ref="rulesets/cleancode.xml">
+        <exclude name="ElseExpression" />
+        <exclude name="BooleanArgumentFlag" />
+        <!-- Static helpers (Editoria11y_Installer, Editoria11y_Test_Definitions)
+             are an intentional pattern: they're stateless data/lifecycle utilities
+             with no DI context to inject through. WP itself uses the same idiom. -->
+        <exclude name="StaticAccess" />
+    </rule>
+
+
+</ruleset>

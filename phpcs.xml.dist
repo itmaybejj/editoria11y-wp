@@ -1,0 +1,77 @@
+<?xml version="1.0"?>
+<ruleset name="Editoria11y">
+	<description>
+		Coding standards for the Editoria11y CSA WordPress plugin.
+
+		Inherits the full WordPress ruleset, then declares the plugin's
+		text domain ("editoria11y") so I18n sniffs (most notably
+		WordPress.WP.I18n.TextDomainMismatch) match against the right
+		value instead of warning on every translation call.
+	</description>
+
+	<!-- Default scope matches the historical `composer phpcs` baseline (src/).
+	     editoria11y.php at the plugin root is intentionally not added here yet
+	     — including it would surface ~100 historical violations unrelated to
+	     this work. Add `./editoria11y.php` once that is cleaned up separately. -->
+	<file>./src</file>
+	<file>./editoria11y.php</file>
+
+	<!-- Skip vendor, bundled library, and tests (PHPUnit conventions differ). -->
+	<exclude-pattern>*/vendor/*</exclude-pattern>
+	<exclude-pattern>*/node_modules/*</exclude-pattern>
+	<exclude-pattern>*/assets/lib/*</exclude-pattern>
+	<exclude-pattern>*/tests/*</exclude-pattern>
+
+	<!-- Show progress + standards-source on errors. -->
+	<arg value="ps"/>
+	<arg name="colors"/>
+	<arg name="extensions" value="php"/>
+
+	<!-- Inherit WordPress and minimum-supported-WP version (matches the
+	     plugin header's "Requires at least: 6.0"). -->
+	<config name="minimum_supported_wp_version" value="6.0"/>
+
+	<rule ref="WordPress"/>
+
+	<!-- src/ uses PSR-4 PascalCase filenames matching the class names
+	     (Editoria11y\Installer in Installer.php, etc.) instead of WP's
+	     class-foo-bar.php convention. The two file-naming sniffs below
+	     are scoped off for that tree only — editoria11y.php at the root
+	     still gets the regular all-lowercase rule. -->
+	<rule ref="WordPress.Files.FileName.NotHyphenatedLowercase">
+		<exclude-pattern>./src/*</exclude-pattern>
+	</rule>
+	<rule ref="WordPress.Files.FileName.InvalidClassFileName">
+		<exclude-pattern>./src/*</exclude-pattern>
+	</rule>
+
+	<!-- Pin the plugin's text domain so WordPress.WP.I18n sniffs check
+	     translation calls against "editoria11y" specifically. -->
+	<rule ref="WordPress.WP.I18n">
+		<properties>
+			<property name="text_domain" type="array">
+				<element value="editoria11y"/>
+			</property>
+		</properties>
+	</rule>
+
+	<!-- Enforce the plugin's prefix on globals/hooks/etc. -->
+	<rule ref="WordPress.NamingConventions.PrefixAllGlobals">
+		<properties>
+			<property name="prefixes" type="array">
+				<element value="ed11y"/>
+				<element value="editoria11y"/>
+				<element value="Editoria11y"/>
+				<element value="ED11Y"/>
+			</property>
+		</properties>
+	</rule>
+	<!-- FREE BUILD ONLY — injected by scripts/build-free.sh; absent from
+	     the premium ruleset. Stripping __premium_only blocks turns several
+	     functions into stubs whose parameter is now unused but whose
+	     signature must stay (e.g. ed11y_get_csa_setting( $key )). Expected
+	     in the generated free tree, so silence the sniff here only. -->
+	<rule ref="Generic.CodeAnalysis.UnusedFunctionParameter">
+		<severity>0</severity>
+	</rule>
+</ruleset>

@@ -1,0 +1,33 @@
+# `export-ignore` strips paths from anything built with `git archive`: the 10up
+# WP.org deploy, GitHub's "Download ZIP", and release tarballs. A plain
+# `git clone`/`pull` is NOT affected — cloned trees keep everything — so files
+# listed here are absent from the shipped/zipped plugin but still available to
+# anyone who clones the repo (and to CI, which reads them from the checkout).
+
+# Directories
+/.wordpress-org export-ignore
+/.github export-ignore
+/scripts export-ignore
+/build export-ignore
+
+# NOTE: vendor/ is intentionally NOT export-ignored. deploy.yaml runs no
+# `composer install`, and only the runtime Freemius SDK + Composer autoloader are
+# committed (see .gitignore). Stripping vendor here produced a download/zip with
+# no dependencies → the "Editoria11y is missing its vendored dependencies" admin
+# notice. It must ship.
+
+# Files
+/.gitattributes export-ignore
+/.gitignore export-ignore
+
+# Development tooling — kept for contributors/CI, stripped from the shipped plugin.
+/composer.json export-ignore
+/package.json export-ignore
+/phpcs.xml.dist export-ignore
+/phpmd.xml export-ignore
+/phpmd.baseline.xml export-ignore
+/cspell.json export-ignore
+/phpunit.xml.dist export-ignore
+/eslint.config.js export-ignore
+/developers.md export-ignore
+

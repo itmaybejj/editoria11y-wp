@@ -1,0 +1,45 @@
+# ignore everything in the root except the "wp-content" directory.
+!wp-content/
+
+# ignore everything in the "wp-content" directory, except:
+# "mu-plugins", "plugins", "themes" directory
+wp-content/*
+!wp-content/mu-plugins/
+!wp-content/plugins/
+!wp-content/themes/
+
+# ignore these plugins
+wp-content/plugins/hello.php
+
+# ignore specific themes
+wp-content/themes/twenty*/
+
+# ignore node dependency directories
+node_modules/
+
+# ignore log files and databases
+*.log
+*.sql
+*.sqlite
+
+# ignore local files
+.todo.md
+.vscode/
+
+# Ignore files related to tooling
+report.xml
+composer.lock
+.idea/
+
+# Build artifacts. This is a dist output dir; nothing in it belongs in the repo.
+# (A premium build zip was committed here once and leaked premium code + the
+# Freemius gatekeeper secret — never track build/.)
+/build/
+
+# Vendor: ship only the Freemius SDK + the Composer autoloader. The WP.org
+# deploy doesn't run `composer install`, so these must be committed; every
+# other vendored package stays ignored.
+/vendor/*
+!/vendor/autoload.php
+!/vendor/composer/
+!/vendor/freemius/

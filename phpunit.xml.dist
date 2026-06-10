@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<phpunit
+	bootstrap="tests/bootstrap.php"
+	backupGlobals="false"
+	colors="true"
+	beStrictAboutCoversAnnotation="true"
+	beStrictAboutOutputDuringTests="true"
+	beStrictAboutTestsThatDoNotTestAnything="true"
+	beStrictAboutTodoAnnotatedTests="true"
+	convertErrorsToExceptions="true"
+	convertNoticesToExceptions="true"
+	convertWarningsToExceptions="true"
+	convertDeprecationsToExceptions="true"
+	failOnRisky="true"
+	failOnWarning="true"
+	verbose="true"
+>
+	<testsuites>
+		<testsuite name="editoria11y">
+			<directory suffix=".php">./tests</directory>
+			<exclude>./tests/bootstrap.php</exclude>
+		</testsuite>
+	</testsuites>
+	<!--
+		The bootstrap defaults WP_TESTS_DIR to vendor/wp-phpunit/wp-phpunit (the
+		Composer-vendored WP test library). Override here only if you've staged
+		a custom build elsewhere, e.g. for testing against a non-released WP.
+	-->
+</phpunit>
