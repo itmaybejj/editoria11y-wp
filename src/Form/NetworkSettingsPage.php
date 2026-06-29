@@ -130,24 +130,7 @@ class NetworkSettingsPage {
 		if ( ! current_user_can( 'manage_network_options' ) ) {
 			wp_die( esc_html__( 'Insufficient privileges.', 'editoria11y' ) );
 		}
-		$saved_notice  = isset( $_GET['updated'] ) && '1' === $_GET['updated']; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		$orphan_notice = isset( $_GET['orphans'] ) && '1' === $_GET['orphans']; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		$orphan_keys   = array();
-		if ( $orphan_notice ) {
-			$transient_key = 'ed11y_network_orphans_' . get_current_user_id();
-			$stored        = get_transient( $transient_key );
-			if ( is_array( $stored ) ) {
-				$orphan_keys = array_values(
-					array_filter(
-						array_map( 'strval', $stored ),
-						static function ( $value ) {
-							return '' !== $value;
-						}
-					)
-				);
-			}
-			delete_transient( $transient_key );
-		}
+		$saved_notice = isset( $_GET['updated'] ) && '1' === $_GET['updated']; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		?>
 		<div class="wrap">
 			<h1><?php esc_html_e( 'Editoria11y default or locked network settings', 'editoria11y' ); ?></h1>
@@ -155,19 +138,6 @@ class NetworkSettingsPage {
 			<?php if ( $saved_notice ) : ?>
 				<div class="notice notice-success is-dismissible">
 					<p><?php esc_html_e( 'Network defaults saved.', 'editoria11y' ); ?></p>
-				</div>
-			<?php endif; ?>
-			<?php if ( ! empty( $orphan_keys ) ) : ?>
-				<div class="notice notice-error">
-					<p>
-						<strong><?php esc_html_e( 'Network defaults were not saved.', 'editoria11y' ); ?></strong>
-						<?php esc_html_e( 'You changed the following settings, but their propagation dropdown is still set to "No network default" — your change would not reach any site. Set the dropdown to "Default for new sites", "Default for all sites", or "Lock for all sites" — or revert the value — and save again.', 'editoria11y' ); ?>
-					</p>
-					<ul style="list-style: disc; margin-left: 2em;">
-						<?php foreach ( $orphan_keys as $label ) : ?>
-							<li><code><?php echo esc_html( $label ); ?></code></li>
-						<?php endforeach; ?>
-					</ul>
 				</div>
 			<?php endif; ?>
 			<?php self::render_backfill_status(); ?>
@@ -487,35 +457,12 @@ class NetworkSettingsPage {
 			'modes'  => array(),
 		);
 
-		// Orphan validation: reject the save outright when a value changed
-		// but the matching propagation-mode dropdown is "No network
-		// default" — the admin almost certainly meant to also flip the
-		// dropdown. Done BEFORE the option writes so the previous storage
-		// stays intact on rejection (the "revert" half of block + revert).
+		// Normalize for the backfill diff below. Every dropdown now carries a
+		// propagating mode (the floor is 'new'), so there is no "value stored
+		// but going nowhere" state to validate against — a blank field simply
+		// has its mode dropped by the validator and never propagates.
 		$new_free_norm = ed11y_normalize_network_default_storage( $free_blob );
 		$new_csa_norm  = ed11y_normalize_network_default_storage( $csa_blob );
-		$orphans       = NetworkDefaultsWorker::detect_orphan_changed_keys(
-			$old_free,
-			$new_free_norm,
-			$old_csa,
-			$new_csa_norm
-		);
-		if ( ! empty( $orphans ) ) {
-			set_transient(
-				'ed11y_network_orphans_' . get_current_user_id(),
-				$orphans,
-				MINUTE_IN_SECONDS
-			);
-			$redirect = add_query_arg(
-				array(
-					'page'    => self::SLUG,
-					'orphans' => '1',
-				),
-				network_admin_url( 'settings.php' )
-			);
-			wp_safe_redirect( $redirect );
-			exit;
-		}
 
 		update_site_option( 'ed11y_network_default_settings', $free_blob );
 

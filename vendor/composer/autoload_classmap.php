@@ -26,7 +26,6 @@ return array(
     'Editoria11y\\Form\\TestStateNormalizer' => $baseDir . '/src/Form/TestStateNormalizer.php',
     'Editoria11y\\FreemiusAccessibilityShim' => $baseDir . '/src/FreemiusAccessibilityShim.php',
     'Editoria11y\\FreemiusContactFallback' => $baseDir . '/src/FreemiusContactFallback.php',
-    'Editoria11y\\FreemiusOptInNag' => $baseDir . '/src/FreemiusOptInNag.php',
     'Editoria11y\\FreemiusOverrides' => $baseDir . '/src/FreemiusOverrides.php',
     'Editoria11y\\FreemiusPricingPage' => $baseDir . '/src/FreemiusPricingPage.php',
     'Editoria11y\\Installer' => $baseDir . '/src/Installer.php',

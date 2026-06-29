@@ -11,6 +11,16 @@ use Editoria11y\TestNames;
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * Pseudo-slug for the multisite network super-admin in the CSA developer
+ * `roles` list. Network super admins are not members of every subsite, so
+ * they have no real `edit_posts` WP role entry to match against. This slug
+ * stands in for them in the saved CSV; the runtime check in
+ * `ed11y_get_user_profile()` resolves it via `is_super_admin()` rather than
+ * `$user->roles`. Chosen to not collide with any built-in WP role slug.
+ */
+const ED11Y_SUPER_ADMIN_PSEUDO_ROLE = 'super_admin';
+
 add_filter( 'plugin_action_links_' . ED11Y_BASE, 'ed11y_add_action_links' );
 /**
  * Adds link to setting page on plugin admin screen.
@@ -66,7 +76,8 @@ function ed11y_get_default_options( string $option = '' ) {
 		'ed11y_livecheck'           => 'all',
 		'ed11y_alert_mode'          => 'polite',
 
-		'ed11y_ignore_elements'     => '#comments *, .wp-block-post-comments *, img.avatar',
+		// Ignore for content editors.
+		'ed11y_ignore_elements'     => '#comments *, .wp-block-post-comments *, img.avatar, .sharedaddy *',
 
 		'ed11y_videoContent'        => 'youtube.com, vimeo.com, yuja.com, panopto.com',
 		'ed11y_audioContent'        => 'soundcloud.com, simplecast.com, podbean.com, buzzsprout.com, blubrry.com, transistor.fm, fusebox.fm, libsyn.com',
@@ -356,14 +367,18 @@ function ed11y_is_csa_active(): bool {
 }
 
 /**
- * Resolve the bare lang-pack filename for the current user's locale.
+ * Map an arbitrary WP locale (or bare language slug) to the bundled
+ * lang-pack filename.
  *
  * The bundled library ships ~20 lang packs in [assets/lib/js/lang/](../assets/lib/js/lang/);
- * this helper maps a WP locale (e.g. `en_US`, `de_DE`, `pt_BR`) to the
- * matching pack filename without extension (`en-us`, `de`, `pt-br`).
+ * this is the shared matcher behind both the UI-locale pack
+ * ({@see ed11y_lang_pack_filename()}) and the content-locale pack
+ * ({@see ed11y_content_lang_pack_filename()}). It maps `en_US`, `de_DE`,
+ * `pt_BR`, or a multilingual-plugin slug like `es` to the matching pack
+ * filename without extension (`en-us`, `de`, `pt-br`, `es`).
  *
  * Match order:
- *   1. Full WP locale lowercased with `-` separators (`pt_BR` → `pt-br`).
+ *   1. Full locale lowercased with `-` separators (`pt_BR` → `pt-br`).
  *   2. Language code only (`de_DE` → `de`), so script-tagged locales like
  *      `zh_CN` / `zh_TW` collapse to the single `zh` pack we ship.
  *   3. `en` as a final fallback for unsupported locales.
@@ -372,9 +387,10 @@ function ed11y_is_csa_active(): bool {
  * page load is wasteful, the upstream file set is stable per release, and
  * `scripts/get.sh` is the only thing that adds files here.
  *
+ * @param string $locale A WP locale (`en_US`) or bare language slug (`es`).
  * @return string Lang-pack filename without `.js` extension.
  */
-function ed11y_lang_pack_filename(): string {
+function ed11y_resolve_lang_pack( string $locale ): string {
 	$available = array(
 		'da',
 		'de',
@@ -385,6 +401,7 @@ function ed11y_lang_pack_filename(): string {
 		'en-us',
 		'es',
 		'fr',
+		'fr-ca',
 		'hu',
 		'it',
 		'ja',
@@ -398,17 +415,128 @@ function ed11y_lang_pack_filename(): string {
 		'zh',
 	);
 
-	$locale = strtolower( str_replace( '_', '-', (string) get_user_locale() ) );
-	if ( '' !== $locale && in_array( $locale, $available, true ) ) {
-		return $locale;
+	$normalized = strtolower( str_replace( '_', '-', $locale ) );
+	if ( '' !== $normalized && in_array( $normalized, $available, true ) ) {
+		return $normalized;
 	}
 
-	$language = strtok( $locale, '-' );
+	$language = strtok( $normalized, '-' );
 	if ( false !== $language && in_array( $language, $available, true ) ) {
 		return $language;
 	}
 
 	return 'en';
+}
+
+/**
+ * Lang-pack filename for the current user's locale (UI / tip strings).
+ *
+ * This is the *interface* language: the strings shown to the logged-in
+ * editor in the panel and tooltips. It is deliberately distinct from the
+ * *content* language ({@see ed11y_content_lang_pack_filename()}) — on a
+ * multilingual site an English-speaking editor can review Spanish content,
+ * and should see English tips but Spanish-aware content checks.
+ *
+ * @return string Lang-pack filename without `.js` extension.
+ */
+function ed11y_lang_pack_filename(): string {
+	return ed11y_resolve_lang_pack( (string) get_user_locale() );
+}
+
+/**
+ * Detect the locale of the *content* being checked, as opposed to the
+ * locale of the logged-in editor's interface ({@see get_user_locale()}).
+ *
+ * The bundled checker reads two distinct dictionaries: UI/tip strings
+ * (shown to the editor → user locale) and ruleset strings — the stopword
+ * and "click here" lists it matches against the page text → content
+ * locale. When an English-speaking editor reviews Spanish content, the
+ * link/alt checks must use the Spanish stopword lists, or they silently
+ * miss "haga clic aquí" while still flagging nothing useful.
+ *
+ * Resolution order (first non-empty hit wins):
+ *   1. Per-post language from a multilingual plugin, when `$post_id` is
+ *      known. Most accurate in the editor, where the request-level
+ *      "current language" can reflect the admin UI rather than the post:
+ *        - Polylang: `pll_get_post_language( $id, 'locale' )`
+ *        - WPML:     `apply_filters( 'wpml_post_language_details', null, $id )`
+ *   2. Request-level current language (the natural frontend case):
+ *        - Polylang: `pll_current_language( 'locale' )`
+ *        - WPML:     `apply_filters( 'wpml_current_language', null )`
+ *   3. WP core: `get_locale()` — the site/content locale for the request.
+ *      Unlike `determine_locale()` in wp-admin, this is NOT swapped for
+ *      the user's profile language, so it stays the content language.
+ *
+ * Filterable via `ed11y_content_locale` for bespoke multilingual stacks
+ * the two bundled detectors do not cover.
+ *
+ * @param int $post_id Post whose language to detect, or 0 for request-level.
+ * @return string A WP locale (`es_ES`) or bare language slug (`es`); pass
+ *                through {@see ed11y_resolve_lang_pack()} for a filename.
+ */
+function ed11y_detect_content_locale( int $post_id = 0 ): string {
+	$locale = '';
+
+	// 1. Per-post detection.
+	if ( $post_id > 0 ) {
+		if ( function_exists( 'pll_get_post_language' ) ) {
+			$pll = pll_get_post_language( $post_id, 'locale' );
+			if ( is_string( $pll ) && '' !== $pll ) {
+				$locale = $pll;
+			}
+		}
+		if ( '' === $locale ) {
+			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WPML's documented read API; we consume its data, not register our own hook.
+			$wpml = apply_filters( 'wpml_post_language_details', null, $post_id );
+			if ( is_array( $wpml ) ) {
+				if ( ! empty( $wpml['locale'] ) ) {
+					$locale = (string) $wpml['locale'];
+				} elseif ( ! empty( $wpml['language_code'] ) ) {
+					$locale = (string) $wpml['language_code'];
+				}
+			}
+		}
+	}
+
+	// 2. Request-level current language.
+	if ( '' === $locale && function_exists( 'pll_current_language' ) ) {
+		$pll = pll_current_language( 'locale' );
+		if ( is_string( $pll ) && '' !== $pll ) {
+			$locale = $pll;
+		}
+	}
+	if ( '' === $locale ) {
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WPML's documented read API; we consume its data, not register our own hook.
+		$wpml = apply_filters( 'wpml_current_language', null );
+		// WPML returns 'all' on language-agnostic archive views; treat as
+		// "no single content language" and fall through to the site locale.
+		if ( is_string( $wpml ) && '' !== $wpml && 'all' !== $wpml ) {
+			$locale = $wpml;
+		}
+	}
+
+	// 3. WP core fallback: the request's site/content locale.
+	if ( '' === $locale ) {
+		$locale = (string) get_locale();
+	}
+
+	return (string) apply_filters( 'ed11y_content_locale', $locale, $post_id );
+}
+
+/**
+ * Lang-pack filename for the locale of the content being checked.
+ *
+ * Companion to {@see ed11y_lang_pack_filename()} (the UI locale). The two
+ * are wired to separate JS modules (`editoria11y-lang` /
+ * `editoria11y-lang-content`); the shim merges the UI pack's interface
+ * strings with the content pack's ruleset strings before constructing
+ * the checker.
+ *
+ * @param int $post_id Post being checked/edited, or 0 for request-level.
+ * @return string Lang-pack filename without `.js` extension.
+ */
+function ed11y_content_lang_pack_filename( int $post_id = 0 ): string {
+	return ed11y_resolve_lang_pack( ed11y_detect_content_locale( $post_id ) );
 }
 
 /**
@@ -791,7 +919,7 @@ function ed11y_get_user_profile( $user = null ): string {
 	if ( null === $user ) {
 		$user = wp_get_current_user();
 	}
-	if ( ! is_object( $user ) || empty( $user->roles ) || ! is_array( $user->roles ) ) {
+	if ( ! is_object( $user ) || empty( $user->ID ) ) {
 		return 'content';
 	}
 	$dev_roles_csv = ed11y_get_csa_setting( 'roles' );
@@ -799,6 +927,19 @@ function ed11y_get_user_profile( $user = null ): string {
 		return 'content';
 	}
 	$dev_roles = array_filter( array_map( 'trim', explode( ',', (string) $dev_roles_csv ) ) );
+
+	// Multisite super-admin pseudo-role: not a real WP role, so it never
+	// appears in `$user->roles` (and a super admin viewing a subsite they
+	// don't belong to has no roles at all). Resolve it against the user ID.
+	if ( in_array( ED11Y_SUPER_ADMIN_PSEUDO_ROLE, $dev_roles, true )
+		&& is_multisite()
+		&& is_super_admin( $user->ID ) ) {
+		return 'dev';
+	}
+
+	if ( empty( $user->roles ) || ! is_array( $user->roles ) ) {
+		return 'content';
+	}
 	$intersect = array_intersect( $user->roles, $dev_roles );
 	return empty( $intersect ) ? 'content' : 'dev';
 }
@@ -1141,11 +1282,17 @@ function ed11y_load_scripts(): void {
 	if ( is_user_logged_in()
 		&& ( $allowed_user_roles || current_user_can( 'edit_posts' ) || current_user_can( 'edit_pages' ) )
 	) {
+		// Two lang packs: the UI pack (editor's locale → panel/tip strings)
+		// and the content pack (the locale of the page being scanned → the
+		// stopword/"click here" ruleset the checks match against). The shim
+		// merges them. When both resolve to the same pack the second module
+		// points at the same URL, so the browser dedupes the fetch.
 		// added last two parameters 10/27/22 need to test.
-		wp_enqueue_script_module( 'editoria11y-js', trailingslashit( ED11Y_ASSETS ) . 'lib/js/ed11y.esm.min.js', array(), Plugin::VERSION, array() );
+		wp_enqueue_script_module( 'editoria11y-js', trailingslashit( ED11Y_ASSETS ) . 'lib/js/ed11y.esm.js', array(), Plugin::VERSION, array() );
 		wp_enqueue_script( 'wp-api' );
 		wp_enqueue_script_module( 'editoria11y-lang', trailingslashit( ED11Y_ASSETS ) . 'lib/js/lang/' . ed11y_lang_pack_filename() . '.js', array(), Plugin::VERSION, array() );
-		wp_enqueue_script_module( 'editoria11y-js-shim', trailingslashit( ED11Y_ASSETS ) . 'js/editoria11y-wp.js', array( 'editoria11y-js', 'editoria11y-lang' ), Plugin::VERSION, array() );
+		wp_enqueue_script_module( 'editoria11y-lang-content', trailingslashit( ED11Y_ASSETS ) . 'lib/js/lang/' . ed11y_content_lang_pack_filename( (int) get_the_ID() ) . '.js', array(), Plugin::VERSION, array() );
+		wp_enqueue_script_module( 'editoria11y-js-shim', trailingslashit( ED11Y_ASSETS ) . 'js/editoria11y-wp.js', array( 'editoria11y-js', 'editoria11y-lang', 'editoria11y-lang-content' ), Plugin::VERSION, array() );
 		wp_enqueue_style( 'editoria11y-lib-css', trailingslashit( ED11Y_ASSETS ) . 'lib/css/editoria11y.min.css', null, Plugin::VERSION );
 	}
 }
@@ -1169,12 +1316,17 @@ function ed11y_enqueue_editor_content_assets() {
 		if ( ( $allowed_user_roles || current_user_can( 'edit_posts' ) || current_user_can( 'edit_pages' ) ) && 'none' !== ed11y_get_setting( 'ed11y_livecheck' ) ) {
 			wp_enqueue_script_module(
 				'editoria11y-js',
-				trailingslashit( ED11Y_ASSETS ) . 'lib/js/ed11y.esm.min.js',
+				trailingslashit( ED11Y_ASSETS ) . 'lib/js/ed11y.esm.js',
 				array(),
 				Plugin::VERSION,
 				array()
 			);
 			wp_enqueue_script( 'wp-api' );
+			// UI pack (editor's locale) + content pack (the locale of the
+			// post being edited). Per-post detection matters most here: in
+			// wp-admin a multilingual plugin's "current language" can track
+			// the admin UI rather than the translation being edited, so we
+			// pass the edited post's ID to anchor the content ruleset.
 			wp_enqueue_script_module(
 				'editoria11y-lang',
 				trailingslashit( ED11Y_ASSETS ) . 'lib/js/lang/' . ed11y_lang_pack_filename() . '.js',
@@ -1183,9 +1335,16 @@ function ed11y_enqueue_editor_content_assets() {
 				array()
 			);
 			wp_enqueue_script_module(
+				'editoria11y-lang-content',
+				trailingslashit( ED11Y_ASSETS ) . 'lib/js/lang/' . ed11y_content_lang_pack_filename( (int) get_the_ID() ) . '.js',
+				array(),
+				Plugin::VERSION,
+				array()
+			);
+			wp_enqueue_script_module(
 				'editoria11y-editor',
 				trailingslashit( ED11Y_ASSETS ) . 'js/editoria11y-editor.js',
-				array( 'editoria11y-js', 'editoria11y-lang' ),
+				array( 'editoria11y-js', 'editoria11y-lang', 'editoria11y-lang-content' ),
 				Plugin::VERSION,
 				array()
 			);

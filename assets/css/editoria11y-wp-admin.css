@@ -40,7 +40,6 @@
         border-bottom: 1px solid #0004;
         display: block;
         padding: 3em 0 .5em;
-        width: 100%;
     }
 
     td p:has(label) {

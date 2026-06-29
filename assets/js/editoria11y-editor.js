@@ -1,23 +1,31 @@
-import {
-  Ed11y,
-  Lang,
-  State,
-  UI,
-  findElements,
-  elements,
-  refresh,
-  setFixedRoots,
-  createDismissalKey,
-  sanitizeHTML,
-} from 'editoria11y-js';
-import { lang } from 'editoria11y-lang';
+import { Ed11y, Lang, State, UI, findElements, elements, computeAccessibleName, createDismissalKey, getElements, refresh, sanitizeHTML, setFixedRoots, version } from 'editoria11y-js';
+import { lang as ed11yUiLang } from 'editoria11y-lang';
+import { lang as ed11yContentLang } from 'editoria11y-lang-content';
 // `findElements`, `elements`, `createDismissalKey`, `sanitizeHTML` are
 // used by `buttonBlockTest` below — kept imported even after the manual
 // custom-rules loop was retired (the library now consumes camelCase
 // `customRules` directly via prepareCustomRuleset()).
 
-Lang.addI18n(lang.strings);
-Lang.testNames = { ...(Lang.testNames || {}), ...lang.testNames };
+// Dual-language merge — see editoria11y-wp.js for the full rationale. The
+// UI half (panel/tip strings, testNames) is the editor's locale; the
+// content-detection ruleset (stopwords, "click here") is the locale of the
+// post being edited, so reviewing a Spanish translation in an English admin
+// still runs the Spanish link/alt checks. Inline copy rather than a shared
+// module, matching the two shims' independent enqueue contexts.
+export function ed11yBuildLang(uiLang, contentLang) {
+  const ui = uiLang && typeof uiLang === 'object' ? uiLang : {};
+  const content = contentLang && typeof contentLang === 'object' ? contentLang : {};
+  return {
+    strings: Object.assign({}, ui.strings, content.ruleset),
+    testNames: ui.testNames,
+    ruleset: content.ruleset || ui.ruleset || {},
+  };
+}
+
+const ed11yLang = ed11yBuildLang(ed11yUiLang, ed11yContentLang);
+
+Lang.addI18n(ed11yLang.strings);
+Lang.testNames = { ...(Lang.testNames || {}), ...(ed11yUiLang.testNames || {}) };
 
 // See editoria11y-wp.js for rationale. Identical helper inlined rather than
 // shared because there's no third consumer yet — refactor to a module if a
@@ -99,6 +107,11 @@ export function ed11yApplyOptionTranslations(options) {
   if (options.profile === 'dev' && options.devAssertiveness) {
     options.alertMode = options.devAssertiveness;
   }
+
+  options.ignoreByTest = {
+    HEADING_EMPTY: 'h1:has([data-rich-text-placeholder]), .is-selected',
+    LABELS_MISSING_LABEL: 'block-editor-rich-text__editable',
+  }
 }
 
 // Build the library's CSA dev/content split configuration. See
@@ -114,6 +127,7 @@ export function ed11yApplyOptionTranslations(options) {
 //
 // `export`ed for the Jest unit suite; the export lives inside the
 // premium markers so the free build strips the whole function.
+
 
 
 // Translate user-configured H2/H3/H4 selectors (live_h2/h3/h4 in PHP
@@ -145,13 +159,8 @@ function ed11yBuildEditorHeadingLevel(options) {
 const ed11yInit = {};
 
 ed11yInit.varDiv = document.getElementById('editoria11y-init');
-if (!ed11yInit.varDiv) {
-  // Init JSON absent — module loaded on an admin screen with no editor.
-  // PHP gates the enqueue to wp_enqueue_editor screens; this guard is a
-  // safety net for unusual contexts (e.g. another plugin enqueueing this
-  // module directly) so the rest of the file can't crash on null.
-  console.warn('[editoria11y] editor init JSON missing; skipping checker boot.');
-} else {
+if (ed11yInit.varDiv) {
+  // Only run if initiation JSON is available.
   ed11yInit.options = JSON.parse(ed11yInit.varDiv.innerHTML);
   // Start the fetch immediately on script load. Both init paths (block /
   // classic) await this promise inside getOptions() before doing the
@@ -235,8 +244,14 @@ if (!ed11yInit.varDiv) {
     ed11yApplyOptionTranslations(ed11yInit.options);
 
     // CSA: build splitConfiguration + enable dev/contrast/readability
-    // plugins when the per-page blob set profile.
+    // plugins when the per-page blob set profile. No-op otherwise.
     
+
+    // Pin the merged dual-language dictionary so the library uses it during
+    // preProcessOptions instead of resetting Lang to its built-in English
+    // pack (it calls Lang.addI18n(State.option.lang.strings) on construction
+    // whenever options.lang is set). firstCheck() constructs Ed11y after this.
+    ed11yInit.options.lang = ed11yLang;
 
     ed11yInit.options['inlineAlerts'] = false;
     // The editor canvas runs at full speed: shadow-DOM detection costs are
@@ -279,6 +294,8 @@ if (!ed11yInit.varDiv) {
       ed11yInit.options['syncedDismissals'] = false;
       ed11yInit.options['allowOK'] = false;
     }
+    // Ignore elementor-hidden content.
+    ed11yInit.options['containerIgnore'] += ', body.elementor-editor-active .block-editor-block-list__layout *';
   };
 
   ed11yInit.shutMenusOnPop = function () {
@@ -307,9 +324,21 @@ if (!ed11yInit.varDiv) {
 
   ed11yInit.firstCheck = function () {
     if (!ed11yInit.once) {
-      ed11yInit.once = true;
-      console.log(ed11yInit.options.checks);
-      new Ed11y(ed11yInit.options); // eslint-disable-line no-new
+      window.setTimeout(() => {
+        ed11yInit.once = true;
+        new Ed11y(ed11yInit.options); // eslint-disable-line no-new
+        window.Ed11y = Ed11y;
+        window.Ed11y.State = State;
+        window.Ed11y.UI = UI;
+        window.Ed11y.Lang = Lang;
+        window.Ed11y.refresh = refresh;
+        window.Ed11y.createDismissalKey = createDismissalKey;
+        window.Ed11y.computeAccessibleName = computeAccessibleName;
+        window.Ed11y.getElements = getElements;
+        window.Ed11y.sanitizeHTML = sanitizeHTML;
+        window.Ed11y.setFixedRoots = setFixedRoots;
+        window.Ed11y.version = version;
+      }, 0); // Defer to ensure this runs after any pending UI updates from the editor.
     }
   };
 
@@ -530,7 +559,8 @@ if (!ed11yInit.varDiv) {
       if (iframe) {
         // Iframed canvas (default in WP 6.3+): library scans the iframe body via fixedRoots.
         const body = iframe.contentWindow.document.body;
-        ed11yInit.options.fixedRoots = [{ fixedRoot: body, framePositioner: iframe }];
+        ed11yInit.options.fixedRoots = [body];
+        ed11yInit.options.framePositioners = [iframe];
         ed11yInit.options.editableContent = [body];
         ed11yInit.options.ignoreAllIfAbsent = false;
       } else {
@@ -557,6 +587,31 @@ if (!ed11yInit.varDiv) {
       ed11yInit.syncDismissals();
       ed11yInit.activeIframe = iframe || null;
 
+      // Establish the baseline state upon load
+      /*
+      let currentSelectedId = wp?.data?.select('core/block-editor')?.getSelectedBlockClientId();
+
+      if (currentSelectedId) {
+        // Listen to every update emitted by the global state container
+        const unsubscribe = wp.data.subscribe(() => {
+          const nextSelectedId = wp?.data?.select('core/block-editor')?.getSelectedBlockClientId();
+
+          // Check if the current ID differs from the previous tick
+          if (currentSelectedId !== nextSelectedId) {
+            console.log('Selection changed to block:', nextSelectedId);
+
+            // Handle block deselect cases (returns null if no block is highlighted)
+            if (nextSelectedId) {
+              const blockDetails = wp.data.select('core/block-editor').getBlock(nextSelectedId);
+              console.log('Selected block details:', blockDetails);
+            }
+
+            // Sync baseline state
+            currentSelectedId = nextSelectedId;
+          }
+        });
+      }*/
+
       // Watch for canvas swaps: Visual ↔ Code editor, post navigation that
       // remounts without a full reload, or the iframe being added/removed when
       // an editor setting changes. setFixedRoots() handles the in-place update.
@@ -574,13 +629,13 @@ if (!ed11yInit.varDiv) {
     if (newIframe) {
       ed11yInit.canvasReady(newIframe, () => {
         const body = newIframe.contentWindow.document.body;
-        setFixedRoots([{ fixedRoot: body, framePositioner: newIframe }], [body]);
+        setFixedRoots([body], [newIframe], [body]);
         ed11yInit.activeIframe = newIframe;
       });
     } else {
       // iframe removed: caller is now using the inline canvas. Drop fixedRoots so
       // the library re-scans the outer document via checkRoots.
-      setFixedRoots([], '.interface-interface-skeleton__content');
+      setFixedRoots([], [], '.interface-interface-skeleton__content');
       ed11yInit.activeIframe = null;
     }
   };
@@ -636,6 +691,7 @@ if (!ed11yInit.varDiv) {
         // Library reads `checkRoot` (singular); the plural form was a parity bug.
         ed11yInit.options['checkRoot'] = '#tinymce, #wp-content-editor-tools';
         ed11yInit.options.fixedRoots = [];
+        ed11yInit.options.framePositioners = [];
         ed11yInit.options.editableContent = [];
 
         // Listen for event
@@ -648,10 +704,8 @@ if (!ed11yInit.varDiv) {
         });
 
         iframes.forEach(iframe => {
-          ed11yInit.options.fixedRoots.push({
-            fixedRoot: iframe.contentWindow.document.body,
-            framePositioner: iframe,
-          });
+          ed11yInit.options.fixedRoots.push(iframe.contentWindow.document.body);
+          ed11yInit.options.framePositioners.push(iframe);
           ed11yInit.options.editableContent.push(iframe.contentWindow.document.body);
           const head = iframe.contentWindow.document.getElementsByTagName('head')[0];
           const script = iframe.contentWindow.document.createElement('script');

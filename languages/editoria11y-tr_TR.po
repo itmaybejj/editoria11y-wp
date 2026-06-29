@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: editoria11y 3.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/editoria11y\n"
-"POT-Creation-Date: 2026-05-25T19:20:04-04:00\n"
+"POT-Creation-Date: 2026-06-14T16:00:44-04:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Language-Team: Editoria11y\n"
 "Language: tr\n"
@@ -40,12 +40,12 @@ msgstr "https://editoria11y.com"
 msgid "Editoria11y is missing its vendored dependencies. Run \"composer install\" inside the plugin directory or reinstall the plugin from a complete release archive."
 msgstr "Editoria11y bağımlılıkları eksik. Eklenti dizininde \"composer install\" komutunu çalıştırın veya eklentiyi eksiksiz bir sürüm arşivinden yeniden yükleyin."
 
-#: editoria11y.php:214
+#: editoria11y.php:282
 msgid "Every fifteen minutes (Editoria11y rehash)"
 msgstr "Her on beş dakikada bir (Editoria11y yeniden tarama)"
 
 #: src/Admin/Dashboard.php:36 src/Admin/Dashboard.php:54
-#: src/Admin/Dashboard.php:196
+#: src/Admin/Dashboard.php:197
 msgid "Editoria11y Accessibility Report"
 msgstr "Editoria11y Erişilebilirlik Raporu"
 
@@ -53,222 +53,222 @@ msgstr "Editoria11y Erişilebilirlik Raporu"
 msgid "Accessibility"
 msgstr "Erişilebilirlik"
 
-#: src/Admin/Dashboard.php:120
+#: src/Admin/Dashboard.php:121
 msgid "View all issues"
 msgstr "Tüm sorunları görüntüle"
 
-#: src/Admin/Dashboard.php:121
+#: src/Admin/Dashboard.php:122
 msgid "View issues on all pages"
 msgstr "Tüm sayfalardaki sorunları görüntüle"
 
 #. translators: %s: name of an alert/test, e.g. "Image is missing alt text".
-#: src/Admin/Dashboard.php:123
+#: src/Admin/Dashboard.php:124
 #, php-format
 msgid "Alert report: \"%s\""
 msgstr "Uyarı raporu: \"%s\""
 
 #. translators: %s: post type slug, e.g. "page" or "post".
-#: src/Admin/Dashboard.php:125
+#: src/Admin/Dashboard.php:126
 #, php-format
 msgid "Alerts on pages of type \"%s\""
 msgstr "\"%s\" türündeki sayfalardaki uyarılar"
 
-#: src/Admin/Dashboard.php:126
+#: src/Admin/Dashboard.php:127
 msgid "Alerts on pages created by author"
 msgstr "Yazara göre oluşturulan sayfalardaki uyarılar"
 
 #. translators: %s: author display name.
-#: src/Admin/Dashboard.php:128
+#: src/Admin/Dashboard.php:129
 #, php-format
 msgid "Alerts on pages created by %s"
 msgstr "%s tarafından oluşturulan sayfalardaki uyarılar"
 
-#: src/Admin/Dashboard.php:129
+#: src/Admin/Dashboard.php:130
 msgid "Alerts dismissed by"
 msgstr "Reddeden kullanıcıya göre uyarılar"
 
 #. translators: %s: user display name of the dismissor.
-#: src/Admin/Dashboard.php:131
+#: src/Admin/Dashboard.php:132
 #, php-format
 msgid "Alerts dismissed by %s"
 msgstr "%s tarafından reddedilen uyarılar"
 
 #. translators: %s: post-status label, e.g. "Published" or "Draft".
-#: src/Admin/Dashboard.php:133
+#: src/Admin/Dashboard.php:134
 #, php-format
 msgid "%s pages"
 msgstr "%s sayfalar"
 
-#: src/Admin/Dashboard.php:134
+#: src/Admin/Dashboard.php:135
 msgid "API error."
 msgstr "API hatası."
 
-#: src/Admin/Dashboard.php:135
+#: src/Admin/Dashboard.php:136
 msgid "loading..."
 msgstr "yükleniyor..."
 
 #. translators: %d: pagination page number.
-#: src/Admin/Dashboard.php:137
+#: src/Admin/Dashboard.php:138
 #, php-format
 msgid "Page %d"
 msgstr "Sayfa %d"
 
-#: src/Admin/Dashboard.php:138
+#: src/Admin/Dashboard.php:139
 msgid "Alerts"
 msgstr "Uyarılar"
 
-#: src/Admin/Dashboard.php:139
+#: src/Admin/Dashboard.php:140
 msgid "Dev alerts"
 msgstr "Geliştirici uyarıları"
 
-#: src/Admin/Dashboard.php:140
+#: src/Admin/Dashboard.php:141
 msgid "Page"
 msgstr "Sayfa"
 
-#: src/Admin/Dashboard.php:141
+#: src/Admin/Dashboard.php:142
 msgid "Path"
 msgstr "Yol"
 
-#: src/Admin/Dashboard.php:142
+#: src/Admin/Dashboard.php:143
 msgid "Type"
 msgstr "Tür"
 
-#: src/Admin/Dashboard.php:143 src/Form/CrawlerPage.php:205
+#: src/Admin/Dashboard.php:144 src/Form/CrawlerPage.php:205
 #: src/Form/CustomRulesPage.php:194 src/Form/NetworkCustomRulesPage.php:154
 msgid "Status"
 msgstr "Durum"
 
-#: src/Admin/Dashboard.php:144
+#: src/Admin/Dashboard.php:145
 msgid "Updated"
 msgstr "Güncellendi"
 
-#: src/Admin/Dashboard.php:145
+#: src/Admin/Dashboard.php:146
 msgid "Author"
 msgstr "Yazar"
 
-#: src/Admin/Dashboard.php:146
+#: src/Admin/Dashboard.php:147
 msgid "Detected"
 msgstr "Algılandı"
 
-#: src/Admin/Dashboard.php:147
+#: src/Admin/Dashboard.php:148
 msgid "Alert"
 msgstr "Uyarı"
 
-#: src/Admin/Dashboard.php:148
+#: src/Admin/Dashboard.php:149
 msgid "Count"
 msgstr "Adet"
 
-#: src/Admin/Dashboard.php:149
+#: src/Admin/Dashboard.php:150
 msgid "Pages"
 msgstr "Sayfalar"
 
-#: src/Admin/Dashboard.php:150
+#: src/Admin/Dashboard.php:151
 msgid "On"
 msgstr "Açık"
 
-#: src/Admin/Dashboard.php:151
+#: src/Admin/Dashboard.php:152
 msgid "Dismissed alert"
 msgstr "Reddedilen uyarı"
 
-#: src/Admin/Dashboard.php:152
+#: src/Admin/Dashboard.php:153
 msgid "Marked"
 msgstr "İşaretlendi"
 
-#: src/Admin/Dashboard.php:153
+#: src/Admin/Dashboard.php:154
 msgid "Current"
 msgstr "Güncel"
 
-#: src/Admin/Dashboard.php:154
+#: src/Admin/Dashboard.php:155
 msgid "By"
 msgstr "Tarafından"
 
-#: src/Admin/Dashboard.php:155
+#: src/Admin/Dashboard.php:156
 msgid "Alerts by page"
 msgstr "Sayfaya göre uyarılar"
 
-#: src/Admin/Dashboard.php:156
+#: src/Admin/Dashboard.php:157
 msgid "Recent alerts"
 msgstr "Son uyarılar"
 
-#: src/Admin/Dashboard.php:157
+#: src/Admin/Dashboard.php:158
 msgid "Alert types"
 msgstr "Uyarı türleri"
 
-#: src/Admin/Dashboard.php:158
+#: src/Admin/Dashboard.php:159
 msgid "Dismissals"
 msgstr "Reddedilen uyarılar"
 
-#: src/Admin/Dashboard.php:159
+#: src/Admin/Dashboard.php:160
 msgid "Recent dismissals"
 msgstr "Son reddedilen uyarılar"
 
-#: src/Admin/Dashboard.php:160
+#: src/Admin/Dashboard.php:161
 msgid "Download results as CSV"
 msgstr "Sonuçları CSV olarak indir"
 
-#: src/Admin/Dashboard.php:161
+#: src/Admin/Dashboard.php:162
 msgid "None"
 msgstr "Yok"
 
-#: src/Admin/Dashboard.php:162
+#: src/Admin/Dashboard.php:163
 msgid "No"
 msgstr "Hayır"
 
-#: src/Admin/Dashboard.php:163
+#: src/Admin/Dashboard.php:164
 msgid "Yes"
 msgstr "Evet"
 
-#: src/Admin/Dashboard.php:164
+#: src/Admin/Dashboard.php:165
 msgid "n/a"
 msgstr "yok"
 
-#: src/Admin/Dashboard.php:165
+#: src/Admin/Dashboard.php:166
 msgid "Empty Link"
 msgstr "Boş Bağlantı"
 
 #. translators: tooltip on a column header that's currently sorted descending.
-#: src/Admin/Dashboard.php:167
+#: src/Admin/Dashboard.php:168
 msgid "descending"
 msgstr "azalan"
 
 #. translators: tooltip on a column header that's currently sorted ascending.
-#: src/Admin/Dashboard.php:169
+#: src/Admin/Dashboard.php:170
 msgid "ascending"
 msgstr "artan"
 
 #. translators: %d: number of result rows returned (singular form).
-#: src/Admin/Dashboard.php:172
+#: src/Admin/Dashboard.php:173
 #, php-format
 msgid "%d result"
 msgstr "%d sonuç"
 
 #. translators: %d: number of result rows returned (plural form).
-#: src/Admin/Dashboard.php:174
+#: src/Admin/Dashboard.php:175
 #, php-format
 msgid "%d results"
 msgstr "%d sonuç"
 
-#: src/Admin/Dashboard.php:179
+#: src/Admin/Dashboard.php:180
 msgid "Published"
 msgstr "Yayımlandı"
 
-#: src/Admin/Dashboard.php:180
+#: src/Admin/Dashboard.php:181
 msgid "Scheduled"
 msgstr "Zamanlandı"
 
-#: src/Admin/Dashboard.php:181
+#: src/Admin/Dashboard.php:182
 msgid "Draft"
 msgstr "Taslak"
 
-#: src/Admin/Dashboard.php:182
+#: src/Admin/Dashboard.php:183
 msgid "Pending"
 msgstr "Beklemede"
 
-#: src/Admin/Dashboard.php:183
+#: src/Admin/Dashboard.php:184
 msgid "Private"
 msgstr "Özel"
 
-#: src/Admin/Dashboard.php:184
+#: src/Admin/Dashboard.php:185
 msgid "Trash"
 msgstr "Çöp kutusu"
 
@@ -348,22 +348,23 @@ msgstr "En az bir kural ölçütü gereklidir: bir filtre seçici VEYA bir ya da
 msgid "Element set \"%s\" is not one of the recognized element categories."
 msgstr "\"%s\" öğe kümesi tanınan öğe kategorilerinden biri değil."
 
-#: src/Form/CrawlerPage.php:59 src/Form/CrawlerPage.php:60
+#: src/Form/CrawlerPage.php:59
 msgid "Editoria11y Crawler"
 msgstr "Editoria11y Tarayıcı"
+
+#: src/Form/CrawlerPage.php:60 src/Form/CrawlerPage.php:146
+#: src/Form/SettingsPage.php:303
+msgid "Crawler"
+msgstr "Tarayıcı"
 
 #: src/Form/CrawlerPage.php:126
 msgid "You do not have permission to use the crawler."
 msgstr "Tarayıcıyı kullanma yetkiniz yok."
 
 #: src/Form/CrawlerPage.php:130 src/Form/CustomRulesPage.php:111
-#: src/Form/SettingsPage.php:188 src/Form/SettingsPage.php:189
+#: src/Form/SettingsPage.php:259 src/Form/SettingsPage.php:260
 msgid "Editoria11y"
 msgstr "Editoria11y"
-
-#: src/Form/CrawlerPage.php:146 src/Form/SettingsPage.php:251
-msgid "Crawler"
-msgstr "Tarayıcı"
 
 #: src/Form/CrawlerPage.php:149
 msgid "The crawler is a CSA feature. Activate CSA to schedule sitewide accessibility scans across posts, pages, and custom post types."
@@ -378,7 +379,7 @@ msgid "Editoria11y reports populate and update in real time as editors work, so 
 msgstr "Editoria11y raporları, editörler çalışırken gerçek zamanlı olarak doldurulur ve güncellenir; bu nedenle manuel tarama genellikle yalnızca eklenti ilk yüklenirken veya büyük tema ya da yapılandırma değişikliklerinden sonra yararlıdır."
 
 #: src/Form/CrawlerPage.php:175 src/Form/CustomRulesPage.php:501
-#: src/Form/NetworkCustomRulesPage.php:288 src/Form/NetworkLicensePage.php:393
+#: src/Form/NetworkCustomRulesPage.php:288 src/Form/NetworkLicensePage.php:416
 msgid "Cancel"
 msgstr "İptal"
 
@@ -555,17 +556,14 @@ msgid "%s hours"
 msgstr "%s saat"
 
 #: src/Form/CustomRulesPage.php:84 src/Form/CustomRulesPage.php:85
-msgid "Editoria11y Custom Rules"
-msgstr "Editoria11y Özel Kurallar"
+#: src/Form/CustomRulesPage.php:143 src/Form/CustomRulesPage.php:174
+msgid "Custom Rules"
+msgstr "Özel Kurallar"
 
 #: src/Form/CustomRulesPage.php:104 src/Form/CustomRulesPage.php:338
 #: src/Form/CustomRulesPage.php:880 src/Form/CustomRulesPage.php:1030
 msgid "You do not have permission to manage custom rules."
 msgstr "Özel kuralları yönetme yetkiniz yok."
-
-#: src/Form/CustomRulesPage.php:143 src/Form/CustomRulesPage.php:174
-msgid "Custom Rules"
-msgstr "Özel Kurallar"
 
 #: src/Form/CustomRulesPage.php:146
 msgid "Custom rules are a CSA feature. Activate CSA to add and edit rules; existing rules remain stored and become editable again on reactivation."
@@ -613,7 +611,7 @@ msgstr "Aynı kimliğe sahip bir site kuralı tarafından geçersiz kılındı"
 
 #: src/Form/CustomRulesPage.php:245 src/Form/CustomRulesPage.php:304
 #: src/Form/CustomRulesPage.php:600 src/Form/CustomRulesPage.php:604
-#: src/Form/NetworkCustomRulesPage.php:176 src/Form/SettingsFields.php:742
+#: src/Form/NetworkCustomRulesPage.php:176 src/Form/SettingsFields.php:787
 msgid "Active"
 msgstr "Etkin"
 
@@ -685,7 +683,7 @@ msgstr "Kurallar listesine dön"
 msgid "Edit custom rule"
 msgstr "Özel kuralı düzenle"
 
-#: src/Form/CustomRulesPage.php:484 src/Form/SettingsFields.php:225
+#: src/Form/CustomRulesPage.php:484 src/Form/SettingsFields.php:247
 msgid "Add custom rule"
 msgstr "Özel kural ekle"
 
@@ -811,7 +809,7 @@ msgstr "Yaygın seçenekler"
 msgid "All text elements: Headings, Paragraphs, Blockquotes and Lists"
 msgstr "Tüm metin öğeleri: Başlıklar, Paragraflar, Blok Alıntılar ve Listeler"
 
-#: src/Form/CustomRulesPage.php:729 src/TestNames.php:376
+#: src/Form/CustomRulesPage.php:729 src/TestNames.php:378
 msgid "Links"
 msgstr "Bağlantılar"
 
@@ -819,11 +817,11 @@ msgstr "Bağlantılar"
 msgid "Paragraphs"
 msgstr "Paragraflar"
 
-#: src/Form/CustomRulesPage.php:731 src/TestNames.php:379
+#: src/Form/CustomRulesPage.php:731 src/TestNames.php:381
 msgid "Headings"
 msgstr "Başlıklar"
 
-#: src/Form/CustomRulesPage.php:732 src/TestNames.php:378
+#: src/Form/CustomRulesPage.php:732 src/TestNames.php:380
 msgid "Images"
 msgstr "Görseller"
 
@@ -957,7 +955,7 @@ msgstr "Yükseltmeyi şimdi çalıştır"
 msgid "Retry"
 msgstr "Yeniden dene"
 
-#: src/Form/MigrationPanel.php:256 src/Form/NetworkLicensePage.php:195
+#: src/Form/MigrationPanel.php:256 src/Form/NetworkLicensePage.php:196
 msgid "Insufficient permissions."
 msgstr "Yetersiz izinler."
 
@@ -970,7 +968,7 @@ msgstr "Editoria11y ağ özel kuralları"
 #: src/Form/NetworkCustomRulesPage.php:107
 #: src/Form/NetworkCustomRulesPage.php:311
 #: src/Form/NetworkCustomRulesPage.php:384 src/Form/NetworkSettingsPage.php:134
-#: src/Form/NetworkSettingsPage.php:466
+#: src/Form/NetworkSettingsPage.php:436
 msgid "Insufficient privileges."
 msgstr "Yetersiz ayrıcalıklar."
 
@@ -1006,7 +1004,7 @@ msgstr "Ağ kuralları listesine dön"
 msgid "Edit network custom rule"
 msgstr "Ağ özel kuralını düzenle"
 
-#: src/Form/NetworkCustomRulesPage.php:271 src/Form/SettingsFields.php:188
+#: src/Form/NetworkCustomRulesPage.php:271 src/Form/SettingsFields.php:210
 msgid "Add network custom rule"
 msgstr "Ağ özel kuralı ekle"
 
@@ -1030,15 +1028,11 @@ msgstr "Silinecek eşleşen ağ kuralı bulunamadı."
 msgid "Network custom rule deleted."
 msgstr "Ağ özel kuralı silindi."
 
-#: src/Form/NetworkDefaultsWorker.php:432
-msgid "Tests + roles assignment"
-msgstr "Test ve rol ataması"
-
 #: src/Form/NetworkLicensePage.php:58 src/Form/NetworkLicensePage.php:59
 msgid "Editoria11y license"
 msgstr "Editoria11y lisansı"
 
-#: src/Form/NetworkLicensePage.php:83 src/FreemiusAccessControl.php:281
+#: src/Form/NetworkLicensePage.php:83 src/FreemiusAccessControl.php:294
 msgid "Only network administrators can manage the Editoria11y license."
 msgstr "Editoria11y lisansını yalnızca ağ yöneticileri yönetebilir."
 
@@ -1098,123 +1092,124 @@ msgstr "Devre dışı bırakma %d sitede hatayla tamamlandı. Aşağıdaki liste
 msgid "An unknown error occurred."
 msgstr "Bilinmeyen bir hata oluştu."
 
-#: src/Form/NetworkLicensePage.php:110
-msgid "Paste your Editoria11y CSA license key to begin."
-msgstr "Başlamak için Editoria11y CSA lisans anahtarınızı yapıştırın."
-
+#. translators: The <a>…</a> tags mark the phrase that will be rendered as a link to https://editoria11y.com/license. Keep the tags around the equivalent phrase in your language; do not add an href.
 #: src/Form/NetworkLicensePage.php:111
+msgid "Paste your <a>Editoria11y CSA license key</a> to begin."
+msgstr "Başlamak için <a>Editoria11y CSA lisans anahtarınızı</a> yapıştırın."
+
+#: src/Form/NetworkLicensePage.php:112
 msgid "Deactivate the Editoria11y CSA license on every site in this network? Each site's license slot will be returned to your Freemius account."
 msgstr "Bu ağdaki her sitede Editoria11y CSA lisansı devre dışı bırakılsın mı? Her sitenin lisans yuvası Freemius hesabınıza iade edilecek."
 
-#: src/Form/NetworkLicensePage.php:112
-msgid "Activate your license"
-msgstr "Lisansınızı etkinleştirin"
-
-#: src/Form/NetworkLicensePage.php:113 src/Form/NetworkLicensePage.php:366
-msgid "Deactivate license network-wide"
-msgstr "Lisansı ağ genelinde devre dışı bırak"
+#: src/Form/NetworkLicensePage.php:113
+msgid "Activate a license network-wide"
+msgstr "Lisansı ağ genelinde etkinleştir"
 
 #: src/Form/NetworkLicensePage.php:114
+msgid "Deactivate licenses network-wide"
+msgstr "Lisansları ağ genelinde devre dışı bırak"
+
+#: src/Form/NetworkLicensePage.php:115
 msgid "Activation in progress"
 msgstr "Etkinleştirme devam ediyor"
 
-#: src/Form/NetworkLicensePage.php:115
+#: src/Form/NetworkLicensePage.php:116
 msgid "Deactivation in progress"
 msgstr "Devre dışı bırakma devam ediyor"
 
-#: src/Form/NetworkLicensePage.php:119
+#: src/Form/NetworkLicensePage.php:120
 msgid "Editoria11y CSA license"
 msgstr "Editoria11y CSA lisansı"
 
-#: src/Form/NetworkLicensePage.php:122
-msgid "Activate your Editoria11y CSA license on every site in this network. Activation runs in the background via WP-Cron; you can leave this page open or come back later."
-msgstr "Editoria11y CSA lisansınızı bu ağdaki her sitede etkinleştirin. Etkinleştirme, WP-Cron aracılığıyla arka planda çalışır; bu sayfayı açık bırakabilir veya daha sonra geri dönebilirsiniz."
+#: src/Form/NetworkLicensePage.php:123
+msgid "Background licensing tasks run slowly via WP-Cron; leave this page open to run a batch every 15 seconds."
+msgstr "Arka plandaki lisanslama görevleri WP-Cron aracılığıyla yavaş çalışır; her 15 saniyede bir toplu işlem çalıştırmak için bu sayfayı açık bırakın."
 
-#: src/Form/NetworkLicensePage.php:137
+#: src/Form/NetworkLicensePage.php:138
 msgid "JavaScript is required to use this page."
 msgstr "Bu sayfayı kullanmak için JavaScript gereklidir."
 
-#: src/Form/NetworkLicensePage.php:170
+#: src/Form/NetworkLicensePage.php:171
 msgid "DISABLE_WP_CRON is enabled on this site. The activation worker depends on WP-Cron firing — make sure your system cron is hitting wp-cron.php, or activation will not progress."
 msgstr "Bu sitede DISABLE_WP_CRON etkin. Etkinleştirme işçisi WP-Cron'un çalışmasına bağlıdır; sistem cron'unuzun wp-cron.php'yi çağırdığından emin olun, aksi takdirde etkinleştirme ilerlemez."
 
-#: src/Form/NetworkLicensePage.php:333
-msgid "sk_••••••••••••••••"
-msgstr "sk_••••••••••••••••"
-
-#: src/Form/NetworkLicensePage.php:340
+#: src/Form/NetworkLicensePage.php:347
 msgid "Activate on every site in this network"
 msgstr "Bu ağdaki her sitede etkinleştir"
 
-#: src/Form/NetworkLicensePage.php:355
+#: src/Form/NetworkLicensePage.php:378
 msgid "License key"
 msgstr "Lisans anahtarı"
 
-#: src/Form/NetworkLicensePage.php:378
+#: src/Form/NetworkLicensePage.php:389
+msgid "Deactivate license network-wide"
+msgstr "Lisansı ağ genelinde devre dışı bırak"
+
+#: src/Form/NetworkLicensePage.php:401
 msgid "Removes the Editoria11y CSA license from every site on the network. Each site's install record stays in place; only the license link is cleared."
 msgstr "Editoria11y CSA lisansını ağdaki her siteden kaldırır. Her sitenin kurulum kaydı yerinde kalır; yalnızca lisans bağlantısı temizlenir."
 
-#: src/Form/NetworkLicensePage.php:437
+#: src/Form/NetworkLicensePage.php:460
 msgid "Retry failed sites"
 msgstr "Başarısız siteleri yeniden dene"
 
-#: src/Form/NetworkLicensePage.php:450
-msgid "Start a new activation"
-msgstr "Yeni bir etkinleştirme başlat"
+#: src/Form/NetworkLicensePage.php:473
+msgid "Modify network license"
+msgstr "Ağ lisansını değiştir"
 
-#: src/Form/NetworkLicensePage.php:469
+#: src/Form/NetworkLicensePage.php:492
 msgid "Back"
 msgstr "Geri"
 
-#: src/Form/NetworkLicensePage.php:480
+#: src/Form/NetworkLicensePage.php:503
 msgid "Done"
 msgstr "Tamamlandı"
 
-#: src/Form/NetworkLicensePage.php:487
+#: src/Form/NetworkLicensePage.php:510
 msgid "Cancelled"
 msgstr "İptal edildi"
 
-#: src/Form/NetworkLicensePage.php:495
+#: src/Form/NetworkLicensePage.php:518
 msgid "Errors"
 msgstr "Hatalar"
 
-#: src/Form/NetworkLicenseWorker.php:138
+#: src/Form/NetworkLicenseWorker.php:329
 msgid "License key is required."
 msgstr "Lisans anahtarı zorunludur."
 
-#: src/Form/NetworkLicenseWorker.php:146 src/Form/NetworkLicenseWorker.php:197
+#: src/Form/NetworkLicenseWorker.php:337 src/Form/NetworkLicenseWorker.php:393
 msgid "An activation run is already in progress."
 msgstr "Bir etkinleştirme işlemi zaten devam ediyor."
 
-#: src/Form/NetworkLicenseWorker.php:262
+#: src/Form/NetworkLicenseWorker.php:465
 msgid "No previous errors to retry."
 msgstr "Yeniden denenecek önceki hata yok."
 
-#: src/Form/NetworkLicenseWorker.php:272
+#: src/Form/NetworkLicenseWorker.php:475
 msgid "License key is no longer stored. Start a new activation."
 msgstr "Lisans anahtarı artık saklanmıyor. Yeni bir etkinleştirme başlatın."
 
-#: src/Form/NetworkLicenseWorker.php:348
+#: src/Form/NetworkLicenseWorker.php:554
 msgid "Freemius SDK wrapper unavailable."
 msgstr "Freemius SDK sarmalayıcısı kullanılamıyor."
 
-#: src/Form/NetworkLicenseWorker.php:455
+#: src/Form/NetworkLicenseWorker.php:676
 msgid "SDK _deactivate_license() method unavailable."
 msgstr "SDK _deactivate_license() yöntemi kullanılamıyor."
 
-#: src/Form/NetworkLicenseWorker.php:503
+#: src/Form/NetworkLicenseWorker.php:726
 msgid "Deactivation API call did not clear the install license."
 msgstr "Devre dışı bırakma API çağrısı kurulum lisansını temizlemedi."
 
-#: src/Form/NetworkLicenseWorker.php:562
+#: src/Form/NetworkLicenseWorker.php:822
 msgid "No valid sites in batch."
 msgstr "Toplu işlemde geçerli site yok."
 
-#: src/Form/NetworkLicenseWorker.php:668
+#: src/Form/NetworkLicenseWorker.php:929
 msgid "Activation API returned an unspecified error."
 msgstr "Etkinleştirme API'si belirtilmemiş bir hata döndürdü."
 
-#: src/Form/NetworkLicenseWorker.php:670
+#: src/Form/NetworkLicenseWorker.php:931
 msgid "Install record not created after API call."
 msgstr "API çağrısından sonra kurulum kaydı oluşturulmadı."
 
@@ -1226,91 +1221,79 @@ msgstr "Editoria11y varsayılanları"
 msgid "Defaults"
 msgstr "Varsayılanlar"
 
-#: src/Form/NetworkSettingsPage.php:110 src/Form/SettingsPage.php:250
+#: src/Form/NetworkSettingsPage.php:110 src/Form/SettingsPage.php:302
 msgid "Custom rules"
 msgstr "Özel kurallar"
 
-#: src/Form/NetworkSettingsPage.php:156
+#: src/Form/NetworkSettingsPage.php:139
 msgid "Editoria11y default or locked network settings"
 msgstr "Editoria11y varsayılan veya kilitli ağ ayarları"
 
-#: src/Form/NetworkSettingsPage.php:160
+#: src/Form/NetworkSettingsPage.php:143
 msgid "Network defaults saved."
 msgstr "Ağ varsayılanları kaydedildi."
 
-#: src/Form/NetworkSettingsPage.php:166
-msgid "Network defaults were not saved."
-msgstr "Ağ varsayılanları kaydedilemedi."
-
-#: src/Form/NetworkSettingsPage.php:167
-msgid "You changed the following settings, but their propagation dropdown is still set to \"No network default\" — your change would not reach any site. Set the dropdown to \"Default for new sites\", \"Default for all sites\", or \"Lock for all sites\" — or revert the value — and save again."
-msgstr "Aşağıdaki ayarları değiştirdiniz, ancak bunların yayılma açılır menüsü hâlâ \"Ağ varsayılanı yok\" olarak ayarlı; değişikliğiniz hiçbir siteye ulaşmaz. Açılır menüyü \"Yeni siteler için varsayılan\", \"Tüm siteler için varsayılan\" veya \"Tüm siteler için kilitle\" olarak ayarlayın ya da değeri geri alın ve tekrar kaydedin."
-
-#: src/Form/NetworkSettingsPage.php:191
+#: src/Form/NetworkSettingsPage.php:161
 msgid "Save network defaults"
 msgstr "Ağ varsayılanlarını kaydet"
 
 #. translators: 1: processed sites, 2: total sites, 3: sites updated
-#: src/Form/NetworkSettingsPage.php:289
+#: src/Form/NetworkSettingsPage.php:259
 #, php-format
 msgid "%1$s of %2$s sites visited (%3$s updated)."
 msgstr "%2$s siteden %1$s tanesi ziyaret edildi (%3$s güncellendi)."
 
 #. translators: %s: human-readable duration estimate
-#: src/Form/NetworkSettingsPage.php:305
+#: src/Form/NetworkSettingsPage.php:275
 #, php-format
 msgid "Estimated %s remaining."
 msgstr "Tahminen %s kaldı."
 
 #. translators: %s: number of errors recorded
-#: src/Form/NetworkSettingsPage.php:318
+#: src/Form/NetworkSettingsPage.php:288
 #, php-format
 msgid "Errors: %s (most recent retained). Check server logs for details."
 msgstr "Hatalar: %s (en son korundu). Ayrıntılar için sunucu günlüklerini inceleyin."
 
-#: src/Form/NetworkSettingsPage.php:327
+#: src/Form/NetworkSettingsPage.php:297
 msgid "Saving the form now will restart propagation with the new settings."
 msgstr "Formu şimdi kaydetmek, yayılmayı yeni ayarlarla yeniden başlatacak."
 
-#: src/Form/NetworkSettingsPage.php:390
+#: src/Form/NetworkSettingsPage.php:360
 msgid "Propagating network defaults to existing sites…"
 msgstr "Ağ varsayılanları mevcut sitelere yayılıyor…"
 
-#: src/Form/NetworkSettingsPage.php:393
+#: src/Form/NetworkSettingsPage.php:363
 msgid "Network defaults propagated."
 msgstr "Ağ varsayılanları yayıldı."
 
-#: src/Form/NetworkSettingsPage.php:396
+#: src/Form/NetworkSettingsPage.php:366
 msgid "Network defaults propagation failed."
 msgstr "Ağ varsayılanlarının yayılması başarısız oldu."
 
-#: src/Form/NetworkSettingsPage.php:399
+#: src/Form/NetworkSettingsPage.php:369
 msgid "Network defaults propagation idle."
 msgstr "Ağ varsayılanları yayılımı boşta."
 
-#: src/Form/SettingsContext.php:181
-msgid "Managed at the network level by the super-admin."
-msgstr "Süper yönetici tarafından ağ düzeyinde yönetilmektedir."
+#: src/Form/SettingsContext.php:214
+msgid "Managed at the network level"
+msgstr "Ağ düzeyinde yönetilir"
 
-#: src/Form/SettingsContext.php:250 src/Form/SettingsContext.php:285
-msgid "— No network default —"
-msgstr "— Ağ varsayılanı yok —"
+#: src/Form/SettingsContext.php:283 src/Form/SettingsContext.php:328
+msgid "Default for new sites"
+msgstr "Yeni siteler için varsayılan"
 
-#: src/Form/SettingsContext.php:251 src/Form/SettingsContext.php:286
-msgid "New sites only"
-msgstr "Yalnızca yeni siteler"
+#: src/Form/SettingsContext.php:284 src/Form/SettingsContext.php:329
+msgid "Default for all sites (keep custom settings)"
+msgstr "Tüm siteler için varsayılan (özel ayarları koru)"
 
-#: src/Form/SettingsContext.php:252 src/Form/SettingsContext.php:287
-msgid "All sites"
-msgstr "Tüm siteler"
+#: src/Form/SettingsContext.php:285 src/Form/SettingsContext.php:330
+msgid "Overwrite for all sites (delete custom settings)"
+msgstr "Tüm siteler için üzerine yaz (özel ayarları sil)"
 
-#: src/Form/SettingsContext.php:253 src/Form/SettingsContext.php:288
-msgid "All sites, locked"
-msgstr "Tüm siteler, kilitli"
-
-#: src/Form/SettingsContext.php:293
-msgid "Default on:"
-msgstr "Varsayılan:"
+#: src/Form/SettingsContext.php:338
+msgid "Propagation"
+msgstr "Yayılma"
 
 #: src/Form/SettingsFields.php:68
 msgid "Include all parts of the page that contain your theme and content."
@@ -1341,66 +1324,70 @@ msgid "Define the parts of each page Editoria11y checks. Activating CSA unlocks 
 msgstr "Editoria11y'nin denetlediği sayfanın her bölümünü tanımlayın. CSA'yı etkinleştirmek, daha fazla denetim çalıştıran ve uyarıları seçtiğiniz rollere yönlendiren ek bir \"geliştirici alanı\" üst kümesinin kilidini açar."
 
 #: src/Form/SettingsFields.php:98
-msgid "These tests detect issues content editors can fix. Toggle a test off to remove it from the page-level checker; the test still runs and is available for re-enabling at any time."
-msgstr "Bu testler, içerik editörlerinin düzeltebileceği sorunları tespit eder. Sayfa düzeyi denetleyiciden kaldırmak için bir testi kapatın; test çalışmaya devam eder ve istediğiniz zaman yeniden etkinleştirilebilir."
+msgid "These tests detect issues content editors can fix. Checks can be individually turned off; sites with CSA licenses can split tests between roles."
+msgstr "Bu testler, içerik editörlerinin düzeltebileceği sorunları tespit eder. Denetimler tek tek kapatılabilir; CSA lisansı olan siteler testleri roller arasında paylaştırabilir."
 
-#: src/Form/SettingsFields.php:113
-msgid "Apply this tests + roles assignment to"
-msgstr "Bu test ve rol atamasını uygula"
+#: src/Form/SettingsFields.php:114
+msgid "Apply all the tests and role assignments below to"
+msgstr "Aşağıdaki tüm testleri ve rol atamalarını şuna uygula:"
 
-#: src/Form/SettingsFields.php:122
-msgid "These tests detect issues that usually need template or theme changes. In free mode they appear here for visibility but are not editable; activate CSA to route them per role."
-msgstr "Bu testler, genellikle şablon veya tema değişiklikleri gerektiren sorunları tespit eder. Ücretsiz modda görünürlük için burada görünürler ancak düzenlenemezler; bunları role göre yönlendirmek için CSA'yı etkinleştirin."
+#: src/Form/SettingsFields.php:123
+msgid "These tests detect issues that usually need theme or plugin changes to fix, and are part of the CSA license for site administrators and developers."
+msgstr "Bu testler, düzeltilmesi genellikle tema veya eklenti değişiklikleri gerektiren sorunları tespit eder ve site yöneticileri ile geliştiriciler için CSA lisansının bir parçasıdır."
 
-#: src/Form/SettingsFields.php:132
+#: src/Form/SettingsFields.php:133
 msgid "The \"tests + roles assignment\" propagation setting under \"Modify content tests\" above also governs the template-test selection — both are stored together."
 msgstr "\"İçerik testlerini değiştir\" bölümündeki \"test ve rol ataması\" yayılma ayarı, şablon testi seçimini de yönetir; her ikisi birlikte saklanır."
 
-#: src/Form/SettingsFields.php:171
+#: src/Form/SettingsFields.php:160
+msgid "Managed at the network level."
+msgstr "Ağ düzeyinde yönetilir."
+
+#: src/Form/SettingsFields.php:193
 msgid "Network-level custom rules apply to every site in the network."
 msgstr "Ağ düzeyindeki özel kurallar ağdaki her sitede geçerlidir."
 
 #. translators: %d is the number of network custom rules defined (active + inactive).
-#: src/Form/SettingsFields.php:182
+#: src/Form/SettingsFields.php:204
 #, php-format
 msgid "Manage network custom rules (%d defined)"
 msgid_plural "Manage network custom rules (%d defined)"
 msgstr[0] "Ağ özel kurallarını yönet (%d tanımlı)"
 msgstr[1] "Ağ özel kurallarını yönet (%d tanımlı)"
 
-#: src/Form/SettingsFields.php:208
+#: src/Form/SettingsFields.php:230
 msgid "Define your own accessibility tests. Each rule pairs a CSS selector with a tip shown to users; rules ship over the cached static config alongside the built-in test catalog."
 msgstr "Kendi erişilebilirlik testlerinizi tanımlayın. Her kural, bir CSS seçiciyi kullanıcılara gösterilen bir ipucuyla eşleştirir; kurallar yerleşik test kataloğuyla birlikte önbelleğe alınmış statik yapılandırma üzerinden gönderilir."
 
 #. translators: %d is the number of custom rules active on this site (per-site rules plus network rules not disabled here).
-#: src/Form/SettingsFields.php:219
+#: src/Form/SettingsFields.php:241
 #, php-format
 msgid "Manage custom rules (%d active)"
 msgid_plural "Manage custom rules (%d active)"
 msgstr[0] "Özel kuralları yönet (%d etkin)"
 msgstr[1] "Özel kuralları yönet (%d etkin)"
 
-#: src/Form/SettingsFields.php:235
+#: src/Form/SettingsFields.php:257
 msgid "Custom rules let CSA admins register additional accessibility tests with their own selectors, labels, and tip content. Activate CSA to manage them here."
 msgstr "Özel kurallar CSA yöneticilerinin kendi seçicileri, etiketleri ve ipucu içerikleriyle ek erişilebilirlik testleri kaydetmesine olanak tanır. Bunları burada yönetmek için CSA'yı etkinleştirin."
 
-#: src/Form/SettingsFields.php:271
+#: src/Form/SettingsFields.php:294
 msgid "Choose when the control panel should open and show inline tips. \"Start open if there are any alerts\" is recommended, as it helps tips get noticed over time."
 msgstr "Denetim panelinin ne zaman açılacağını ve satır içi ipuçlarını göstereceğini seçin. \"Herhangi bir uyarı varsa açık başlat\" önerilir; bu sayede ipuçları zamanla fark edilir."
 
-#: src/Form/SettingsFields.php:289
+#: src/Form/SettingsFields.php:312
 msgid "Choose whether to show inline tips while editing post and page content. The checker always hides while editing templates and layouts."
 msgstr "Gönderi ve sayfa içeriği düzenlenirken satır içi ipuçlarının gösterilip gösterilmeyeceğini seçin. Denetleyici, şablonlar ve düzenler düzenlenirken her zaman gizlenir."
 
-#: src/Form/SettingsFields.php:310
+#: src/Form/SettingsFields.php:333
 msgid "Provide CSS selectors. Content authors will only see the alerts within these parts of the page. Do not provide selectors that nest within each other, or the inner content will be checked twice."
 msgstr "CSS seçiciler sağlayın. İçerik yazarları yalnızca sayfanın bu bölümlerindeki uyarıları görecektir. Birbirine iç içe giren seçiciler sağlamayın; aksi takdirde iç içerik iki kez denetlenir."
 
-#: src/Form/SettingsFields.php:320
+#: src/Form/SettingsFields.php:343
 msgid "The default is <code>main</code> or <code>body</code>, depending on theme."
 msgstr "Varsayılan, temaya bağlı olarak <code>main</code> veya <code>body</code>'dir."
 
-#: src/Form/SettingsFields.php:343
+#: src/Form/SettingsFields.php:366
 msgid ""
 "If Editoria11y is flagging things editors cannot fix, e.g., theme-generated \"read more\" links or social media widgets,\n"
 "\t\t\t\tprovide CSS selectors for elements you would like it to ignore. Be specific, e.g. <code>.read-more a, .wp-block-post-excerpt__more-link, #comments h3</code>"
@@ -1408,447 +1395,453 @@ msgstr ""
 "Editoria11y, editörlerin düzeltip düzeltemeyeceği şeyleri işaretliyorsa (örn. tema tarafından oluşturulan \"daha fazla oku\" bağlantıları veya sosyal medya araçları),\n"
 "\t\t\t\tyoksaymasını istediğiniz öğeler için CSS seçiciler sağlayın. Örn. <code>.read-more a, .wp-block-post-excerpt__more-link, #comments h3</code>"
 
-#: src/Form/SettingsFields.php:354
+#: src/Form/SettingsFields.php:377
 msgid "If you are new at this, start by opening your browser's developer tools, inspecting the element you do not want flagged, and looking for unique-looking CSS selectors."
 msgstr "Bu konuda yeniyseniz, tarayıcınızın geliştirici araçlarını açarak işaretlenmesini istemediğiniz öğeyi inceleyip özgün görünen CSS seçicileri arayarak başlayın."
 
-#: src/Form/SettingsFields.php:418
+#: src/Form/SettingsFields.php:440
 msgid "Set to the number of other themes or plugins that will be injecting custom result JS events. Editoria11y will wait until it receives this number of <code>ed11yResume</code> notifications before showing results."
 msgstr "Özel sonuç JS olayları enjekte edecek diğer tema veya eklenti sayısına ayarlayın. Editoria11y, sonuçları göstermeden önce bu sayıda <code>ed11yResume</code> bildirimi alana kadar bekler."
 
-#: src/Form/SettingsFields.php:440
+#: src/Form/SettingsFields.php:463
 msgid "Used to block checking on site sections or admin pages."
 msgstr "Site bölümlerinde veya yönetici sayfalarında denetimi engellemek için kullanılır."
 
-#: src/Form/SettingsFields.php:469
+#: src/Form/SettingsFields.php:495
 msgid "Autodetect"
 msgstr "Otomatik algıla"
 
-#: src/Form/SettingsFields.php:470
+#: src/Form/SettingsFields.php:496
 msgid "Only user-editable content"
 msgstr "Yalnızca kullanıcı tarafından düzenlenebilir içerik"
 
-#: src/Form/SettingsFields.php:471
+#: src/Form/SettingsFields.php:497
 msgid "Other"
 msgstr "Diğer"
 
-#: src/Form/SettingsFields.php:475
+#: src/Form/SettingsFields.php:502
 msgid "Developer scan area"
 msgstr "Geliştirici tarama alanı"
 
-#: src/Form/SettingsFields.php:493
+#: src/Form/SettingsFields.php:520
 msgid "\"Autodetect\" selects:<br><em><code>body &gt; *:not(#wpadminbar, script, style, .ed11y-element)</code></em>"
 msgstr "\"Otomatik algıla\" seçer:<br><em><code>body &gt; *:not(#wpadminbar, script, style, .ed11y-element)</code></em>"
 
-#: src/Form/SettingsFields.php:510
+#: src/Form/SettingsFields.php:537
 msgid "Specify regions to check"
 msgstr "Denetlenecek bölgeleri belirtin"
 
-#: src/Form/SettingsFields.php:524
+#: src/Form/SettingsFields.php:552
 msgid "Alerts in these regions will be shown to both developers and editors. One selector per line."
 msgstr "Bu bölgelerdeki uyarılar hem geliştiricilere hem de editörlere gösterilecektir. Satır başına bir seçici."
 
-#: src/Form/SettingsFields.php:559
+#: src/Form/SettingsFields.php:584
 msgid "These parts of the page will be ignored entirely."
 msgstr "Sayfanın bu bölümleri tamamen yoksayılacaktır."
 
-#: src/Form/SettingsFields.php:593
+#: src/Form/SettingsFields.php:618
 msgid "Developer roles"
 msgstr "Geliştirici rolleri"
 
-#: src/Form/SettingsFields.php:611
+#: src/Form/SettingsFields.php:636
 msgid "Unchecked roles only see content checks."
 msgstr "İşaretlenmemiş roller yalnızca içerik denetimlerini görür."
 
-#: src/Form/SettingsFields.php:634
+#: src/Form/SettingsFields.php:664
 msgid "Start open if there are new alerts"
 msgstr "Yeni uyarılar varsa açık başlat"
 
-#: src/Form/SettingsFields.php:635
+#: src/Form/SettingsFields.php:665
 msgid "Start open if there are any alerts"
 msgstr "Herhangi bir uyarı varsa açık başlat"
 
-#: src/Form/SettingsFields.php:636
+#: src/Form/SettingsFields.php:666
 msgid "Always start open"
 msgstr "Her zaman açık başlat"
 
-#: src/Form/SettingsFields.php:637
+#: src/Form/SettingsFields.php:667
 msgid "Start minimized"
 msgstr "Küçültülmüş başlat"
 
-#: src/Form/SettingsFields.php:736
+#: src/Form/SettingsFields.php:781
 msgid "Rule"
 msgstr "Kural"
 
-#: src/Form/SettingsFields.php:740
+#: src/Form/SettingsFields.php:785
 msgid "Show to"
 msgstr "Göster:"
 
-#: src/Form/SettingsFields.php:780
+#: src/Form/SettingsFields.php:826
 msgid "Everyone"
 msgstr "Herkes"
 
-#: src/Form/SettingsFields.php:781
+#: src/Form/SettingsFields.php:827
 msgid "Developers only"
 msgstr "Yalnızca geliştiriciler"
 
-#: src/Form/SettingsFields.php:782
+#: src/Form/SettingsFields.php:828
 msgid "Off"
 msgstr "Kapalı"
 
-#: src/Form/SettingsFields.php:798
+#: src/Form/SettingsFields.php:845
 msgid "(Part of CSA suite)"
 msgstr "(CSA paketinin parçası)"
 
-#: src/Form/SettingsFields.php:836
+#: src/Form/SettingsFields.php:883
 msgid "Remind the editor that these linked documents need a manual check"
 msgstr "Editörü bu bağlantılı belgelerin manuel kontrol gerektirdiğini hatırlat"
 
-#: src/Form/SettingsFields.php:837
+#: src/Form/SettingsFields.php:884
 msgid "Add or remove filetypes. Set to \"false\" to disable the test altogether. Providing any value will override the default."
 msgstr "Dosya türleri ekleyin veya kaldırın. Testi tamamen devre dışı bırakmak için \"false\" olarak ayarlayın. Herhangi bir değer sağlamak varsayılanı geçersiz kılar."
 
-#: src/Form/SettingsFields.php:841
+#: src/Form/SettingsFields.php:888
 msgid "Remove elements that match these selectors before testing link text"
 msgstr "Bağlantı metnini test etmeden önce bu seçicilerle eşleşen öğeleri kaldırın"
 
-#: src/Form/SettingsFields.php:842
+#: src/Form/SettingsFields.php:889
 msgid "Provide a CSS selector for elements your themes or plugins programmatically add to links (usually external or open-in-new-window markers), so they can be ignored when the link text is checked for the \"link has no text\" and \"link text is not meaningful\" tests."
 msgstr "Temalarınızın veya eklentilerinizin bağlantılara programatik olarak eklediği öğeler için (genellikle harici veya yeni pencerede açılır işaretçiler) bir CSS seçici sağlayın; böylece \"bağlantının metni yok\" ve \"bağlantı metni anlamlı değil\" testlerinde bağlantı metni denetlenirken yoksayılabilirler."
 
-#: src/Form/SettingsFields.php:846
+#: src/Form/SettingsFields.php:893
 msgid "Remove these strings before testing link text"
 msgstr "Bağlantı metnini test etmeden önce bu dizeleri kaldırın"
 
-#: src/Form/SettingsFields.php:847
+#: src/Form/SettingsFields.php:894
 msgid "Provide a pipe-separated (\"|\") list of phrases your themes or plugins programmatically add to links to hint a purpose (external, mail, phone, open-in-new-window), so they can be ignored when the link text is checked for the \"link has no text\" and \"link text is not meaningful\" tests; e.g.: (link is external)|(link sends email)."
 msgstr "Temalarınızın veya eklentilerinizin bağlantılara bir amaç belirtmek için programatik olarak eklediği ifadelerin boru ile ayrılmış (\"|\") listesini sağlayın (harici, e-posta, telefon, yeni pencerede aç); böylece \"bağlantının metni yok\" ve \"bağlantı metni anlamlı değil\" testlerinde bağlantı metni denetlenirken yoksayılabilirler; örn.: (bağlantı harici)|(bağlantı e-posta gönderir)."
 
-#: src/Form/SettingsFields.php:851
+#: src/Form/SettingsFields.php:898
 msgid "Strings in links that indicate new tabs"
 msgstr "Bağlantılarda yeni sekme belirten dizeler"
 
-#: src/Form/SettingsFields.php:852
+#: src/Form/SettingsFields.php:899
 msgid "Provide a pipe-separated list of phrases your site uses to warn users a link opens in a new tab; e.g.: new tab|new window|external."
 msgstr "Sitenizin kullanıcıları bir bağlantının yeni sekmede açılacağı konusunda uyarmak için kullandığı ifadelerin boru ile ayrılmış listesini sağlayın; örn.: yeni sekme|yeni pencere|harici."
 
-#: src/Form/SettingsFields.php:860
+#: src/Form/SettingsFields.php:907
 msgid "Embeds flagged as needing manual review"
 msgstr "Manuel inceleme gerektiren olarak işaretlenen gömülü içerikler"
 
-#: src/Form/SettingsFields.php:864
+#: src/Form/SettingsFields.php:911
 msgid "Videos flagged as needing a manual check for captions"
 msgstr "Alt yazı için manuel kontrol gerektiren olarak işaretlenen videolar"
 
-#: src/Form/SettingsFields.php:868
+#: src/Form/SettingsFields.php:915
 msgid "Audio flagged as needing a manual check for transcripts"
 msgstr "Transkript için manuel kontrol gerektiren olarak işaretlenen ses içerikleri"
 
-#: src/Form/SettingsFields.php:872
+#: src/Form/SettingsFields.php:919
 msgid "Remind editor that content in these embeds needs manual review"
 msgstr "Editörü bu gömülü içeriklerdeki içeriğin manuel inceleme gerektirdiğini hatırlat"
 
-#: src/Form/SettingsFields.php:873
+#: src/Form/SettingsFields.php:920
 msgid "Provide a comma-separated list of selectors you wish to flag for the editor, e.g.: .my-embedded-feed, #my-social-link-block."
 msgstr "Editör için işaretlemek istediğiniz seçicilerin virgülle ayrılmış listesini sağlayın, örn.: .my-embedded-feed, #my-social-link-block."
 
-#: src/Form/SettingsFields.php:885
+#: src/Form/SettingsFields.php:932
 msgid "Do not check contrast for these elements"
 msgstr "Bu öğeler için kontrast denetimi yapma"
 
-#: src/Form/SettingsFields.php:898
+#: src/Form/SettingsFields.php:945
 msgid "Provide a comma-separated list of selectors for elements to ignore for all users."
 msgstr "Tüm kullanıcılar için yoksayılacak öğelerin seçicilerinin virgülle ayrılmış listesini sağlayın."
 
-#: src/Form/SettingsFields.php:928
+#: src/Form/SettingsFields.php:975
 msgid "Assertiveness"
 msgstr "Kararlılık"
 
-#: src/Form/SettingsFields.php:930
+#: src/Form/SettingsFields.php:977
 msgid "Checker mode for content roles"
 msgstr "İçerik rolleri için denetleyici modu"
 
-#: src/Form/SettingsFields.php:938
+#: src/Form/SettingsFields.php:985
 msgid "Checker mode for developer roles"
 msgstr "Geliştirici rolleri için denetleyici modu"
 
-#: src/Form/SettingsFields.php:946
+#: src/Form/SettingsFields.php:993
 msgid "Checker mode inside editor"
 msgstr "Editör içinde denetleyici modu"
 
-#: src/Form/SettingsFields.php:952
+#: src/Form/SettingsFields.php:999
 msgid "Theme and plugin compatibility"
 msgstr "Tema ve eklenti uyumluluğu"
 
-#: src/Form/SettingsFields.php:954
+#: src/Form/SettingsFields.php:1001
 msgid "Editoria11y theme"
 msgstr "Editoria11y teması"
 
-#: src/Form/SettingsFields.php:959
+#: src/Form/SettingsFields.php:1006
 msgid "Pin panel to"
 msgstr "Paneli sabitle"
 
-#: src/Form/SettingsFields.php:964
+#: src/Form/SettingsFields.php:1012
 msgid "Right"
 msgstr "Sağ"
 
-#: src/Form/SettingsFields.php:965
+#: src/Form/SettingsFields.php:1013
 msgid "Left"
 msgstr "Sol"
 
-#: src/Form/SettingsFields.php:970
+#: src/Form/SettingsFields.php:1019
 msgid "Shift panel position if it overlaps these elements"
 msgstr "Panel bu öğelerle çakışıyorsa konumunu kaydır"
 
-#: src/Form/SettingsFields.php:971
+#: src/Form/SettingsFields.php:1020
 msgid "Comma-separated selectors for competing widgets, e.g. .interface-interface-skeleton__sidebar."
 msgstr "Birbiriyle çakışan araçlar için virgülle ayrılmış seçiciler, örn. .interface-interface-skeleton__sidebar."
 
-#: src/Form/SettingsFields.php:978
+#: src/Form/SettingsFields.php:1025
 msgid "Do not check on pages with these elements"
 msgstr "Bu öğeleri içeren sayfalarda denetim yapma"
 
-#: src/Form/SettingsFields.php:982
+#: src/Form/SettingsFields.php:1029
 msgid "JS injected custom rules"
 msgstr "JS ile enjekte edilen özel kurallar"
 
-#: src/Form/SettingsFields.php:988
+#: src/Form/SettingsFields.php:1035
 msgid "Don't show edit links on tips in these containers"
 msgstr "Bu kapsayıcılardaki ipuçlarında düzenleme bağlantıları gösterme"
 
-#: src/Form/SettingsFields.php:989
+#: src/Form/SettingsFields.php:1036
 msgid "Provide a comma-separated list of page sections where edit links should not show. To hide the links everywhere, set this field to an asterisk (*)."
 msgstr "Düzenleme bağlantılarının gösterilmemesi gereken sayfa bölümlerinin virgülle ayrılmış listesini sağlayın. Bağlantıları her yerde gizlemek için bu alanı yıldız işareti (*) olarak ayarlayın."
 
-#: src/Form/SettingsFields.php:1008
+#: src/Form/SettingsFields.php:1055
 msgid "Handling tips on hidden content"
 msgstr "Gizli içerikteki ipuçlarının işlenmesi"
 
-#: src/Form/SettingsFields.php:1010
+#: src/Form/SettingsFields.php:1057
 msgid "Warn users if elements might not be visible when jumping to tips"
 msgstr "İpuçlarına atlarken öğeler görünmeyebilirse kullanıcıları uyar"
 
-#: src/Form/SettingsFields.php:1017
+#: src/Form/SettingsFields.php:1064
 msgid "Elements with overflow hidden"
 msgstr "Taşma gizli öğeler"
 
-#: src/Form/SettingsFields.php:1018
+#: src/Form/SettingsFields.php:1065
 msgid "Sometimes buttons get drawn and visually truncated outside the bounds of a positioned element. Provide a selector list."
 msgstr "Bazen düğmeler konumlandırılmış bir öğenin sınırları dışında çizilir ve görsel olarak kırpılır. Bir seçici listesi sağlayın."
 
-#: src/Form/SettingsFields.php:1023
+#: src/Form/SettingsFields.php:1070
 msgid "Theme JS will handle revealing hidden tooltips inside these containers"
 msgstr "Tema JS, bu kapsayıcıların içindeki gizli araç ipuçlarını göstermeyi yönetir"
 
-#: src/Form/SettingsFields.php:1024
+#: src/Form/SettingsFields.php:1071
 msgid "Editoria11y detects hidden tooltips and warns the user when they try to jump to them from the panel. For elements on this list, Editoria11y will dispatch a JS event instead of a warning, so custom JS in your theme can first reveal the hidden tip (e.g., open an accordion or tab panel)."
 msgstr "Editoria11y, gizli araç ipuçlarını algılar ve kullanıcı panelden bunlara atlamaya çalıştığında uyarır. Bu listedeki öğeler için Editoria11y, uyarı yerine bir JS olayı gönderir; böylece temanızdaki özel JS önce gizli ipucunu gösterebilir (örn. bir akordeon veya sekme paneli açmak)."
 
-#: src/Form/SettingsFields.php:1035
+#: src/Form/SettingsFields.php:1082
 msgid "Detecting dynamic and shadow content"
 msgstr "Dinamik ve gölge içeriği algılama"
 
-#: src/Form/SettingsFields.php:1038
+#: src/Form/SettingsFields.php:1085
 msgid "Dynamically refresh if new content appears"
 msgstr "Yeni içerik görünürse dinamik olarak yenile"
 
-#: src/Form/SettingsFields.php:1043
+#: src/Form/SettingsFields.php:1091
 msgid "Watch for changes anywhere on the page"
 msgstr "Sayfanın herhangi bir yerindeki değişiklikleri izle"
 
-#: src/Form/SettingsFields.php:1044
+#: src/Form/SettingsFields.php:1092
 msgid "Only watch for changes to content containers present on load"
 msgstr "Yalnızca yüklemede mevcut içerik kapsayıcılarındaki değişiklikleri izle"
 
-#: src/Form/SettingsFields.php:1045
+#: src/Form/SettingsFields.php:1093
 msgid "Do not watch for changes"
 msgstr "Değişiklikleri izleme"
 
-#: src/Form/SettingsFields.php:1049
+#: src/Form/SettingsFields.php:1096
 msgid "Set to \"anywhere\" if changes are being missed; set to \"do not watch\" if you notice performance issues."
 msgstr "Değişiklikler kaçırılıyorsa \"herhangi bir yerde\" olarak ayarlayın; performans sorunları fark ederseniz \"izleme\" olarak ayarlayın."
 
-#: src/Form/SettingsFields.php:1053
+#: src/Form/SettingsFields.php:1100
 msgid "Check inside these specific Web components"
 msgstr "Bu belirli Web bileşenlerinin içini denetle"
 
-#: src/Form/SettingsFields.php:1054
+#: src/Form/SettingsFields.php:1101
 msgid "Provide selectors for elements with shadow DOM you want tested. E.g.: my-fancy-accordion-widget, my-magical-slideshow."
 msgstr "Test etmek istediğiniz shadow DOM'lu öğeler için seçiciler sağlayın. Örn.: my-fancy-accordion-widget, my-magical-slideshow."
 
-#: src/Form/SettingsFields.php:1058
+#: src/Form/SettingsFields.php:1105
 msgid "Auto-detect any Web components"
 msgstr "Tüm Web bileşenlerini otomatik algıla"
 
-#: src/Form/SettingsFields.php:1059
+#: src/Form/SettingsFields.php:1106
 msgid "This is easier to configure than specifying components, but may slow test runs on very complicated pages."
 msgstr "Bu, bileşen belirtmekten daha kolay yapılandırılır, ancak çok karmaşık sayfalarda test çalıştırmayı yavaşlatabilir."
 
-#: src/Form/SettingsFields.php:1070
+#: src/Form/SettingsFields.php:1117
 msgid "Syncing results to reports"
 msgstr "Sonuçlar raporlara eşitleniyor"
 
-#: src/Form/SettingsFields.php:1086
+#: src/Form/SettingsFields.php:1134
 msgid "Only admins can view reports"
 msgstr "Yalnızca yöneticiler raporları görüntüleyebilir"
 
-#: src/Form/SettingsFields.php:1092
+#: src/Form/SettingsFields.php:1139
 msgid "By default both admins and editors can view reports."
 msgstr "Varsayılan olarak hem yöneticiler hem de editörler raporları görüntüleyebilir."
 
-#: src/Form/SettingsFields.php:1104
+#: src/Form/SettingsFields.php:1152
 msgid "Hide reports shortcut on toggle"
 msgstr "Geçiş düğmesindeki rapor kısayolunu gizle"
 
-#: src/Form/SettingsFields.php:1112
+#: src/Form/SettingsFields.php:1159
 msgid "Reports will still be available on the WordPress admin dashboard."
 msgstr "Raporlar, WordPress yönetici panosunda hâlâ erişilebilir olacaktır."
 
-#: src/Form/SettingsFields.php:1122
+#: src/Form/SettingsFields.php:1169
 msgid "Remove redundant base url from URLs"
 msgstr "URL'lerden gereksiz temel URL'yi kaldır"
 
-#: src/Form/SettingsFields.php:1134
+#: src/Form/SettingsFields.php:1181
 msgid "Provide base URL (\"/mysite\") if your site is installed in a subdirectory. Subdirectories tend to get duplicated (/mysite/mysite/mypage) and throw errors from the API."
 msgstr "Siteniz bir alt dizine kuruluysa temel URL (\"/mysite\") sağlayın. Alt dizinler tekrarlanma eğilimindedir (/mysite/mysite/mypage) ve API'den hata verir."
 
-#: src/Form/SettingsFields.php:1139
+#: src/Form/SettingsFields.php:1186
 msgid "Preserve query parameters"
 msgstr "Sorgu parametrelerini koru"
 
-#: src/Form/SettingsFields.php:1140
+#: src/Form/SettingsFields.php:1187
 msgid "The dashboard ignores most parameters: results for both /news?f=1 and /news?f=2 will show up as just /news. Provide a comma-separated list of parameters that are meaningful and should appear as separate pages in results."
 msgstr "Pano çoğu parametreyi yoksayar: hem /news?f=1 hem de /news?f=2 için sonuçlar yalnızca /news olarak görünür. Anlamlı olan ve sonuçlarda ayrı sayfalar olarak görünmesi gereken parametrelerin virgülle ayrılmış listesini sağlayın."
 
-#: src/Form/SettingsFields.php:1144
+#: src/Form/SettingsFields.php:1191
 msgid "Disable sync altogether"
 msgstr "Eşitlemeyi tamamen devre dışı bırak"
 
-#: src/Form/SettingsFields.php:1145
+#: src/Form/SettingsFields.php:1192
 msgid "Syncing test results is required for the issue dashboard, dismissal dashboard, and \"mark OK\" buttons."
 msgstr "Test sonuçlarını eşitleme, sorun panosu, reddetme panosu ve \"Tamam işaretle\" düğmeleri için gereklidir."
 
-#: src/Form/SettingsFields.php:1156
+#: src/Form/SettingsFields.php:1203
 msgid "Heading outline position of editable content"
 msgstr "Düzenlenebilir içeriğin başlık taslağı konumu"
 
-#: src/Form/SettingsFields.php:1158
+#: src/Form/SettingsFields.php:1205
 msgid "To check headings while editing, Editoria11y needs to know what the first heading level should be in each editable field. Body fields should generally be at the H2 level."
 msgstr "Düzenleme sırasında başlıkları denetlemek için Editoria11y'nin her düzenlenebilir alanda ilk başlık düzeyinin ne olması gerektiğini bilmesi gerekir. Gövde alanları genellikle H2 düzeyinde olmalıdır."
 
-#: src/Form/SettingsFields.php:1163
+#: src/Form/SettingsFields.php:1210
 msgid "H2 level content (body content)"
 msgstr "H2 düzeyinde içerik (gövde içeriği)"
 
-#: src/Form/SettingsFields.php:1164
+#: src/Form/SettingsFields.php:1211
 msgid "Body fields are preceded by an H1 (the post or page title), so their highest heading level should be H2."
 msgstr "Gövde alanlarının önünde bir H1 (gönderi veya sayfa başlığı) bulunur, bu nedenle en yüksek başlık düzeyleri H2 olmalıdır."
 
-#: src/Form/SettingsFields.php:1168
+#: src/Form/SettingsFields.php:1215
 msgid "H3 level content (blocks or widgets with separate titles)"
 msgstr "H3 düzeyinde içerik (ayrı başlıklara sahip bloklar veya araçlar)"
 
-#: src/Form/SettingsFields.php:1169
+#: src/Form/SettingsFields.php:1216
 msgid "The highest heading level should be H3."
 msgstr "En yüksek başlık düzeyi H3 olmalıdır."
 
-#: src/Form/SettingsFields.php:1173
+#: src/Form/SettingsFields.php:1220
 msgid "H4 level content (deeply nested blocks or widgets)"
 msgstr "H4 düzeyinde içerik (derin iç içe geçmiş bloklar veya araçlar)"
 
-#: src/Form/SettingsFields.php:1174
+#: src/Form/SettingsFields.php:1221
 msgid "The highest heading level should be H4."
 msgstr "En yüksek başlık düzeyi H4 olmalıdır."
 
-#: src/Form/SettingsPage.php:107
-msgid "free version at WordPress.org"
-msgstr "WordPress.org'daki ücretsiz sürüm"
-
-#: src/Form/SettingsPage.php:112
+#: src/Form/SettingsPage.php:122 src/Form/SettingsPage.php:183
 msgid "becoming a supporter"
 msgstr "destekçi olmak"
 
+#: src/Form/SettingsPage.php:127
+msgid "free version at WordPress.org"
+msgstr "WordPress.org'daki ücretsiz sürüm"
+
 #. translators: %s: link reading "free version at WordPress.org".
-#: src/Form/SettingsPage.php:121
+#: src/Form/SettingsPage.php:136
 #, php-format
 msgid "This site has the community-supported \"CSA\" version of Editoria11y installed rather than the %s."
 msgstr "Bu sitede %s yerine topluluk destekli \"CSA\" sürümü kurulu."
 
 #. translators: %s: link reading "becoming a supporter".
-#: src/Form/SettingsPage.php:130
+#: src/Form/SettingsPage.php:145
 #, php-format
-msgid "To activate the community-supported features and continue receiving updates, either enter your existing license key below or view options for %s."
-msgstr "Topluluk destekli özellikleri etkinleştirmek ve güncellemeleri almaya devam etmek için mevcut lisans anahtarınızı aşağıya girin veya %s seçeneklerini görüntüleyin."
+msgid "To activate the community-supported features and continue receiving updates, either enter your existing license key or view options for %s."
+msgstr "Topluluk destekli özellikleri etkinleştirmek ve güncellemeleri almaya devam etmek için ya mevcut lisans anahtarınızı girin ya da %s seçeneklerini görüntüleyin."
 
-#: src/Form/SettingsPage.php:155
+#: src/Form/SettingsPage.php:188
+msgid "This site is running the free version of Editoria11y from WordPress.org. The community-supported (CSA) features like developer and contrast tests, the custom test builder and site crawler, are not yet installed."
+msgstr "Bu sitede Editoria11y'nin WordPress.org'daki ücretsiz sürümü çalışıyor. Geliştirici ve kontrast testleri, özel test oluşturucu ve site tarayıcısı gibi topluluk destekli (CSA) özellikler henüz kurulu değil."
+
+#. translators: %s: link reading "becoming a supporter".
+#: src/Form/SettingsPage.php:194
+#, php-format
+msgid "Unlock the community-supported features and help ongoing work on the free version by %s."
+msgstr "%s yoluyla topluluk destekli özelliklerin kilidini açın ve ücretsiz sürüm üzerinde devam eden çalışmalara destek olun."
+
+#: src/Form/SettingsPage.php:224
 msgid "Editoria11y License & Account"
 msgstr "Editoria11y Lisans ve Hesap"
 
-#: src/Form/SettingsPage.php:240
+#: src/Form/SettingsPage.php:291
 msgid "Settings"
 msgstr "Ayarlar"
 
-#: src/Form/SettingsPage.php:241 src/Form/SettingsPage.php:253
+#: src/Form/SettingsPage.php:299 src/Form/SettingsPage.php:306
 msgid "License & Account"
 msgstr "Lisans ve Hesap"
 
-#: src/Form/SettingsPage.php:252
-msgid "Contact us"
-msgstr "Bizimle iletişime geçin"
-
-#: src/Form/SettingsPage.php:491
+#: src/Form/SettingsPage.php:579
 msgid "Getting started"
 msgstr "Başlarken"
 
-#: src/Form/SettingsPage.php:500
+#: src/Form/SettingsPage.php:588
 msgid "Modify content tests"
 msgstr "İçerik testlerini değiştir"
 
-#: src/Form/SettingsPage.php:506 src/Form/SettingsPage.php:520
+#: src/Form/SettingsPage.php:594 src/Form/SettingsPage.php:608
 msgid "Tests by group"
 msgstr "Gruba göre testler"
 
-#: src/Form/SettingsPage.php:514
+#: src/Form/SettingsPage.php:602
 msgid "Modify template tests"
 msgstr "Şablon testlerini değiştir"
 
-#: src/Form/SettingsPage.php:531
+#: src/Form/SettingsPage.php:619
 msgid "Custom rules (CSA)"
 msgstr "Özel kurallar (CSA)"
 
-#: src/Form/SettingsPage.php:546
+#: src/Form/SettingsPage.php:634
 msgid "Parts of the page to test"
 msgstr "Test edilecek sayfa bölümleri"
 
-#: src/Form/SettingsPage.php:554
+#: src/Form/SettingsPage.php:642
 msgid "Do not check for any errors inside these elements"
 msgstr "Bu öğelerin içinde herhangi bir hata denetimi yapma"
 
-#: src/Form/SettingsPage.php:565
+#: src/Form/SettingsPage.php:653
 msgid "Page regions with user-editable content"
 msgstr "Kullanıcı tarafından düzenlenebilir içerikli sayfa bölgeleri"
 
-#: src/Form/SettingsPage.php:575
+#: src/Form/SettingsPage.php:663
 msgid "Do not check for content errors inside these elements"
 msgstr "Bu öğelerin içinde içerik hatası denetimi yapma"
 
-#: src/Form/SettingsPage.php:578
+#: src/Form/SettingsPage.php:666
 msgid "Errors in these elements should only be shown to developers"
 msgstr "Bu öğelerdeki hatalar yalnızca geliştiricilere gösterilmelidir"
 
-#: src/Form/SettingsPage.php:594
+#: src/Form/SettingsPage.php:682
 msgid "Roles that will see developer alerts"
 msgstr "Geliştirici uyarılarını görecek roller"
 
-#: src/Form/SettingsPage.php:609
+#: src/Form/SettingsPage.php:697
 msgid "Advanced settings"
 msgstr "Gelişmiş ayarlar"
 
-#: src/Form/SettingsPage.php:627
+#: src/Form/SettingsPage.php:715
 msgid "Editoria11y Settings"
 msgstr "Editoria11y Ayarları"
 
-#: src/Form/SettingsPage.php:642
+#: src/Form/SettingsPage.php:753
 msgid "Save Settings"
 msgstr "Ayarları Kaydet"
 
@@ -1862,17 +1855,88 @@ msgstr "bilinmiyor"
 msgid "Editoria11y CSA: the loaded Freemius SDK (version %1$s) is newer than the highest tested version (%2$s). Another Freemius-using plugin on this site has bundled a newer SDK build. The network license activation page may not behave as expected; review release notes or contact support if you hit issues."
 msgstr "Editoria11y CSA: Yüklenen Freemius SDK (sürüm %1$s), test edilen en yüksek sürümden (%2$s) daha yeni. Bu sitedeki başka bir Freemius kullanan eklenti, daha yeni bir SDK derlemesini paketlemiş. Ağ lisansı etkinleştirme sayfası beklendiği gibi davranmayabilir; sorunla karşılaşırsanız sürüm notlarını inceleyin veya destek ile iletişime geçin."
 
-#: src/FreemiusAccessControl.php:442
+#: src/FreemiusAccessControl.php:455
 msgid "Editoria11y network licenses are activated from a dedicated page that walks every site in the network in cron-driven batches. This avoids the SDK's 1,000-site limit and keeps the page responsive on large multisites."
 msgstr "Editoria11y ağ lisansları, ağdaki her siteyi cron ile yönetilen toplu işlemlerle geçen özel bir sayfadan etkinleştirilir. Bu, SDK'nın 1.000 site sınırını aşmaktan kaçınır ve sayfanın büyük çoklu sitelerde duyarlı kalmasını sağlar."
 
-#: src/FreemiusAccessControl.php:448
+#: src/FreemiusAccessControl.php:461
 msgid "Open Editoria11y license page"
 msgstr "Editoria11y lisans sayfasını aç"
 
-#: src/FreemiusAccessControl.php:504
+#: src/FreemiusAccessControl.php:517
 msgid "Per-site license rows are not shown to keep this page responsive on large networks. The license you choose below applies to every site in the network. To activate or deactivate on individual sites, visit each site's per-site Settings → Editoria11y → License & Account."
 msgstr "Büyük ağlarda bu sayfanın duyarlı kalması için site bazlı lisans satırları gösterilmez. Aşağıda seçtiğiniz lisans ağdaki her siteye uygulanır. Tek tek sitelerde etkinleştirmek veya devre dışı bırakmak için her sitenin Ayarlar → Editoria11y → Lisans ve Hesap sayfasını ziyaret edin."
+
+#: src/FreemiusContactFallback.php:117 src/FreemiusContactFallback.php:118
+#: src/FreemiusContactFallback.php:146 src/FreemiusContactFallback.php:206
+msgid "Contact Editoria11y"
+msgstr "Editoria11y ile iletişime geçin"
+
+#: src/FreemiusContactFallback.php:202
+msgid "Editoria11y library forums"
+msgstr "Editoria11y kütüphane forumları"
+
+#. translators: 1: @itmaybejj GitHub profile link, 2: #Drupal Slack invite link, 3: #WordPress Slack chat link, 4: #WPCampus Slack invite link, 5: #DigiCol Slack invite link.
+#: src/FreemiusContactFallback.php:211
+#, php-format
+msgid "Lead maintainer %1$s can usually be found on Slack for informal support, configuration tips and debugging any time the sun is up in the western hemisphere in %2$s, %3$s, %4$s and %5$s."
+msgstr "Baş geliştirici %1$s, gayriresmi destek, yapılandırma ipuçları ve hata ayıklama için güneş batı yarımkürede yükseldiği saatlerde genellikle %2$s, %3$s, %4$s ve %5$s Slack kanallarında bulunabilir."
+
+#. translators: %s: link to the Editoria11y library GitHub discussions page.
+#: src/FreemiusContactFallback.php:224
+#, php-format
+msgid "Check the %s for roadmap proposals and discussions."
+msgstr "Yol haritası önerileri ve tartışmaları için %s sayfasına bakın."
+
+#: src/FreemiusContactFallback.php:230
+msgid "Formal support:"
+msgstr "Resmi destek:"
+
+#: src/FreemiusContactFallback.php:233
+msgid "Editoria11y Library issue queue"
+msgstr "Editoria11y kütüphanesi sorun kuyruğu"
+
+#: src/FreemiusContactFallback.php:235
+msgid "Editoria11y WordPress issue queue"
+msgstr "Editoria11y WordPress sorun kuyruğu"
+
+#: src/FreemiusContactFallback.php:237
+msgid "Editoria11y Drupal issue queue"
+msgstr "Editoria11y Drupal sorun kuyruğu"
+
+#: src/FreemiusContactFallback.php:239
+msgid "Submit a support request"
+msgstr "Destek talebi gönderin"
+
+#: src/FreemiusPricingPage.php:158
+msgid "Editoria11y CSA pricing"
+msgstr "Editoria11y CSA fiyatlandırması"
+
+#: src/FreemiusPricingPage.php:220
+msgid "Support the project"
+msgstr "Projeye destek olun"
+
+#: src/FreemiusPricingPage.php:223
+msgid "Editoria11y promotes accessibility in a unique way. Its tools are highly effective at helping non-technical authors prepare content that can be enjoyed equally by disabled Web users. We consider this a public good, so <strong>Editoria11y will always be free to use</strong>."
+msgstr "Editoria11y, erişilebilirliği benzersiz bir şekilde teşvik eder. Araçları, teknik bilgisi olmayan yazarların engelli Web kullanıcıları tarafından da eşit şekilde yararlanılabilecek içerikler hazırlamasına yardımcı olmakta son derece etkilidir. Bunu kamusal bir yarar olarak gördüğümüz için <strong>Editoria11y kullanımı her zaman ücretsiz olacaktır</strong>."
+
+#: src/FreemiusPricingPage.php:227
+msgid "Editoria11y is not, however, free to develop or support."
+msgstr "Ancak Editoria11y'nin geliştirilmesi veya desteklenmesi ücretsiz değildir."
+
+#: src/FreemiusPricingPage.php:230
+msgid "The \"Community Supported Add-ons\" (CSA) project fills the gap: project members support the development of the Editoria11y library, its CMS plugins, and the CSA suite: a rapidly growing set of quality assurance tools that provide similar functionality to commercial products, open-source and on-prem. In return, they get access to premium features like <strong>developer and contrast tests, the custom rule builder and a site crawler</strong>."
+msgstr "\"Topluluk Destekli Eklentiler\" (CSA) projesi bu boşluğu doldurur: proje üyeleri, Editoria11y kütüphanesinin, CMS eklentilerinin ve CSA paketinin geliştirilmesini destekler; bu paket, ticari ürünlere benzer işlevsellik sunan, açık kaynaklı ve şirket içi (on-prem) çalışan, hızla büyüyen bir kalite güvence araçları kümesidir. Karşılığında <strong>geliştirici ve kontrast testleri, özel kural oluşturucu ve site tarayıcısı</strong> gibi premium özelliklere erişim elde ederler."
+
+#: src/FreemiusPricingPage.php:237
+msgid "CSA supporters page"
+msgstr "CSA destekçileri sayfası"
+
+#. translators: %s: link to the CSA supporters page.
+#: src/FreemiusPricingPage.php:243
+#, php-format
+msgid "This is a <strong>contribute what you can</strong> model; the quick checkout prices below are for full support. The %s has options for different support levels (from 10%% to 150%%), cross-platform (WordPress plus Drupal) licenses, unlimited-site options, and non-financial paths to project membership."
+msgstr "Bu, <strong>gücünüz yettiğince katkıda bulunun</strong> modelidir; aşağıdaki hızlı ödeme fiyatları tam destek içindir. %s sayfasında farklı destek düzeyleri (%%10'dan %%150'ye kadar), platformlar arası (WordPress ve Drupal) lisanslar, sınırsız site seçenekleri ve proje üyeliğine giden finansal olmayan yollar için seçenekler bulunur."
 
 #: src/TestNames.php:46
 msgid "This alt text is a filename, not a description"
@@ -1907,405 +1971,413 @@ msgid "Button name repeats the word \"button\""
 msgstr "Düğme adında \"button\" sözcüğü tekrarlanıyor"
 
 #: src/TestNames.php:55
+msgid "This button is unpronounceable"
+msgstr "Bu düğme telaffuz edilemiyor"
+
+#: src/TestNames.php:56
 msgid "Text does not have enough contrast to be easily legible"
 msgstr "Metin kolayca okunabilmek için yeterli kontrasta sahip değil"
 
-#: src/TestNames.php:56
+#: src/TestNames.php:57
 msgid "Graphic or icon does not have enough contrast"
 msgstr "Grafik veya simgenin yeterli kontrastı yok"
 
-#: src/TestNames.php:57
+#: src/TestNames.php:58
 msgid "Input does not provide enough contrast to be easily legible"
 msgstr "Giriş alanı kolayca okunabilmek için yeterli kontrast sağlamıyor"
 
-#: src/TestNames.php:58
+#: src/TestNames.php:59
 msgid "Placeholder text does not have enough contrast to be easily legible"
 msgstr "Yer tutucu metin yeterli kontrasta sahip değil"
 
-#: src/TestNames.php:59
+#: src/TestNames.php:60
 msgid "Does this placeholder text have enough contrast?"
 msgstr "Bu yer tutucu metinde yeterli kontrast var mı?"
 
-#: src/TestNames.php:60
+#: src/TestNames.php:61
 msgid "Does this text have enough contrast?"
 msgstr "Bu metnin yeterli kontrastı var mı?"
 
-#: src/TestNames.php:61
+#: src/TestNames.php:62
 msgid "Does this graphic or icon have enough contrast?"
 msgstr "Bu grafik veya simgenin yeterli kontrastı var mı?"
 
-#: src/TestNames.php:62
+#: src/TestNames.php:63
 msgid "Duplicate ID attribute"
 msgstr "Yinelenen ID özniteliği"
 
-#: src/TestNames.php:63
+#: src/TestNames.php:64
 msgid "This link has a tooltip with the same text as the link"
 msgstr "Bu bağlantının araç ipucu, bağlantı metniyle aynı"
 
-#: src/TestNames.php:64
+#: src/TestNames.php:65
 msgid "Does this audio have a transcript?"
 msgstr "Bu sesli içeriğin dökümü var mı?"
 
-#: src/TestNames.php:65
+#: src/TestNames.php:66
 msgid "Is this visualization accessible?"
 msgstr "Bu görselleştirme erişilebilir mi?"
 
-#: src/TestNames.php:66
+#: src/TestNames.php:67
 msgid "Embedded iframes need manual checks"
 msgstr "Gömülü iframe'ler elle denetim gerektiriyor"
 
-#: src/TestNames.php:67
+#: src/TestNames.php:68
 msgid "Frame missing \"title\" attribute"
 msgstr "Çerçevede \"title\" özniteliği eksik"
 
-#: src/TestNames.php:68
+#: src/TestNames.php:69
 msgid "Frame with tabindex=\"-1\" will not be keyboard accessible."
 msgstr "tabindex=\"-1\" olan çerçeve klavyeyle erişilebilir olmayacak."
 
-#: src/TestNames.php:69
+#: src/TestNames.php:70
 msgid "Is this video accurately captioned?"
 msgstr "Bu video doğru şekilde altyazılandırılmış mı?"
 
-#: src/TestNames.php:70
+#: src/TestNames.php:71
 msgid "This heading has no text"
 msgstr "Bu başlıkta metin yok"
 
-#: src/TestNames.php:71
+#: src/TestNames.php:72
 msgid "This image is used as a heading, so it needs alt text"
 msgstr "Bu görüntü başlık olarak kullanılıyor; alternatif metin gerekli"
 
-#: src/TestNames.php:72
+#: src/TestNames.php:73
 msgid "The first heading on this page is a subheading"
 msgstr "Bu sayfadaki ilk başlık bir alt başlık"
 
-#: src/TestNames.php:73
+#: src/TestNames.php:74
 msgid "Can this heading be shorter?"
 msgstr "Bu başlık kısaltılabilir mi?"
 
-#: src/TestNames.php:74
+#: src/TestNames.php:75
 msgid "This page is missing a Heading 1"
 msgstr "Bu sayfada 1. Düzey Başlık eksik"
 
-#: src/TestNames.php:75
+#: src/TestNames.php:76
 msgid "This heading is tagged at the wrong level"
 msgstr "Bu başlık yanlış düzeyde etiketlenmiş"
 
-#: src/TestNames.php:76
+#: src/TestNames.php:77
+msgid "This heading is unpronounceable"
+msgstr "Bu başlık telaffuz edilemiyor"
+
+#: src/TestNames.php:78
 msgid "This element cannot be described by screen readers"
 msgstr "Bu öğe ekran okuyucular tarafından tanımlanamıyor"
 
-#: src/TestNames.php:77
+#: src/TestNames.php:79
 msgid "Can this alt text be shorter?"
 msgstr "Bu alternatif metin kısaltılabilir mi?"
 
-#: src/TestNames.php:78
+#: src/TestNames.php:80
 msgid "Is this image actually meaningless?"
 msgstr "Bu görüntü gerçekten anlamsız mı?"
 
-#: src/TestNames.php:79
+#: src/TestNames.php:81
 msgid "Image in a carousel or gallery marked as decorative"
 msgstr "Döngü veya galeride dekoratif olarak işaretlenmiş görüntü"
 
-#: src/TestNames.php:80
+#: src/TestNames.php:82
 msgid "This captioned image has no alt text"
 msgstr "Açıklamalı bu görüntüde alternatif metin yok"
 
-#: src/TestNames.php:81
+#: src/TestNames.php:83
 msgid "Alt text should not be the same as caption text"
 msgstr "Alternatif metin, açıklama metniyle aynı olmamalı"
 
-#: src/TestNames.php:82
+#: src/TestNames.php:84
 msgid "Is there a visible label for this field?"
 msgstr "Bu alan için görünür bir etiket var mı?"
 
-#: src/TestNames.php:83
+#: src/TestNames.php:85
 msgid "Prefer visible labels to placeholders"
 msgstr "Yer tutucular yerine görünür etiketleri tercih edin"
 
-#: src/TestNames.php:84
+#: src/TestNames.php:86
 msgid "Is this reset button needed?"
 msgstr "Bu sıfırlama düğmesi gerekli mi?"
 
-#: src/TestNames.php:85
+#: src/TestNames.php:87
 msgid "This input has an empty label"
 msgstr "Bu giriş alanının etiketi boş"
 
-#: src/TestNames.php:86
+#: src/TestNames.php:88
 msgid "Visible label does not match invisible label"
 msgstr "Görünür etiket, görünmez etiketle eşleşmiyor"
 
-#: src/TestNames.php:87
+#: src/TestNames.php:89
 msgid "This image input is missing alt text"
 msgstr "Bu görüntü girişinde alternatif metin eksik"
 
-#: src/TestNames.php:88
+#: src/TestNames.php:90
 msgid "This input is not connected to a label"
 msgstr "Bu giriş alanı bir etiketle bağlantılı değil"
 
-#: src/TestNames.php:89
+#: src/TestNames.php:91
 msgid "Language tag does not match the content"
 msgstr "Dil etiketi içerikle eşleşmiyor"
 
-#: src/TestNames.php:90
+#: src/TestNames.php:92
 msgid "This content appears to be in a different language"
 msgstr "Bu içerik farklı bir dilde görünüyor"
 
-#: src/TestNames.php:91
+#: src/TestNames.php:93
 msgid "This alt text appears to be in a different language"
 msgstr "Bu alternatif metin farklı bir dilde görünüyor"
 
-#: src/TestNames.php:92
+#: src/TestNames.php:94
 msgid "Alt text used as a link should not be a URL"
 msgstr "Bağlantı olarak kullanılan alternatif metin URL olmamalı"
 
-#: src/TestNames.php:93 src/TestNames.php:94
+#: src/TestNames.php:95 src/TestNames.php:96
 msgid "This linked alt might not be clear and concise"
 msgstr "Bu bağlantılı alternatif metin açık ve özlü olmayabilir"
 
-#: src/TestNames.php:95
+#: src/TestNames.php:97
 msgid "Linked images need pronounceable alt text"
 msgstr "Bağlantılı görüntülerin telaffuz edilebilir alternatif metin gerekir"
 
-#: src/TestNames.php:96
+#: src/TestNames.php:98
 msgid "Manual check: link contains \"click here\""
 msgstr "Bu bağlantıda \"buraya tıklayın\" ifadesi var"
 
-#: src/TestNames.php:97
+#: src/TestNames.php:99
 msgid "Link article titles, not DOI numbers"
 msgstr "Makale başlıklarına bağlantı verin, DOI numaralarına değil"
 
-#: src/TestNames.php:98
+#: src/TestNames.php:100
 msgid "This link contains no words"
 msgstr "Bu bağlantıda hiç sözcük yok"
 
-#: src/TestNames.php:99
+#: src/TestNames.php:101
 msgid "Link with invalid \"aria-labelledby\" attribute"
 msgstr "Geçersiz \"aria-labelledby\" özniteliği olan bağlantı"
 
-#: src/TestNames.php:100
+#: src/TestNames.php:102
 msgid "This link needs a label"
 msgstr "Bu bağlantının bir etikete ihtiyacı var"
 
-#: src/TestNames.php:101
+#: src/TestNames.php:103
 msgid "Link points to a file without warning"
 msgstr "Bağlantı uyarı vermeden bir dosyaya yönlendiriyor"
 
-#: src/TestNames.php:102
+#: src/TestNames.php:104
 msgid "Links with the same text link to different pages"
 msgstr "Aynı metne sahip bağlantılar farklı sayfalara gidiyor"
 
-#: src/TestNames.php:103
+#: src/TestNames.php:105
 msgid "Does this alt text describe the link or the image?"
 msgstr "Bu alternatif metin bağlantıyı mı yoksa görüntüyü mü açıklıyor?"
 
-#: src/TestNames.php:104
+#: src/TestNames.php:106
 msgid "Does this alt text make sense as part of this link?"
 msgstr "Bu alternatif metin bu bağlantının bir parçası olarak anlamlı mı?"
 
-#: src/TestNames.php:105
+#: src/TestNames.php:107
 msgid "Can this linked alt text be shorter?"
 msgstr "Bu bağlantılı alternatif metin kısaltılabilir mi?"
 
-#: src/TestNames.php:106
+#: src/TestNames.php:108
 msgid "This linked image needs alt text"
 msgstr "Bu bağlantılı görüntünün alternatif metne ihtiyacı var"
 
-#: src/TestNames.php:107
+#: src/TestNames.php:109
 msgid "Does this linked image need a description?"
 msgstr "Bu bağlantılı görüntünün bir açıklamaya ihtiyacı var mı?"
 
-#: src/TestNames.php:108
+#: src/TestNames.php:110
 msgid "Is this link actually a button?"
 msgstr "Bu bağlantı aslında bir düğme mi?"
 
-#: src/TestNames.php:109
+#: src/TestNames.php:111
 msgid "Does this link open a new tab without warning?"
 msgstr "Bu bağlantı uyarı vermeden yeni sekme açıyor mu?"
 
-#: src/TestNames.php:110
+#: src/TestNames.php:112
 msgid "This linked alt text may be a placeholder"
 msgstr "Bu bağlantılı alternatif metin bir yer tutucu olabilir"
 
-#: src/TestNames.php:111
+#: src/TestNames.php:113
 msgid "This link only contains generic words"
 msgstr "Bu bağlantı yalnızca genel sözcükler içeriyor"
 
-#: src/TestNames.php:112
+#: src/TestNames.php:114
 msgid "The purpose of this link is visually hidden"
 msgstr "Bu bağlantının amacı görsel olarak gizli"
 
-#: src/TestNames.php:113
+#: src/TestNames.php:115
 msgid "Does this image's alt describe the image or the link?"
 msgstr "Bu görüntünün alternatif metni görüntüyü mü yoksa bağlantıyı mı açıklıyor?"
 
-#: src/TestNames.php:114
+#: src/TestNames.php:116
 msgid "Are the symbols or emoji in this link meaningful?"
 msgstr "Bu bağlantıdaki simgeler veya emoji anlamlı mı?"
 
-#: src/TestNames.php:115
+#: src/TestNames.php:117
 msgid "This link is unpronounceable"
 msgstr "Bu bağlantı telaffuz edilemiyor"
 
-#: src/TestNames.php:116
+#: src/TestNames.php:118
 msgid "Link text should not be a URL"
 msgstr "Bağlantı metni URL olmamalı"
 
-#: src/TestNames.php:117
+#: src/TestNames.php:119
 msgid "Meta tag for page language missing"
 msgstr "Sayfa dili için meta etiketi eksik"
 
-#: src/TestNames.php:118
+#: src/TestNames.php:120
 msgid "Did you mean a different language code?"
 msgstr "Farklı bir dil kodu mu kastettiniz?"
 
-#: src/TestNames.php:119
+#: src/TestNames.php:121
 msgid "Invalid language code"
 msgstr "Geçersiz dil kodu"
 
-#: src/TestNames.php:120
+#: src/TestNames.php:122
 msgid "Page language may not match the content"
 msgstr "Sayfa dili içerikle eşleşmiyor olabilir"
 
-#: src/TestNames.php:121
+#: src/TestNames.php:123
 msgid "Meta tag limits how much users can enlarge text"
 msgstr "Meta etiketi kullanıcıların metni ne kadar büyütebileceğini kısıtlıyor"
 
-#: src/TestNames.php:122
+#: src/TestNames.php:124
 msgid "Meta tag automatically refreshes page"
 msgstr "Meta etiketi sayfayı otomatik olarak yeniliyor"
 
-#: src/TestNames.php:123
+#: src/TestNames.php:125
 msgid "Meta tag prevents users from enlarging text"
 msgstr "Meta etiketi kullanıcıların metni büyütmesini engelliyor"
 
-#: src/TestNames.php:124
+#: src/TestNames.php:126
 msgid "Meta tag for page title missing"
 msgstr "Sayfa başlığı için meta etiketi eksik"
 
-#: src/TestNames.php:125
+#: src/TestNames.php:127
 msgid "Invalid HTML: image has no alt attribute"
 msgstr "Geçersiz HTML: görüntüde alt özniteliği yok"
 
-#: src/TestNames.php:126
+#: src/TestNames.php:128
 msgid "Invalid HTML: linked image missing alt attribute"
 msgstr "Geçersiz HTML: bağlantılı görüntüde alt özniteliği eksik"
 
-#: src/TestNames.php:127
+#: src/TestNames.php:129
 msgid "Invalid HTML: image in link missing alt attribute"
 msgstr "Geçersiz HTML: bağlantı içindeki görüntüde alt özniteliği eksik"
 
-#: src/TestNames.php:128
+#: src/TestNames.php:130
 msgid "This link target may be invalid"
 msgstr "Bu bağlantı hedefi geçersiz olabilir"
 
-#: src/TestNames.php:129
+#: src/TestNames.php:131
 msgid "Should this quote be a heading?"
 msgstr "Bu alıntı bir başlık olmalı mı?"
 
-#: src/TestNames.php:130
+#: src/TestNames.php:132
 msgid "Has this document been tagged for screen readers?"
 msgstr "Bu belge ekran okuyucular için etiketlendi mi?"
 
-#: src/TestNames.php:131
+#: src/TestNames.php:133
 msgid "Should this bold text be a heading?"
 msgstr "Bu kalın metin bir başlık olmalı mı?"
 
-#: src/TestNames.php:132
+#: src/TestNames.php:134
 msgid "Should this have list formatting?"
 msgstr "Buna liste biçimlendirmesi uygulanmalı mı?"
 
-#: src/TestNames.php:133
+#: src/TestNames.php:135
 msgid "Broken same-page link"
 msgstr "Bozuk sayfa içi bağlantı"
 
-#: src/TestNames.php:134
+#: src/TestNames.php:136
 msgid "Do not justify text"
 msgstr "Metni iki yana yaslamayın"
 
-#: src/TestNames.php:135
+#: src/TestNames.php:137
 msgid "Nested interactive layout components"
 msgstr "İç içe etkileşimli düzen bileşenleri"
 
-#: src/TestNames.php:136
+#: src/TestNames.php:138
 msgid "Is there an alternative for this PDF?"
 msgstr "Bu PDF için bir alternatif var mı?"
 
-#: src/TestNames.php:137
+#: src/TestNames.php:139
 msgid "Text is too small"
 msgstr "Metin çok küçük"
 
-#: src/TestNames.php:138
+#: src/TestNames.php:140
 msgid "Large blocks of emphasized text are harder to read"
 msgstr "Büyük bloklar halinde vurgulanan metin okunması daha zordur"
 
-#: src/TestNames.php:139
+#: src/TestNames.php:141
 msgid "Do not use sub/superscript as visual formatting"
 msgstr "Alt/üst simgeyi yalnızca görsel biçimlendirme için kullanmayın"
 
-#: src/TestNames.php:140
+#: src/TestNames.php:142
 msgid "Only links should be underlined"
 msgstr "Yalnızca bağlantıların altı çizilmeli"
 
-#: src/TestNames.php:141
+#: src/TestNames.php:143
 msgid "Is this uppercase text needed?"
 msgstr "Bu büyük harf metni gerekli mi?"
 
-#: src/TestNames.php:142
+#: src/TestNames.php:144
 msgid "Are there redundant words in this alt text?"
 msgstr "Bu alternatif metinde gereksiz sözcükler var mı?"
 
-#: src/TestNames.php:143
+#: src/TestNames.php:145
 msgid "Tabindex overrides interrupt the focus order"
 msgstr "Tabindex geçersiz kılmaları odak sırasını bozuyor"
 
-#: src/TestNames.php:144
+#: src/TestNames.php:146
 msgid "This header cell needs text"
 msgstr "Bu başlık hücresine metin gerekiyor"
 
-#: src/TestNames.php:145
+#: src/TestNames.php:147
 msgid "This table has an invalid headers attribute"
 msgstr "Bu tabloda geçersiz bir headers özniteliği var"
 
-#: src/TestNames.php:146
+#: src/TestNames.php:148
 msgid "This table needs a header row and/or column"
 msgstr "Bu tabloda başlık satırı ve/veya sütunu gerekiyor"
 
-#: src/TestNames.php:147
+#: src/TestNames.php:149
 msgid "Content headings should not be used inside tables"
 msgstr "İçerik başlıkları tablo içinde kullanılmamalı"
 
-#: src/TestNames.php:148
+#: src/TestNames.php:150
 msgid "Invalid HTML list"
 msgstr "Geçersiz HTML listesi"
 
-#: src/TestNames.php:377
+#: src/TestNames.php:379
 msgid "Linked images"
 msgstr "Bağlantılı görseller"
 
-#: src/TestNames.php:380
+#: src/TestNames.php:382
 msgid "Tables"
 msgstr "Tablolar"
 
-#: src/TestNames.php:381
+#: src/TestNames.php:383
 msgid "Text formatting"
 msgstr "Metin biçimlendirme"
 
-#: src/TestNames.php:382
+#: src/TestNames.php:384
 msgid "Video, audio, frames"
 msgstr "Video, ses, çerçeveler"
 
-#: src/TestNames.php:383
+#: src/TestNames.php:385
 msgid "Contrast"
 msgstr "Kontrast"
 
-#: src/TestNames.php:384
+#: src/TestNames.php:386
 msgid "Forms"
 msgstr "Formlar"
 
-#: src/TestNames.php:385
+#: src/TestNames.php:387
 msgid "ARIA and focus"
 msgstr "ARIA ve odak"
 
-#: src/TestNames.php:386
+#: src/TestNames.php:388
 msgid "Page metadata"
 msgstr "Sayfa meta verileri"

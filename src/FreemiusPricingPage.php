@@ -226,7 +226,10 @@ final class FreemiusPricingPage {
 
 		$p_not_free = esc_html__( 'Editoria11y is not, however, free to develop or support.', 'editoria11y' );
 
-		$p_csa = esc_html__( 'The "Community Supported Add-ons" (CSA) project fills the gap: project members support the development of the Editoria11y library, its CMS plugins, and the CSA suite: a rapidly growing set of quality assurance tools that provide similar functionality to commercial products, open-source and on-prem. In return, they get access to premium features and support.', 'editoria11y' );
+		$p_csa = wp_kses(
+			__( 'The "Community Supported Add-ons" (CSA) project fills the gap: project members support the development of the Editoria11y library, its CMS plugins, and the CSA suite: a rapidly growing set of quality assurance tools that provide similar functionality to commercial products, open-source and on-prem. In return, they get access to premium features like <strong>developer and contrast tests, the custom rule builder and a site crawler</strong>.', 'editoria11y' ),
+			$inline_strong
+		);
 
 		$supporters_link = sprintf(
 			'<a href="%1$s"><strong>%2$s</strong></a>',
@@ -237,7 +240,7 @@ final class FreemiusPricingPage {
 		$p_contribute = wp_kses(
 			sprintf(
 				/* translators: %s: link to the CSA supporters page. */
-				__( 'This is a <strong>"contribute what you can"</strong> model. The %s has options for different financial support levels (from 25%% to 150%%), cross-platform (WordPress plus Drupal) licenses, unlimited-site options, and non-financial alternate paths for project support.', 'editoria11y' ),
+				__( 'This is a <strong>contribute what you can</strong> model; the quick checkout prices below are for full support. The %s has options for different support levels (from 10%% to 150%%), cross-platform (WordPress plus Drupal) licenses, unlimited-site options, and non-financial paths to project membership.', 'editoria11y' ),
 				$supporters_link
 			),
 			array(

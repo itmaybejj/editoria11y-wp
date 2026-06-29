@@ -105,15 +105,32 @@ class SettingsValidator {
 		// Production callers gate via `ed11y_is_csa_active()` (not Freemius
 		// directly) so tests can simulate CSA via the
 		// `ed11y_is_csa_active` filter.
+		// Distinguish a genuine settings-form submission from a programmatic
+		// update_option() write. The per-site form emits a hidden
+		// `_ed11y_form_submit` marker (see SettingsPage::render_page());
+		// programmatic writers — the Installer schema/seed backfills, the
+		// NetworkDefaultsWorker seeder/backfill, and any third-party code —
+		// never carry it. Only a real submission may re-derive `tests_off`
+		// or run CSA routing: without the marker, a write that lacks the
+		// form's `tests_enabled` sub-array would be misread as "every
+		// checkbox unchecked" and clobber `tests_off` to "every content test
+		// off" (the v2->v3 "all tests off" bug). This marker is the single
+		// guard for every programmatic writer — it replaced the former
+		// NetworkDefaultsWorker detach-the-filter helper.
+		$is_form_submit = array_key_exists( '_ed11y_form_submit', $settings );
+		unset( $settings['_ed11y_form_submit'] );
+
 		$handled_csa = false;
 
 		// CSA-mode branch wrapped in the preprocessor gate so it strips
 		// from the free build. The `$handled_csa` flag, rather than an
 		// `if/else`, gates the free branch — Freemius's preprocessor only
 		// removes the `is__premium_only()` block, so a sibling `else`
-		// would be orphaned and parse-fail.
+		// would be orphaned and parse-fail. The `$is_form_submit` guards sit
+		// on the INNER conditions so the `is__premium_only()` marker line the
+		// strip script matches stays pristine.
 
-		if ( ! $handled_csa ) {
+		if ( $is_form_submit && ! $handled_csa ) {
 			$existing_off          = ed11y_get_raw_setting( 'tests_off' );
 			$enabled_post          = isset( $settings['tests_enabled'] ) && is_array( $settings['tests_enabled'] )
 				? $settings['tests_enabled']

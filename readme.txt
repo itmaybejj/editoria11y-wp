@@ -1,7 +1,7 @@
 === Editoria11y Accessibility Checker ===
 Contributors: itmaybejj, partyka
 Tags: accessibility checker, automated testing, quality assurance, SEO
-Stable tag: 3.0.0-alpha1
+Stable tag: 3.0.0-alpha2
 Tested up to: 7.0
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -185,7 +185,7 @@ New feature development is usually sponsored by grants from academic institution
 
 == Changelog ==
 
-= 3.0.0-alpha1 =
+= 3.0.0-alpha2 =
 * Adds many new content editor tests and translations.
 * Adds robust multisite configuration management (defaults and overrides).
 * Adds a [supporter tier](https://editoria11y.com/license/) with developer tests, a custom test builder, role-based split configuration (who sees which test) and a crawler.

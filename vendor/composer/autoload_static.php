@@ -45,7 +45,6 @@ class ComposerStaticInit36cef893ec8edd1d2c416c66b742feb2
         'Editoria11y\\Form\\TestStateNormalizer' => __DIR__ . '/../..' . '/src/Form/TestStateNormalizer.php',
         'Editoria11y\\FreemiusAccessibilityShim' => __DIR__ . '/../..' . '/src/FreemiusAccessibilityShim.php',
         'Editoria11y\\FreemiusContactFallback' => __DIR__ . '/../..' . '/src/FreemiusContactFallback.php',
-        'Editoria11y\\FreemiusOptInNag' => __DIR__ . '/../..' . '/src/FreemiusOptInNag.php',
         'Editoria11y\\FreemiusOverrides' => __DIR__ . '/../..' . '/src/FreemiusOverrides.php',
         'Editoria11y\\FreemiusPricingPage' => __DIR__ . '/../..' . '/src/FreemiusPricingPage.php',
         'Editoria11y\\Installer' => __DIR__ . '/../..' . '/src/Installer.php',

@@ -113,6 +113,39 @@ final class SettingsContext {
 	}
 
 	/**
+	 * Pre-selection value for a CSA "choice" field — a radio group or
+	 * `<select>` that always needs exactly one option marked selected, so it
+	 * cannot render a meaningful "blank" state the way a text field can.
+	 *
+	 * In `network` context: the raw stored network default, falling back to
+	 * the hardcoded module default when the key has never been authored. This
+	 * is what makes a never-configured choice field pre-select the module
+	 * default — mirroring the per-site page — while still reading the
+	 * *network* blob once a default has been saved. (Reading
+	 * {@see ed11y_get_csa_setting()} here would instead surface the network
+	 * admin's *current blog* value, so a saved network default would be
+	 * invisible in the UI and re-saving would silently seed the wrong value.)
+	 *
+	 * In `site` context: the effective per-site value, exactly as
+	 * {@see ed11y_get_csa_setting()} returns it (including the network-lock
+	 * overlay), so a locked field still shows the enforced network value.
+	 *
+	 * Text / textarea fields do NOT need this — they read
+	 * {@see get_csa_raw_setting()} and let an empty value reveal the
+	 * placeholder default. Use this only for radios / selects.
+	 *
+	 * @param string $key CSA setting key.
+	 * @return mixed Stored/effective value used to pre-select an option.
+	 */
+	public static function get_csa_choice_setting( string $key ) {
+		if ( self::is_network() ) {
+			$raw = ed11y_get_network_default_csa_setting( $key );
+			return '' !== $raw ? $raw : ed11y_get_csa_default_options( $key );
+		}
+		return ed11y_get_csa_setting( $key );
+	}
+
+	/**
 	 * Attribute string to splice into an `<input>` / `<select>` /
 	 * `<textarea>` opening tag: ` disabled` when the key is locked at
 	 * network level AND we're in `site` context, otherwise empty.
@@ -228,9 +261,9 @@ final class SettingsContext {
 	 *                whose stored values are still tracking the network
 	 *                (see {@see NetworkDefaultsWorker}).
 	 *   - `'lock'` → enforce all four at read time; sites cannot override.
-	 *   - `''`     → "no network default" — the four values are stored
-	 *                but never propagate. Authoring path for "remove the
-	 *                bundle default entirely."
+	 *
+	 * Like the per-key dropdown there is no "no network default" option;
+	 * an empty or unrecognized stored mode falls back to `'new'`.
 	 *
 	 * The bundle entry is the single source of truth for these four
 	 * keys' propagation; per-key modes for them are rejected by the
@@ -247,11 +280,13 @@ final class SettingsContext {
 		$storage = ed11y_get_network_default_csa_settings_storage();
 		$current = is_string( $storage['modes'][ $bundle_key ] ?? null ) ? $storage['modes'][ $bundle_key ] : '';
 		$options = array(
-			''     => __( '— No network default —', 'editoria11y' ),
 			'new'  => __( 'Default for new sites', 'editoria11y' ),
-			'all'  => __( 'Default for all sites (skip custom values)', 'editoria11y' ),
-			'lock' => __( 'Override for all sites (delete custom values)', 'editoria11y' ),
+			'all'  => __( 'Default for all sites (keep custom settings)', 'editoria11y' ),
+			'lock' => __( 'Overwrite for all sites (delete custom settings)', 'editoria11y' ),
 		);
+		if ( ! isset( $options[ $current ] ) ) {
+			$current = 'new';
+		}
 		?>
 		<p class="ed11y-network-mode ed11y-bundle-mode">
 			<label>
@@ -272,9 +307,17 @@ final class SettingsContext {
 	/**
 	 * Shared mode-dropdown markup so the wording stays in one place.
 	 *
-	 * An empty `$current` selects the implicit "no network default" option
-	 * (no entry in `modes[]`), which the validator drops; that is the
-	 * authoring path for "remove this network default entirely."
+	 * There is no "no network default" option: every field on the network
+	 * page propagates at least to new sites. A field left blank simply has
+	 * nothing to propagate — the validator drops the mode for empty values
+	 * ({@see \Editoria11y\Form\NetworkSettingsValidator::filter_modes()}), so
+	 * "leave the value blank" is the authoring path for "no network default
+	 * for this key" rather than a dropdown choice.
+	 *
+	 * An empty or unrecognized `$current` (never-saved key, or a legacy blob
+	 * predating this control) falls back to `'new'`, so the rendered
+	 * selection always matches the floor the validator will store instead of
+	 * relying on the browser's implicit "first option" behavior.
 	 *
 	 * @param string $name_prefix `free_modes` or `csa_modes`.
 	 * @param string $key         Setting key.
@@ -282,11 +325,13 @@ final class SettingsContext {
 	 */
 	private static function echo_mode_dropdown( string $name_prefix, string $key, string $current ): void {
 		$options = array(
-			''     => __( '— No network default —', 'editoria11y' ),
 			'new'  => __( 'Default for new sites', 'editoria11y' ),
-			'all'  => __( 'Default for all sites (skip custom values)', 'editoria11y' ),
-			'lock' => __( 'Override for all sites (delete custom values)', 'editoria11y' ),
+			'all'  => __( 'Default for all sites (keep custom settings)', 'editoria11y' ),
+			'lock' => __( 'Overwrite for all sites (delete custom settings)', 'editoria11y' ),
 		);
+		if ( ! isset( $options[ $current ] ) ) {
+			$current = 'new';
+		}
 		?>
 		<p class="ed11y-network-mode">
 			<label>

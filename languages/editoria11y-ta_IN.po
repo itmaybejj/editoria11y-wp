@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: editoria11y 3.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/editoria11y\n"
-"POT-Creation-Date: 2026-05-25T19:20:04-04:00\n"
+"POT-Creation-Date: 2026-06-14T16:00:44-04:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Language-Team: Editoria11y\n"
 "Language: ta\n"
@@ -40,12 +40,12 @@ msgstr "https://editoria11y.com"
 msgid "Editoria11y is missing its vendored dependencies. Run \"composer install\" inside the plugin directory or reinstall the plugin from a complete release archive."
 msgstr "Editoria11y-க்கு தேவையான சார்புகள் இல்லை. செருகுநிரல் கோப்பகத்தில் \"composer install\" இயக்கவும் அல்லது முழுமையான வெளியீட்டு காப்பகத்திலிருந்து செருகுநிரலை மீண்டும் நிறுவிக்கவும்."
 
-#: editoria11y.php:214
+#: editoria11y.php:282
 msgid "Every fifteen minutes (Editoria11y rehash)"
 msgstr "ஒவ்வொரு பதினைந்து நிமிடங்களுக்கும் (Editoria11y மறுசீரமைப்பு)"
 
 #: src/Admin/Dashboard.php:36 src/Admin/Dashboard.php:54
-#: src/Admin/Dashboard.php:196
+#: src/Admin/Dashboard.php:197
 msgid "Editoria11y Accessibility Report"
 msgstr "Editoria11y அணுகல்தன்மை அறிக்கை"
 
@@ -53,222 +53,222 @@ msgstr "Editoria11y அணுகல்தன்மை அறிக்கை"
 msgid "Accessibility"
 msgstr "அணுகல்தன்மை"
 
-#: src/Admin/Dashboard.php:120
+#: src/Admin/Dashboard.php:121
 msgid "View all issues"
 msgstr "அனைத்து சிக்கல்களையும் காண்க"
 
-#: src/Admin/Dashboard.php:121
+#: src/Admin/Dashboard.php:122
 msgid "View issues on all pages"
 msgstr "அனைத்து பக்கங்களிலும் உள்ள சிக்கல்களைக் காண்க"
 
 #. translators: %s: name of an alert/test, e.g. "Image is missing alt text".
-#: src/Admin/Dashboard.php:123
+#: src/Admin/Dashboard.php:124
 #, php-format
 msgid "Alert report: \"%s\""
 msgstr "எச்சரிக்கை அறிக்கை: \"%s\""
 
 #. translators: %s: post type slug, e.g. "page" or "post".
-#: src/Admin/Dashboard.php:125
+#: src/Admin/Dashboard.php:126
 #, php-format
 msgid "Alerts on pages of type \"%s\""
 msgstr "\"%s\" வகை பக்கங்களில் எச்சரிக்கைகள்"
 
-#: src/Admin/Dashboard.php:126
+#: src/Admin/Dashboard.php:127
 msgid "Alerts on pages created by author"
 msgstr "ஆசிரியரால் உருவாக்கப்பட்ட பக்கங்களில் எச்சரிக்கைகள்"
 
 #. translators: %s: author display name.
-#: src/Admin/Dashboard.php:128
+#: src/Admin/Dashboard.php:129
 #, php-format
 msgid "Alerts on pages created by %s"
 msgstr "%s உருவாக்கிய பக்கங்களில் எச்சரிக்கைகள்"
 
-#: src/Admin/Dashboard.php:129
+#: src/Admin/Dashboard.php:130
 msgid "Alerts dismissed by"
 msgstr "நிராகரிக்கப்பட்ட எச்சரிக்கைகள்"
 
 #. translators: %s: user display name of the dismissor.
-#: src/Admin/Dashboard.php:131
+#: src/Admin/Dashboard.php:132
 #, php-format
 msgid "Alerts dismissed by %s"
 msgstr "%s நிராகரித்த எச்சரிக்கைகள்"
 
 #. translators: %s: post-status label, e.g. "Published" or "Draft".
-#: src/Admin/Dashboard.php:133
+#: src/Admin/Dashboard.php:134
 #, php-format
 msgid "%s pages"
 msgstr "%s பக்கங்கள்"
 
-#: src/Admin/Dashboard.php:134
+#: src/Admin/Dashboard.php:135
 msgid "API error."
 msgstr "API பிழை."
 
-#: src/Admin/Dashboard.php:135
+#: src/Admin/Dashboard.php:136
 msgid "loading..."
 msgstr "ஏற்றுகிறது..."
 
 #. translators: %d: pagination page number.
-#: src/Admin/Dashboard.php:137
+#: src/Admin/Dashboard.php:138
 #, php-format
 msgid "Page %d"
 msgstr "பக்கம் %d"
 
-#: src/Admin/Dashboard.php:138
+#: src/Admin/Dashboard.php:139
 msgid "Alerts"
 msgstr "எச்சரிக்கைகள்"
 
-#: src/Admin/Dashboard.php:139
+#: src/Admin/Dashboard.php:140
 msgid "Dev alerts"
 msgstr "டெவலப்பர் எச்சரிக்கைகள்"
 
-#: src/Admin/Dashboard.php:140
+#: src/Admin/Dashboard.php:141
 msgid "Page"
 msgstr "பக்கம்"
 
-#: src/Admin/Dashboard.php:141
+#: src/Admin/Dashboard.php:142
 msgid "Path"
 msgstr "பாதை"
 
-#: src/Admin/Dashboard.php:142
+#: src/Admin/Dashboard.php:143
 msgid "Type"
 msgstr "வகை"
 
-#: src/Admin/Dashboard.php:143 src/Form/CrawlerPage.php:205
+#: src/Admin/Dashboard.php:144 src/Form/CrawlerPage.php:205
 #: src/Form/CustomRulesPage.php:194 src/Form/NetworkCustomRulesPage.php:154
 msgid "Status"
 msgstr "நிலை"
 
-#: src/Admin/Dashboard.php:144
+#: src/Admin/Dashboard.php:145
 msgid "Updated"
 msgstr "புதுப்பிக்கப்பட்டது"
 
-#: src/Admin/Dashboard.php:145
+#: src/Admin/Dashboard.php:146
 msgid "Author"
 msgstr "ஆசிரியர்"
 
-#: src/Admin/Dashboard.php:146
+#: src/Admin/Dashboard.php:147
 msgid "Detected"
 msgstr "கண்டறியப்பட்டது"
 
-#: src/Admin/Dashboard.php:147
+#: src/Admin/Dashboard.php:148
 msgid "Alert"
 msgstr "எச்சரிக்கை"
 
-#: src/Admin/Dashboard.php:148
+#: src/Admin/Dashboard.php:149
 msgid "Count"
 msgstr "எண்ணிக்கை"
 
-#: src/Admin/Dashboard.php:149
+#: src/Admin/Dashboard.php:150
 msgid "Pages"
 msgstr "பக்கங்கள்"
 
-#: src/Admin/Dashboard.php:150
+#: src/Admin/Dashboard.php:151
 msgid "On"
 msgstr "இல்"
 
-#: src/Admin/Dashboard.php:151
+#: src/Admin/Dashboard.php:152
 msgid "Dismissed alert"
 msgstr "நிராகரிக்கப்பட்ட எச்சரிக்கை"
 
-#: src/Admin/Dashboard.php:152
+#: src/Admin/Dashboard.php:153
 msgid "Marked"
 msgstr "குறிக்கப்பட்டது"
 
-#: src/Admin/Dashboard.php:153
+#: src/Admin/Dashboard.php:154
 msgid "Current"
 msgstr "தற்போதைய"
 
-#: src/Admin/Dashboard.php:154
+#: src/Admin/Dashboard.php:155
 msgid "By"
 msgstr "ஆல்"
 
-#: src/Admin/Dashboard.php:155
+#: src/Admin/Dashboard.php:156
 msgid "Alerts by page"
 msgstr "பக்கத்தால் எச்சரிக்கைகள்"
 
-#: src/Admin/Dashboard.php:156
+#: src/Admin/Dashboard.php:157
 msgid "Recent alerts"
 msgstr "சமீபத்திய எச்சரிக்கைகள்"
 
-#: src/Admin/Dashboard.php:157
+#: src/Admin/Dashboard.php:158
 msgid "Alert types"
 msgstr "எச்சரிக்கை வகைகள்"
 
-#: src/Admin/Dashboard.php:158
+#: src/Admin/Dashboard.php:159
 msgid "Dismissals"
 msgstr "நிராகரிப்புகள்"
 
-#: src/Admin/Dashboard.php:159
+#: src/Admin/Dashboard.php:160
 msgid "Recent dismissals"
 msgstr "சமீபத்திய நிராகரிப்புகள்"
 
-#: src/Admin/Dashboard.php:160
+#: src/Admin/Dashboard.php:161
 msgid "Download results as CSV"
 msgstr "முடிவுகளை CSV ஆக பதிவிறக்கவும்"
 
-#: src/Admin/Dashboard.php:161
+#: src/Admin/Dashboard.php:162
 msgid "None"
 msgstr "இல்லை"
 
-#: src/Admin/Dashboard.php:162
+#: src/Admin/Dashboard.php:163
 msgid "No"
 msgstr "இல்லை"
 
-#: src/Admin/Dashboard.php:163
+#: src/Admin/Dashboard.php:164
 msgid "Yes"
 msgstr "ஆம்"
 
-#: src/Admin/Dashboard.php:164
+#: src/Admin/Dashboard.php:165
 msgid "n/a"
 msgstr "n/a"
 
-#: src/Admin/Dashboard.php:165
+#: src/Admin/Dashboard.php:166
 msgid "Empty Link"
 msgstr "காலி இணைப்பு"
 
 #. translators: tooltip on a column header that's currently sorted descending.
-#: src/Admin/Dashboard.php:167
+#: src/Admin/Dashboard.php:168
 msgid "descending"
 msgstr "இறங்கு வரிசை"
 
 #. translators: tooltip on a column header that's currently sorted ascending.
-#: src/Admin/Dashboard.php:169
+#: src/Admin/Dashboard.php:170
 msgid "ascending"
 msgstr "ஏறு வரிசை"
 
 #. translators: %d: number of result rows returned (singular form).
-#: src/Admin/Dashboard.php:172
+#: src/Admin/Dashboard.php:173
 #, php-format
 msgid "%d result"
 msgstr "%d முடிவு"
 
 #. translators: %d: number of result rows returned (plural form).
-#: src/Admin/Dashboard.php:174
+#: src/Admin/Dashboard.php:175
 #, php-format
 msgid "%d results"
 msgstr "%d முடிவுகள்"
 
-#: src/Admin/Dashboard.php:179
+#: src/Admin/Dashboard.php:180
 msgid "Published"
 msgstr "வெளியிடப்பட்டது"
 
-#: src/Admin/Dashboard.php:180
+#: src/Admin/Dashboard.php:181
 msgid "Scheduled"
 msgstr "திட்டமிடப்பட்டது"
 
-#: src/Admin/Dashboard.php:181
+#: src/Admin/Dashboard.php:182
 msgid "Draft"
 msgstr "வரைவு"
 
-#: src/Admin/Dashboard.php:182
+#: src/Admin/Dashboard.php:183
 msgid "Pending"
 msgstr "நிலுவையில் உள்ளது"
 
-#: src/Admin/Dashboard.php:183
+#: src/Admin/Dashboard.php:184
 msgid "Private"
 msgstr "தனிப்பட்டது"
 
-#: src/Admin/Dashboard.php:184
+#: src/Admin/Dashboard.php:185
 msgid "Trash"
 msgstr "குப்பை"
 
@@ -348,22 +348,23 @@ msgstr "குறைந்தது ஒரு விதி அளவுகோல
 msgid "Element set \"%s\" is not one of the recognized element categories."
 msgstr "தனிம தொகுப்பு \"%s\" அங்கீகரிக்கப்பட்ட தனிம வகைகளில் ஒன்றல்ல."
 
-#: src/Form/CrawlerPage.php:59 src/Form/CrawlerPage.php:60
+#: src/Form/CrawlerPage.php:59
 msgid "Editoria11y Crawler"
 msgstr "Editoria11y ஊர்வன்"
+
+#: src/Form/CrawlerPage.php:60 src/Form/CrawlerPage.php:146
+#: src/Form/SettingsPage.php:303
+msgid "Crawler"
+msgstr "ஊர்வன்"
 
 #: src/Form/CrawlerPage.php:126
 msgid "You do not have permission to use the crawler."
 msgstr "ஊர்வனைப் பயன்படுத்த உங்களுக்கு அனுமதி இல்லை."
 
 #: src/Form/CrawlerPage.php:130 src/Form/CustomRulesPage.php:111
-#: src/Form/SettingsPage.php:188 src/Form/SettingsPage.php:189
+#: src/Form/SettingsPage.php:259 src/Form/SettingsPage.php:260
 msgid "Editoria11y"
 msgstr "Editoria11y"
-
-#: src/Form/CrawlerPage.php:146 src/Form/SettingsPage.php:251
-msgid "Crawler"
-msgstr "ஊர்வன்"
 
 #: src/Form/CrawlerPage.php:149
 msgid "The crawler is a CSA feature. Activate CSA to schedule sitewide accessibility scans across posts, pages, and custom post types."
@@ -378,7 +379,7 @@ msgid "Editoria11y reports populate and update in real time as editors work, so 
 msgstr "Editoria11y அறிக்கைகள் ஆசிரியர்கள் பணிசெய்யும்போது நேரலையில் நிரப்பப்பட்டு புதுப்பிக்கப்படுகின்றன, எனவே கைமுறை ஊர்வல் பொதுவாக செருகுநிரலை முதலில் நிறுவும்போது அல்லது முக்கிய தீம் அல்லது உள்ளமைவு மாற்றங்களுக்குப் பிறகு மட்டுமே உதவியாக இருக்கும்."
 
 #: src/Form/CrawlerPage.php:175 src/Form/CustomRulesPage.php:501
-#: src/Form/NetworkCustomRulesPage.php:288 src/Form/NetworkLicensePage.php:393
+#: src/Form/NetworkCustomRulesPage.php:288 src/Form/NetworkLicensePage.php:416
 msgid "Cancel"
 msgstr "ரத்து செய்"
 
@@ -555,17 +556,14 @@ msgid "%s hours"
 msgstr "%s மணி நேரங்கள்"
 
 #: src/Form/CustomRulesPage.php:84 src/Form/CustomRulesPage.php:85
-msgid "Editoria11y Custom Rules"
-msgstr "Editoria11y தனிப்பயன் விதிகள்"
+#: src/Form/CustomRulesPage.php:143 src/Form/CustomRulesPage.php:174
+msgid "Custom Rules"
+msgstr "தனிப்பயன் விதிகள்"
 
 #: src/Form/CustomRulesPage.php:104 src/Form/CustomRulesPage.php:338
 #: src/Form/CustomRulesPage.php:880 src/Form/CustomRulesPage.php:1030
 msgid "You do not have permission to manage custom rules."
 msgstr "தனிப்பயன் விதிகளை நிர்வகிக்க உங்களுக்கு அனுமதி இல்லை."
-
-#: src/Form/CustomRulesPage.php:143 src/Form/CustomRulesPage.php:174
-msgid "Custom Rules"
-msgstr "தனிப்பயன் விதிகள்"
 
 #: src/Form/CustomRulesPage.php:146
 msgid "Custom rules are a CSA feature. Activate CSA to add and edit rules; existing rules remain stored and become editable again on reactivation."
@@ -613,7 +611,7 @@ msgstr "அதே ID கொண்ட தள விதியால் மேல�
 
 #: src/Form/CustomRulesPage.php:245 src/Form/CustomRulesPage.php:304
 #: src/Form/CustomRulesPage.php:600 src/Form/CustomRulesPage.php:604
-#: src/Form/NetworkCustomRulesPage.php:176 src/Form/SettingsFields.php:742
+#: src/Form/NetworkCustomRulesPage.php:176 src/Form/SettingsFields.php:787
 msgid "Active"
 msgstr "செயலில்"
 
@@ -655,7 +653,7 @@ msgstr "இந்த தளம்"
 
 #: src/Form/CustomRulesPage.php:353
 msgid "No matching network rule found to toggle."
-msgstr "நிமிர்த்த பொருந்தும் நெட்வொர்க் விதி எதுவும் கிடைக்கவில்லை."
+msgstr "நிலைமாற்ற பொருந்தும் நெட்வொர்க் விதி எதுவும் கிடைக்கவில்லை."
 
 #: src/Form/CustomRulesPage.php:360
 msgid "This rule is locked by the network admin and cannot be disabled per-site."
@@ -685,7 +683,7 @@ msgstr "விதிகள் பட்டியலுக்கு திரு�
 msgid "Edit custom rule"
 msgstr "தனிப்பயன் விதியை திருத்தவும்"
 
-#: src/Form/CustomRulesPage.php:484 src/Form/SettingsFields.php:225
+#: src/Form/CustomRulesPage.php:484 src/Form/SettingsFields.php:247
 msgid "Add custom rule"
 msgstr "தனிப்பயன் விதி சேர்க்கவும்"
 
@@ -811,7 +809,7 @@ msgstr "பொதுவான தேர்வுகள்"
 msgid "All text elements: Headings, Paragraphs, Blockquotes and Lists"
 msgstr "அனைத்து உரை தனிமங்கள்: தலைப்புகள், பத்திகள், தொகுதி மேற்கோள்கள் மற்றும் பட்டியல்கள்"
 
-#: src/Form/CustomRulesPage.php:729 src/TestNames.php:376
+#: src/Form/CustomRulesPage.php:729 src/TestNames.php:378
 msgid "Links"
 msgstr "இணைப்புகள்"
 
@@ -819,11 +817,11 @@ msgstr "இணைப்புகள்"
 msgid "Paragraphs"
 msgstr "பத்திகள்"
 
-#: src/Form/CustomRulesPage.php:731 src/TestNames.php:379
+#: src/Form/CustomRulesPage.php:731 src/TestNames.php:381
 msgid "Headings"
 msgstr "தலைப்புகள்"
 
-#: src/Form/CustomRulesPage.php:732 src/TestNames.php:378
+#: src/Form/CustomRulesPage.php:732 src/TestNames.php:380
 msgid "Images"
 msgstr "படங்கள்"
 
@@ -957,7 +955,7 @@ msgstr "இப்போது மேம்படுத்தலை இயக்�
 msgid "Retry"
 msgstr "மீண்டும் முயற்சிக்கவும்"
 
-#: src/Form/MigrationPanel.php:256 src/Form/NetworkLicensePage.php:195
+#: src/Form/MigrationPanel.php:256 src/Form/NetworkLicensePage.php:196
 msgid "Insufficient permissions."
 msgstr "போதுமான அனுமதிகள் இல்லை."
 
@@ -970,7 +968,7 @@ msgstr "Editoria11y நெட்வொர்க் தனிப்பயன் �
 #: src/Form/NetworkCustomRulesPage.php:107
 #: src/Form/NetworkCustomRulesPage.php:311
 #: src/Form/NetworkCustomRulesPage.php:384 src/Form/NetworkSettingsPage.php:134
-#: src/Form/NetworkSettingsPage.php:466
+#: src/Form/NetworkSettingsPage.php:436
 msgid "Insufficient privileges."
 msgstr "போதுமான சலுகைகள் இல்லை."
 
@@ -1006,7 +1004,7 @@ msgstr "நெட்வொர்க் விதிகள் பட்டிய�
 msgid "Edit network custom rule"
 msgstr "நெட்வொர்க் தனிப்பயன் விதியை திருத்தவும்"
 
-#: src/Form/NetworkCustomRulesPage.php:271 src/Form/SettingsFields.php:188
+#: src/Form/NetworkCustomRulesPage.php:271 src/Form/SettingsFields.php:210
 msgid "Add network custom rule"
 msgstr "நெட்வொர்க் தனிப்பயன் விதி சேர்க்கவும்"
 
@@ -1030,15 +1028,11 @@ msgstr "நீக்க பொருந்தும் நெட்வொர்�
 msgid "Network custom rule deleted."
 msgstr "நெட்வொர்க் தனிப்பயன் விதி நீக்கப்பட்டது."
 
-#: src/Form/NetworkDefaultsWorker.php:432
-msgid "Tests + roles assignment"
-msgstr "சோதனைகள் + பாத்திர ஒதுக்கீடு"
-
 #: src/Form/NetworkLicensePage.php:58 src/Form/NetworkLicensePage.php:59
 msgid "Editoria11y license"
 msgstr "Editoria11y உரிமம்"
 
-#: src/Form/NetworkLicensePage.php:83 src/FreemiusAccessControl.php:281
+#: src/Form/NetworkLicensePage.php:83 src/FreemiusAccessControl.php:294
 msgid "Only network administrators can manage the Editoria11y license."
 msgstr "Editoria11y உரிமத்தை நெட்வொர்க் நிர்வாகிகள் மட்டுமே நிர்வகிக்க முடியும்."
 
@@ -1098,123 +1092,124 @@ msgstr "%d தளங்களில் பிழையுடன் முடக�
 msgid "An unknown error occurred."
 msgstr "தெரியாத பிழை ஏற்பட்டது."
 
-#: src/Form/NetworkLicensePage.php:110
-msgid "Paste your Editoria11y CSA license key to begin."
-msgstr "தொடங்க உங்கள் Editoria11y CSA உரிம விசையை ஒட்டவும்."
-
+#. translators: The <a>…</a> tags mark the phrase that will be rendered as a link to https://editoria11y.com/license. Keep the tags around the equivalent phrase in your language; do not add an href.
 #: src/Form/NetworkLicensePage.php:111
+msgid "Paste your <a>Editoria11y CSA license key</a> to begin."
+msgstr "தொடங்குவதற்கு உங்கள் <a>Editoria11y CSA உரிம விசையை</a> ஒட்டவும்."
+
+#: src/Form/NetworkLicensePage.php:112
 msgid "Deactivate the Editoria11y CSA license on every site in this network? Each site's license slot will be returned to your Freemius account."
 msgstr "இந்த நெட்வொர்க்கில் உள்ள ஒவ்வொரு தளத்திலும் Editoria11y CSA உரிமத்தை முடக்கவா? ஒவ்வொரு தளத்தின் உரிம இடமும் உங்கள் Freemius கணக்கிற்கு திரும்பும்."
 
-#: src/Form/NetworkLicensePage.php:112
-msgid "Activate your license"
-msgstr "உங்கள் உரிமத்தை இயக்கவும்"
-
-#: src/Form/NetworkLicensePage.php:113 src/Form/NetworkLicensePage.php:366
-msgid "Deactivate license network-wide"
-msgstr "உரிமத்தை நெட்வொர்க் முழுவதும் முடக்கவும்"
+#: src/Form/NetworkLicensePage.php:113
+msgid "Activate a license network-wide"
+msgstr "உரிமத்தை நெட்வொர்க் முழுவதும் இயக்கவும்"
 
 #: src/Form/NetworkLicensePage.php:114
+msgid "Deactivate licenses network-wide"
+msgstr "உரிமங்களை நெட்வொர்க் முழுவதும் முடக்கவும்"
+
+#: src/Form/NetworkLicensePage.php:115
 msgid "Activation in progress"
 msgstr "இயக்கம் நடைபெறுகிறது"
 
-#: src/Form/NetworkLicensePage.php:115
+#: src/Form/NetworkLicensePage.php:116
 msgid "Deactivation in progress"
 msgstr "முடக்கம் நடைபெறுகிறது"
 
-#: src/Form/NetworkLicensePage.php:119
+#: src/Form/NetworkLicensePage.php:120
 msgid "Editoria11y CSA license"
 msgstr "Editoria11y CSA உரிமம்"
 
-#: src/Form/NetworkLicensePage.php:122
-msgid "Activate your Editoria11y CSA license on every site in this network. Activation runs in the background via WP-Cron; you can leave this page open or come back later."
-msgstr "இந்த நெட்வொர்க்கில் உள்ள ஒவ்வொரு தளத்திலும் உங்கள் Editoria11y CSA உரிமத்தை இயக்கவும். WP-Cron வழியாக பின்னணியில் இயக்கம் நடைபெறும்; இந்த பக்கத்தை திறந்து விட்டு போகலாம் அல்லது பிறகு திரும்பலாம்."
+#: src/Form/NetworkLicensePage.php:123
+msgid "Background licensing tasks run slowly via WP-Cron; leave this page open to run a batch every 15 seconds."
+msgstr "பின்னணி உரிம பணிகள் WP-Cron வழியாக மெதுவாக இயங்கும்; ஒவ்வொரு 15 வினாடிகளுக்கும் ஒரு தொகுதியை இயக்க இந்த பக்கத்தை திறந்த நிலையில் வைத்திருங்கள்."
 
-#: src/Form/NetworkLicensePage.php:137
+#: src/Form/NetworkLicensePage.php:138
 msgid "JavaScript is required to use this page."
 msgstr "இந்த பக்கத்தை பயன்படுத்த JavaScript தேவைப்படுகிறது."
 
-#: src/Form/NetworkLicensePage.php:170
+#: src/Form/NetworkLicensePage.php:171
 msgid "DISABLE_WP_CRON is enabled on this site. The activation worker depends on WP-Cron firing — make sure your system cron is hitting wp-cron.php, or activation will not progress."
 msgstr "இந்த தளத்தில் DISABLE_WP_CRON இயக்கப்பட்டுள்ளது. இயக்க தொழிலாளர் WP-Cron இயக்கத்தை சார்ந்துள்ளது — உங்கள் கணினி cron wp-cron.php-ஐ அணுகுகிறதா என்பதை உறுதிப்படுத்தவும், இல்லையெனில் இயக்கம் முன்னேறாது."
 
-#: src/Form/NetworkLicensePage.php:333
-msgid "sk_••••••••••••••••"
-msgstr "sk_••••••••••••••••"
-
-#: src/Form/NetworkLicensePage.php:340
+#: src/Form/NetworkLicensePage.php:347
 msgid "Activate on every site in this network"
 msgstr "இந்த நெட்வொர்க்கில் உள்ள ஒவ்வொரு தளத்திலும் இயக்கவும்"
 
-#: src/Form/NetworkLicensePage.php:355
+#: src/Form/NetworkLicensePage.php:378
 msgid "License key"
 msgstr "உரிம விசை"
 
-#: src/Form/NetworkLicensePage.php:378
+#: src/Form/NetworkLicensePage.php:389
+msgid "Deactivate license network-wide"
+msgstr "உரிமத்தை நெட்வொர்க் முழுவதும் முடக்கவும்"
+
+#: src/Form/NetworkLicensePage.php:401
 msgid "Removes the Editoria11y CSA license from every site on the network. Each site's install record stays in place; only the license link is cleared."
 msgstr "நெட்வொர்க்கில் உள்ள ஒவ்வொரு தளத்திலிருந்தும் Editoria11y CSA உரிமத்தை நீக்குகிறது. ஒவ்வொரு தளத்தின் நிறுவல் பதிவு அப்படியே நிலைக்கும்; உரிம இணைப்பு மட்டும் அழிக்கப்படும்."
 
-#: src/Form/NetworkLicensePage.php:437
+#: src/Form/NetworkLicensePage.php:460
 msgid "Retry failed sites"
 msgstr "தோல்வியடைந்த தளங்களை மீண்டும் முயற்சிக்கவும்"
 
-#: src/Form/NetworkLicensePage.php:450
-msgid "Start a new activation"
-msgstr "புதிய இயக்கத்தை தொடங்கவும்"
+#: src/Form/NetworkLicensePage.php:473
+msgid "Modify network license"
+msgstr "நெட்வொர்க் உரிமத்தை மாற்றவும்"
 
-#: src/Form/NetworkLicensePage.php:469
+#: src/Form/NetworkLicensePage.php:492
 msgid "Back"
 msgstr "பின்னால்"
 
-#: src/Form/NetworkLicensePage.php:480
+#: src/Form/NetworkLicensePage.php:503
 msgid "Done"
 msgstr "முடிந்தது"
 
-#: src/Form/NetworkLicensePage.php:487
+#: src/Form/NetworkLicensePage.php:510
 msgid "Cancelled"
 msgstr "ரத்து செய்யப்பட்டது"
 
-#: src/Form/NetworkLicensePage.php:495
+#: src/Form/NetworkLicensePage.php:518
 msgid "Errors"
 msgstr "பிழைகள்"
 
-#: src/Form/NetworkLicenseWorker.php:138
+#: src/Form/NetworkLicenseWorker.php:329
 msgid "License key is required."
 msgstr "உரிம விசை தேவைப்படுகிறது."
 
-#: src/Form/NetworkLicenseWorker.php:146 src/Form/NetworkLicenseWorker.php:197
+#: src/Form/NetworkLicenseWorker.php:337 src/Form/NetworkLicenseWorker.php:393
 msgid "An activation run is already in progress."
 msgstr "ஒரு இயக்க செயல்முறை ஏற்கனவே நடைபெறுகிறது."
 
-#: src/Form/NetworkLicenseWorker.php:262
+#: src/Form/NetworkLicenseWorker.php:465
 msgid "No previous errors to retry."
 msgstr "மீண்டும் முயற்சிக்க முந்தைய பிழைகள் எதுவும் இல்லை."
 
-#: src/Form/NetworkLicenseWorker.php:272
+#: src/Form/NetworkLicenseWorker.php:475
 msgid "License key is no longer stored. Start a new activation."
 msgstr "உரிம விசை இனி சேமிக்கப்படவில்லை. புதிய இயக்கத்தை தொடங்கவும்."
 
-#: src/Form/NetworkLicenseWorker.php:348
+#: src/Form/NetworkLicenseWorker.php:554
 msgid "Freemius SDK wrapper unavailable."
 msgstr "Freemius SDK wrapper கிடைக்கவில்லை."
 
-#: src/Form/NetworkLicenseWorker.php:455
+#: src/Form/NetworkLicenseWorker.php:676
 msgid "SDK _deactivate_license() method unavailable."
 msgstr "SDK _deactivate_license() முறை கிடைக்கவில்லை."
 
-#: src/Form/NetworkLicenseWorker.php:503
+#: src/Form/NetworkLicenseWorker.php:726
 msgid "Deactivation API call did not clear the install license."
 msgstr "முடக்கம் API அழைப்பு நிறுவல் உரிமத்தை அழிக்கவில்லை."
 
-#: src/Form/NetworkLicenseWorker.php:562
+#: src/Form/NetworkLicenseWorker.php:822
 msgid "No valid sites in batch."
 msgstr "தொகுதியில் சரியான தளங்கள் எதுவும் இல்லை."
 
-#: src/Form/NetworkLicenseWorker.php:668
+#: src/Form/NetworkLicenseWorker.php:929
 msgid "Activation API returned an unspecified error."
 msgstr "இயக்கம் API குறிப்பிடப்படாத பிழையை திரும்பியது."
 
-#: src/Form/NetworkLicenseWorker.php:670
+#: src/Form/NetworkLicenseWorker.php:931
 msgid "Install record not created after API call."
 msgstr "API அழைப்புக்குப் பிறகு நிறுவல் பதிவு உருவாக்கப்படவில்லை."
 
@@ -1226,91 +1221,79 @@ msgstr "Editoria11y இயல்புநிலைகள்"
 msgid "Defaults"
 msgstr "இயல்புநிலைகள்"
 
-#: src/Form/NetworkSettingsPage.php:110 src/Form/SettingsPage.php:250
+#: src/Form/NetworkSettingsPage.php:110 src/Form/SettingsPage.php:302
 msgid "Custom rules"
 msgstr "தனிப்பயன் விதிகள்"
 
-#: src/Form/NetworkSettingsPage.php:156
+#: src/Form/NetworkSettingsPage.php:139
 msgid "Editoria11y default or locked network settings"
 msgstr "Editoria11y இயல்புநிலை அல்லது பூட்டப்பட்ட நெட்வொர்க் அமைப்புகள்"
 
-#: src/Form/NetworkSettingsPage.php:160
+#: src/Form/NetworkSettingsPage.php:143
 msgid "Network defaults saved."
 msgstr "நெட்வொர்க் இயல்புநிலைகள் சேமிக்கப்பட்டது."
 
-#: src/Form/NetworkSettingsPage.php:166
-msgid "Network defaults were not saved."
-msgstr "நெட்வொர்க் இயல்புநிலைகள் சேமிக்கப்படவில்லை."
-
-#: src/Form/NetworkSettingsPage.php:167
-msgid "You changed the following settings, but their propagation dropdown is still set to \"No network default\" — your change would not reach any site. Set the dropdown to \"Default for new sites\", \"Default for all sites\", or \"Lock for all sites\" — or revert the value — and save again."
-msgstr "நீங்கள் பின்வரும் அமைப்புகளை மாற்றினீர்கள், ஆனால் அவற்றின் பரப்புதல் கீழ்-இழுப்பு இன்னும் “நெட்வொர்க் இயல்புநிலை இல்லை” என அமைக்கப்பட்டுள்ளது — உங்கள் மாற்றம் எந்த தளத்தையும் சென்றடையாது. கீழ்-இழுப்பை “புதிய தளங்களுக்கு இயல்புநிலை”, “அனைத்து தளங்களுக்கும் இயல்புநிலை”, அல்லது “அனைத்து தளங்களுக்கும் பூட்டவும்” என அமைக்கவும் — அல்லது மதிப்பை மீட்டமைக்கவும் — மீண்டும் சேமிக்கவும்."
-
-#: src/Form/NetworkSettingsPage.php:191
+#: src/Form/NetworkSettingsPage.php:161
 msgid "Save network defaults"
 msgstr "நெட்வொர்க் இயல்புநிலைகளை சேமிக்கவும்"
 
 #. translators: 1: processed sites, 2: total sites, 3: sites updated
-#: src/Form/NetworkSettingsPage.php:289
+#: src/Form/NetworkSettingsPage.php:259
 #, php-format
 msgid "%1$s of %2$s sites visited (%3$s updated)."
 msgstr "%2$s தளங்களில் %1$s பார்வையிடப்பட்டது (%3$s புதுப்பிக்கப்பட்டது)."
 
 #. translators: %s: human-readable duration estimate
-#: src/Form/NetworkSettingsPage.php:305
+#: src/Form/NetworkSettingsPage.php:275
 #, php-format
 msgid "Estimated %s remaining."
 msgstr "மதிப்பிட்டதன்படி %s மீதமுள்ளது."
 
 #. translators: %s: number of errors recorded
-#: src/Form/NetworkSettingsPage.php:318
+#: src/Form/NetworkSettingsPage.php:288
 #, php-format
 msgid "Errors: %s (most recent retained). Check server logs for details."
 msgstr "பிழைகள்: %s (மிகச் சமீபத்தியது வைக்கப்பட்டது). விவரங்களுக்கு சேவையக பதிவுகளை சரிபார்க்கவும்."
 
-#: src/Form/NetworkSettingsPage.php:327
+#: src/Form/NetworkSettingsPage.php:297
 msgid "Saving the form now will restart propagation with the new settings."
 msgstr "இப்போது படிவத்தை சேமிப்பது புதிய அமைப்புகளுடன் பரப்புதலை மீண்டும் தொடங்கும்."
 
-#: src/Form/NetworkSettingsPage.php:390
+#: src/Form/NetworkSettingsPage.php:360
 msgid "Propagating network defaults to existing sites…"
 msgstr "நெட்வொர்க் இயல்புநிலைகளை ஏற்கனவே உள்ள தளங்களுக்கு பரப்புகிறது…"
 
-#: src/Form/NetworkSettingsPage.php:393
+#: src/Form/NetworkSettingsPage.php:363
 msgid "Network defaults propagated."
 msgstr "நெட்வொர்க் இயல்புநிலைகள் பரப்பப்பட்டது."
 
-#: src/Form/NetworkSettingsPage.php:396
+#: src/Form/NetworkSettingsPage.php:366
 msgid "Network defaults propagation failed."
 msgstr "நெட்வொர்க் இயல்புநிலைகள் பரப்புதல் தோல்வியடைந்தது."
 
-#: src/Form/NetworkSettingsPage.php:399
+#: src/Form/NetworkSettingsPage.php:369
 msgid "Network defaults propagation idle."
 msgstr "நெட்வொர்க் இயல்புநிலைகள் பரப்புதல் செயலற்று உள்ளது."
 
-#: src/Form/SettingsContext.php:181
-msgid "Managed at the network level by the super-admin."
-msgstr "சூப்பர்-நிர்வாகியால் நெட்வொர்க் அளவில் நிர்வகிக்கப்படுகிறது."
+#: src/Form/SettingsContext.php:214
+msgid "Managed at the network level"
+msgstr "நெட்வொர்க் அளவில் நிர்வகிக்கப்படுகிறது"
 
-#: src/Form/SettingsContext.php:250 src/Form/SettingsContext.php:285
-msgid "— No network default —"
-msgstr "— நெட்வொர்க் இயல்புநிலை இல்லை —"
+#: src/Form/SettingsContext.php:283 src/Form/SettingsContext.php:328
+msgid "Default for new sites"
+msgstr "புதிய தளங்களுக்கான இயல்புநிலை"
 
-#: src/Form/SettingsContext.php:251 src/Form/SettingsContext.php:286
-msgid "New sites only"
-msgstr "புதிய தளங்கள் மட்டும்"
+#: src/Form/SettingsContext.php:284 src/Form/SettingsContext.php:329
+msgid "Default for all sites (keep custom settings)"
+msgstr "அனைத்து தளங்களுக்கும் இயல்புநிலை (தனிப்பயன் அமைப்புகளை வைத்திருக்கவும்)"
 
-#: src/Form/SettingsContext.php:252 src/Form/SettingsContext.php:287
-msgid "All sites"
-msgstr "அனைத்து தளங்கள்"
+#: src/Form/SettingsContext.php:285 src/Form/SettingsContext.php:330
+msgid "Overwrite for all sites (delete custom settings)"
+msgstr "அனைத்து தளங்களுக்கும் மேலெழுதவும் (தனிப்பயன் அமைப்புகளை நீக்கவும்)"
 
-#: src/Form/SettingsContext.php:253 src/Form/SettingsContext.php:288
-msgid "All sites, locked"
-msgstr "அனைத்து தளங்கள், பூட்டப்பட்டது"
-
-#: src/Form/SettingsContext.php:293
-msgid "Default on:"
-msgstr "இயல்புநிலை:"
+#: src/Form/SettingsContext.php:338
+msgid "Propagation"
+msgstr "பரப்புதல்"
 
 #: src/Form/SettingsFields.php:68
 msgid "Include all parts of the page that contain your theme and content."
@@ -1341,66 +1324,70 @@ msgid "Define the parts of each page Editoria11y checks. Activating CSA unlocks 
 msgstr "Editoria11y சரிபார்க்கும் ஒவ்வொரு பக்கத்தின் பகுதிகளை வரையறுக்கவும். CSA-ஐ இயக்குவது கூடுதல் \"டெவலப்பர் பகுதி\" மேற்தொகுப்பை திறக்கிறது, இது அதிக சரிபார்ப்புகளை இயக்கி நீங்கள் தேர்வு செய்யும் பாத்திரங்களுக்கு எச்சரிக்கைகளை வழிப்படுத்துகிறது."
 
 #: src/Form/SettingsFields.php:98
-msgid "These tests detect issues content editors can fix. Toggle a test off to remove it from the page-level checker; the test still runs and is available for re-enabling at any time."
-msgstr "இந்த சோதனைகள் உள்ளடக்க ஆசிரியர்கள் சரிசெய்யக்கூடிய சிக்கல்களை கண்டறியும். பக்க-நிலை சரிபார்ப்பாளரிலிருந்து நீக்க ஒரு சோதனையை முடக்கவும்; சோதனை இன்னும் இயங்கும் மற்றும் எந்த நேரத்திலும் மீண்டும் இயக்குவதற்கு கிடைக்கும்."
+msgid "These tests detect issues content editors can fix. Checks can be individually turned off; sites with CSA licenses can split tests between roles."
+msgstr "உள்ளடக்க ஆசிரியர்கள் சரிசெய்யக்கூடிய சிக்கல்களை இந்த சோதனைகள் கண்டறியும். சரிபார்ப்புகளை தனித்தனியாக முடக்கலாம்; CSA உரிமங்கள் கொண்ட தளங்கள் சோதனைகளை பாத்திரங்களுக்கு இடையே பிரிக்கலாம்."
 
-#: src/Form/SettingsFields.php:113
-msgid "Apply this tests + roles assignment to"
-msgstr "இந்த சோதனைகள் + பாத்திர ஒதுக்கீட்டை இதற்கு பயன்படுத்தவும்"
+#: src/Form/SettingsFields.php:114
+msgid "Apply all the tests and role assignments below to"
+msgstr "கீழே உள்ள அனைத்து சோதனைகள் மற்றும் பாத்திர ஒதுக்கீடுகளையும் இதற்குப் பயன்படுத்தவும்"
 
-#: src/Form/SettingsFields.php:122
-msgid "These tests detect issues that usually need template or theme changes. In free mode they appear here for visibility but are not editable; activate CSA to route them per role."
-msgstr "இந்த சோதனைகள் பொதுவாக வார்ப்புரு அல்லது தீம் மாற்றங்கள் தேவைப்படும் சிக்கல்களை கண்டறியும். இலவச பயன்முறையில் அவை தெரிவுக்காக இங்கே தோன்றும் ஆனால் திருத்தக்கூடியதல்ல; பாத்திரத்தின் படி திருப்பிவிட CSA-ஐ இயக்கவும்."
+#: src/Form/SettingsFields.php:123
+msgid "These tests detect issues that usually need theme or plugin changes to fix, and are part of the CSA license for site administrators and developers."
+msgstr "பொதுவாக சரிசெய்ய தீம் அல்லது செருகுநிரல் மாற்றங்கள் தேவைப்படும் சிக்கல்களை இந்த சோதனைகள் கண்டறியும்; இவை தள நிர்வாகிகள் மற்றும் டெவலப்பர்களுக்கான CSA உரிமத்தின் ஒரு பகுதியாகும்."
 
-#: src/Form/SettingsFields.php:132
+#: src/Form/SettingsFields.php:133
 msgid "The \"tests + roles assignment\" propagation setting under \"Modify content tests\" above also governs the template-test selection — both are stored together."
 msgstr "“உள்ளடக்க சோதனைகளை மாற்றவும்” என்பதன் கீழ் உள்ள “சோதனைகள் + பாத்திர ஒதுக்கீடு” பரப்புதல் அமைப்பு வார்ப்புரு-சோதனை தேர்வையும் நிர்வகிக்கிறது — இரண்டும் ஒன்றாக சேமிக்கப்படும்."
 
-#: src/Form/SettingsFields.php:171
+#: src/Form/SettingsFields.php:160
+msgid "Managed at the network level."
+msgstr "நெட்வொர்க் அளவில் நிர்வகிக்கப்படுகிறது."
+
+#: src/Form/SettingsFields.php:193
 msgid "Network-level custom rules apply to every site in the network."
 msgstr "நெட்வொர்க்-நிலை தனிப்பயன் விதிகள் நெட்வொர்க்கில் உள்ள ஒவ்வொரு தளத்திற்கும் பொருந்தும்."
 
 #. translators: %d is the number of network custom rules defined (active + inactive).
-#: src/Form/SettingsFields.php:182
+#: src/Form/SettingsFields.php:204
 #, php-format
 msgid "Manage network custom rules (%d defined)"
 msgid_plural "Manage network custom rules (%d defined)"
 msgstr[0] "%d நெட்வொர்க் தனிப்பயன் விதியை நிர்வகிக்கவும் (வரையறுக்கப்பட்டது)"
 msgstr[1] "%d நெட்வொர்க் தனிப்பயன் விதிகளை நிர்வகிக்கவும் (வரையறுக்கப்பட்டவை)"
 
-#: src/Form/SettingsFields.php:208
+#: src/Form/SettingsFields.php:230
 msgid "Define your own accessibility tests. Each rule pairs a CSS selector with a tip shown to users; rules ship over the cached static config alongside the built-in test catalog."
 msgstr "உங்கள் சொந்த அணுகல்தன்மை சோதனைகளை வரையறுக்கவும். ஒவ்வொரு விதியும் ஒரு CSS தேர்வியை பயனர்களுக்கு காட்டப்படும் குறிப்புடன் இணைக்கிறது; விதிகள் உள்ளமைக்கப்பட்ட சோதனை தொகுப்புடன் கேஷ் செய்யப்பட்ட நிலையான உள்ளமைவின் வழியாக அனுப்பப்படுகின்றன."
 
 #. translators: %d is the number of custom rules active on this site (per-site rules plus network rules not disabled here).
-#: src/Form/SettingsFields.php:219
+#: src/Form/SettingsFields.php:241
 #, php-format
 msgid "Manage custom rules (%d active)"
 msgid_plural "Manage custom rules (%d active)"
 msgstr[0] "%d தனிப்பயன் விதியை நிர்வகிக்கவும் (செயலில்)"
 msgstr[1] "%d தனிப்பயன் விதிகளை நிர்வகிக்கவும் (செயலில்)"
 
-#: src/Form/SettingsFields.php:235
+#: src/Form/SettingsFields.php:257
 msgid "Custom rules let CSA admins register additional accessibility tests with their own selectors, labels, and tip content. Activate CSA to manage them here."
 msgstr "தனிப்பயன் விதிகள் CSA நிர்வாகிகளை தங்கள் சொந்த தேர்விகள், லேபிள்கள் மற்றும் குறிப்பு உள்ளடக்கத்துடன் கூடுதல் அணுகல்தன்மை சோதனைகளை பதிவு செய்ய அனுமதிக்கின்றன. இங்கே அவற்றை நிர்வகிக்க CSA-ஐ இயக்கவும்."
 
-#: src/Form/SettingsFields.php:271
+#: src/Form/SettingsFields.php:294
 msgid "Choose when the control panel should open and show inline tips. \"Start open if there are any alerts\" is recommended, as it helps tips get noticed over time."
 msgstr "கட்டுப்பாட்டு பலகை எப்போது திறந்து நேரடி குறிப்புகளை காட்ட வேண்டும் என்பதை தேர்வு செய்யவும். “ஏதேனும் எச்சரிக்கைகள் இருந்தால் திறந்த நிலையில் தொடங்கவும்” பரிந்துரைக்கப்படுகிறது, ஏனெனில் இது காலப்போக்கில் குறிப்புகள் கவனிக்கப்படுவதற்கு உதவுகிறது."
 
-#: src/Form/SettingsFields.php:289
+#: src/Form/SettingsFields.php:312
 msgid "Choose whether to show inline tips while editing post and page content. The checker always hides while editing templates and layouts."
 msgstr "இடுகை மற்றும் பக்க உள்ளடக்கத்தை திருத்தும்போது நேரடி குறிப்புகளை காட்டுவதா என்பதை தேர்வு செய்யவும். வார்ப்புருக்கள் மற்றும் தளவமைப்புகளை திருத்தும்போது சரிபார்ப்பாளர் எப்போதும் மறைந்திருக்கும்."
 
-#: src/Form/SettingsFields.php:310
+#: src/Form/SettingsFields.php:333
 msgid "Provide CSS selectors. Content authors will only see the alerts within these parts of the page. Do not provide selectors that nest within each other, or the inner content will be checked twice."
 msgstr "CSS தேர்விகளை வழங்கவும். உள்ளடக்க ஆசிரியர்கள் பக்கத்தின் இந்த பகுதிகளில் மட்டுமே எச்சரிக்கைகளை காண்பார்கள். ஒன்றுக்குள் ஒன்று கூடு கட்டும் தேர்விகளை வழங்காதீர்கள், இல்லையெனில் உள் உள்ளடக்கம் இருமுறை சரிபார்க்கப்படும்."
 
-#: src/Form/SettingsFields.php:320
+#: src/Form/SettingsFields.php:343
 msgid "The default is <code>main</code> or <code>body</code>, depending on theme."
 msgstr "இயல்புநிலை தீமைப் பொறுத்து <code>main</code> அல்லது <code>body</code> ஆகும்."
 
-#: src/Form/SettingsFields.php:343
+#: src/Form/SettingsFields.php:366
 msgid ""
 "If Editoria11y is flagging things editors cannot fix, e.g., theme-generated \"read more\" links or social media widgets,\n"
 "\t\t\t\tprovide CSS selectors for elements you would like it to ignore. Be specific, e.g. <code>.read-more a, .wp-block-post-excerpt__more-link, #comments h3</code>"
@@ -1408,447 +1395,453 @@ msgstr ""
 "Editoria11y ஆசிரியர்கள் சரிசெய்ய இயலாதவற்றை கொடியிட்டால், எ.கா., தீம்-உருவாக்கிய \"மேலும் படிக்க\" இணைப்புகள் அல்லது சமூக ஊடக விஜெட்கள்,\n"
 "\t\t\t\tதவிர்க்க விரும்பும் தனிமங்களுக்கு CSS தேர்விகளை வழங்கவும். குறிப்பிட்டதாக இருக்கவும், எ.கா. <code>.read-more a, .wp-block-post-excerpt__more-link, #comments h3</code>"
 
-#: src/Form/SettingsFields.php:354
+#: src/Form/SettingsFields.php:377
 msgid "If you are new at this, start by opening your browser's developer tools, inspecting the element you do not want flagged, and looking for unique-looking CSS selectors."
 msgstr "இதில் புதியவராக இருந்தால், உங்கள் உலாவியின் டெவலப்பர் கருவிகளை திறந்து, கொடியிட விரும்பாத தனிமத்தை ஆய்வு செய்து, தனிமையான CSS தேர்விகளை தேடத் தொடங்கவும்."
 
-#: src/Form/SettingsFields.php:418
+#: src/Form/SettingsFields.php:440
 msgid "Set to the number of other themes or plugins that will be injecting custom result JS events. Editoria11y will wait until it receives this number of <code>ed11yResume</code> notifications before showing results."
 msgstr "தனிப்பயன் முடிவு JS நிகழ்வுகளை செலுத்தும் மற்ற தீம்கள் அல்லது செருகுநிரல்களின் எண்ணிக்கைக்கு அமைக்கவும். Editoria11y முடிவுகளை காட்டுவதற்கு முன் இந்த எண்ணிக்கையிலான <code>ed11yResume</code> அறிவிப்புகளை பெறும் வரை காத்திருக்கும்."
 
-#: src/Form/SettingsFields.php:440
+#: src/Form/SettingsFields.php:463
 msgid "Used to block checking on site sections or admin pages."
 msgstr "தள பிரிவுகள் அல்லது நிர்வாக பக்கங்களில் சரிபார்ப்பை தடுக்க பயன்படுத்தப்படுகிறது."
 
-#: src/Form/SettingsFields.php:469
+#: src/Form/SettingsFields.php:495
 msgid "Autodetect"
 msgstr "தன்னியக்க கண்டறிதல்"
 
-#: src/Form/SettingsFields.php:470
+#: src/Form/SettingsFields.php:496
 msgid "Only user-editable content"
 msgstr "பயனர் திருத்தக்கூடிய உள்ளடக்கம் மட்டும்"
 
-#: src/Form/SettingsFields.php:471
+#: src/Form/SettingsFields.php:497
 msgid "Other"
 msgstr "மற்றவை"
 
-#: src/Form/SettingsFields.php:475
+#: src/Form/SettingsFields.php:502
 msgid "Developer scan area"
 msgstr "டெவலப்பர் ஸ்கேன் பகுதி"
 
-#: src/Form/SettingsFields.php:493
+#: src/Form/SettingsFields.php:520
 msgid "\"Autodetect\" selects:<br><em><code>body &gt; *:not(#wpadminbar, script, style, .ed11y-element)</code></em>"
 msgstr "\"தன்னியக்க கண்டறிதல்\" தேர்ந்தெடுக்கும்:<br><em><code>body &gt; *:not(#wpadminbar, script, style, .ed11y-element)</code></em>"
 
-#: src/Form/SettingsFields.php:510
+#: src/Form/SettingsFields.php:537
 msgid "Specify regions to check"
 msgstr "சரிபார்க்க வேண்டிய பகுதிகளை குறிப்பிடவும்"
 
-#: src/Form/SettingsFields.php:524
+#: src/Form/SettingsFields.php:552
 msgid "Alerts in these regions will be shown to both developers and editors. One selector per line."
 msgstr "இந்த பகுதிகளில் உள்ள எச்சரிக்கைகள் டெவலப்பர்கள் மற்றும் ஆசிரியர்கள் இருவருக்கும் காட்டப்படும். வரிக்கு ஒரு தேர்வி."
 
-#: src/Form/SettingsFields.php:559
+#: src/Form/SettingsFields.php:584
 msgid "These parts of the page will be ignored entirely."
 msgstr "பக்கத்தின் இந்த பகுதிகள் முற்றிலும் புறக்கணிக்கப்படும்."
 
-#: src/Form/SettingsFields.php:593
+#: src/Form/SettingsFields.php:618
 msgid "Developer roles"
 msgstr "டெவலப்பர் பாத்திரங்கள்"
 
-#: src/Form/SettingsFields.php:611
+#: src/Form/SettingsFields.php:636
 msgid "Unchecked roles only see content checks."
 msgstr "சரிபார்க்கப்படாத பாத்திரங்கள் உள்ளடக்க சரிபார்ப்புகளை மட்டுமே காணும்."
 
-#: src/Form/SettingsFields.php:634
+#: src/Form/SettingsFields.php:664
 msgid "Start open if there are new alerts"
 msgstr "புதிய எச்சரிக்கைகள் இருந்தால் திறந்த நிலையில் தொடங்கவும்"
 
-#: src/Form/SettingsFields.php:635
+#: src/Form/SettingsFields.php:665
 msgid "Start open if there are any alerts"
 msgstr "ஏதேனும் எச்சரிக்கைகள் இருந்தால் திறந்த நிலையில் தொடங்கவும்"
 
-#: src/Form/SettingsFields.php:636
+#: src/Form/SettingsFields.php:666
 msgid "Always start open"
 msgstr "எப்போதும் திறந்த நிலையில் தொடங்கவும்"
 
-#: src/Form/SettingsFields.php:637
+#: src/Form/SettingsFields.php:667
 msgid "Start minimized"
 msgstr "சிறுக்கப்பட்ட நிலையில் தொடங்கவும்"
 
-#: src/Form/SettingsFields.php:736
+#: src/Form/SettingsFields.php:781
 msgid "Rule"
 msgstr "விதி"
 
-#: src/Form/SettingsFields.php:740
+#: src/Form/SettingsFields.php:785
 msgid "Show to"
 msgstr "காட்டு"
 
-#: src/Form/SettingsFields.php:780
+#: src/Form/SettingsFields.php:826
 msgid "Everyone"
 msgstr "அனைவரும்"
 
-#: src/Form/SettingsFields.php:781
+#: src/Form/SettingsFields.php:827
 msgid "Developers only"
 msgstr "டெவலப்பர்கள் மட்டும்"
 
-#: src/Form/SettingsFields.php:782
+#: src/Form/SettingsFields.php:828
 msgid "Off"
 msgstr "முடக்கவும்"
 
-#: src/Form/SettingsFields.php:798
+#: src/Form/SettingsFields.php:845
 msgid "(Part of CSA suite)"
 msgstr "(CSA தொகுப்பின் பகுதி)"
 
-#: src/Form/SettingsFields.php:836
+#: src/Form/SettingsFields.php:883
 msgid "Remind the editor that these linked documents need a manual check"
 msgstr "இந்த இணைக்கப்பட்ட ஆவணங்களுக்கு கைமுறை சரிபார்ப்பு தேவை என்று ஆசிரியருக்கு நினைவூட்டவும்"
 
-#: src/Form/SettingsFields.php:837
+#: src/Form/SettingsFields.php:884
 msgid "Add or remove filetypes. Set to \"false\" to disable the test altogether. Providing any value will override the default."
 msgstr "கோப்பு வகைகளை சேர்க்கவும் அல்லது நீக்கவும். சோதனையை முற்றிலும் முடக்க \"false\" என அமைக்கவும். எந்த மதிப்பும் வழங்குவது இயல்புநிலையை மேலெழுதும்."
 
-#: src/Form/SettingsFields.php:841
+#: src/Form/SettingsFields.php:888
 msgid "Remove elements that match these selectors before testing link text"
 msgstr "இணைப்பு உரையை சோதிப்பதற்கு முன் இந்த தேர்விகளுடன் பொருந்தும் தனிமங்களை நீக்கவும்"
 
-#: src/Form/SettingsFields.php:842
+#: src/Form/SettingsFields.php:889
 msgid "Provide a CSS selector for elements your themes or plugins programmatically add to links (usually external or open-in-new-window markers), so they can be ignored when the link text is checked for the \"link has no text\" and \"link text is not meaningful\" tests."
 msgstr "உங்கள் தீம்கள் அல்லது செருகுநிரல்கள் நிரலாக இணைப்புகளுக்கு சேர்க்கும் தனிமங்களுக்கு (பொதுவாக வெளிப்புற அல்லது புதிய சாளரத்தில் திறக்கும் குறியீடுகள்) ஒரு CSS தேர்வியை வழங்கவும், அவை \"இணைப்பில் உரை இல்லை\" மற்றும் \"இணைப்பு உரை அர்த்தமற்றது\" சோதனைகளுக்கான இணைப்பு உரை சரிபார்க்கப்படும்போது புறக்கணிக்கப்படும்."
 
-#: src/Form/SettingsFields.php:846
+#: src/Form/SettingsFields.php:893
 msgid "Remove these strings before testing link text"
 msgstr "இணைப்பு உரையை சோதிப்பதற்கு முன் இந்த சரங்களை நீக்கவும்"
 
-#: src/Form/SettingsFields.php:847
+#: src/Form/SettingsFields.php:894
 msgid "Provide a pipe-separated (\"|\") list of phrases your themes or plugins programmatically add to links to hint a purpose (external, mail, phone, open-in-new-window), so they can be ignored when the link text is checked for the \"link has no text\" and \"link text is not meaningful\" tests; e.g.: (link is external)|(link sends email)."
 msgstr "உங்கள் தீம்கள் அல்லது செருகுநிரல்கள் நிரலாக இணைப்புகளுக்கு சேர்க்கும் சொற்றொடர்களின் குழாய்-பிரிக்கப்பட்ட (\"|\") பட்டியலை வழங்கவும் (வெளிப்புற, மின்னஞ்சல், தொலைபேசி, புதிய சாளரத்தில் திறக்கும்), \"இணைப்பில் உரை இல்லை\" மற்றும் \"இணைப்பு உரை அர்த்தமற்றது\" சோதனைகளுக்கான இணைப்பு உரை சரிபார்க்கப்படும்போது அவை புறக்கணிக்கப்படும்; எ.கா.: (link is external)|(link sends email)."
 
-#: src/Form/SettingsFields.php:851
+#: src/Form/SettingsFields.php:898
 msgid "Strings in links that indicate new tabs"
 msgstr "புதிய தாவல்களை சுட்டும் இணைப்புகளில் உள்ள சரங்கள்"
 
-#: src/Form/SettingsFields.php:852
+#: src/Form/SettingsFields.php:899
 msgid "Provide a pipe-separated list of phrases your site uses to warn users a link opens in a new tab; e.g.: new tab|new window|external."
 msgstr "ஒரு இணைப்பு புதிய தாவலில் திறக்கிறது என்று பயனர்களை எச்சரிக்க உங்கள் தளம் பயன்படுத்தும் சொற்றொடர்களின் குழாய்-பிரிக்கப்பட்ட பட்டியலை வழங்கவும்; எ.கா.: new tab|new window|external."
 
-#: src/Form/SettingsFields.php:860
+#: src/Form/SettingsFields.php:907
 msgid "Embeds flagged as needing manual review"
 msgstr "கைமுறை மதிப்பாய்வு தேவைப்படுவதாக கொடியிடப்பட்ட உட்பொதிவுகள்"
 
-#: src/Form/SettingsFields.php:864
+#: src/Form/SettingsFields.php:911
 msgid "Videos flagged as needing a manual check for captions"
 msgstr "தலைப்புகளுக்கு கைமுறை சரிபார்ப்பு தேவைப்படுவதாக கொடியிடப்பட்ட வீடியோக்கள்"
 
-#: src/Form/SettingsFields.php:868
+#: src/Form/SettingsFields.php:915
 msgid "Audio flagged as needing a manual check for transcripts"
 msgstr "படிவங்களுக்கு கைமுறை சரிபார்ப்பு தேவைப்படுவதாக கொடியிடப்பட்ட ஆடியோ"
 
-#: src/Form/SettingsFields.php:872
+#: src/Form/SettingsFields.php:919
 msgid "Remind editor that content in these embeds needs manual review"
 msgstr "இந்த உட்பொதிவுகளில் உள்ள உள்ளடக்கத்திற்கு கைமுறை மதிப்பாய்வு தேவை என்று ஆசிரியருக்கு நினைவூட்டவும்"
 
-#: src/Form/SettingsFields.php:873
+#: src/Form/SettingsFields.php:920
 msgid "Provide a comma-separated list of selectors you wish to flag for the editor, e.g.: .my-embedded-feed, #my-social-link-block."
 msgstr "ஆசிரியருக்கு கொடியிட விரும்பும் தேர்விகளின் கமா-பிரிக்கப்பட்ட பட்டியலை வழங்கவும், எ.கா.: .my-embedded-feed, #my-social-link-block."
 
-#: src/Form/SettingsFields.php:885
+#: src/Form/SettingsFields.php:932
 msgid "Do not check contrast for these elements"
 msgstr "இந்த தனிமங்களுக்கு மாறுபாட்டை சரிபார்க்காதீர்கள்"
 
-#: src/Form/SettingsFields.php:898
+#: src/Form/SettingsFields.php:945
 msgid "Provide a comma-separated list of selectors for elements to ignore for all users."
 msgstr "அனைத்து பயனர்களுக்கும் புறக்கணிக்க வேண்டிய தனிமங்களுக்கான தேர்விகளின் கமா-பிரிக்கப்பட்ட பட்டியலை வழங்கவும்."
 
-#: src/Form/SettingsFields.php:928
+#: src/Form/SettingsFields.php:975
 msgid "Assertiveness"
 msgstr "உறுதியான தன்மை"
 
-#: src/Form/SettingsFields.php:930
+#: src/Form/SettingsFields.php:977
 msgid "Checker mode for content roles"
 msgstr "உள்ளடக்க பாத்திரங்களுக்கான சரிபார்ப்பாளர் பயன்முறை"
 
-#: src/Form/SettingsFields.php:938
+#: src/Form/SettingsFields.php:985
 msgid "Checker mode for developer roles"
 msgstr "டெவலப்பர் பாத்திரங்களுக்கான சரிபார்ப்பாளர் பயன்முறை"
 
-#: src/Form/SettingsFields.php:946
+#: src/Form/SettingsFields.php:993
 msgid "Checker mode inside editor"
 msgstr "ஆசிரியருக்குள் சரிபார்ப்பாளர் பயன்முறை"
 
-#: src/Form/SettingsFields.php:952
+#: src/Form/SettingsFields.php:999
 msgid "Theme and plugin compatibility"
 msgstr "தீம் மற்றும் செருகுநிரல் இணக்கத்தன்மை"
 
-#: src/Form/SettingsFields.php:954
+#: src/Form/SettingsFields.php:1001
 msgid "Editoria11y theme"
 msgstr "Editoria11y தீம்"
 
-#: src/Form/SettingsFields.php:959
+#: src/Form/SettingsFields.php:1006
 msgid "Pin panel to"
 msgstr "பலகையை இதில் பொருத்தவும்"
 
-#: src/Form/SettingsFields.php:964
+#: src/Form/SettingsFields.php:1012
 msgid "Right"
 msgstr "வலது"
 
-#: src/Form/SettingsFields.php:965
+#: src/Form/SettingsFields.php:1013
 msgid "Left"
 msgstr "இடது"
 
-#: src/Form/SettingsFields.php:970
+#: src/Form/SettingsFields.php:1019
 msgid "Shift panel position if it overlaps these elements"
 msgstr "இந்த தனிமங்களுடன் மேலேறினால் பலகை நிலையை மாற்றவும்"
 
-#: src/Form/SettingsFields.php:971
+#: src/Form/SettingsFields.php:1020
 msgid "Comma-separated selectors for competing widgets, e.g. .interface-interface-skeleton__sidebar."
 msgstr "போட்டியிடும் விஜெட்களுக்கான கமா-பிரிக்கப்பட்ட தேர்விகள், எ.கா. .interface-interface-skeleton__sidebar."
 
-#: src/Form/SettingsFields.php:978
+#: src/Form/SettingsFields.php:1025
 msgid "Do not check on pages with these elements"
 msgstr "இந்த தனிமங்கள் உள்ள பக்கங்களில் சரிபார்க்காதீர்கள்"
 
-#: src/Form/SettingsFields.php:982
+#: src/Form/SettingsFields.php:1029
 msgid "JS injected custom rules"
 msgstr "JS செலுத்தப்பட்ட தனிப்பயன் விதிகள்"
 
-#: src/Form/SettingsFields.php:988
+#: src/Form/SettingsFields.php:1035
 msgid "Don't show edit links on tips in these containers"
 msgstr "இந்த கொள்கலன்களில் உள்ள குறிப்புகளில் திருத்தும் இணைப்புகளை காட்டாதீர்கள்"
 
-#: src/Form/SettingsFields.php:989
+#: src/Form/SettingsFields.php:1036
 msgid "Provide a comma-separated list of page sections where edit links should not show. To hide the links everywhere, set this field to an asterisk (*)."
 msgstr "திருத்தும் இணைப்புகள் காட்டப்படாத பக்க பிரிவுகளின் கமா-பிரிக்கப்பட்ட பட்டியலை வழங்கவும். இணைப்புகளை எல்லா இடங்களிலும் மறைக்க, இந்த புலத்தை நட்சத்திரமாக (*) அமைக்கவும்."
 
-#: src/Form/SettingsFields.php:1008
+#: src/Form/SettingsFields.php:1055
 msgid "Handling tips on hidden content"
 msgstr "மறைக்கப்பட்ட உள்ளடக்கத்தில் குறிப்புகளை கையாளுதல்"
 
-#: src/Form/SettingsFields.php:1010
+#: src/Form/SettingsFields.php:1057
 msgid "Warn users if elements might not be visible when jumping to tips"
 msgstr "குறிப்புகளுக்கு தாவும்போது தனிமங்கள் காட்சியில் இல்லாமல் போகலாம் என்று பயனர்களை எச்சரிக்கவும்"
 
-#: src/Form/SettingsFields.php:1017
+#: src/Form/SettingsFields.php:1064
 msgid "Elements with overflow hidden"
 msgstr "மறைக்கப்பட்ட வழிந்தோடல் கொண்ட தனிமங்கள்"
 
-#: src/Form/SettingsFields.php:1018
+#: src/Form/SettingsFields.php:1065
 msgid "Sometimes buttons get drawn and visually truncated outside the bounds of a positioned element. Provide a selector list."
 msgstr "சில நேரங்களில் பொத்தான்கள் நிலை வைக்கப்பட்ட தனிமத்தின் வரம்புகளுக்கு வெளியே வரையப்பட்டு காட்சியில் வெட்டப்படுகின்றன. ஒரு தேர்வி பட்டியலை வழங்கவும்."
 
-#: src/Form/SettingsFields.php:1023
+#: src/Form/SettingsFields.php:1070
 msgid "Theme JS will handle revealing hidden tooltips inside these containers"
 msgstr "தீம் JS இந்த கொள்கலன்களில் மறைக்கப்பட்ட கருவிக் குறிப்புகளை வெளிப்படுத்துவதை கையாளும்"
 
-#: src/Form/SettingsFields.php:1024
+#: src/Form/SettingsFields.php:1071
 msgid "Editoria11y detects hidden tooltips and warns the user when they try to jump to them from the panel. For elements on this list, Editoria11y will dispatch a JS event instead of a warning, so custom JS in your theme can first reveal the hidden tip (e.g., open an accordion or tab panel)."
 msgstr "Editoria11y மறைக்கப்பட்ட கருவிக் குறிப்புகளை கண்டறிந்து பலகையிலிருந்து அவற்றுக்கு தாவ முயற்சிக்கும்போது பயனரை எச்சரிக்கும். இந்த பட்டியலில் உள்ள தனிமங்களுக்கு, Editoria11y எச்சரிக்கைக்கு பதிலாக ஒரு JS நிகழ்வை அனுப்பும், எனவே உங்கள் தீமில் உள்ள தனிப்பயன் JS முதலில் மறைக்கப்பட்ட குறிப்பை வெளிப்படுத்தலாம் (எ.கா., ஒரு அக்கார்டியன் அல்லது தாவல் பலகையை திறக்கலாம்)."
 
-#: src/Form/SettingsFields.php:1035
+#: src/Form/SettingsFields.php:1082
 msgid "Detecting dynamic and shadow content"
 msgstr "மாறும் மற்றும் நிழல் உள்ளடக்கத்தை கண்டறிதல்"
 
-#: src/Form/SettingsFields.php:1038
+#: src/Form/SettingsFields.php:1085
 msgid "Dynamically refresh if new content appears"
 msgstr "புதிய உள்ளடக்கம் தோன்றினால் மாறும் வகையில் புதுப்பிக்கவும்"
 
-#: src/Form/SettingsFields.php:1043
+#: src/Form/SettingsFields.php:1091
 msgid "Watch for changes anywhere on the page"
 msgstr "பக்கத்தில் எங்கும் மாற்றங்களை கவனிக்கவும்"
 
-#: src/Form/SettingsFields.php:1044
+#: src/Form/SettingsFields.php:1092
 msgid "Only watch for changes to content containers present on load"
 msgstr "ஏற்றத்தில் உள்ள உள்ளடக்க கொள்கலன்களில் மாற்றங்களை மட்டுமே கவனிக்கவும்"
 
-#: src/Form/SettingsFields.php:1045
+#: src/Form/SettingsFields.php:1093
 msgid "Do not watch for changes"
 msgstr "மாற்றங்களை கவனிக்காதீர்கள்"
 
-#: src/Form/SettingsFields.php:1049
+#: src/Form/SettingsFields.php:1096
 msgid "Set to \"anywhere\" if changes are being missed; set to \"do not watch\" if you notice performance issues."
 msgstr "மாற்றங்கள் கவனிக்கப்படவில்லை என்றால் \"எங்கும்\" என அமைக்கவும்; செயல்திறன் சிக்கல்களை கவனித்தால் \"கவனிக்காதீர்கள்\" என அமைக்கவும்."
 
-#: src/Form/SettingsFields.php:1053
+#: src/Form/SettingsFields.php:1100
 msgid "Check inside these specific Web components"
 msgstr "இந்த குறிப்பிட்ட இணைய கூறுகளுக்குள் சரிபார்க்கவும்"
 
-#: src/Form/SettingsFields.php:1054
+#: src/Form/SettingsFields.php:1101
 msgid "Provide selectors for elements with shadow DOM you want tested. E.g.: my-fancy-accordion-widget, my-magical-slideshow."
 msgstr "சோதிக்க விரும்பும் நிழல் DOM உள்ள தனிமங்களுக்கான தேர்விகளை வழங்கவும். எ.கா.: my-fancy-accordion-widget, my-magical-slideshow."
 
-#: src/Form/SettingsFields.php:1058
+#: src/Form/SettingsFields.php:1105
 msgid "Auto-detect any Web components"
 msgstr "எந்த இணைய கூறுகளையும் தன்னியக்கமாக கண்டறி"
 
-#: src/Form/SettingsFields.php:1059
+#: src/Form/SettingsFields.php:1106
 msgid "This is easier to configure than specifying components, but may slow test runs on very complicated pages."
 msgstr "கூறுகளை குறிப்பிடுவதை விட இதை உள்ளமைப்பது எளிதானது, ஆனால் மிகவும் சிக்கலான பக்கங்களில் சோதனை இயக்கங்களை மெதுவாக்கலாம்."
 
-#: src/Form/SettingsFields.php:1070
+#: src/Form/SettingsFields.php:1117
 msgid "Syncing results to reports"
 msgstr "முடிவுகளை அறிக்கைகளுடன் ஒத்திசைக்கிறது"
 
-#: src/Form/SettingsFields.php:1086
+#: src/Form/SettingsFields.php:1134
 msgid "Only admins can view reports"
 msgstr "நிர்வாகிகள் மட்டுமே அறிக்கைகளை பார்க்க முடியும்"
 
-#: src/Form/SettingsFields.php:1092
+#: src/Form/SettingsFields.php:1139
 msgid "By default both admins and editors can view reports."
 msgstr "இயல்பு நிலையில் நிர்வாகிகளும் ஆசிரியர்களும் அறிக்கைகளை பார்க்க முடியும்."
 
-#: src/Form/SettingsFields.php:1104
+#: src/Form/SettingsFields.php:1152
 msgid "Hide reports shortcut on toggle"
 msgstr "நிமிர்த்திய மாற்றியில் அறிக்கை குறுக்குவழியை மறைக்கவும்"
 
-#: src/Form/SettingsFields.php:1112
+#: src/Form/SettingsFields.php:1159
 msgid "Reports will still be available on the WordPress admin dashboard."
 msgstr "அறிக்கைகள் இன்னும் WordPress நிர்வாக கட்டுப்பலகையில் கிடைக்கும்."
 
-#: src/Form/SettingsFields.php:1122
+#: src/Form/SettingsFields.php:1169
 msgid "Remove redundant base url from URLs"
 msgstr "URL-களிலிருந்து தேவையற்ற அடிப்படை URL-ஐ நீக்கவும்"
 
-#: src/Form/SettingsFields.php:1134
+#: src/Form/SettingsFields.php:1181
 msgid "Provide base URL (\"/mysite\") if your site is installed in a subdirectory. Subdirectories tend to get duplicated (/mysite/mysite/mypage) and throw errors from the API."
 msgstr "உங்கள் தளம் துணை அடைவில் நிறுவப்பட்டிருந்தால் அடிப்படை URL (\"/mysite\") வழங்கவும். துணை அடைவுகள் நகல் (/mysite/mysite/mypage) செய்யப்பட்டு API-யிலிருந்து பிழைகளை ஏற்படுத்தும்."
 
-#: src/Form/SettingsFields.php:1139
+#: src/Form/SettingsFields.php:1186
 msgid "Preserve query parameters"
 msgstr "வினவல் அளவுருக்களை பாதுகாக்கவும்"
 
-#: src/Form/SettingsFields.php:1140
+#: src/Form/SettingsFields.php:1187
 msgid "The dashboard ignores most parameters: results for both /news?f=1 and /news?f=2 will show up as just /news. Provide a comma-separated list of parameters that are meaningful and should appear as separate pages in results."
 msgstr "கட்டுப்பலகை பெரும்பாலான அளவுருக்களை புறக்கணிக்கிறது: /news?f=1 மற்றும் /news?f=2 இரண்டுக்கும் முடிவுகள் /news மட்டுமாக காட்டப்படும். அர்த்தமுள்ள மற்றும் முடிவுகளில் தனி பக்கங்களாக காட்டப்பட வேண்டிய அளவுருக்களின் கமா-பிரிக்கப்பட்ட பட்டியலை வழங்கவும்."
 
-#: src/Form/SettingsFields.php:1144
+#: src/Form/SettingsFields.php:1191
 msgid "Disable sync altogether"
 msgstr "ஒத்திசைவை முற்றிலும் முடக்கவும்"
 
-#: src/Form/SettingsFields.php:1145
+#: src/Form/SettingsFields.php:1192
 msgid "Syncing test results is required for the issue dashboard, dismissal dashboard, and \"mark OK\" buttons."
 msgstr "சிக்கல் கட்டுப்பலகை, நிராகரிப்பு கட்டுப்பலகை மற்றும் \"சரி என குறி\" பொத்தான்களுக்கு சோதனை முடிவுகளை ஒத்திசைப்பது தேவைப்படுகிறது."
 
-#: src/Form/SettingsFields.php:1156
+#: src/Form/SettingsFields.php:1203
 msgid "Heading outline position of editable content"
 msgstr "திருத்தக்கூடிய உள்ளடக்கத்தின் தலைப்பு சுருக்க நிலை"
 
-#: src/Form/SettingsFields.php:1158
+#: src/Form/SettingsFields.php:1205
 msgid "To check headings while editing, Editoria11y needs to know what the first heading level should be in each editable field. Body fields should generally be at the H2 level."
 msgstr "திருத்தும்போது தலைப்புகளை சரிபார்க்க, Editoria11y ஒவ்வொரு திருத்தக்கூடிய புலத்திலும் முதல் தலைப்பு நிலை என்னவாக இருக்க வேண்டும் என்று தெரிந்துகொள்ள வேண்டும். உடல் புலங்கள் பொதுவாக H2 நிலையில் இருக்க வேண்டும்."
 
-#: src/Form/SettingsFields.php:1163
+#: src/Form/SettingsFields.php:1210
 msgid "H2 level content (body content)"
 msgstr "H2 நிலை உள்ளடக்கம் (உடல் உள்ளடக்கம்)"
 
-#: src/Form/SettingsFields.php:1164
+#: src/Form/SettingsFields.php:1211
 msgid "Body fields are preceded by an H1 (the post or page title), so their highest heading level should be H2."
 msgstr "உடல் புலங்களுக்கு முன் H1 (இடுகை அல்லது பக்க தலைப்பு) இருக்கும், எனவே அவற்றின் மிக உயர்ந்த தலைப்பு நிலை H2 ஆக இருக்க வேண்டும்."
 
-#: src/Form/SettingsFields.php:1168
+#: src/Form/SettingsFields.php:1215
 msgid "H3 level content (blocks or widgets with separate titles)"
 msgstr "H3 நிலை உள்ளடக்கம் (தனி தலைப்புகள் கொண்ட தொகுதிகள் அல்லது விஜெட்கள்)"
 
-#: src/Form/SettingsFields.php:1169
+#: src/Form/SettingsFields.php:1216
 msgid "The highest heading level should be H3."
 msgstr "மிக உயர்ந்த தலைப்பு நிலை H3 ஆக இருக்க வேண்டும்."
 
-#: src/Form/SettingsFields.php:1173
+#: src/Form/SettingsFields.php:1220
 msgid "H4 level content (deeply nested blocks or widgets)"
 msgstr "H4 நிலை உள்ளடக்கம் (ஆழமாக கூடு கட்டப்பட்ட தொகுதிகள் அல்லது விஜெட்கள்)"
 
-#: src/Form/SettingsFields.php:1174
+#: src/Form/SettingsFields.php:1221
 msgid "The highest heading level should be H4."
 msgstr "மிக உயர்ந்த தலைப்பு நிலை H4 ஆக இருக்க வேண்டும்."
 
-#: src/Form/SettingsPage.php:107
-msgid "free version at WordPress.org"
-msgstr "WordPress.org-இல் இலவச பதிப்பு"
-
-#: src/Form/SettingsPage.php:112
+#: src/Form/SettingsPage.php:122 src/Form/SettingsPage.php:183
 msgid "becoming a supporter"
 msgstr "ஆதரிப்பாளராக மாறுதல்"
 
+#: src/Form/SettingsPage.php:127
+msgid "free version at WordPress.org"
+msgstr "WordPress.org-இல் இலவச பதிப்பு"
+
 #. translators: %s: link reading "free version at WordPress.org".
-#: src/Form/SettingsPage.php:121
+#: src/Form/SettingsPage.php:136
 #, php-format
 msgid "This site has the community-supported \"CSA\" version of Editoria11y installed rather than the %s."
 msgstr "இந்த தளத்தில் %s-க்கு பதிலாக சமூக-ஆதரவு கொண்ட “CSA” பதிப்பு Editoria11y நிறுவப்பட்டுள்ளது."
 
 #. translators: %s: link reading "becoming a supporter".
-#: src/Form/SettingsPage.php:130
+#: src/Form/SettingsPage.php:145
 #, php-format
-msgid "To activate the community-supported features and continue receiving updates, either enter your existing license key below or view options for %s."
-msgstr "சமூக-ஆதரவு அம்சங்களை இயக்கி புதுப்பிப்புகளை தொடர்ந்து பெற, கீழே உங்கள் தற்போதைய உரிம விசையை உள்ளிடவும் அல்லது %s-க்கான விருப்பங்களை பார்க்கவும்."
+msgid "To activate the community-supported features and continue receiving updates, either enter your existing license key or view options for %s."
+msgstr "சமூக-ஆதரவு அம்சங்களை இயக்கி புதுப்பிப்புகளைத் தொடர்ந்து பெற, உங்கள் தற்போதைய உரிம விசையை உள்ளிடவும் அல்லது %s-க்கான விருப்பங்களைப் பார்க்கவும்."
 
-#: src/Form/SettingsPage.php:155
+#: src/Form/SettingsPage.php:188
+msgid "This site is running the free version of Editoria11y from WordPress.org. The community-supported (CSA) features like developer and contrast tests, the custom test builder and site crawler, are not yet installed."
+msgstr "இந்த தளம் WordPress.org-இலிருந்து Editoria11y-யின் இலவச பதிப்பை இயக்குகிறது. டெவலப்பர் மற்றும் மாறுபாடு சோதனைகள், தனிப்பயன் சோதனை கட்டமைப்பாளர் மற்றும் தள ஊர்வன் போன்ற சமூக-ஆதரவு (CSA) அம்சங்கள் இன்னும் நிறுவப்படவில்லை."
+
+#. translators: %s: link reading "becoming a supporter".
+#: src/Form/SettingsPage.php:194
+#, php-format
+msgid "Unlock the community-supported features and help ongoing work on the free version by %s."
+msgstr "%s மூலம் சமூக-ஆதரவு அம்சங்களைத் திறந்து, இலவச பதிப்பில் நடந்துவரும் பணிக்கு உதவுங்கள்."
+
+#: src/Form/SettingsPage.php:224
 msgid "Editoria11y License & Account"
 msgstr "Editoria11y உரிமம் & கணக்கு"
 
-#: src/Form/SettingsPage.php:240
+#: src/Form/SettingsPage.php:291
 msgid "Settings"
 msgstr "அமைப்புகள்"
 
-#: src/Form/SettingsPage.php:241 src/Form/SettingsPage.php:253
+#: src/Form/SettingsPage.php:299 src/Form/SettingsPage.php:306
 msgid "License & Account"
 msgstr "உரிமம் & கணக்கு"
 
-#: src/Form/SettingsPage.php:252
-msgid "Contact us"
-msgstr "எங்களை தொடர்பு கொள்ளுங்கள்"
-
-#: src/Form/SettingsPage.php:491
+#: src/Form/SettingsPage.php:579
 msgid "Getting started"
 msgstr "தொடங்குவதற்கு"
 
-#: src/Form/SettingsPage.php:500
+#: src/Form/SettingsPage.php:588
 msgid "Modify content tests"
 msgstr "உள்ளடக்க சோதனைகளை மாற்றவும்"
 
-#: src/Form/SettingsPage.php:506 src/Form/SettingsPage.php:520
+#: src/Form/SettingsPage.php:594 src/Form/SettingsPage.php:608
 msgid "Tests by group"
 msgstr "குழுவால் சோதனைகள்"
 
-#: src/Form/SettingsPage.php:514
+#: src/Form/SettingsPage.php:602
 msgid "Modify template tests"
 msgstr "வார்ப்புரு சோதனைகளை மாற்றவும்"
 
-#: src/Form/SettingsPage.php:531
+#: src/Form/SettingsPage.php:619
 msgid "Custom rules (CSA)"
 msgstr "தனிப்பயன் விதிகள் (CSA)"
 
-#: src/Form/SettingsPage.php:546
+#: src/Form/SettingsPage.php:634
 msgid "Parts of the page to test"
 msgstr "சோதிக்க வேண்டிய பக்கத்தின் பகுதிகள்"
 
-#: src/Form/SettingsPage.php:554
+#: src/Form/SettingsPage.php:642
 msgid "Do not check for any errors inside these elements"
 msgstr "இந்த தனிமங்களுக்குள் எந்த பிழைகளையும் சரிபார்க்காதீர்கள்"
 
-#: src/Form/SettingsPage.php:565
+#: src/Form/SettingsPage.php:653
 msgid "Page regions with user-editable content"
 msgstr "பயனர் திருத்தக்கூடிய உள்ளடக்கம் கொண்ட பக்க பகுதிகள்"
 
-#: src/Form/SettingsPage.php:575
+#: src/Form/SettingsPage.php:663
 msgid "Do not check for content errors inside these elements"
 msgstr "இந்த தனிமங்களுக்குள் உள்ளடக்க பிழைகளை சரிபார்க்காதீர்கள்"
 
-#: src/Form/SettingsPage.php:578
+#: src/Form/SettingsPage.php:666
 msgid "Errors in these elements should only be shown to developers"
 msgstr "இந்த தனிமங்களில் உள்ள பிழைகள் டெவலப்பர்களுக்கு மட்டுமே காட்டப்பட வேண்டும்"
 
-#: src/Form/SettingsPage.php:594
+#: src/Form/SettingsPage.php:682
 msgid "Roles that will see developer alerts"
 msgstr "டெவலப்பர் எச்சரிக்கைகளை காணும் பாத்திரங்கள்"
 
-#: src/Form/SettingsPage.php:609
+#: src/Form/SettingsPage.php:697
 msgid "Advanced settings"
 msgstr "மேம்பட்ட அமைப்புகள்"
 
-#: src/Form/SettingsPage.php:627
+#: src/Form/SettingsPage.php:715
 msgid "Editoria11y Settings"
 msgstr "Editoria11y அமைப்புகள்"
 
-#: src/Form/SettingsPage.php:642
+#: src/Form/SettingsPage.php:753
 msgid "Save Settings"
 msgstr "அமைப்புகளை சேமிக்கவும்"
 
@@ -1862,17 +1855,88 @@ msgstr "தெரியாது"
 msgid "Editoria11y CSA: the loaded Freemius SDK (version %1$s) is newer than the highest tested version (%2$s). Another Freemius-using plugin on this site has bundled a newer SDK build. The network license activation page may not behave as expected; review release notes or contact support if you hit issues."
 msgstr "Editoria11y CSA: ஏற்றப்பட்ட Freemius SDK (பதிப்பு %1$s) மிக உயரிய சோதிக்கப்பட்ட பதிப்பை (%2$s) விட புதியது. இந்த தளத்தில் Freemius பயன்படுத்தும் மற்றொரு செருகுநிரல் புதிய SDK build-ஐ இணைத்துள்ளது. நெட்வொர்க் உரிம இயக்க பக்கம் எதிர்பார்த்தபடி செயல்படாமல் போகலாம்; சிக்கல்கள் ஏற்பட்டால் வெளியீட்டு குறிப்புகளை மதிப்பாய்வு செய்யவும் அல்லது ஆதரவை தொடர்பு கொள்ளவும்."
 
-#: src/FreemiusAccessControl.php:442
+#: src/FreemiusAccessControl.php:455
 msgid "Editoria11y network licenses are activated from a dedicated page that walks every site in the network in cron-driven batches. This avoids the SDK's 1,000-site limit and keeps the page responsive on large multisites."
 msgstr "Editoria11y நெட்வொர்க் உரிமங்கள் cron-இயக்க தொகுதிகளில் நெட்வொர்க்கில் உள்ள ஒவ்வொரு தளத்தையும் கடந்து செல்லும் அர்ப்பணிக்கப்பட்ட பக்கத்திலிருந்து இயக்கப்படுகின்றன. இது SDK-யின் 1,000-தளம் வரம்பை தவிர்க்கிறது மற்றும் பெரிய multisites-இல் பக்கம் பதிலளிக்கக்கூடியதாக வைத்திருக்கிறது."
 
-#: src/FreemiusAccessControl.php:448
+#: src/FreemiusAccessControl.php:461
 msgid "Open Editoria11y license page"
 msgstr "Editoria11y உரிம பக்கத்தை திறக்கவும்"
 
-#: src/FreemiusAccessControl.php:504
+#: src/FreemiusAccessControl.php:517
 msgid "Per-site license rows are not shown to keep this page responsive on large networks. The license you choose below applies to every site in the network. To activate or deactivate on individual sites, visit each site's per-site Settings → Editoria11y → License & Account."
 msgstr "பெரிய நெட்வொர்க்குகளில் இந்த பக்கம் பதிலளிக்கக்கூடியதாக வைத்திருக்க தளத்திற்கு தளமான உரிம வரிசைகள் காட்டப்படவில்லை. கீழே நீங்கள் தேர்வு செய்யும் உரிமம் நெட்வொர்க்கில் உள்ள ஒவ்வொரு தளத்திற்கும் பொருந்தும். தனிப்பட்ட தளங்களில் இயக்க அல்லது முடக்க, ஒவ்வொரு தளத்தின் அமைப்புகள் → Editoria11y → உரிமம் & கணக்கு பக்கத்தை பார்வையிடவும்."
+
+#: src/FreemiusContactFallback.php:117 src/FreemiusContactFallback.php:118
+#: src/FreemiusContactFallback.php:146 src/FreemiusContactFallback.php:206
+msgid "Contact Editoria11y"
+msgstr "Editoria11y-ஐ தொடர்பு கொள்ளவும்"
+
+#: src/FreemiusContactFallback.php:202
+msgid "Editoria11y library forums"
+msgstr "Editoria11y நூலக மன்றங்கள்"
+
+#. translators: 1: @itmaybejj GitHub profile link, 2: #Drupal Slack invite link, 3: #WordPress Slack chat link, 4: #WPCampus Slack invite link, 5: #DigiCol Slack invite link.
+#: src/FreemiusContactFallback.php:211
+#, php-format
+msgid "Lead maintainer %1$s can usually be found on Slack for informal support, configuration tips and debugging any time the sun is up in the western hemisphere in %2$s, %3$s, %4$s and %5$s."
+msgstr "மேற்கு அரைக்கோளத்தில் சூரியன் இருக்கும் எந்த நேரத்திலும், முதன்மை பராமரிப்பாளர் %1$s பொதுவாக %2$s, %3$s, %4$s மற்றும் %5$s ஆகியவற்றில் சாதாரண ஆதரவு, உள்ளமைவு குறிப்புகள் மற்றும் பிழைதிருத்தத்திற்காக Slack-இல் கிடைப்பார்."
+
+#. translators: %s: link to the Editoria11y library GitHub discussions page.
+#: src/FreemiusContactFallback.php:224
+#, php-format
+msgid "Check the %s for roadmap proposals and discussions."
+msgstr "வழிபடம் தொடர்பான முன்மொழிவுகள் மற்றும் விவாதங்களுக்கு %s-ஐப் பார்க்கவும்."
+
+#: src/FreemiusContactFallback.php:230
+msgid "Formal support:"
+msgstr "முறையான ஆதரவு:"
+
+#: src/FreemiusContactFallback.php:233
+msgid "Editoria11y Library issue queue"
+msgstr "Editoria11y நூலக சிக்கல் வரிசை"
+
+#: src/FreemiusContactFallback.php:235
+msgid "Editoria11y WordPress issue queue"
+msgstr "Editoria11y WordPress சிக்கல் வரிசை"
+
+#: src/FreemiusContactFallback.php:237
+msgid "Editoria11y Drupal issue queue"
+msgstr "Editoria11y Drupal சிக்கல் வரிசை"
+
+#: src/FreemiusContactFallback.php:239
+msgid "Submit a support request"
+msgstr "ஆதரவு கோரிக்கையை சமர்ப்பிக்கவும்"
+
+#: src/FreemiusPricingPage.php:158
+msgid "Editoria11y CSA pricing"
+msgstr "Editoria11y CSA விலைநிர்ணயம்"
+
+#: src/FreemiusPricingPage.php:220
+msgid "Support the project"
+msgstr "திட்டத்தை ஆதரிக்கவும்"
+
+#: src/FreemiusPricingPage.php:223
+msgid "Editoria11y promotes accessibility in a unique way. Its tools are highly effective at helping non-technical authors prepare content that can be enjoyed equally by disabled Web users. We consider this a public good, so <strong>Editoria11y will always be free to use</strong>."
+msgstr "Editoria11y அணுகல்தன்மையை ஒரு தனித்துவமான முறையில் ஊக்குவிக்கிறது. ஊனமுற்ற இணைய பயனர்களும் சமமாக அனுபவிக்கக்கூடிய உள்ளடக்கத்தைத் தயாரிக்க தொழில்நுட்பம் சாராத ஆசிரியர்களுக்கு உதவுவதில் அதன் கருவிகள் மிகவும் பயனுள்ளவை. இதை நாங்கள் ஒரு பொது நன்மையாகக் கருதுகிறோம், எனவே <strong>Editoria11y எப்போதும் பயன்படுத்த இலவசமாகவே இருக்கும்</strong>."
+
+#: src/FreemiusPricingPage.php:227
+msgid "Editoria11y is not, however, free to develop or support."
+msgstr "எனினும், Editoria11y-ஐ உருவாக்குவதோ ஆதரிப்பதோ இலவசம் அல்ல."
+
+#: src/FreemiusPricingPage.php:230
+msgid "The \"Community Supported Add-ons\" (CSA) project fills the gap: project members support the development of the Editoria11y library, its CMS plugins, and the CSA suite: a rapidly growing set of quality assurance tools that provide similar functionality to commercial products, open-source and on-prem. In return, they get access to premium features like <strong>developer and contrast tests, the custom rule builder and a site crawler</strong>."
+msgstr "“சமூக ஆதரவு துணை நிரல்கள்” (CSA) திட்டம் இந்த இடைவெளியை நிரப்புகிறது: திட்ட உறுப்பினர்கள் Editoria11y நூலகம், அதன் CMS செருகுநிரல்கள் மற்றும் CSA தொகுப்பின் வளர்ச்சியை ஆதரிக்கிறார்கள்: இது வணிக தயாரிப்புகளுக்கு இணையான செயல்பாட்டை வழங்கும், திறந்த-மூல மற்றும் தற்சார்பு (on-prem) தர உறுதிப்படுத்தல் கருவிகளின் வேகமாக வளரும் தொகுப்பாகும். ஈடாக, <strong>டெவலப்பர் மற்றும் மாறுபாடு சோதனைகள், தனிப்பயன் விதி கட்டமைப்பாளர் மற்றும் தள ஊர்வன்</strong> போன்ற பிரீமியம் அம்சங்களுக்கான அணுகலை அவர்கள் பெறுகிறார்கள்."
+
+#: src/FreemiusPricingPage.php:237
+msgid "CSA supporters page"
+msgstr "CSA ஆதரிப்பாளர்கள் பக்கம்"
+
+#. translators: %s: link to the CSA supporters page.
+#: src/FreemiusPricingPage.php:243
+#, php-format
+msgid "This is a <strong>contribute what you can</strong> model; the quick checkout prices below are for full support. The %s has options for different support levels (from 10%% to 150%%), cross-platform (WordPress plus Drupal) licenses, unlimited-site options, and non-financial paths to project membership."
+msgstr "இது <strong>உங்களால் முடிந்ததை வழங்குங்கள்</strong> என்னும் மாதிரியாகும்; கீழே உள்ள விரைவு செக்அவுட் விலைகள் முழு ஆதரவுக்கானவை. %s-இல் வெவ்வேறு ஆதரவு நிலைகள் (10%% முதல் 150%% வரை), பல்தள (WordPress மற்றும் Drupal) உரிமங்கள், வரம்பற்ற-தள விருப்பங்கள் மற்றும் திட்ட உறுப்பினராவதற்கான நிதி சாராத வழிகள் ஆகியவற்றுக்கான விருப்பங்கள் உள்ளன."
 
 #: src/TestNames.php:46
 msgid "This alt text is a filename, not a description"
@@ -1907,405 +1971,413 @@ msgid "Button name repeats the word \"button\""
 msgstr "பட்டனின் பெயரில் \"பட்டன்\" என்ற சொல் திரும்பத்திரும்ப வருகிறது"
 
 #: src/TestNames.php:55
+msgid "This button is unpronounceable"
+msgstr "இந்தப் பட்டன் உச்சரிக்க முடியாதது"
+
+#: src/TestNames.php:56
 msgid "Text does not have enough contrast to be easily legible"
 msgstr "எழுத்தை எளிதாக வாசிக்க போதுமான நிறவேறுபாடு இல்லை"
 
-#: src/TestNames.php:56
+#: src/TestNames.php:57
 msgid "Graphic or icon does not have enough contrast"
 msgstr "சித்தரிப்பு அல்லது சின்னத்திற்குப் போதுமான நிறவேறுபாடு இல்லை"
 
-#: src/TestNames.php:57
+#: src/TestNames.php:58
 msgid "Input does not provide enough contrast to be easily legible"
 msgstr "கொடுக்கும் தகவலை எளிதாக வாசிக்க போதுமான நிறவேறுபாடு இல்லை"
 
-#: src/TestNames.php:58
+#: src/TestNames.php:59
 msgid "Placeholder text does not have enough contrast to be easily legible"
 msgstr "நிரப்பப்படுமிட வாசகத்தை எளிதாக வாசிக்க போதுமான நிறவேறுபாடு இல்லை"
 
-#: src/TestNames.php:59
+#: src/TestNames.php:60
 msgid "Does this placeholder text have enough contrast?"
 msgstr "இந்த நிரப்பப்படுமிட வாசகத்திற்குப் போதுமான நிறவேறுபாடு உள்ளதா?"
 
-#: src/TestNames.php:60
+#: src/TestNames.php:61
 msgid "Does this text have enough contrast?"
 msgstr "இந்த எழுத்திற்குப் போதுமான நிறவேறுபாடு உள்ளதா?"
 
-#: src/TestNames.php:61
+#: src/TestNames.php:62
 msgid "Does this graphic or icon have enough contrast?"
 msgstr "இந்த சித்தரிப்பு அல்லது சின்னத்திற்குப் போதுமான நிறவேறுபாடு உள்ளதா?"
 
-#: src/TestNames.php:62
+#: src/TestNames.php:63
 msgid "Duplicate ID attribute"
 msgstr "ID பண்புக்கூறு இரட்டிப்பாக உள்ளது"
 
-#: src/TestNames.php:63
+#: src/TestNames.php:64
 msgid "This link has a tooltip with the same text as the link"
 msgstr "இந்தப் பிணைப்பில் பிணைப்பு வாசகத்தையே திரும்பக் கூறும் குறிப்பு உள்ளது"
 
-#: src/TestNames.php:64
+#: src/TestNames.php:65
 msgid "Does this audio have a transcript?"
 msgstr "இந்த ஒலியில் எழுத்தாக்கம் உள்ளதா?"
 
-#: src/TestNames.php:65
+#: src/TestNames.php:66
 msgid "Is this visualization accessible?"
 msgstr "இந்தத் தரவு காட்சிப்படுத்தல் பயன்படுத்தக்கூடியதா?"
 
-#: src/TestNames.php:66
+#: src/TestNames.php:67
 msgid "Embedded iframes need manual checks"
 msgstr "உட்பொதிக்கப்பட்ட iframe-களுக்குக் கைமுறைச் சரிபார்ப்பு தேவை"
 
-#: src/TestNames.php:67
+#: src/TestNames.php:68
 msgid "Frame missing \"title\" attribute"
 msgstr "iframe-இல் \"title\" பண்புக்கூறு இல்லை"
 
-#: src/TestNames.php:68
+#: src/TestNames.php:69
 msgid "Frame with tabindex=\"-1\" will not be keyboard accessible."
 msgstr "tabindex=\"-1\" உள்ள iframe-ஐ விசைப்பலகை மூலம் பயன்படுத்த முடியாது."
 
-#: src/TestNames.php:69
+#: src/TestNames.php:70
 msgid "Is this video accurately captioned?"
 msgstr "இந்தக் காணொலியில் சரியான வசனம் உள்ளதா?"
 
-#: src/TestNames.php:70
+#: src/TestNames.php:71
 msgid "This heading has no text"
 msgstr "இந்தத் தலைப்பில் வாசகம் இல்லை"
 
-#: src/TestNames.php:71
+#: src/TestNames.php:72
 msgid "This image is used as a heading, so it needs alt text"
 msgstr "இந்தப் படம் தலைப்பாகப் பயன்படுத்தப்படுவதால் விவரிப்பு வாசகம் தேவை"
 
-#: src/TestNames.php:72
+#: src/TestNames.php:73
 msgid "The first heading on this page is a subheading"
 msgstr "இந்தப் பக்கத்தில் முதல் தலைப்பு உப-தலைப்பாக உள்ளது"
 
-#: src/TestNames.php:73
+#: src/TestNames.php:74
 msgid "Can this heading be shorter?"
 msgstr "இந்தத் தலைப்பைச் சுருக்கலாமா?"
 
-#: src/TestNames.php:74
+#: src/TestNames.php:75
 msgid "This page is missing a Heading 1"
 msgstr "இந்தப் பக்கத்தில் தலைப்பு 1 இல்லை"
 
-#: src/TestNames.php:75
+#: src/TestNames.php:76
 msgid "This heading is tagged at the wrong level"
 msgstr "இந்தத் தலைப்பு தவறான நிலையில் குறிக்கப்பட்டுள்ளது"
 
-#: src/TestNames.php:76
+#: src/TestNames.php:77
+msgid "This heading is unpronounceable"
+msgstr "இந்தத் தலைப்பு உச்சரிக்க முடியாதது"
+
+#: src/TestNames.php:78
 msgid "This element cannot be described by screen readers"
 msgstr "இந்த உறுப்பைத் திரைவாசிப்பான்களால் விவரிக்க முடியாது"
 
-#: src/TestNames.php:77
+#: src/TestNames.php:79
 msgid "Can this alt text be shorter?"
 msgstr "இந்த விவரிப்பு வாசகத்தைச் சுருக்கலாமா?"
 
-#: src/TestNames.php:78
+#: src/TestNames.php:80
 msgid "Is this image actually meaningless?"
 msgstr "இந்தப் படம் உண்மையிலேயே அர்த்தமற்றதா?"
 
-#: src/TestNames.php:79
+#: src/TestNames.php:81
 msgid "Image in a carousel or gallery marked as decorative"
 msgstr "உருளும்படங்கள் அல்லது படக்களஞ்சியத்தில் உள்ள படம் அலங்கரிப்பாகக் குறிக்கப்பட்டுள்ளது"
 
-#: src/TestNames.php:80
+#: src/TestNames.php:82
 msgid "This captioned image has no alt text"
 msgstr "இந்தத் தலைப்பிடப்பட்ட படத்தில் விவரிப்பு வாசகம் இல்லை"
 
-#: src/TestNames.php:81
+#: src/TestNames.php:83
 msgid "Alt text should not be the same as caption text"
 msgstr "விவரிப்பு வாசகம் தலைப்பு வாசகத்தைப் போலவே இருக்கக்கூடாது"
 
-#: src/TestNames.php:82
+#: src/TestNames.php:84
 msgid "Is there a visible label for this field?"
 msgstr "இந்தப் புலத்திற்குக் காணக்கூடிய விவரமிடல் உள்ளதா?"
 
-#: src/TestNames.php:83
+#: src/TestNames.php:85
 msgid "Prefer visible labels to placeholders"
 msgstr "நிரப்பப்படுமிட வாசகத்தை விடக் காணக்கூடிய விவரமிடல்களையே விரும்புங்கள்"
 
-#: src/TestNames.php:84
+#: src/TestNames.php:86
 msgid "Is this reset button needed?"
 msgstr "இந்த மீட்டமைப்புப் பட்டன் தேவையானதா?"
 
-#: src/TestNames.php:85
+#: src/TestNames.php:87
 msgid "This input has an empty label"
 msgstr "இந்தக் கொடுக்கும் தகவலில் காலியான விவரமிடல் உள்ளது"
 
-#: src/TestNames.php:86
+#: src/TestNames.php:88
 msgid "Visible label does not match invisible label"
 msgstr "காணக்கூடிய விவரமிடல் மறைவான விவரமிடலுடன் பொருந்தவில்லை"
 
-#: src/TestNames.php:87
+#: src/TestNames.php:89
 msgid "This image input is missing alt text"
 msgstr "இந்தப் படக் கொடுக்கும் தகவலில் விவரிப்பு வாசகம் இல்லை"
 
-#: src/TestNames.php:88
+#: src/TestNames.php:90
 msgid "This input is not connected to a label"
 msgstr "இந்தக் கொடுக்கும் தகவல் விவரமிடலுடன் இணைக்கப்படவில்லை"
 
-#: src/TestNames.php:89
+#: src/TestNames.php:91
 msgid "Language tag does not match the content"
 msgstr "மொழி அடையாளமிடல் உள்ளடக்கத்துடன் பொருந்தவில்லை"
 
-#: src/TestNames.php:90
+#: src/TestNames.php:92
 msgid "This content appears to be in a different language"
 msgstr "இந்த உள்ளடக்கம் வேறு மொழியில் இருப்பதாகத் தெரிகிறது"
 
-#: src/TestNames.php:91
+#: src/TestNames.php:93
 msgid "This alt text appears to be in a different language"
 msgstr "இந்த விவரிப்பு வாசகம் வேறு மொழியில் இருப்பதாகத் தெரிகிறது"
 
-#: src/TestNames.php:92
+#: src/TestNames.php:94
 msgid "Alt text used as a link should not be a URL"
 msgstr "பிணைப்பாகப் பயன்படுத்தப்படும் விவரிப்பு வாசகம் URL ஆக இருக்கக்கூடாது"
 
-#: src/TestNames.php:93 src/TestNames.php:94
+#: src/TestNames.php:95 src/TestNames.php:96
 msgid "This linked alt might not be clear and concise"
 msgstr "இந்தப் பிணைக்கப்பட்ட விவரிப்பு வாசகம் தெளிவாகவும் சுருக்கமாகவும் இல்லாமல் இருக்கலாம்"
 
-#: src/TestNames.php:95
+#: src/TestNames.php:97
 msgid "Linked images need pronounceable alt text"
 msgstr "பிணைக்கப்பட்ட படங்களுக்கு உச்சரிக்கக்கூடிய விவரிப்பு வாசகம் தேவை"
 
-#: src/TestNames.php:96
+#: src/TestNames.php:98
 msgid "Manual check: link contains \"click here\""
 msgstr "இந்தப் பிணைப்பில் \"இங்கே சொடுக்குக\" என்று உள்ளது"
 
-#: src/TestNames.php:97
+#: src/TestNames.php:99
 msgid "Link article titles, not DOI numbers"
 msgstr "DOI எண்களை அல்ல, கட்டுரை தலைப்புகளை பிணைக்கவும்"
 
-#: src/TestNames.php:98
+#: src/TestNames.php:100
 msgid "This link contains no words"
 msgstr "இந்தப் பிணைப்பில் வார்த்தைகள் இல்லை"
 
-#: src/TestNames.php:99
+#: src/TestNames.php:101
 msgid "Link with invalid \"aria-labelledby\" attribute"
 msgstr "செல்லாத \"aria-labelledby\" பண்புக்கூறுடன் பிணைப்பு"
 
-#: src/TestNames.php:100
+#: src/TestNames.php:102
 msgid "This link needs a label"
 msgstr "இந்தப் பிணைப்புக்கு விவரமிடல் தேவை"
 
-#: src/TestNames.php:101
+#: src/TestNames.php:103
 msgid "Link points to a file without warning"
 msgstr "பிணைப்பு எச்சரிக்கை இல்லாமல் கோப்பைச் சுட்டிக்காட்டுகிறது"
 
-#: src/TestNames.php:102
+#: src/TestNames.php:104
 msgid "Links with the same text link to different pages"
 msgstr "ஒரே வாசகத்துடன் உள்ள பிணைப்புகள் வெவ்வேறு பக்கங்களுக்குச் செல்கின்றன"
 
-#: src/TestNames.php:103
+#: src/TestNames.php:105
 msgid "Does this alt text describe the link or the image?"
 msgstr "இந்த விவரிப்பு வாசகம் பிணைப்பை விவரிக்கிறதா அல்லது படத்தை விவரிக்கிறதா?"
 
-#: src/TestNames.php:104
+#: src/TestNames.php:106
 msgid "Does this alt text make sense as part of this link?"
 msgstr "இந்த விவரிப்பு வாசகம் இந்தப் பிணைப்பின் ஒரு பகுதியாக அர்த்தமுள்ளதா?"
 
-#: src/TestNames.php:105
+#: src/TestNames.php:107
 msgid "Can this linked alt text be shorter?"
 msgstr "இந்தப் பிணைக்கப்பட்ட விவரிப்பு வாசகத்தைச் சுருக்கலாமா?"
 
-#: src/TestNames.php:106
+#: src/TestNames.php:108
 msgid "This linked image needs alt text"
 msgstr "இந்தப் பிணைக்கப்பட்ட படத்திற்கு விவரிப்பு வாசகம் தேவை"
 
-#: src/TestNames.php:107
+#: src/TestNames.php:109
 msgid "Does this linked image need a description?"
 msgstr "இந்தப் பிணைக்கப்பட்ட படத்திற்கு விவரணம் தேவையா?"
 
-#: src/TestNames.php:108
+#: src/TestNames.php:110
 msgid "Is this link actually a button?"
 msgstr "இந்தப் பிணைப்பு உண்மையில் ஒரு பட்டனா?"
 
-#: src/TestNames.php:109
+#: src/TestNames.php:111
 msgid "Does this link open a new tab without warning?"
 msgstr "இந்தப் பிணைப்பு எச்சரிக்கை இல்லாமல் புதுப் பிரிவில் திறக்கிறதா?"
 
-#: src/TestNames.php:110
+#: src/TestNames.php:112
 msgid "This linked alt text may be a placeholder"
 msgstr "இந்தப் பிணைக்கப்பட்ட விவரிப்பு வாசகம் நிரப்பப்படுமிடமாக இருக்கலாம்"
 
-#: src/TestNames.php:111
+#: src/TestNames.php:113
 msgid "This link only contains generic words"
 msgstr "இந்தப் பிணைப்பில் பொதுவான வார்த்தைகள் மட்டுமே உள்ளன"
 
-#: src/TestNames.php:112
+#: src/TestNames.php:114
 msgid "The purpose of this link is visually hidden"
 msgstr "இந்தப் பிணைப்பின் நோக்கம் காட்சி முறையில் மறைக்கப்பட்டுள்ளது"
 
-#: src/TestNames.php:113
+#: src/TestNames.php:115
 msgid "Does this image's alt describe the image or the link?"
 msgstr "இந்த படத்தின் alt படத்தை விவரிக்கிறதா அல்லது இணைப்பை விவரிக்கிறதா?"
 
-#: src/TestNames.php:114
+#: src/TestNames.php:116
 msgid "Are the symbols or emoji in this link meaningful?"
 msgstr "இந்தப் பிணைப்பில் உள்ள சின்னங்கள் அல்லது எமோஜிகள் அர்த்தமுள்ளவையா?"
 
-#: src/TestNames.php:115
+#: src/TestNames.php:117
 msgid "This link is unpronounceable"
 msgstr "இந்தப் பிணைப்பு உச்சரிக்க முடியாதது"
 
-#: src/TestNames.php:116
+#: src/TestNames.php:118
 msgid "Link text should not be a URL"
 msgstr "பிணைப்பு வாசகம் URL ஆக இருக்கக்கூடாது"
 
-#: src/TestNames.php:117
+#: src/TestNames.php:119
 msgid "Meta tag for page language missing"
 msgstr "பக்க மொழிக்கான மெட்டா அடையாளமிடல் இல்லை"
 
-#: src/TestNames.php:118
+#: src/TestNames.php:120
 msgid "Did you mean a different language code?"
 msgstr "நீங்கள் வேறு மொழிக் குறியீட்டைக் கூற முயன்றீர்களா?"
 
-#: src/TestNames.php:119
+#: src/TestNames.php:121
 msgid "Invalid language code"
 msgstr "செல்லாத மொழிக் குறியீடு"
 
-#: src/TestNames.php:120
+#: src/TestNames.php:122
 msgid "Page language may not match the content"
 msgstr "பக்க மொழி உள்ளடக்கத்துடன் பொருந்தாமல் இருக்கலாம்"
 
-#: src/TestNames.php:121
+#: src/TestNames.php:123
 msgid "Meta tag limits how much users can enlarge text"
 msgstr "மெட்டா அடையாளமிடல் பயனர்கள் எழுத்தைப் பெரிதாக்குவதைக் கட்டுப்படுத்துகிறது"
 
-#: src/TestNames.php:122
+#: src/TestNames.php:124
 msgid "Meta tag automatically refreshes page"
 msgstr "மெட்டா அடையாளமிடல் பக்கத்தைத் தானாகவே புதுப்பிக்கிறது"
 
-#: src/TestNames.php:123
+#: src/TestNames.php:125
 msgid "Meta tag prevents users from enlarging text"
 msgstr "மெட்டா அடையாளமிடல் பயனர்கள் எழுத்தைப் பெரிதாக்குவதைத் தடுக்கிறது"
 
-#: src/TestNames.php:124
+#: src/TestNames.php:126
 msgid "Meta tag for page title missing"
 msgstr "பக்கத் தலைப்புக்கான மெட்டா அடையாளமிடல் இல்லை"
 
-#: src/TestNames.php:125
+#: src/TestNames.php:127
 msgid "Invalid HTML: image has no alt attribute"
 msgstr "செல்லாத HTML: படத்தில் விவரிப்பு வாசகப் பண்புக்கூறு இல்லை"
 
-#: src/TestNames.php:126
+#: src/TestNames.php:128
 msgid "Invalid HTML: linked image missing alt attribute"
 msgstr "செல்லாத HTML: பிணைக்கப்பட்ட படத்தில் விவரிப்பு வாசகப் பண்புக்கூறு இல்லை"
 
-#: src/TestNames.php:127
+#: src/TestNames.php:129
 msgid "Invalid HTML: image in link missing alt attribute"
 msgstr "செல்லாத HTML: பிணைப்பில் உள்ள படத்தில் விவரிப்பு வாசகப் பண்புக்கூறு இல்லை"
 
-#: src/TestNames.php:128
+#: src/TestNames.php:130
 msgid "This link target may be invalid"
 msgstr "இந்தப் பிணைப்பின் இலக்கு செல்லாததாக இருக்கலாம்"
 
-#: src/TestNames.php:129
+#: src/TestNames.php:131
 msgid "Should this quote be a heading?"
 msgstr "இந்த மேற்கோள் தலைப்பாக இருக்க வேண்டுமா?"
 
-#: src/TestNames.php:130
+#: src/TestNames.php:132
 msgid "Has this document been tagged for screen readers?"
 msgstr "இந்த ஆவணம் திரைவாசிப்பான்களுக்கு அடையாளமிடப்பட்டுள்ளதா?"
 
-#: src/TestNames.php:131
+#: src/TestNames.php:133
 msgid "Should this bold text be a heading?"
 msgstr "இந்தத் தடிமனான வாசகம் தலைப்பாக இருக்க வேண்டுமா?"
 
-#: src/TestNames.php:132
+#: src/TestNames.php:134
 msgid "Should this have list formatting?"
 msgstr "இதற்குப் பட்டியல் வடிவமைப்பு இருக்க வேண்டுமா?"
 
-#: src/TestNames.php:133
+#: src/TestNames.php:135
 msgid "Broken same-page link"
 msgstr "செயல்படாத ஒரே பக்கப் பிணைப்பு"
 
-#: src/TestNames.php:134
+#: src/TestNames.php:136
 msgid "Do not justify text"
 msgstr "வாசகத்தை நேர்படுத்தாதீர்கள்"
 
-#: src/TestNames.php:135
+#: src/TestNames.php:137
 msgid "Nested interactive layout components"
 msgstr "ஒன்றுக்குள் ஒன்றாகப் பிணைக்கப்பட்ட செயல்மேற்கொள்ளும் தளவமைப்புக் கூறுகள்"
 
-#: src/TestNames.php:136
+#: src/TestNames.php:138
 msgid "Is there an alternative for this PDF?"
 msgstr "இந்த PDF-க்கு மாற்று வழி உள்ளதா?"
 
-#: src/TestNames.php:137
+#: src/TestNames.php:139
 msgid "Text is too small"
 msgstr "வாசகம் மிகவும் சிறியதாக உள்ளது"
 
-#: src/TestNames.php:138
+#: src/TestNames.php:140
 msgid "Large blocks of emphasized text are harder to read"
 msgstr "பெரிய அளவில் வலியுறுத்தப்பட்ட வாசகம் வாசிப்பதற்குக் கடினமாக உள்ளது"
 
-#: src/TestNames.php:139
+#: src/TestNames.php:141
 msgid "Do not use sub/superscript as visual formatting"
 msgstr "காட்சி வடிவமைப்பிற்காகக் கீழெழுத்து/மேலெழுத்தைப் பயன்படுத்தாதீர்கள்"
 
-#: src/TestNames.php:140
+#: src/TestNames.php:142
 msgid "Only links should be underlined"
 msgstr "பிணைப்புகள் மட்டுமே அடிக்கோடிடப்பட வேண்டும்"
 
-#: src/TestNames.php:141
+#: src/TestNames.php:143
 msgid "Is this uppercase text needed?"
 msgstr "இந்தப் பேரெழுத்து வாசகம் தேவையானதா?"
 
-#: src/TestNames.php:142
+#: src/TestNames.php:144
 msgid "Are there redundant words in this alt text?"
 msgstr "இந்த விவரிப்பு வாசகத்தில் தேவையற்ற வார்த்தைகள் உள்ளனவா?"
 
-#: src/TestNames.php:143
+#: src/TestNames.php:145
 msgid "Tabindex overrides interrupt the focus order"
 msgstr "Tabindex மேலெழுதல்கள் கவனம் செலுத்தும் வரிசையைக் குழப்புகின்றன"
 
-#: src/TestNames.php:144
+#: src/TestNames.php:146
 msgid "This header cell needs text"
 msgstr "இந்தத் தலைப்புக் கலத்தில் வாசகம் தேவை"
 
-#: src/TestNames.php:145
+#: src/TestNames.php:147
 msgid "This table has an invalid headers attribute"
 msgstr "இந்த அட்டவணையில் செல்லாத headers பண்புக்கூறு உள்ளது"
 
-#: src/TestNames.php:146
+#: src/TestNames.php:148
 msgid "This table needs a header row and/or column"
 msgstr "இந்த அட்டவணைக்குத் தலைப்பு வரிசை மற்றும்/அல்லது நெடுவரிசை தேவை"
 
-#: src/TestNames.php:147
+#: src/TestNames.php:149
 msgid "Content headings should not be used inside tables"
 msgstr "உள்ளடக்கத் தலைப்புகளை அட்டவணைகளுக்குள் பயன்படுத்தக்கூடாது"
 
-#: src/TestNames.php:148
+#: src/TestNames.php:150
 msgid "Invalid HTML list"
 msgstr "செல்லாத HTML பட்டியல்"
 
-#: src/TestNames.php:377
+#: src/TestNames.php:379
 msgid "Linked images"
 msgstr "இணைக்கப்பட்ட படங்கள்"
 
-#: src/TestNames.php:380
+#: src/TestNames.php:382
 msgid "Tables"
 msgstr "அட்டவணைகள்"
 
-#: src/TestNames.php:381
+#: src/TestNames.php:383
 msgid "Text formatting"
 msgstr "உரை வடிவமைப்பு"
 
-#: src/TestNames.php:382
+#: src/TestNames.php:384
 msgid "Video, audio, frames"
 msgstr "வீடியோ, ஆடியோ, சட்டங்கள்"
 
-#: src/TestNames.php:383
+#: src/TestNames.php:385
 msgid "Contrast"
 msgstr "மாறுபாடு"
 
-#: src/TestNames.php:384
+#: src/TestNames.php:386
 msgid "Forms"
 msgstr "படிவங்கள்"
 
-#: src/TestNames.php:385
+#: src/TestNames.php:387
 msgid "ARIA and focus"
 msgstr "ARIA மற்றும் கவனம்"
 
-#: src/TestNames.php:386
+#: src/TestNames.php:388
 msgid "Page metadata"
 msgstr "பக்க மெட்டாதரவு"

@@ -1,8 +1,41 @@
 import { Ed11y, Lang, State, UI, findElements, elements, computeAccessibleName, createDismissalKey, getElements, refresh, sanitizeHTML, setFixedRoots, version } from 'editoria11y-js';
-import { lang } from 'editoria11y-lang';
+import { lang as ed11yUiLang } from 'editoria11y-lang';
+import { lang as ed11yContentLang } from 'editoria11y-lang-content';
 
-Lang.addI18n(lang.strings);
-Lang.testNames = { ...(Lang.testNames || {}), ...lang.testNames };
+// Build the dual-language dictionary the bundled library consumes.
+//
+// The checker reads ONE flat string table (Lang.langStrings) for both the
+// panel/tip UI *and* the content-detection ruleset (stopword lists, the
+// "click here" set, suspicious-alt words). We want those two halves in
+// different languages: UI in the editor's locale, ruleset in the locale of
+// the content being scanned — so an English-speaking editor reviewing
+// Spanish content still catches Spanish "haga clic aquí" links.
+//
+// PHP enqueues two packs (editoria11y-lang = UI locale, editoria11y-lang-content
+// = content locale). Each pack exports `{ strings, testNames, ruleset }`,
+// where `strings` already contains the ruleset keys; assigning the content
+// pack's `ruleset` over the UI pack's `strings` swaps just the
+// content-detection half. When both packs are the same locale the assign is
+// a harmless no-op. Pure helper, exported for the unit suite.
+export function ed11yBuildLang(uiLang, contentLang) {
+  const ui = uiLang && typeof uiLang === 'object' ? uiLang : {};
+  const content = contentLang && typeof contentLang === 'object' ? contentLang : {};
+  return {
+    strings: Object.assign({}, ui.strings, content.ruleset),
+    testNames: ui.testNames,
+    ruleset: content.ruleset || ui.ruleset || {},
+  };
+}
+
+const ed11yLang = ed11yBuildLang(ed11yUiLang, ed11yContentLang);
+
+// Seed the runtime table now so any early lookup resolves. The library
+// re-applies this from `options.lang` during construction (see ed11yInit),
+// which is what actually survives — without `options.lang` set, the library
+// resets Lang back to its built-in English pack. testNames are panel labels,
+// always the editor's (UI) locale.
+Lang.addI18n(ed11yLang.strings);
+Lang.testNames = { ...(Lang.testNames || {}), ...(ed11yUiLang.testNames || {}) };
 
 // Fetch static config from /wp-json/ed11y/v1/config.
 // Browser-cached for 30 days via Cache-Control: immutable; cachebust is the
@@ -62,6 +95,8 @@ export function ed11yApplyOptionTranslations(options) {
   if (!options.checkRoot) {
     options.checkRoot = document.querySelector('main') ? 'main' : 'body > *:not(#wpadminbar, script, style, .ed11y-element)';
   }
+
+  options.linkIgnore = '[aria-hidden="true"][tabindex="-1"], [href*="/wp-admin/"]';
 
   // `linkStringsNewWindows` is a /pipe|delimited|phrases/g regex used to
   // detect "opens in a new tab" warnings inside link text.
@@ -390,6 +425,13 @@ const ed11yInit = async function () {
     }
     ed11yOptions.cssUrls = [ed11yOptions.cssLocation];
 
+    // Pin the merged dual-language dictionary so the library uses it during
+    // preProcessOptions. The library calls Lang.addI18n(State.option.lang.strings)
+    // on construction and, when options.lang is unset, falls back to its
+    // built-in English pack — which is what previously clobbered the
+    // enqueued translation back to English for non-English sites.
+    ed11yOptions.lang = ed11yLang;
+
     let lateResultsReady;
     document.addEventListener('ed11yResults', function () {
       // Delay to make sure page has painted. Not needed until a tip is drawn.
@@ -474,8 +516,6 @@ const ed11yInit = async function () {
       }
       e.detail.tip.dataset.alreadyDecorated = 'true';
     });
-
-    console.log(ed11yOptions.checks);
 
     window.ed11y = new Ed11y(ed11yOptions);
     // Expose the library's State / UI / Lang namespaces alongside the

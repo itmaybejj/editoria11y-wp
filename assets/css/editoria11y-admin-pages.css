@@ -5,15 +5,27 @@
 	   that the Freemius menu is unified onto our settings page (menu.slug ===
 	   'ed11y'). They are reachable via the nav-tab row, so hide the redundant
 	   sidebar rows. Matched by URL suffix; our settings page (`page=ed11y`)
-	   and Custom rules / Crawler stay reachable, only these submenus hide. */
+	   and Custom rules / Crawler stay reachable, only these submenus hide.
+	   commented out:
+	   */
+	a[href^="https://wp.freemius.com/contact/?page=ed11y"],
+	a[href$="ed11y-account"],
+	a[href$="ed11y-addons"],
+	a[href$="ed11y-affiliation"],
 	a[href$="ed11y-custom-rules"],
 	a[href$="ed11y-crawler"],
-	a[href$="ed11y-account"],
 	a[href$="ed11y-contact"],
-	a[href$="ed11y-pricing"],
-	a[href$="ed11y-addons"],
-	a[href$="ed11y-affiliation"] {
-		display: none;
+	a[href*="plugin_id=26217"],
+	a[href*="ed11y-pricing"] {
+		&:not(.current a) {
+			display: none;
+		}
+	}
+
+	a[href$="ed11y-custom-rules"]::before,
+	a[href$="ed11y-crawler"]::before {
+		content: "↳" / "Editorially";
+		padding: 0 5px;
 	}
 }
 

@@ -416,110 +416,6 @@ final class NetworkDefaultsWorker {
 	}
 
 	/**
-	 * Detect "orphan" saves: keys whose value changed but whose
-	 * propagation mode is "No network default" (mode absent or set to a
-	 * value other than `'new'` / `'all'` / `'lock'`).
-	 *
-	 * The save handler uses this as a hard validation gate — a value that
-	 * goes nowhere is almost always a UX mistake (the admin meant to also
-	 * flip the mode dropdown but didn't), so we reject the save and let
-	 * them either configure the mode or revert.
-	 *
-	 * Bundle-governed keys are grouped behind the bundle's mode; if the
-	 * bundle is configured, none of its four governed keys can be orphans
-	 * even if their individual values changed. Conversely, if the bundle
-	 * is unconfigured and any of its governed values changed, the bundle
-	 * itself surfaces as a single orphan entry (using its dropdown label)
-	 * rather than four duplicates.
-	 *
-	 * Returns a list of human-readable labels for the offending keys, in
-	 * the order they were detected.
-	 *
-	 * @param array{values: array<string,mixed>, modes: array<string,string>} $old_main Previous main storage.
-	 * @param array{values: array<string,mixed>, modes: array<string,string>} $new_main New main storage.
-	 * @param array{values: array<string,mixed>, modes: array<string,string>} $old_csa  Previous CSA storage.
-	 * @param array{values: array<string,mixed>, modes: array<string,string>} $new_csa  New CSA storage.
-	 * @return array<int,string>
-	 *
-	 * @SuppressWarnings(PHPMD.CyclomaticComplexity) Bundle branch + two per-blob loops with mode + value-change gates; flattening would obscure the read.
-	 */
-	public static function detect_orphan_changed_keys( array $old_main, array $new_main, array $old_csa, array $new_csa ): array {
-		$bundle_key          = SettingsValidator::BUNDLE_LOCK_TESTS_AND_ROLES;
-		$bundle_keys         = SettingsValidator::BUNDLE_LOCK_TESTS_AND_ROLES_KEYS;
-		$propagating         = array( 'new', 'all', 'lock' );
-		$orphans             = array();
-		$new_bundle_mode     = $new_csa['modes'][ $bundle_key ] ?? null;
-		$bundle_unconfigured = ! in_array( $new_bundle_mode, $propagating, true );
-
-		if ( $bundle_unconfigured ) {
-			$bundle_changed = false;
-			$main_off_old   = $old_main['values']['tests_off'] ?? null;
-			$main_off_new   = $new_main['values']['tests_off'] ?? null;
-			if ( $main_off_old !== $main_off_new && '' !== $main_off_new && null !== $main_off_new ) {
-				$bundle_changed = true;
-			}
-			if ( ! $bundle_changed ) {
-				foreach ( $bundle_keys as $key ) {
-					$csa_old = $old_csa['values'][ $key ] ?? null;
-					$csa_new = $new_csa['values'][ $key ] ?? null;
-					if ( $csa_old !== $csa_new && '' !== $csa_new && null !== $csa_new ) {
-						$bundle_changed = true;
-						break;
-					}
-				}
-			}
-			if ( $bundle_changed ) {
-				$orphans[] = __( 'Tests + roles assignment', 'editoria11y' );
-			}
-		}
-
-		// Main-blob per-key orphan check (skip bundle-governed keys —
-		// covered by the bundle branch above).
-		foreach ( $new_main['values'] as $key => $new_value ) {
-			if ( in_array( $key, $bundle_keys, true ) ) {
-				continue;
-			}
-			if ( '' === $new_value || null === $new_value ) {
-				continue;
-			}
-			$old_value = $old_main['values'][ $key ] ?? null;
-			if ( $old_value === $new_value ) {
-				continue;
-			}
-			$mode = $new_main['modes'][ $key ] ?? null;
-			if ( in_array( $mode, $propagating, true ) ) {
-				continue;
-			}
-			$orphans[] = (string) $key;
-		}
-
-		// CSA-blob per-key orphan check (skip the bundle key + governed
-		// keys).
-		foreach ( $new_csa['values'] as $key => $new_value ) {
-			if ( $key === $bundle_key ) {
-				continue;
-			}
-			if ( in_array( $key, $bundle_keys, true ) ) {
-				continue;
-			}
-			if ( '' === $new_value || null === $new_value ) {
-				continue;
-			}
-			$old_value = $old_csa['values'][ $key ] ?? null;
-			if ( $old_value === $new_value ) {
-				continue;
-			}
-			$mode = $new_csa['modes'][ $key ] ?? null;
-			if ( in_array( $mode, $propagating, true ) ) {
-				continue;
-			}
-			$orphans[] = (string) $key;
-		}
-
-		return array_values( array_unique( $orphans ) );
-	}
-
-	/**
 	 * Insert each `key => value` from `$seed` into the named option, but
 	 * only where the key is currently absent. Never clobbers a stored
 	 * value (including `''`). No-op when seed is empty.
@@ -544,45 +440,14 @@ final class NetworkDefaultsWorker {
 			$changed        = true;
 		}
 		if ( $changed ) {
-			self::update_option_without_form_validator( $option_name, $stored );
-		}
-	}
-
-	/**
-	 * `update_option()` that detaches the per-site form's `sanitize_option_*`
-	 * callback for the duration of the write, then restores it.
-	 *
-	 * Why: {@see \Editoria11y\Form\SettingsPage::register_settings()} hooks
-	 * {@see SettingsValidator::validate()} onto `sanitize_option_ed11y_plugin_settings`
-	 * via `register_setting()`. That validator expects form-shaped input
-	 * (with `tests_enabled` / `tests_state` UI sub-arrays) and unconditionally
-	 * re-derives `tests_off` from a possibly-absent `tests_enabled` — when
-	 * the seeder/backfill writes canonical, already-validated values, the
-	 * filter silently rewrites `tests_off` to "every content test is off"
-	 * (the `from_free_post( array(), $existing )` result for a missing
-	 * `tests_enabled`).
-	 *
-	 * `register_setting()` only fires from `admin_init`, so this only matters
-	 * when site creation happens inside an admin request (Network → Sites →
-	 * Add new). WP-CLI `wp site create` runs outside admin context and dodges
-	 * the issue, which is why the bug went unnoticed in scripted seeding.
-	 *
-	 * @param string              $option_name Option name on the current blog.
-	 * @param array<string,mixed> $value       Already-canonical value to store.
-	 */
-	private static function update_option_without_form_validator( string $option_name, array $value ): void {
-		$filter_name = "sanitize_option_$option_name";
-		$callback    = array( SettingsValidator::class, 'validate' );
-		$priority    = has_filter( $filter_name, $callback );
-		if ( false !== $priority ) {
-			remove_filter( $filter_name, $callback, (int) $priority );
-		}
-		try {
-			update_option( $option_name, $value );
-		} finally {
-			if ( false !== $priority ) {
-				add_filter( $filter_name, $callback, (int) $priority );
-			}
+			// Plain update_option: this is a programmatic, already-canonical
+			// write. The per-site form sanitizer
+			// ({@see SettingsValidator::validate()}, hooked on
+			// `sanitize_option_ed11y_plugin_settings`) recognizes the absence
+			// of the form's `_ed11y_form_submit` marker and passes `tests_off`
+			// through untouched, so the seed lands verbatim. See the marker
+			// note in {@see \Editoria11y\Form\SettingsPage::render_page()}.
+			update_option( $option_name, $stored );
 		}
 	}
 
@@ -1027,7 +892,10 @@ final class NetworkDefaultsWorker {
 			$changed        = true;
 		}
 		if ( $changed ) {
-			self::update_option_without_form_validator( $option_name, $stored );
+			// Plain update_option — the form sanitizer treats a marker-less
+			// write as programmatic and leaves `tests_off` alone. See the
+			// marker note in {@see \Editoria11y\Form\SettingsPage::render_page()}.
+			update_option( $option_name, $stored );
 		}
 		return $changed;
 	}

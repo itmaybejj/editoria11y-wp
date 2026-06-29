@@ -4,7 +4,7 @@
  *
  * Plugin Name:       Editoria11y Accessibility Checker
  * Plugin URI:        https://wordpress.org/plugins/editoria11y-accessibility-checker/
- * Version:           3.0.0-alpha1
+ * Version:           3.0.0-alpha2
  * Requires PHP:      7.4
  * Requires at least: 6.0
  * Tested up to:      7.0
@@ -27,6 +27,79 @@
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
+
+/*
+ * Build-precedence yield + single-instance guard (free vs. premium collision).
+ *
+ * The free build (slug editoria11y-accessibility-checker) and the premium
+ * build (slug editoria11y-wp-csa) are the same Freemius product shipped in
+ * two separate folders. They share the Editoria11y\ namespace, the ED11Y_*
+ * constants, and the ed11ycsa() accessor, and each ships its own Composer
+ * autoloader registered with prepend = true — so when both are included in
+ * one request the second-loaded build's autoloader jumps to the FRONT of the
+ * SPL stack and resolves any not-yet-loaded class from its own src/, serving
+ * a mix of stripped (free) and unstripped (premium) copies of the same class.
+ * The symptom that surfaced this: the premium-only Settings nav tabs vanished
+ * because SettingsPage autoloaded from the free (stripped) copy while Plugin
+ * had already loaded from the premium copy.
+ *
+ * Both builds can legitimately be active in one request on multisite, in
+ * BOTH precedence directions:
+ *   - premium network-active + free per-site active on a subsite (Freemius's
+ *     activate-time handoff misses per-site subsite activations a site admin
+ *     made independently); and
+ *   - free network-active everywhere + premium per-site active on the
+ *     licensed subsites (the per-active-site billing model — free is the
+ *     baseline, premium is added only on sites that paid for it).
+ * WordPress loads network-active plugins before per-site ones, so load order
+ * alone does NOT reliably hand the request to the premium build: in the
+ * second case the free build loads first and would otherwise win.
+ *
+ * Two cooperating guards make the premium build win whenever it is co-active,
+ * in either direction:
+ *
+ *   1. Precedence yield. The free build bails the instant it detects a
+ *      co-active premium build (per-site on this blog, or network-active) —
+ *      BEFORE defining the sentinel below, so the premium build still finds
+ *      the sentinel undefined and boots normally even when it loads second.
+ *      Build identity is the folder name (the Freemius slug): stable, and
+ *      resolvable before the autoloader without WordPress's plugin registry.
+ *
+ *   2. Single-instance sentinel. The first build past the yield bails any
+ *      sibling that still reaches this point — before requiring our vendor
+ *      tree (so no second autoloader registers) and before fs_dynamic_init()
+ *      (so the SDK isn't double-initialized for one product id). Exactly one
+ *      build then owns the request with an internally consistent class set.
+ *
+ * The redundant still-"active" free entry on premium-everywhere installs is
+ * cleaned up lazily by Editoria11y\CoActivationGuard; the per-active-site
+ * baseline (network-active free) is intentional and is left untouched.
+ *
+ * Plain (un-gated) code so it survives into the free build too — the free
+ * build is the one that does the yielding, and both builds must run the same
+ * sentinel check against the same constant.
+ */
+$ed11y_premium_basename = 'editoria11y-wp-csa/editoria11y.php';
+if (
+	'editoria11y-accessibility-checker' === basename( __DIR__ )
+	&& (
+		in_array( $ed11y_premium_basename, (array) get_option( 'active_plugins', array() ), true )
+		|| (
+			is_multisite()
+			&& array_key_exists(
+				$ed11y_premium_basename,
+				(array) get_site_option( 'active_sitewide_plugins', array() )
+			)
+		)
+	)
+) {
+	return;
+}
+
+if ( defined( 'ED11Y_PLUGIN_FILE' ) ) {
+	return;
+}
+define( 'ED11Y_PLUGIN_FILE', __FILE__ );
 
 /*
  * Composer autoload.
@@ -68,13 +141,13 @@ if ( file_exists( __DIR__ . '/vendor/autoload.php' ) ) {
  *
  * Defined here at file-load (rather than inside a class method on
  * plugins_loaded:1) so PSR-4 autoload-resolved classes can use ED11Y_SRC /
- * ED11Y_BASE directly. Keeping the definitions in this file means __FILE__
- * always refers to the actual plugin entry — moving the defines onto a
- * class in src/ would have broken plugin_basename( __FILE__ ).
+ * ED11Y_BASE directly and __FILE__ refers to the actual plugin entry.
  */
-define( 'ED11Y_BASE', plugin_basename( __FILE__ ) );
-define( 'ED11Y_SRC', trailingslashit( plugin_dir_path( __FILE__ ) . 'src/' ) );
-define( 'ED11Y_ASSETS', trailingslashit( plugin_dir_url( __FILE__ ) . 'assets/' ) );
+if ( ! defined( 'ED11Y_BASE' ) ) {
+	define( 'ED11Y_BASE', plugin_basename( __FILE__ ) );
+	define( 'ED11Y_SRC', trailingslashit( plugin_dir_path( __FILE__ ) . 'src/' ) );
+	define( 'ED11Y_ASSETS', trailingslashit( plugin_dir_url( __FILE__ ) . 'assets/' ) );
+}
 
 if ( ! function_exists( 'ed11ycsa' ) ) {
 	/**
@@ -126,6 +199,12 @@ if ( ! function_exists( 'ed11ycsa' ) ) {
 					'has_addons'          => false,
 					'has_paid_plans'      => true,
 					'is_org_compliant'    => true,
+					// Premium build: license holders connect their account, so the
+					// SDK's opt-in/connection flow stays enabled here (anonymous_mode
+					// => false). The strip flips this to true for the free build so
+					// WP.org users are never pestered with opt-in nags and the plugin
+					// runs fully anonymous. Mirrors the is_premium flip.
+					'anonymous_mode'      => true,
 					// Automatically removed in the free version. If you're not using the
 					// auto-generated free version, delete this line before uploading to wp.org.
 					'trial'               => array(
@@ -162,9 +241,6 @@ if ( ! function_exists( 'ed11ycsa' ) ) {
 
 			// Replace unprofessional SDK strings.
 			\Editoria11y\FreemiusOverrides::apply( $ed11ycsa );
-
-			// Throttle the SDK's opt-in nag to once per login.
-			\Editoria11y\FreemiusOptInNag::apply( $ed11ycsa );
 
 			// Catch-all for stray `options-general.php?page=ed11y-contact`
 			// links the SDK emits from places we can't intercept

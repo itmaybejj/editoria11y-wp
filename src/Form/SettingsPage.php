@@ -74,113 +74,87 @@ class SettingsPage {
 		if ( ! function_exists( 'ed11ycsa' ) ) {
 			return;
 		}
-		ed11ycsa()->add_filter( 'hide_account_tabs', '__return_true' );
-		ed11ycsa()->add_filter( 'templates/account.php', array( __CLASS__, 'wrap_account_template' ) );
-		// Registered in BOTH builds (not gated behind is__premium_only): the
-		// free build's connect/opt-in screen is where a free user enters a
-		// license key to activate the CSA features, so the "becoming a
-		// supporter" pointer belongs there too. render_obtain_license_notice()
-		// adapts its copy to the running build via ed11ycsa()->is_premium().
-		ed11ycsa()->add_action( 'connect/before', array( __CLASS__, 'render_obtain_license_notice' ) );
+		// Premium-only: all three hooks drive the Freemius account / connect
+		// screens. The free build runs fully anonymous (anonymous_mode => true,
+		// no opt-in) and renders neither screen, so these handlers would be dead
+		// there — and `hide_account_tabs` / `wrap_account_template` carry
+		// "License & Account" chrome while `render_obtain_license_notice` carries
+		// license-entry copy the WP.org build shouldn't ship. The free build's
+		// upgrade funnel lives on the Settings page instead, in
+		// `render_upgrade_notice()`. The preprocessor strips this whole block.
 	}
 
 	/**
 	 * Banner shown on the Freemius connect / activation screen (the opt-in
-	 * shown on `options-general.php?page=ed11y`), pointing users at the
+	 * shown on `options-general.php?page=ed11y`), pointing premium users at the
 	 * supporter / license path.
 	 *
-	 * Shown in BOTH builds (the registration in
-	 * register_freemius_account_filters() is no longer gated behind
-	 * is__premium_only), but the copy differs because the two builds offer
-	 * different things:
-	 *   - Premium (CSA) build: its connect screen DOES expose a license-key
-	 *     field, so we keep the "enter your existing license key …" copy and
-	 *     also surface a pointer to editoria11y.com/codes (the SDK explains how
-	 *     to *enter* a key but offers no path to *obtain* one).
-	 *   - Free (WP.org) build: the SDK does NOT expose a license field — license
-	 *     activation is gated to the premium build by
-	 *     Freemius::_add_license_activation() (has_premium_version && !is_premium
-	 *     returns early) and by connect.php's `$require_license_key` (false when
-	 *     !is_premium_code && has_release_on_freemius). So the free copy must NOT
-	 *     promise license entry; it points only to the supporter path. Activation
-	 *     happens later, in the supporter build the user installs.
+	 * Premium-only. Registered via the `connect/before` Freemius action in
+	 * `register_freemius_account_filters()`, which is itself gated behind
+	 * is__premium_only(): the free build runs fully anonymous (anonymous_mode,
+	 * no opt-in) and never shows a connect screen, so this notice has nothing to
+	 * render on there. The free-build equivalent is `render_upgrade_notice()` on
+	 * the Settings page. The whole body is wrapped in is__premium_only() so the
+	 * preprocessor strips the license-entry copy from the WP.org build entirely.
 	 *
-	 * Both paragraphs branch on `ed11ycsa()->is_premium()` — a runtime check,
-	 * NOT the is__premium_only() strip marker, so the free branch survives the
-	 * preprocessor and runs when is_premium is flipped to false in the free
-	 * build. The premium copy is left verbatim so its existing 29-locale
-	 * translations stay valid; the free build adds two new strings.
+	 * The premium (CSA) connect screen DOES expose a license-key field
+	 * (require_license_key can be true), so the "enter your existing license
+	 * key" path is real here; the editoria11y.com/codes pointer covers how to
+	 * *obtain* a key (the SDK only explains how to *enter* one). Copy is left
+	 * verbatim so its existing 29-locale translations stay valid.
 	 *
-	 * Registered via the `connect/before` Freemius action, which fires just
-	 * above `<div id="fs_connect" class="wrap">` — so we wrap our own `.wrap`
-	 * for the standard admin gutter.
-	 *
-	 * Links are injected via printf `%s` placeholders rather than living inside
-	 * the translated string so URLs stay in code (not editable by translators)
-	 * and translators only see the human-readable copy.
+	 * The `connect/before` action fires just above
+	 * `<div id="fs_connect" class="wrap">`, so we wrap our own `.wrap` for the
+	 * standard admin gutter. Links are injected via printf `%s` placeholders
+	 * rather than living inside the translated string so URLs stay in code (not
+	 * editable by translators) and translators only see the human-readable copy.
 	 */
 	public static function render_obtain_license_notice() {
+	}
+
+	/**
+	 * Free-build upgrade funnel, shown at the top of the Settings page.
+	 *
+	 * Replaces the supporter pitch that used to ride on the Freemius connect
+	 * screen via `render_obtain_license_notice()`. The free build runs fully
+	 * anonymous (anonymous_mode, no opt-in), so that screen never renders; the
+	 * pitch needs a home that doesn't depend on it, and the Settings page loads
+	 * in every state.
+	 *
+	 * Gated by a RUNTIME `is_premium()` check, NOT the is__premium_only() strip
+	 * marker: the method ships in both builds but only paints in the free build,
+	 * which has no License & Account tab / connect screen carrying the upgrade
+	 * path. The premium build already has that funnel, so the notice stays
+	 * hidden there to avoid a redundant pitch on the Settings page.
+	 *
+	 * Copy mirrors the free branch formerly in render_obtain_license_notice():
+	 * no license-entry promise (the free build exposes no license field), only
+	 * the supporter path. The strings are reused verbatim so their translations
+	 * carry over unchanged.
+	 */
+	public static function render_upgrade_notice() {
+		if ( ! function_exists( 'ed11ycsa' ) || ed11ycsa()->is_premium() ) {
+			return;
+		}
 		$codes_link = sprintf(
 			'<a href="%s" target="_blank" rel="noopener">%s</a>',
 			esc_url( 'https://editoria11y.com/codes/' ),
 			esc_html__( 'becoming a supporter', 'editoria11y' )
 		);
 		?>
-		<div class="wrap">
-			<div class="notice notice-info" style="margin-left: 0; margin-right: 0;">
+		<div class="notice notice-info ed11y-upgrade-notice" style="margin-left: 0; margin-right: 0;">
+			<p>
+				<?php esc_html_e( 'This site is running the free version of Editoria11y from WordPress.org. The community-supported (CSA) features like developer and contrast tests, the custom test builder and site crawler, are not yet installed.', 'editoria11y' ); ?>
+			</p>
+			<p>
 				<?php
-				if ( ed11ycsa()->is_premium() ) {
-					// Premium (CSA) build: its connect screen DOES expose a
-					// license-key field (require_license_key can be true), so the
-					// "enter your existing license key" path is real here.
-					$free_link = sprintf(
-						'<a href="%s" target="_blank" rel="noopener">%s</a>',
-						esc_url( 'https://wordpress.org/plugins/editoria11y-accessibility-checker/' ),
-						esc_html__( 'free version at WordPress.org', 'editoria11y' )
-					);
-					?>
-					<p>
-						<?php
-						printf(
-							/* translators: %s: link reading "free version at WordPress.org". */
-							esc_html__( 'This site has the community-supported "CSA" version of Editoria11y installed rather than the %s.', 'editoria11y' ),
-							$free_link // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-						);
-						?>
-					</p>
-					<p>
-						<?php
-						printf(
-							/* translators: %s: link reading "becoming a supporter". */
-							esc_html__( 'To activate the community-supported features and continue receiving updates, either enter your existing license key or view options for %s.', 'editoria11y' ),
-							$codes_link // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-						);
-						?>
-					</p>
-					<?php
-				} else {
-					// Free (WP.org) build: the SDK does NOT expose a license-key
-					// field here (has_premium_version + !is_premium gates it off —
-					// see Freemius::_add_license_activation()). License activation
-					// only happens in the supporter build, so do NOT tell the user
-					// to "enter a license key"; point only to the supporter path.
-					?>
-					<p>
-						<?php esc_html_e( 'This site is running the free version of Editoria11y from WordPress.org. The community-supported (CSA) features are not active.', 'editoria11y' ); ?>
-					</p>
-					<p>
-						<?php
-						printf(
-							/* translators: %s: link reading "becoming a supporter". */
-							esc_html__( 'Unlock the community-supported features and continued updates by %s.', 'editoria11y' ),
-							$codes_link // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-						);
-						?>
-					</p>
-					<?php
-				}
+				printf(
+					/* translators: %s: link reading "becoming a supporter". */
+					esc_html__( 'Unlock the community-supported features and help ongoing work on the free version by %s.', 'editoria11y' ),
+					$codes_link // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				);
 				?>
-			</div>
+			</p>
 		</div>
 		<?php
 	}
@@ -198,18 +172,13 @@ class SettingsPage {
 	 * @return string
 	 */
 	public static function wrap_account_template( $html ) {
-		ob_start();
-		?>
-		<h1><?php esc_html_e( 'Editoria11y License & Account', 'editoria11y' ); ?></h1>
-		<?php self::render_nav_tabs( 'ed11y-account' ); ?>
-		<?php
-		$injection = ob_get_clean();
-		return preg_replace(
-			'#(<div class="wrap fs-section">)#',
-			'$1' . "\n" . $injection,
-			$html,
-			1
-		);
+		// Premium-only body (sentinel-return, not `else`): the filter that calls
+		// this is registered only in the premium build, and the injected chrome
+		// carries "License & Account" copy. The free build returns $html
+		// untouched — though in practice it never reaches here, as the account
+		// page that triggers the filter is never rendered in anonymous mode.
+
+		return $html;
 	}
 
 	/**
@@ -258,15 +227,15 @@ class SettingsPage {
 	 * @param string $current Slug of the active page.
 	 */
 	public static function render_nav_tabs( $current ) {
+		// Settings is the only tab in the free build, which runs fully anonymous
+		// (anonymous_mode => true, no opt-in): it never registers a Freemius
+		// account page and exposes no license entry, so "License & Account" has
+		// no live destination there — the slug would only route back into the
+		// opt-in flow the free build no longer has. The Freemius preprocessor
+		// strips the whole if-block below, taking the account / CSA tabs with it.
 		$tabs = array(
-			'ed11y'         => __( 'Settings', 'editoria11y' ),
-			'ed11y-account' => __( 'License & Account', 'editoria11y' ),
+			'ed11y' => __( 'Settings', 'editoria11y' ),
 		);
-		// Freemius preprocessor strips this whole if-block from the free
-		// build. To keep `else` branches out of the preprocessor's path,
-		// the free-build tab layout is set above and this block only adds
-		// the CSA-only tab variant when the runtime gate is also active.
-		// The unset/re-add keeps "License & Account" last in the row.
 
 		// On network-activated installs the Freemius "License & Account"
 		// destination resolves to a network-admin URL (see tab_url() /
@@ -303,32 +272,20 @@ class SettingsPage {
 	 * the user is connected. We route that one specially; everything else is
 	 * one of our own pages and resolves with a plain `admin_url()`.
 	 *
+	 * The special-case routing is premium-only: the fully-anonymous free build
+	 * has no `ed11y-account` tab, so after the strip every slug resolves via
+	 * `admin_url()`.
+	 *
 	 * @param string $slug Tab slug from {@see render_nav_tabs()}.
 	 */
 	private static function tab_url( string $slug ): string {
-		if ( 'ed11y-account' === $slug && function_exists( 'ed11ycsa' ) ) {
-			$freemius = ed11ycsa();
-			// Registered: the live Account page (…-account), where the license
-			// and account UI render.
-			if ( $freemius->is_registered() ) {
-				return (string) $freemius->_get_admin_page_url( 'account' );
-			}
-			// Not yet connected — either the user skipped the opt-in (anonymous)
-			// or opted in but hasn't confirmed the email yet (pending
-			// activation). Neither state has an Account page, and the bare slug
-			// is just the settings page (looping the user back to where they
-			// are). Re-enter the opt-in / license flow via the reconnect URL:
-			// it targets the menu slug — now the always-registered settings page
-			// (`ed11y`) — and its reset action (handled by the SDK's
-			// connect_again() on admin_init, which clears BOTH anonymous and
-			// pending) lands on a real page instead of 403ing or looping.
-			if ( $freemius->is_anonymous() || $freemius->is_pending_activation() ) {
-				return (string) $freemius->get_reconnect_url();
-			}
-			// Activation mode (fresh install): the SDK overrides the settings
-			// page with its opt-in screen; link straight to it.
-			return (string) $freemius->_get_admin_page_url( '' );
-		}
+		// Premium-only: ed11y-account is the only nav-tab whose destination
+		// isn't one of our own pages — it resolves to the Freemius account /
+		// reconnect / opt-in screens depending on connection state. None of
+		// those exist in the fully-anonymous free build (which has no account
+		// tab to route here in the first place), so the preprocessor strips
+		// this block and every free-build slug falls through to admin_url().
+
 		return admin_url( 'options-general.php?page=' . $slug );
 	}
 
@@ -519,6 +476,11 @@ class SettingsPage {
 
 		$is_csa = ed11y_is_csa_active();
 
+		/**
+		 * Need help?
+		 * <ul><li>Developer docs: <a href="https://editoria11y.com/docs/" target="_blank" rel="noopener">editoria11y.com/docs/</a></li>
+		 */
+
 		add_settings_section(
 			'ed11y_getting_started',
 			__( 'Getting started', 'editoria11y' ),
@@ -611,6 +573,7 @@ class SettingsPage {
 		<div class="wrap">
 			<h1><?php esc_html_e( 'Editoria11y Settings', 'editoria11y' ); ?></h1>
 			<?php self::render_nav_tabs( 'ed11y' ); ?>
+			<?php self::render_upgrade_notice(); ?>
 			<?php MigrationPanel::render(); ?>
 
 			<div id="poststuff">
@@ -623,6 +586,28 @@ class SettingsPage {
 
 					<form method="post" action="options.php" autocomplete="off" class="ed11y-form-admin">
 						<?php settings_fields( 'ed11y_settings' ); ?>
+						<?php
+						// Marker that lets SettingsValidator::validate() tell a
+						// real form submission from a programmatic
+						// update_option() write (Installer schema/seed
+						// backfills, the NetworkDefaultsWorker seeder/backfill,
+						// third-party code). Only a submission carrying this
+						// marker may re-derive `tests_off` or run CSA test
+						// routing; without it the validator passes those
+						// through untouched.
+						//
+						// DO NOT REMOVE without a replacement. Deleting this
+						// field reintroduces the v2->v3 "all tests off"
+						// corruption: any programmatic write to
+						// `ed11y_plugin_settings` during an admin request would
+						// be read as "every checkbox unchecked" and rewrite
+						// `tests_off` to every content test. If this field must
+						// go, restore an equivalent guard that detaches the
+						// `sanitize_option_ed11y_plugin_settings` filter around
+						// every such write (the former
+						// NetworkDefaultsWorker::update_option_without_form_validator()).
+						?>
+						<input type="hidden" name="ed11y_plugin_settings[_ed11y_form_submit]" value="1" />
 						<?php do_settings_sections( 'ed11y' ); ?>
 						<?php submit_button( esc_html__( 'Save Settings', 'editoria11y' ), 'primary large' ); ?>
 					</form>
