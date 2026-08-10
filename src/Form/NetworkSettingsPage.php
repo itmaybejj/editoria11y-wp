@@ -106,7 +106,6 @@ class NetworkSettingsPage {
 		// premium build. The preprocessor strips the block from the free
 		// build; the runtime gate keeps free-mode multisite installs from
 		// rendering a tab to a stripped page.
-		
 
 		echo '<h2 class="nav-tab-wrapper">';
 		foreach ( $tabs as $slug => $label ) {
@@ -525,7 +524,6 @@ class NetworkSettingsPage {
 			'values' => array(),
 			'modes'  => array(),
 		);
-		
 
 		$free_blob = NetworkSettingsValidator::validate_free( (array) $post );
 
@@ -533,7 +531,6 @@ class NetworkSettingsPage {
 			'values' => array(),
 			'modes'  => array(),
 		);
-		
 
 		// Orphan validation: reject the save outright when a value changed
 		// but the matching propagation-mode dropdown is "No network
@@ -566,7 +563,6 @@ class NetworkSettingsPage {
 		}
 
 		update_site_option( 'ed11y_network_default_settings', $free_blob );
-		
 
 		// Queue the backfill — only `'all'`-mode keys whose value/mode
 		// actually changed end up in the dirty set. No-op when nothing
@@ -574,11 +570,11 @@ class NetworkSettingsPage {
 		try {
 			$main_dirty = NetworkDefaultsWorker::diff_dirty_keys( $old_free, $new_free_norm );
 			$csa_dirty  = array();
-			
+
 			// Cross-blob bundle expansion: tests_off has destinations in
 			// both blobs, so it cannot be diffed by the per-blob walks
 			// above (the bundle mode lives only in CSA modes).
-			
+
 			NetworkDefaultsWorker::enqueue( $main_dirty, $csa_dirty );
 		} catch ( \Throwable $e ) {
 			// Worker / autoload failure must not block the form save —

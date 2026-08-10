@@ -1,0 +1,33 @@
+{
+  "name": "editoria11y-wp",
+  "version": "3.0.0",
+  "description": "=== Editoria11y Accessibility Checker ===\r Contributors: itmaybejj\r Tags: accessibility, accessibility automated testing, accessibility checker\r Requires at least: 7.2\r Tested up to: 7.0\r Requires PHP: 7.2\r Stable tag: 2.1.12\r License: GPLv2 or later\r License URI: http://www.gnu.org/licenses/gpl-2.0.html",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "npm run test:unit && npm run test:e2e",
+    "test:unit": "vitest run",
+    "test:unit:watch": "vitest",
+    "test:e2e": "playwright test",
+    "test:e2e:install": "playwright install --with-deps chromium",
+    "test:e2e:ui": "playwright test --ui"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/itmaybejj/editoria11y-wp.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/itmaybejj/editoria11y-wp/issues"
+  },
+  "homepage": "https://github.com/itmaybejj/editoria11y-wp#readme",
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.49.0",
+    "eslint": "^10.3.0",
+    "globals": "^17.6.0",
+    "jsdom": "^29.1.1",
+    "vitest": "^4.1.8"
+  }
+}
