@@ -105,37 +105,34 @@ class SettingsValidator {
 		// Production callers gate via `ed11y_is_csa_active()` (not Freemius
 		// directly) so tests can simulate CSA via the
 		// `ed11y_is_csa_active` filter.
-		// Distinguish a genuine settings-form submission from a programmatic
-		// update_option() write. The per-site form emits a hidden
-		// `_ed11y_form_submit` marker (see SettingsPage::render_page());
-		// programmatic writers — the Installer schema/seed backfills, the
-		// NetworkDefaultsWorker seeder/backfill, and any third-party code —
-		// never carry it. Only a real submission may re-derive `tests_off`
-		// or run CSA routing: without the marker, a write that lacks the
-		// form's `tests_enabled` sub-array would be misread as "every
-		// checkbox unchecked" and clobber `tests_off` to "every content test
-		// off" (the v2->v3 "all tests off" bug). This marker is the single
-		// guard for every programmatic writer — it replaced the former
-		// NetworkDefaultsWorker detach-the-filter helper.
-		$is_form_submit = array_key_exists( '_ed11y_form_submit', $settings );
-		unset( $settings['_ed11y_form_submit'] );
-
 		$handled_csa = false;
 
 		// CSA-mode branch wrapped in the preprocessor gate so it strips
 		// from the free build. The `$handled_csa` flag, rather than an
 		// `if/else`, gates the free branch — Freemius's preprocessor only
 		// removes the `is__premium_only()` block, so a sibling `else`
-		// would be orphaned and parse-fail. The `$is_form_submit` guards sit
-		// on the INNER conditions so the `is__premium_only()` marker line the
-		// strip script matches stays pristine.
+		// would be orphaned and parse-fail.
+		
 
-		if ( $is_form_submit && ! $handled_csa ) {
-			$existing_off          = ed11y_get_raw_setting( 'tests_off' );
-			$enabled_post          = isset( $settings['tests_enabled'] ) && is_array( $settings['tests_enabled'] )
-				? $settings['tests_enabled']
-				: array();
-			$settings['tests_off'] = TestStateNormalizer::from_free_post( $enabled_post, $existing_off );
+		if ( ! $handled_csa ) {
+			// Only re-derive `tests_off` from checkbox state when the input is
+			// actually form-shaped. Every real free-mode form POST carries the
+			// `tests_enabled` array — even with all boxes unchecked — because
+			// the renderer emits a hidden `__form` sentinel alongside the
+			// checkbox group (checkboxes alone vanish from the POST when
+			// unchecked). Input WITHOUT the array is not a form save: it is
+			// this validator's own output (WP re-runs sanitize when
+			// `update_option` falls through to `add_option`), a third-party
+			// `update_option()` call, or a bundle-locked form whose disabled
+			// checkboxes (and suppressed sentinel) never posted. Re-deriving
+			// from an absent array used to rewrite `tests_off` to "every
+			// content test off" — preserve the incoming/stored value instead.
+			if ( isset( $settings['tests_enabled'] ) && is_array( $settings['tests_enabled'] ) ) {
+				$existing_off          = ed11y_get_raw_setting( 'tests_off' );
+				$settings['tests_off'] = TestStateNormalizer::from_free_post( $settings['tests_enabled'], $existing_off );
+			} elseif ( ! array_key_exists( 'tests_off', $settings ) ) {
+				$settings['tests_off'] = ed11y_get_raw_setting( 'tests_off' );
+			}
 		}
 
 		// `tests_enabled`, `tests_state`, `csa_settings`, and
@@ -158,7 +155,7 @@ class SettingsValidator {
 		$settings = self::enforce_network_locks( $settings );
 
 		// Reset cache.
-		delete_site_transient( 'editoria11y_settings' );
+		delete_transient( 'editoria11y_settings' );
 
 		return $settings;
 	}
@@ -174,26 +171,52 @@ class SettingsValidator {
 	 *
 	 * @param array $settings Sanitized main settings, pre-routing.
 	 * @return array Same array with `tests_off` set.
+	 *
+	 * @SuppressWarnings(PHPMD.CyclomaticComplexity) Sequential input-shape guards (non-form / bundle-locked / full form); flattening would hide the state web.
 	 */
 	private static function apply_csa_routing( array $settings ): array {
-		$state_post = isset( $settings['tests_state'] ) && is_array( $settings['tests_state'] )
-			? $settings['tests_state']
-			: array();
+		$has_state = isset( $settings['tests_state'] ) && is_array( $settings['tests_state'] );
+		$has_csa   = isset( $settings['csa_settings'] ) && is_array( $settings['csa_settings'] );
 
-		$routed                = TestStateNormalizer::from_csa_post( $state_post );
-		$settings['tests_off'] = $routed['main_off'];
+		// Neither UI sub-array present → this is not a form save (it is the
+		// validator's own output on a double-sanitize, or a third-party
+		// `update_option()` call). Routing from an empty state used to empty
+		// all four test CSVs and reset the CSA blob to defaults; preserve
+		// the incoming/stored values and skip the side-effect write instead,
+		// so validate() is idempotent.
+		if ( ! $has_state && ! $has_csa ) {
+			if ( ! array_key_exists( 'tests_off', $settings ) ) {
+				$settings['tests_off'] = ed11y_get_raw_setting( 'tests_off' );
+			}
+			return $settings;
+		}
+
+		if ( $has_state ) {
+			$routed                = TestStateNormalizer::from_csa_post( $settings['tests_state'] );
+			$settings['tests_off'] = $routed['main_off'];
+			$csa_tests             = array(
+				'tests_off'     => $routed['csa_off'],
+				'tests_content' => $routed['csa_content'],
+				'tests_dev'     => $routed['csa_dev'],
+			);
+		} else {
+			// Bundle-locked form: the 3-way selects render disabled, so a
+			// legitimate save posts `csa_settings` but no `tests_state`.
+			// Leave the stored CSVs alone (the merge below preserves the
+			// existing blob values; enforce_network_csa_locks re-coerces the
+			// bundle-governed keys regardless).
+			if ( ! array_key_exists( 'tests_off', $settings ) ) {
+				$settings['tests_off'] = ed11y_get_raw_setting( 'tests_off' );
+			}
+			$csa_tests = array();
+		}
 
 		// `csa_settings` is the form's CSA dev-mode sub-array. A forged
 		// POST that includes it while CSA is INACTIVE never reaches this
 		// branch, so free-mode submits can't sneak past the gate.
-		$csa_post = isset( $settings['csa_settings'] ) && is_array( $settings['csa_settings'] )
-			? $settings['csa_settings']
-			: array();
+		$csa_post = $has_csa ? $settings['csa_settings'] : array();
 
-		$csa_storage = array(
-			'tests_off'         => $routed['csa_off'],
-			'tests_content'     => $routed['csa_content'],
-			'tests_dev'         => $routed['csa_dev'],
+		$csa_storage = $csa_tests + array(
 			'dev_check_root'    => FieldSanitizer::sanitize_csa( 'dev_check_root', $csa_post['dev_check_root'] ?? '' ),
 			'specify_root'      => FieldSanitizer::sanitize_csa( 'specify_root', $csa_post['specify_root'] ?? '' ),
 			'always_ignore'     => FieldSanitizer::sanitize_csa( 'always_ignore', $csa_post['always_ignore'] ?? '' ),
@@ -231,10 +254,7 @@ class SettingsValidator {
 	 */
 	private static function enforce_network_locks( array $settings ): array {
 		$network = ed11y_get_network_default_settings_storage();
-		if ( empty( $network['modes'] ) ) {
-			return $settings;
-		}
-		foreach ( $network['modes'] as $key => $mode ) {
+		foreach ( $network['modes'] ?? array() as $key => $mode ) {
 			if ( 'lock' !== $mode ) {
 				continue;
 			}
@@ -243,6 +263,18 @@ class SettingsValidator {
 				continue;
 			}
 			$settings[ $key ] = $network['values'][ $key ];
+		}
+
+		// The bundle lock lives in the CSA blob's modes but covers the MAIN
+		// blob's `tests_off` too — mirror {@see ed11y_is_setting_locked()},
+		// which reports `tests_off` locked whenever the bundle is. Without
+		// this, a forged or disabled-checkbox POST under a bundle lock could
+		// leave stored `tests_off` diverged from the network decision, and
+		// the divergence resurfaced the moment the bundle was unlocked.
+		// Checked outside the loop above because the main blob's own modes
+		// can be empty while the bundle is locked.
+		if ( ed11y_is_bundle_locked() ) {
+			$settings['tests_off'] = $network['values']['tests_off'] ?? '';
 		}
 		return $settings;
 	}

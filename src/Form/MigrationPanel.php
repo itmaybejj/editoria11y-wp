@@ -74,15 +74,15 @@ class MigrationPanel {
 		$message      = '';
 		switch ( $state ) {
 			case 'pre-v3':
-				$message = __( 'Editoria11y needs to upgrade its database tables.', 'editoria11y' );
+				$message = __( 'Editoria11y needs to update its database tables.', 'editoria11y' );
 				break;
 			case 'dual':
 				$message = $is_failed
-					? __( 'Editoria11y database upgrade encountered an error during finalization.', 'editoria11y' )
-					: __( 'Editoria11y is upgrading existing dismissal records in the background.', 'editoria11y' );
+					? __( 'Editoria11y database update encountered an error during finalization.', 'editoria11y' )
+					: __( 'Editoria11y is updating existing dismissal records in the background.', 'editoria11y' );
 				break;
 			case 'broken':
-				$message = __( 'Editoria11y database upgrade failed and writes are paused.', 'editoria11y' );
+				$message = __( 'Editoria11y database update failed and writes are paused.', 'editoria11y' );
 				break;
 			default:
 				return;
@@ -118,24 +118,24 @@ class MigrationPanel {
 		$nonce = wp_create_nonce( self::NONCE );
 		$ajax  = admin_url( 'admin-ajax.php' );
 		$i18n  = array(
-			'failed'      => __( 'Upgrade failed. Please retry.', 'editoria11y' ),
+			'failed'      => __( 'Update failed. Please retry.', 'editoria11y' ),
 			/* translators: 1: number of legacy dismissals already migrated, 2: total count detected at start. */
 			'progress'    => __( 'Migrating dismissals: %1$d of %2$d processed.', 'editoria11y' ),
-			'complete'    => __( 'Database upgrade complete.', 'editoria11y' ),
+			'complete'    => __( 'Database update complete.', 'editoria11y' ),
 			'working'     => __( 'Working…', 'editoria11y' ),
-			'priorFailed' => __( 'A previous upgrade attempt did not finish.', 'editoria11y' ),
-			'preV3'       => __( 'A schema upgrade is required.', 'editoria11y' ),
-			'dual'        => __( 'Background data rewrite is in progress. Click below to drive it to completion now.', 'editoria11y' ),
+			'priorFailed' => __( 'A previous update attempt did not finish.', 'editoria11y' ),
+			'preV3'       => __( 'A schema update is required.', 'editoria11y' ),
+			'dual'        => __( 'Background data update is in progress. Click below to drive it to completion now.', 'editoria11y' ),
 		);
 		?>
 		<div class="notice notice-info" id="ed11y-migration-panel" style="padding: 12px;">
-			<h2 style="margin-top:0;"><?php esc_html_e( 'Database upgrade', 'editoria11y' ); ?></h2>
+			<h2 style="margin-top:0;"><?php esc_html_e( 'Editoria11y database update', 'editoria11y' ); ?></h2>
 			<p id="ed11y-migration-status">
 				<?php esc_html_e( 'Checking schema state…', 'editoria11y' ); ?>
 			</p>
 			<p>
 				<button type="button" class="button button-primary" id="ed11y-migration-run">
-					<?php esc_html_e( 'Run upgrade now', 'editoria11y' ); ?>
+					<?php esc_html_e( 'Run update now', 'editoria11y' ); ?>
 				</button>
 				<button type="button" class="button" id="ed11y-migration-retry" style="display:none;">
 					<?php esc_html_e( 'Retry', 'editoria11y' ); ?>
@@ -183,6 +183,18 @@ class MigrationPanel {
 				var d = payload.data;
 				version = d.version;
 				state   = d.schema_state;
+				if (d.failed) {
+					// Sticky -failed marker: stop polling and hand control
+					// back to the Retry button — the server no longer
+					// auto-clears the marker on plain steps, so looping
+					// would just spin on "Working…" forever.
+					bar.style.display = 'none';
+					status.textContent = i18n.priorFailed;
+					btnRun.style.display   = 'none';
+					btnRetry.style.display = '';
+					btnRetry.disabled = false;
+					return;
+				}
 				if (d.remaining > totalSeen) {
 					totalSeen = d.remaining + (d.processed || 0);
 				}
@@ -260,7 +272,13 @@ class MigrationPanel {
 		$retry   = ! empty( $_POST['retry'] );
 		$version = (string) get_option( 'editoria11y_db_version', '' );
 
-		if ( $retry || '-failed' === substr( $version, -7 ) ) {
+		// Only an EXPLICIT retry clears a sticky -failed marker. The old
+		// `$retry || '-failed'` condition meant the JS polling loop
+		// auto-retried a persistently failing step every 250ms forever,
+		// defeating the circuit breaker and never surfacing the failure —
+		// a plain step against a -failed version now reports it instead
+		// (see the `failed` flag below).
+		if ( $retry ) {
 			Installer::retry_migration();
 		}
 
@@ -294,6 +312,9 @@ class MigrationPanel {
 				'schema_state' => $state,
 				'processed'    => $processed,
 				'remaining'    => $remaining,
+				// The JS loop stops and re-surfaces the Retry button on
+				// this flag instead of polling a wedged migration forever.
+				'failed'       => '-failed' === substr( $version, -7 ),
 			)
 		);
 	}

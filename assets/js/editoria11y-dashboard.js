@@ -13,6 +13,21 @@ import { lang } from 'editoria11y-lang';
 export const labelFor = (key, resultName) =>
   lang.testNames[key] || resultName || key;
 
+// page_url values come from editor-submitted scan payloads (semi-trusted):
+// `new URL()` happily preserves schemes like `javascript:`, which would
+// render as a clickable XSS link in the report tables. Returns a URL object
+// for http(s) targets, null for anything else (caller falls back to '#').
+// Exported for unit tests.
+export const safeReportUrl = (url, base) => {
+  let parsed;
+  try {
+    parsed = new URL(url, base);
+  } catch {
+    return null;
+  }
+  return 'http:' === parsed.protocol || 'https:' === parsed.protocol ? parsed : null;
+};
+
 // Config blob printed by Admin\Dashboard::render(). `wp_add_inline_script`
 // does not attach to script modules, so server → JS data flows through a
 // JSON <script> element rather than wpApiSettings or ed11yDashboard globals.
@@ -20,6 +35,15 @@ export const labelFor = (key, resultName) =>
 // module from the unit tests (or any non-dashboard context) doesn't throw.
 const configEl = document.getElementById('editoria11y-dash-config');
 const config = configEl ? JSON.parse(configEl.textContent) : null;
+
+/**
+ * Join a route (which may carry its own query string) onto the REST root.
+ * On plain-permalink sites rest_url() is `index.php?rest_route=/`, so a
+ * literal `?` in the route would truncate the rest_route param and 404
+ * every request; mirror @wordpress/api-fetch and demote it to `&`.
+ */
+export const restUrl = (root, route) =>
+  root.includes('?') ? root + route.replace('?', '&') : root + route;
 
 /**
  * sprintf-lite for the small set of placeholders we use server-side.
@@ -194,8 +218,8 @@ class Ed1 {
      * "Published" hack — labels now flow through the WP translation layer
      * via config.i18n.statusLabels.
      */
-    const prettyStatus = function( page_status ) {
-      return page_status ? statusLabel( page_status ) : page_status;
+    const prettyStatus = function (page_status) {
+      return page_status ? statusLabel(page_status) : page_status;
     };
 
     /**
@@ -218,9 +242,23 @@ class Ed1 {
      */
     Ed1.buildRequest = function (request) {
       let q = Ed1.requests[request];
-	  // Can't use &author as param when author enumeration blocking is activated.
-      let req = `${q.base}?view=${q.view}&count=${q.count}&offset=${q.offset}&sort=${q.sort}&direction=${q.direction}&result_key=${q.result_key}&p_author=${q.p_author}&entity_type=${q.entity_type}&post_status=${q.post_status}&dismissor=${q.dismissor}&nocache=${Date.now()}`;
-      return req;
+      // Can't use &author as param when author enumeration blocking is activated.
+      // URLSearchParams handles encoding — raw interpolation let a
+      // filter value containing & or = silently corrupt every later param.
+      const params = new URLSearchParams({
+        view: q.view,
+        count: q.count,
+        offset: q.offset,
+        sort: q.sort,
+        direction: q.direction,
+        result_key: q.result_key,
+        p_author: q.p_author,
+        entity_type: q.entity_type,
+        post_status: q.post_status,
+        dismissor: q.dismissor,
+        nocache: Date.now(),
+      });
+      return `${q.base}?${params.toString()}`;
     };
 
     /**
@@ -239,23 +277,23 @@ class Ed1 {
       Ed1.render.tableHeaders();
 
       // Only build result table if there is no result or type filter.
-      if (!!Ed1.resultKey || !!Ed1.type || !!Ed1.post_status || !! Ed1.p_author || !! Ed1.dismissor ) {
+      if (!!Ed1.resultKey || !!Ed1.type || !!Ed1.post_status || !!Ed1.p_author || !!Ed1.dismissor) {
         Ed1.h1 = Ed1.wrapper.querySelector('#ed1 h1');
         let resetType = config.i18n.viewAllIssues;
         if (Ed1.resultKey) {
-          Ed1.h1.textContent = format( config.i18n.alertReport, lang.testNames[Ed1.resultKey] ?? Ed1.resultKey );
-        } else if ( Ed1.type ) {
-          Ed1.h1.textContent = format( config.i18n.alertsOnType, Ed1.type );
+          Ed1.h1.textContent = format(config.i18n.alertReport, lang.testNames[Ed1.resultKey] ?? Ed1.resultKey);
+        } else if (Ed1.type) {
+          Ed1.h1.textContent = format(config.i18n.alertsOnType, Ed1.type);
           resetType = config.i18n.viewAllPages;
-        } else if ( Ed1.p_author ) {
+        } else if (Ed1.p_author) {
           Ed1.h1.textContent = config.i18n.alertsByAuthor;
-        } else if ( Ed1.dismissor ) {
+        } else if (Ed1.dismissor) {
           // Display name is filled in by Ed1.get.ed1dismiss once the API
           // returns the matching author record.
           Ed1.h1.textContent = config.i18n.dismissedBy;
         }
         else {
-          Ed1.h1.textContent = format( config.i18n.statusPages, prettyStatus( Ed1.post_status ) );
+          Ed1.h1.textContent = format(config.i18n.statusPages, prettyStatus(Ed1.post_status));
           resetType = config.i18n.viewAllPages;
         }
         let reset = Ed1.render.a(resetType, false, Ed1.url.toString());
@@ -274,7 +312,7 @@ class Ed1 {
       let ed1Lag = Ed1.openDetails ? 0 : 500;
 
       // Always build page table.
-      if ( !Ed1.dismissor ) {
+      if (!Ed1.dismissor) {
         Ed1.get.ed1recent(Ed1.buildRequest('ed1recent'), false);
         Ed1.get.ed1page(Ed1.buildRequest('ed1page'), false);
       }
@@ -282,7 +320,7 @@ class Ed1 {
       // Possible todo: we could wait until the Details is open to do this.
       window.setTimeout(function () {
         Ed1.get.ed1dismiss(Ed1.buildRequest('ed1dismiss'), false);
-        }, ed1Lag);
+      }, ed1Lag);
 
       // Show whatever is drawn after one second.
       window.setTimeout(function () { Ed1.show(); }, 500);
@@ -295,9 +333,9 @@ class Ed1 {
     };
 
     Ed1.show = function () {
-      if ( Ed1.dismissor ) {
+      if (Ed1.dismissor) {
         Ed1.wrapRecent.setAttribute('hidden', '');
-        Ed1.wrapPage.setAttribute( 'hidden', '' );
+        Ed1.wrapPage.setAttribute('hidden', '');
         Ed1.wrapDismiss.querySelector('details').setAttribute('open', '');
       }
       Ed1.wrapper.classList.add('show');
@@ -359,15 +397,15 @@ class Ed1 {
       let link = document.createElement('a');
       link.textContent = text;
       let href;
-      if (url) {
-        let parsedUrl = new URL(url, window.location.origin);
+      const parsedUrl = url ? safeReportUrl(url, window.location.origin) : null;
+      if (parsedUrl) {
         if (pid) {
           parsedUrl.searchParams.set('ed1ref', parseInt(pid));
           parsedUrl.searchParams.set('_wpnonce', Ed1.nonce);
         }
         href = parsedUrl.toString();
       } else {
-        href = '#' + encodeURIComponent(hash);
+        href = '#' + (hash ? encodeURIComponent(hash) : '');
       }
       link.href = href;
       return link;
@@ -676,16 +714,16 @@ class Ed1 {
           let keyName = labelFor(result['result_key'], result['result_name']);
 
           // URL sanitized on build...
-          let key = Ed1.render.td(keyName, false, Ed1.buildUrl({rkey: result['result_key']}), false, 'rkey');
+          let key = Ed1.render.td(keyName, false, Ed1.buildUrl({ rkey: result['result_key'] }), false, 'rkey');
           row.insertAdjacentElement('beforeend', key);
 
           Ed1.tables['ed1result'].insertAdjacentElement('beforeend', row);
         });
 
         if (!Ed1.csvLink) {
-          Ed1.csvLink = Ed1.render.a(config.i18n.csvDownload, '' , Ed1.buildUrl({ed11y_export_results_csv: 'download', _wpnonce: Ed1.nonce}));
+          Ed1.csvLink = Ed1.render.a(config.i18n.csvDownload, '', Ed1.buildUrl({ ed11y_export_results_csv: 'download', _wpnonce: Ed1.nonce }));
           Ed1.csvLink.classList.add('ed11y-export');
-          Ed1.wrapper.append( Ed1.csvLink );
+          Ed1.wrapper.append(Ed1.csvLink);
         }
       }
 
@@ -698,8 +736,8 @@ class Ed1 {
     };
 
     Ed1.authorList = {};
-    Ed1.matchAuthors = function( author_query ) {
-      author_query?.forEach( ( p_author ) => {
+    Ed1.matchAuthors = function (author_query) {
+      author_query?.forEach((p_author) => {
         Ed1.authorList[p_author.ID] = p_author.display_name;
       });
     };
@@ -732,11 +770,14 @@ class Ed1 {
           row.insertAdjacentElement('beforeend', pageLink);
 
           let path = decodeURI(result['page_url'].replace(window.location.protocol + '//' + window.location.host, ''));
-          path = Ed1.render.td( path ? path : '/' );
+          if (path && path !== '/' && path.startsWith('/')) {
+            path = path.substring(1);
+          }
+          path = Ed1.render.td(path ? path : '/');
           row.insertAdjacentElement('beforeend', path);
 
           let keyName = labelFor(result['result_key'], result['result_name']);
-          let key = Ed1.render.td(keyName, false, Ed1.buildUrl({rkey: result['result_key']}), false, 'rkey');
+          let key = Ed1.render.td(keyName, false, Ed1.buildUrl({ rkey: result['result_key'] }), false, 'rkey');
           row.insertAdjacentElement('beforeend', key);
 
           let pageCount = Ed1.render.td(result['result_count']);
@@ -745,12 +786,12 @@ class Ed1 {
 
           
 
-          let type = Ed1.render.td(result['entity_type'], false, Ed1.buildUrl({type: result['entity_type']}));
+          let type = Ed1.render.td(result['entity_type'], false, Ed1.buildUrl({ type: result['entity_type'] }));
           row.insertAdjacentElement('beforeend', type);
 
           let post_status = result['post_status'] ?
-              Ed1.render.td( prettyStatus( result['post_status'] ), false, Ed1.buildUrl({post_status: result['post_status']}))
-              : Ed1.render.td(statusLabel('publish'), false, Ed1.buildUrl({post_status: 'publish'}));
+            Ed1.render.td(prettyStatus(result['post_status']), false, Ed1.buildUrl({ post_status: result['post_status'] }))
+            : Ed1.render.td(statusLabel('publish'), false, Ed1.buildUrl({ post_status: 'publish' }));
           row.insertAdjacentElement('beforeend', post_status);
 
 
@@ -796,36 +837,39 @@ class Ed1 {
           row.insertAdjacentElement('beforeend', pageLink);
 
           let path = decodeURI(result['page_url'].replace(window.location.protocol + '//' + window.location.host, ''));
-          path = Ed1.render.td( path ? path : '/' );
+          if (path && path !== '/' && path.startsWith('/')) {
+            path = path.substring(1);
+          }
+          path = Ed1.render.td(path ? path : '/');
           row.insertAdjacentElement('beforeend', path);
 
-          let type = Ed1.render.td(result['entity_type'], false, Ed1.buildUrl({type: result['entity_type']}));
+          let type = Ed1.render.td(result['entity_type'], false, Ed1.buildUrl({ type: result['entity_type'] }));
           row.insertAdjacentElement('beforeend', type);
 
           let post_status = result['post_status'] ?
-              Ed1.render.td( prettyStatus( result['post_status'] ), false, Ed1.buildUrl({post_status: result['post_status']}))
-              : Ed1.render.td(statusLabel('publish'), false, Ed1.buildUrl({post_status: 'publish'}));
+            Ed1.render.td(prettyStatus(result['post_status']), false, Ed1.buildUrl({ post_status: result['post_status'] }))
+            : Ed1.render.td(statusLabel('publish'), false, Ed1.buildUrl({ post_status: 'publish' }));
           row.insertAdjacentElement('beforeend', post_status);
 
           let date = result['post_modified'] ?
-              Ed1.render.td( result['post_modified'].split(' ')[0].replace(/[^\-0-9]/g, '') )
-              : Ed1.render.td(config.i18n.na, false, false, false, 'muted' );
+            Ed1.render.td(result['post_modified'].split(' ')[0].replace(/[^\-0-9]/g, ''))
+            : Ed1.render.td(config.i18n.na, false, false, false, 'muted');
 
           row.insertAdjacentElement('beforeend', date);
 
-          if ( result['post_author'] ) {
+          if (result['post_author']) {
             row.insertAdjacentElement(
-                'beforeend',
-                Ed1.render.td(
-                    Ed1.authorList[ result['post_author'] ] || result['post_author'],
-                    false,
-                    Ed1.buildUrl({p_author: result['post_author']}),
-                ),
+              'beforeend',
+              Ed1.render.td(
+                Ed1.authorList[result['post_author']] || result['post_author'],
+                false,
+                Ed1.buildUrl({ p_author: result['post_author'] }),
+              ),
             );
           } else {
             row.insertAdjacentElement(
-                'beforeend',
-                Ed1.render.td(config.i18n.na, false, false, false, 'muted'),
+              'beforeend',
+              Ed1.render.td(config.i18n.na, false, false, false, 'muted'),
             );
           }
 
@@ -873,11 +917,14 @@ class Ed1 {
             row.insertAdjacentElement('beforeend', pageLink);
 
             let path = decodeURI(result['page_url'].replace(window.location.protocol + '//' + window.location.host, ''));
-            path = Ed1.render.td( path ? path : '/' );
+            if (path && path !== '/' && path.startsWith('/')) {
+              path = path.substring(1);
+            }
+            path = Ed1.render.td(path ? path : '/');
             row.insertAdjacentElement('beforeend', path);
 
             let keyName = labelFor(result['result_key'], result['result_name']);
-            let key = Ed1.render.td(keyName, false, Ed1.buildUrl({rkey: result['result_key']}), false, 'rkey');
+            let key = Ed1.render.td(keyName, false, Ed1.buildUrl({ rkey: result['result_key'] }), false, 'rkey');
             row.insertAdjacentElement('beforeend', key);
 
             let marked = Ed1.render.td(result['dismissal_status']);
@@ -888,7 +935,7 @@ class Ed1 {
             stale.classList.add('numeric');
             row.insertAdjacentElement('beforeend', stale);
 
-            let by = Ed1.render.td( Ed1.authorList[ result['user'] ] || result['user'] , false, Ed1.buildUrl({dismissor: result['user']}));
+            let by = Ed1.render.td(Ed1.authorList[result['user']] || result['user'], false, Ed1.buildUrl({ dismissor: result['user'] }));
             row.insertAdjacentElement('beforeend', by);
 
             Ed1.tables['ed1dismiss'].insertAdjacentElement('beforeend', row);
@@ -920,64 +967,88 @@ class Ed1 {
     };
 
     Ed1.get = {};
-    Ed1.get.ed1page = async function (action, announce = false) {
-      fetch(config.root + 'ed11y/v1/' + action, Ed1.api,
-      ).then(function (response) {
-        return response.json();
-      }).then(function (post) {
-        if (post?.data?.status === 500) {
-          console.error(post.data.status + ': ' + post.message);
-        } else {
-          Ed1.matchAuthors( post[2] );
-          if ( Ed1.p_author && Ed1.authorList[ Ed1.p_author ]) {
-            Ed1.h1.textContent = format( config.i18n.alertsByAuthorN, Ed1.authorList[ Ed1.p_author ] );
-          }
-          Ed1.render.ed1page(post[0], post[1], announce);
-        }
+
+    // Replace any still-loading cells with a failure message NOW instead
+    // of waiting for the generic 3s sweep.
+    Ed1.apiFail = function (message) {
+      const neverLoaded = document.querySelectorAll('#ed1 .loading');
+      Array.from(neverLoaded).forEach((el) => {
+        el.textContent = message;
+        el.classList.remove('loading');
       });
+    };
+
+    // Shared REST reader. The original getters piped straight into
+    // response.json() with no ok-check and no catch, so an expired nonce
+    // (401/403 after the dashboard sat open past the nonce lifetime), a
+    // 502 HTML page, or a network drop either threw an unhandled
+    // rejection or rendered the WP error object as table data. Returns
+    // the payload array or null after surfacing a visible message.
+    Ed1.get.rows = async function (action) {
+      let response;
+      try {
+        response = await fetch(restUrl(config.root, 'ed11y/v1/' + action), Ed1.api);
+      } catch (err) {
+        console.error('Editoria11y dashboard fetch failed', err);
+        Ed1.apiFail(config.i18n.apiError);
+        return null;
+      }
+      if (response.status === 401 || response.status === 403) {
+        Ed1.apiFail(config.i18n.sessionExpired || config.i18n.apiError);
+        return null;
+      }
+      let post = null;
+      try {
+        post = await response.json();
+      } catch (err) {
+        console.error('Editoria11y dashboard returned non-JSON', err);
+      }
+      if (!response.ok || !Array.isArray(post)) {
+        console.error('Editoria11y dashboard API error', response.status, post);
+        Ed1.apiFail(config.i18n.apiError);
+        return null;
+      }
+      return post;
+    };
+
+    Ed1.get.ed1page = async function (action, announce = false) {
+      const post = await Ed1.get.rows(action);
+      if (!post) {
+        return;
+      }
+      Ed1.matchAuthors(post[2]);
+      if (Ed1.p_author && Ed1.authorList[Ed1.p_author]) {
+        Ed1.h1.textContent = format(config.i18n.alertsByAuthorN, Ed1.authorList[Ed1.p_author]);
+      }
+      Ed1.render.ed1page(post[0], post[1], announce);
     };
     Ed1.get.ed1recent = async function (action, announce = false) {
-      fetch(config.root + 'ed11y/v1/' + action, Ed1.api,
-      ).then(function (response) {
-        return response.json();
-      }).then(function (post) {
-        if (post?.data?.status === 500) {
-          console.error(post.data.status + ': ' + post.message);
-        } else {
-          Ed1.render.ed1recent(post[0], post[1], announce);
-        }
-      });
+      const post = await Ed1.get.rows(action);
+      if (!post) {
+        return;
+      }
+      Ed1.render.ed1recent(post[0], post[1], announce);
     };
     Ed1.get.ed1result = async function (action, announce = false) {
-      fetch(config.root + 'ed11y/v1/' + action, Ed1.api,
-      ).then(function (response) {
-        return response.json();
-      }).then(function (post) {
-        if (post?.data?.status === 500) {
-          console.error(post.data.status + ': ' + post.message);
-        } else {
-          Ed1.render.ed1result(post[0], post[1], announce);
-        }
-      });
+      const post = await Ed1.get.rows(action);
+      if (!post) {
+        return;
+      }
+      Ed1.render.ed1result(post[0], post[1], announce);
     };
     Ed1.get.ed1dismiss = async function (action, announce = false) {
-      fetch(config.root + 'ed11y/v1/' + action, Ed1.api,
-      ).then(function (response) {
-        return response.json();
-      }).then(function (post) {
-        if (post?.data?.status === 500) {
-          console.error(post.data.status + ': ' + post.message);
-        } else {
-          Ed1.matchAuthors( post[2] );
-          // Display name for the dismissor filter is only available after
-          // the API returns the matching user record. Update the H1 here
-          // (set as a placeholder in init()) once we have the lookup.
-          if ( Ed1.dismissor && Ed1.h1 && Ed1.authorList[ Ed1.dismissor ] ) {
-            Ed1.h1.textContent = format( config.i18n.dismissedByN, Ed1.authorList[ Ed1.dismissor ] );
-          }
-          Ed1.render.ed1dismiss(post[0], post[1], announce);
-        }
-      });
+      const post = await Ed1.get.rows(action);
+      if (!post) {
+        return;
+      }
+      Ed1.matchAuthors(post[2]);
+      // Display name for the dismissor filter is only available after
+      // the API returns the matching user record. Update the H1 here
+      // (set as a placeholder in init()) once we have the lookup.
+      if (Ed1.dismissor && Ed1.h1 && Ed1.authorList[Ed1.dismissor]) {
+        Ed1.h1.textContent = format(config.i18n.dismissedByN, Ed1.authorList[Ed1.dismissor]);
+      }
+      Ed1.render.ed1dismiss(post[0], post[1], announce);
     };
 
 

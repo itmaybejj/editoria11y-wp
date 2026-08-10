@@ -13,11 +13,7 @@
     <exclude-pattern>.*/vendor/.*</exclude-pattern>
 
     <!-- Import the entire unused code rule set -->
-    <!-- FREE BUILD ONLY — injected by scripts/build-free.sh; the premium
-         ruleset imports rulesets/unusedcode.xml here. Dropped from the
-         generated free build: stripping __premium_only code inherently
-         leaves unused parameters, locals, and now-uncalled private
-         helpers (expected debris, not defects). Premium stays strict. -->
+    <rule ref="rulesets/unusedcode.xml" />
 
     <!-- Import the entire cyclomatic complexity rule -->
     <rule ref="rulesets/codesize.xml/CyclomaticComplexity" />

@@ -85,6 +85,14 @@ class UpdateHelpers {
 	 * English string; localized installs that ran the v1 schema in another
 	 * language are not covered (they get the default fallback instead).
 	 *
+	 * Verified byte-for-byte against Drupal UpdateHelpers.php `oldNames`
+	 * (2026-07). Apparent oddities are deliberate parity, not typos:
+	 * 'Manual check: is the linked document accessible?' maps to QA_PDF
+	 * while the linkDocument KEY maps to QA_DOCUMENT (both are real,
+	 * distinct v3 tests), and 'Image has no alternative text attribute' →
+	 * LINK_IMAGE_LONG_ALT matches the upstream mapping exactly. Do not
+	 * "fix" entries here without changing Drupal first.
+	 *
 	 * @return array<string, string>
 	 */
 	public static function old_names(): array {

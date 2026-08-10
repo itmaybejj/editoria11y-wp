@@ -107,6 +107,9 @@ msgstr "Open Editoria11y licence page"
 msgid "Per-site license rows are not shown to keep this page responsive on large networks. The license you choose below applies to every site in the network. To activate or deactivate on individual sites, visit each site's per-site Settings → Editoria11y → License & Account."
 msgstr "Per-site licence rows are not shown to keep this page responsive on large networks. The licence you choose below applies to every site in the network. To activate or deactivate on individual sites, visit each site's per-site Settings → Editoria11y → Licence & Account."
 
+msgid "Every fifteen minutes (Editoria11y license watchdog)"
+msgstr "Every fifteen minutes (Editoria11y licence watchdog)"
+
 msgid "Paste your <a>Editoria11y CSA license key</a> to begin."
 msgstr "Paste your <a>Editoria11y CSA licence key</a> to begin."
 
@@ -125,9 +128,12 @@ msgstr "These tests detect issues content editors can fix. Checks can be individ
 msgid "These tests detect issues that usually need theme or plugin changes to fix, and are part of the CSA license for site administrators and developers."
 msgstr "These tests detect issues that usually need theme or plugin changes to fix, and are part of the CSA licence for site administrators and developers."
 
+msgid "Added to the built-in detection list (Looker/Data Studio, Tableau, Power BI, Qlik). Provide a comma-separated list of domains or URL fragments. To stop flagging visualizations entirely, disable that test above."
+msgstr "Added to the built-in detection list (Looker/Data Studio, Tableau, Power BI, Qlik). Provide a comma-separated list of domains or URL fragments. To stop flagging visualisations entirely, disable that test above."
+
 msgid "To activate the community-supported features and continue receiving updates, either enter your existing license key or view options for %s."
 msgstr "To activate the community-supported features and continue receiving updates, either enter your existing licence key or view options for %s."
 
-msgid "This is a <strong>contribute what you can</strong> model; the quick checkout prices below are for full support. The %s has options for different support levels (from 10%% to 150%%), cross-platform (WordPress plus Drupal) licenses, unlimited-site options, and non-financial paths to project membership."
-msgstr "This is a <strong>contribute what you can</strong> model; the quick checkout prices below are for full support. The %s has options for different support levels (from 10%% to 150%%), cross-platform (WordPress plus Drupal) licences, unlimited-site options, and non-financial paths to project membership."
+msgid "This is a <strong>contribute what you can</strong> \"farmshare\" model. The Editoria11y LLC site has options for %s, options to contribute as a coder or tester instead, and options for cross-platform and unlimited-site licenses."
+msgstr "This is a <strong>contribute what you can</strong> \"farmshare\" model. The Editoria11y LLC site has options for %s, options to contribute as a coder or tester instead, and options for cross-platform and unlimited-site licences."
 

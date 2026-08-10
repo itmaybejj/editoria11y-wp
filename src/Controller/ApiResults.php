@@ -76,17 +76,34 @@ class ApiResults extends WP_REST_Controller {
 	}
 
 	/**
+	 * Option flag marking the legacy post_id backfill as complete for THIS
+	 * blog. An option, not a transient: this is a one-shot data migration
+	 * marker, and the original site-transient version was double-broken on
+	 * multisite — network-scoped flag guarding per-blog table writes (only
+	 * the first blog to load a dashboard ever backfilled), and set before
+	 * the unbounded loop (a timeout marked the job done with partial data).
+	 */
+	const GOT_POST_IDS_OPTION = 'ed11y_got_post_ids';
+
+	/**
+	 * Rows examined per dashboard load. url_to_postid() parses rewrite
+	 * rules per call, so the batch keeps a legacy-heavy dashboard load
+	 * from timing out; the next load continues where this one stopped
+	 * (resolved rows drop out of the WHERE).
+	 */
+	const ADD_POST_ID_BATCH = 500;
+
+	/**
 	 * Associate old records with post ID. Todo: remove.
 	 */
 	private function add_post_id() {
-		set_site_transient( 'ed11y_got_ids', true );
-
 		global $wpdb;
 		$utable = $wpdb->prefix . 'ed11y_urls';
 
 		// phpcs:disable
 		$missing_id = $wpdb->get_results(
-			"SELECT
+			$wpdb->prepare(
+				"SELECT
 						{$utable}.page_url
 						FROM {$utable}
 						WHERE (
@@ -98,9 +115,13 @@ class ApiResults extends WP_REST_Controller {
 						        $utable.entity_type = 'Post'
 						    )
 						)
-						;"
+						LIMIT %d
+						;",
+				self::ADD_POST_ID_BATCH
+			)
 		);
 		// phpcs:enable
+		$updated = 0;
 		foreach ( $missing_id as $value ) {
 			$post_id = url_to_postid( $value->page_url );
 			if ( ! empty( $post_id ) ) {
@@ -117,7 +138,16 @@ class ApiResults extends WP_REST_Controller {
 						'%s',
 					)
 				);
+				++$updated;
 			}
+		}
+
+		// Done when the table is drained — or when a full batch resolved
+		// nothing (url_to_postid() is deterministic, so an all-unresolvable
+		// batch would just re-run forever; stop and accept those rows as
+		// permanent post_id=0 routes).
+		if ( count( $missing_id ) < self::ADD_POST_ID_BATCH || 0 === $updated ) {
+			update_option( self::GOT_POST_IDS_OPTION, 1, false );
 		}
 	}
 
@@ -136,8 +166,7 @@ class ApiResults extends WP_REST_Controller {
 		$rtable     = $wpdb->prefix . 'ed11y_results';
 		$post_table = $wpdb->prefix . 'posts';
 
-		$got_ids = get_site_transient( 'ed11y_got_ids' );
-		if ( empty( $got_ids ) ) {
+		if ( empty( get_option( self::GOT_POST_IDS_OPTION ) ) ) {
 			$this->add_post_id();
 		}
 
@@ -148,7 +177,7 @@ class ApiResults extends WP_REST_Controller {
 		// every request, but third-party REST consumers (and PHPUnit tests
 		// targeting the permission callback) reasonably omit them. `+=`
 		// preserves keys the caller did set and only fills in the rest.
-		$params     += array(
+		$defaults = array(
 			'view'        => 'pages',
 			'count'       => 25,
 			'offset'      => 0,
@@ -160,8 +189,16 @@ class ApiResults extends WP_REST_Controller {
 			'p_author'    => '',
 			'dismissor'   => '',
 		);
-		$count       = intval( $params['count'] );
-		$offset      = intval( $params['offset'] );
+		$params  += $defaults;
+		// Enforce scalars: an array-valued param would stringify to the
+		// literal "Array" downstream and silently filter on nothing.
+		foreach ( array_keys( $defaults ) as $key ) {
+			if ( ! is_scalar( $params[ $key ] ) ) {
+				$params[ $key ] = $defaults[ $key ];
+			}
+		}
+		$count       = Validate::count( $params['count'] );
+		$offset      = Validate::offset( $params['offset'] );
 		$direction   = 'ASC' === $params['direction'] ? 'ASC' : 'DESC';
 		$order_by    = ! empty( $params['sort'] ) && $validate->sort( $params['sort'] ) ? $params['sort'] : false;
 		$entity_type = ! empty( $params['entity_type'] ) && $validate->entity_type( $params['entity_type'] ) ? $params['entity_type'] : false;
@@ -185,8 +222,12 @@ class ApiResults extends WP_REST_Controller {
 			 * Dashboard panel: list of pages with issues.
 			 */
 
-			// Sort by sanitized param; page total is default.
-			$order_by = $order_by ? $order_by : 'page_total';
+			// Sort by sanitized param; page total is default. The global
+			// whitelist covers all views; keys not selected by THIS view's
+			// query (e.g. dismissal_status) would be an ORDER BY error, so
+			// fall back to the default instead.
+			$pages_sorts = array( 'pid', 'page_url', 'page_title', 'entity_type', 'page_total', 'dev_total', 'post_status', 'post_modified', 'post_author' );
+			$order_by    = $order_by && in_array( $order_by, $pages_sorts, true ) ? $order_by : 'page_total';
 
 			// Build where clause based on sanitized params.
 			// Alert + dev columns alias to per-key counts when a result_key
@@ -257,22 +298,27 @@ class ApiResults extends WP_REST_Controller {
 				);
 			}
 
-			// Get user display names.
+			// Get user display names. An empty `include` array would make
+			// WP_User_Query drop the filter and return EVERY user, so only
+			// query when the page of rows actually references authors
+			// (post_id=0 routes — archives, search — have none).
 			$user_ids = [];
 			foreach ( $data as $value ) {
 				if ( $value->post_author && !in_array($value->post_author, $user_ids ) )
 					$user_ids[] = $value->post_author;
 			}
-			$user_query = new WP_User_Query(
-				array(
-					'include' => $user_ids,
-					'fields'  => array(
-						'ID',
-						'display_name',
-					),
-				)
-			);
-			$users = $user_query->get_results();
+			if ( ! empty( $user_ids ) ) {
+				$user_query = new WP_User_Query(
+					array(
+						'include' => $user_ids,
+						'fields'  => array(
+							'ID',
+							'display_name',
+						),
+					)
+				);
+				$users = $user_query->get_results();
+			}
 
 			// phpcs:enable
 
@@ -280,11 +326,13 @@ class ApiResults extends WP_REST_Controller {
 			/**
 			 * Dashboard panel: list of issues.
 			 */
-			if ( false === $order_by || 'count' === $order_by ) {
-				$order_by = 'SUM(' . $wpdb->prefix . 'ed11y_results.result_count)';
-			} elseif ( 'dev_count' === $order_by ) {
+			if ( 'dev_count' === $order_by ) {
 				// Sort by aggregated dev count, mirroring the count branch.
 				$order_by = 'SUM(' . $wpdb->prefix . 'ed11y_results.dev_count)';
+			} elseif ( 'result_key' !== $order_by ) {
+				// Everything else — including whitelisted-but-inapplicable
+				// keys from other views — aggregates on total count.
+				$order_by = 'SUM(' . $wpdb->prefix . 'ed11y_results.result_count)';
 			}
 
 			/*
@@ -319,8 +367,10 @@ class ApiResults extends WP_REST_Controller {
 			* Dashboard panel: recent issues.
 			*/
 
-			// Sort by sanitized param; page total is default.
-			$order_by = $order_by ? $order_by : 'page_total';
+			// Sort by sanitized param; page total is default; keys this
+			// view's SELECT doesn't expose fall back (ORDER BY error otherwise).
+			$recent_sorts = array( 'pid', 'page_url', 'page_title', 'entity_type', 'page_total', 'dev_total', 'result_key', 'result_count', 'dev_count', 'created', 'post_status' );
+			$order_by     = $order_by && in_array( $order_by, $recent_sorts, true ) ? $order_by : 'page_total';
 
 			// Build where clause based on sanitized params.
 			$where = '';
@@ -411,6 +461,10 @@ class ApiResults extends WP_REST_Controller {
 				);
 				// phpcs:enable
 			}
+		} else {
+			// Unknown view: previously fell through with $data/$rowcount
+			// undefined (PHP 8 warnings + a [null, null, []] payload).
+			return new WP_REST_Response( array( 'error' => 'Unknown view.' ), 400 );
 		}
 
 		return new WP_REST_Response( array( $data, $rowcount, $users ), 200 );
@@ -424,6 +478,21 @@ class ApiResults extends WP_REST_Controller {
 	 * @return WP_REST_Response
 	 */
 	public function update_item( $request ): WP_REST_Response {
+
+		// Structural validation up front: no route schema is registered, so
+		// get_endpoint_args_for_item_schema() enforces nothing and a hostile
+		// or truncated body used to reach send_results() unchecked (a missing
+		// `dismissals` key was a PHP 8 TypeError fatal). Optional keys get
+		// defaults in send_results(); only structurally unusable bodies 400.
+		$data = $request->get_param( 'data' );
+		if (
+			! is_array( $data )
+			|| '' === trim( (string) ( $data['page_url'] ?? '' ) )
+			|| ( isset( $data['results'] ) && ! is_array( $data['results'] ) )
+			|| ( isset( $data['dismissals'] ) && ! is_array( $data['dismissals'] ) )
+		) {
+			return new WP_REST_Response( array( 'error' => 'Malformed scan payload.' ), 400 );
+		}
 
 		$data = $this->send_results( $request );
 		if ( ! ( in_array( false, $data, true ) ) ) {
@@ -468,34 +537,106 @@ class ApiResults extends WP_REST_Controller {
 	}
 
 	/**
+	 * Returns true when the given URL row still owns an `okAll` dismissal.
+	 *
+	 * Deleting such a row cascades the dismissal away (FK ON DELETE
+	 * CASCADE), which invalidates the long-lived static config payload —
+	 * callers must bump the config version after the delete commits.
+	 *
+	 * @param int $pid URL row id.
+	 */
+	private function pid_has_okall_dismissal( int $pid ): bool {
+		global $wpdb;
+		return (bool) $wpdb->get_var( // phpcs:ignore
+			$wpdb->prepare(
+				"SELECT 1 FROM {$wpdb->prefix}ed11y_dismissals
+				WHERE pid = %d AND dismissal_status = 'okAll' LIMIT 1;",
+				array( $pid )
+			)
+		);
+	}
+
+	/**
 	 *
 	 * Attempts to send item to DB
 	 *
+	 * Runs inside a real transaction: the sequence is url upsert + N result
+	 * upserts + stale cleanup + possible url delete, and $wpdb never throws,
+	 * so without one a mid-sequence failure left half-written state behind
+	 * a 500. Note for the test harness: START TRANSACTION implicitly
+	 * commits WP_UnitTestCase's wrapping transaction — the suites driving
+	 * this method already run real DDL (same implicit commit) and reset
+	 * their tables manually.
+	 *
 	 * @param WP_REST_Request $request Full data about the request.
+	 *
+	 * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+	 * @SuppressWarnings(PHPMD.NPathComplexity)
+	 * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
 	 */
 	public function send_results( WP_REST_Request $request ): array {
 
 		$params  = $request->get_params();
 		$results = $params['data'];
-		$now     = gmdate( 'Y-m-d H:i:s' );
-		$rows    = $results['page_count'] > 0 || count( $results['dismissals'] ) > 0 ? 1 : 0; // If 0 at end, delete URL.
-		$return  = array();
+		// update_item() has rejected structurally unusable bodies; fill in
+		// defaults for optional keys so older client payloads (and PHP 8's
+		// undefined-key warnings / count() TypeError) can't take this down.
+		$results += array(
+			'pid'         => -1,
+			'post_id'     => 0,
+			'entity_type' => '',
+			'page_title'  => '',
+			'page_count'  => 0,
+			'dev_count'   => 0,
+			'results'     => array(),
+			'dismissals'  => array(),
+		);
+		// Mirror the JS senders' varchar(190) truncation so every writer —
+		// results and dismissals alike — keys a long URL on the same string.
+		if ( mb_strlen( (string) $results['page_url'] ) > 190 ) {
+			$results['page_url'] = mb_substr( (string) $results['page_url'], 0, 189 );
+		}
+		$now    = gmdate( 'Y-m-d H:i:s' );
+		$rows   = $results['page_count'] > 0 || count( $results['dismissals'] ) > 0 ? 1 : 0; // If 0 at end, delete URL.
+		$return = array();
 		global $wpdb;
 
-		// Handle clicks from dashboard to changed URLS first to prevent URL collisions.
-		if ( $results['pid'] > -1 ) {
-			$wpdb->query( // phpcs:ignore
+		// Bump the config cachebust only after COMMIT: the static payload
+		// carries globalDismissals for 30 days, so a cascade-deleted okAll
+		// must invalidate it — but bumping inside the transaction would
+		// desync the options cache if we roll back.
+		$bump_after_commit = false;
+
+		$wpdb->query( 'START TRANSACTION' ); // phpcs:ignore
+
+		// Handle clicks from dashboard to changed URLS first to prevent URL
+		// collisions: the dashboard passes the stale row's pid via ?ed1ref so
+		// a renamed permalink replaces its old row instead of colliding.
+		// The DELETE is scoped to the post the caller is reporting on
+		// (pid AND post_id must both match): the pid alone is client
+		// input, and honoring it unscoped would let any edit_posts user
+		// cascade-delete arbitrary pages' results and dismissals. post_id=0
+		// routes (archives, search) have no stable identity to verify, so
+		// they never take this branch — get_pid() resolves them by URL.
+		$reported_post_id = (int) $results['post_id'];
+		if ( $results['pid'] > -1 && $reported_post_id > 0 ) {
+			$stale_had_okall = $this->pid_has_okall_dismissal( (int) $results['pid'] );
+			$deleted         = $wpdb->query( // phpcs:ignore
 				$wpdb->prepare(
 					"DELETE FROM {$wpdb->prefix}ed11y_urls
 					WHERE
-						(pid = %d AND page_url != %s)
+						(pid = %d AND post_id = %d AND page_url != %s)
 					;",
 					array(
 						$results['pid'],
+						$reported_post_id,
 						$results['page_url'],
 					)
 				)
 			);
+			if ( $deleted && $stale_had_okall ) {
+				$bump_after_commit = true;
+			}
 		}
 
 		$pid = $this->get_pid( $results['page_url'], $results['post_id'] ); // may be 0.
@@ -505,7 +646,12 @@ class ApiResults extends WP_REST_Controller {
 
 			$dev_total = isset( $results['dev_count'] ) ? (int) $results['dev_count'] : 0;
 			if ( empty( $pid ) ) {
-				// Insert results.
+				// Insert results. ON DUPLICATE KEY (page_url is UNIQUE as of
+				// schema 2.1): if a concurrent first-scan of the same URL won
+				// the race between our get_pid() read and this insert, fold
+				// into its row instead of erroring. Placeholders are repeated
+				// rather than using VALUES()/alias syntax — the only form
+				// both MySQL 8.4+ and MariaDB accept.
 				$return[] = $wpdb->query( // phpcs:ignore
 					$wpdb->prepare(
 						"INSERT INTO {$wpdb->prefix}ed11y_urls
@@ -515,9 +661,20 @@ class ApiResults extends WP_REST_Controller {
 						page_title,
 						page_total,
 						dev_total)
-					VALUES (%s, %d, %s, %s, %d, %d);",
+					VALUES (%s, %d, %s, %s, %d, %d)
+					ON DUPLICATE KEY UPDATE
+						post_id = %d,
+						entity_type = %s,
+						page_title = %s,
+						page_total = %d,
+						dev_total = %d;",
 						array(
 							$results['page_url'],
+							$results['post_id'],
+							$results['entity_type'],
+							$results['page_title'],
+							$results['page_count'],
+							$dev_total,
 							$results['post_id'],
 							$results['entity_type'],
 							$results['page_title'],
@@ -661,7 +818,8 @@ class ApiResults extends WP_REST_Controller {
 
 			if ( 0 === $rows ) {
 				// No records for this route.
-				$response = $wpdb->query( // phpcs:ignore
+				$empty_had_okall = $this->pid_has_okall_dismissal( (int) $pid );
+				$response        = $wpdb->query( // phpcs:ignore
 					$wpdb->prepare(
 						"DELETE FROM {$wpdb->prefix}ed11y_urls WHERE pid = %d;",
 						array(
@@ -669,7 +827,19 @@ class ApiResults extends WP_REST_Controller {
 						)
 					)
 				);
+				if ( $response && $empty_had_okall ) {
+					$bump_after_commit = true;
+				}
 			}
+		}
+
+		if ( in_array( false, $return, true ) ) {
+			$wpdb->query( 'ROLLBACK' ); // phpcs:ignore
+			return $return;
+		}
+		$wpdb->query( 'COMMIT' ); // phpcs:ignore
+		if ( $bump_after_commit ) {
+			ed11y_bump_config_version();
 		}
 		return $return;
 	}
@@ -684,7 +854,7 @@ class ApiResults extends WP_REST_Controller {
 		if ( 'broken' === Installer::schema_state() ) {
 			return new WP_Error(
 				'ed11y_schema_unavailable',
-				__( 'Editoria11y database upgrade did not complete; writes are paused until an administrator retries the upgrade.', 'editoria11y' ),
+				__( 'Editoria11y database update did not complete; writes are paused until an administrator retries the update.', 'editoria11y' ),
 				array( 'status' => 503 )
 			);
 		}
@@ -709,13 +879,10 @@ class ApiResults extends WP_REST_Controller {
 		if ( 'broken' === Installer::schema_state() ) {
 			return new WP_Error(
 				'ed11y_schema_unavailable',
-				__( 'Editoria11y database upgrade did not complete; the dashboard is paused until an administrator retries the upgrade.', 'editoria11y' ),
+				__( 'Editoria11y database update did not complete; the dashboard is paused until an administrator retries the update.', 'editoria11y' ),
 				array( 'status' => 503 )
 			);
 		}
-		$capability = '1' === ed11y_get_raw_setting( 'ed11y_report_restrict' )
-			? 'manage_options'
-			: 'edit_others_posts';
-		return current_user_can( $capability );
+		return current_user_can( ed11y_report_reader_capability() );
 	}
 }

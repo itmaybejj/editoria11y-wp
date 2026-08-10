@@ -1,6 +1,23 @@
-import { Ed11y, Lang, State, UI, findElements, elements, computeAccessibleName, createDismissalKey, getElements, refresh, sanitizeHTML, setFixedRoots, version } from 'editoria11y-js';
+import {
+  Ed11y,
+  Lang,
+  State,
+  UI,
+  findElements,
+  elements,
+  refresh,
+  setFixedRoots,
+  createDismissalKey,
+  sanitizeHTML,
+} from 'editoria11y-js';
 import { lang as ed11yUiLang } from 'editoria11y-lang';
 import { lang as ed11yContentLang } from 'editoria11y-lang-content';
+import {
+  ed11yLoadStaticConfig,
+  ed11yApplyStaticConfig,
+  ed11yApplyOptionTranslations as ed11ySharedOptionTranslations,
+} from './editoria11y-option-translations.js';
+
 // `findElements`, `elements`, `createDismissalKey`, `sanitizeHTML` are
 // used by `buttonBlockTest` below — kept imported even after the manual
 // custom-rules loop was retired (the library now consumes camelCase
@@ -27,112 +44,26 @@ const ed11yLang = ed11yBuildLang(ed11yUiLang, ed11yContentLang);
 Lang.addI18n(ed11yLang.strings);
 Lang.testNames = { ...(Lang.testNames || {}), ...(ed11yUiLang.testNames || {}) };
 
-// See editoria11y-wp.js for rationale. Identical helper inlined rather than
-// shared because there's no third consumer yet — refactor to a module if a
-// fourth init script needs the same fetch-and-merge pattern.
-async function ed11yLoadStaticConfig(configUrl) {
-  if (!configUrl) return null;
-  const headers = {};
-  if (typeof wpApiSettings !== 'undefined' && wpApiSettings && wpApiSettings.nonce) {
-    headers['X-WP-Nonce'] = wpApiSettings.nonce;
-  }
-  try {
-    const res = await fetch(configUrl, {
-      credentials: 'same-origin',
-      cache: 'force-cache',
-      headers,
-    });
-    if (!res.ok) return null;
-    return await res.json();
-  } catch (e) {
-    console.warn('Editoria11y: static config fetch failed', e);
-    return null;
-  }
-}
 
-function ed11yApplyStaticConfig(data, options) {
-  if (!data) return;
-  if (data.testNames && typeof data.testNames === 'object') {
-    Lang.testNames = { ...Lang.testNames, ...data.testNames };
-  }
-  if (!options) return;
-  if (data.globalDismissals && typeof data.globalDismissals === 'object') {
-    const synced = (options.syncedDismissals && typeof options.syncedDismissals === 'object')
-      ? options.syncedDismissals
-      : {};
-    for (const [resultKey, elementMap] of Object.entries(data.globalDismissals)) {
-      synced[resultKey] = { ...(synced[resultKey] || {}), ...elementMap };
-    }
-    options.syncedDismissals = synced;
-  }
-  for (const [key, value] of Object.entries(data)) {
-    if (key === 'testNames' || key === 'globalDismissals') continue;
-    if (value !== undefined && value !== null) {
-      options[key] = value;
-    }
-  }
-}
 
-// See editoria11y-wp.js for the full rationale on each conversion.
-// Inline copy rather than shared module because the two shims have
-// distinct enqueue contexts (script-module vs. classic-script + iframe
-// loader); a third consumer would justify extracting.
+
+
+
+
+
+
+// Shared translation layer (see editoria11y-option-translations.js).
+// Editor binding: NO checkRoot autodetect — every editor mount path sets
+// its own canvas root. Exported for the unit suite.
 export function ed11yApplyOptionTranslations(options) {
-  if (!options || typeof options !== 'object') return;
-
-  options.linkStringsNewWindows = options.linkStringsNewWindows
-    ? new RegExp(options.linkStringsNewWindows, 'g')
-    : /window|\stab|download/g;
-
-  if (typeof options.linkIgnoreStrings === 'string' && options.linkIgnoreStrings.length > 0) {
-    options.linkIgnoreStrings = options.linkIgnoreStrings.split('|').map((s) => s.trim()).filter(Boolean);
-  } else if (!Array.isArray(options.linkIgnoreStrings)) {
-    options.linkIgnoreStrings = [];
-  }
-
-  if (typeof options.embeddedContentWarning === 'string' && options.embeddedContentWarning.trim().length > 0) {
-    options.checks = options.checks || {};
-    options.checks.EMBED_CUSTOM = { sources: options.embeddedContentWarning };
-  }
-
-  if (Array.isArray(options.ignoreTests)) {
-    options.checks = options.checks || {};
-    options.ignoreTests.forEach((key) => {
-      if (typeof key === 'string' && key.length > 0) {
-        options.checks[key] = false;
-      }
-    });
-  }
-
-  if (options.profile === 'dev' && options.devAssertiveness) {
-    options.alertMode = options.devAssertiveness;
-  }
-
-  options.ignoreByTest = {
-    HEADING_EMPTY: 'h1:has([data-rich-text-placeholder]), .is-selected',
-    LABELS_MISSING_LABEL: 'block-editor-rich-text__editable',
-  }
+  ed11ySharedOptionTranslations(options, { autodetectCheckRoot: false });
 }
-
-// Build the library's CSA dev/content split configuration. See
-// editoria11y-wp.js for the full rationale; this is the in-editor copy.
-//
-// The ONLY behavioral difference from the front-end shim is `editors`:
-// inside the block / Classic / TinyMCE editor it is true, so page-level
-// checks (HEADING_MISSING_ONE / HEADING_FIRST / META_*) are suppressed —
-// the editor scans one piece of content, not a whole rendered page. The
-// devChecks map below must otherwise stay byte-aligned with the
-// front-end copy and Drupal's editoria11yOptions.js; the parity guard in
-// tests/js/unit/devchecks-parity.test.js enforces that.
-//
-// `export`ed for the Jest unit suite; the export lives inside the
-// premium markers so the free build strips the whole function.
 
 
 
 // Translate user-configured H2/H3/H4 selectors (live_h2/h3/h4 in PHP
 // storage; liveH2/H3/H4 in the static config emit) into the library's
-// `editorHeadingLevel` / `initialHeadingLevel` shape:
+// `initialHeadingLevel` shape:
 //
 //   [{ selector: '...', previousHeading: <int> }, ...]
 //
@@ -141,7 +72,8 @@ export function ed11yApplyOptionTranslations(options) {
 // uses this to detect skipped levels inside live editor content.
 //
 // Returns the array; caller decides whether to assign to
-// `editorHeadingLevel` (block editor) or merge with hardcoded defaults.
+// `initialHeadingLevel` directly (block editor) or merge with hardcoded
+// defaults (MCE).
 function ed11yBuildEditorHeadingLevel(options) {
   const out = [];
   if (typeof options.liveH2 === 'string' && options.liveH2.trim().length > 0) {
@@ -159,8 +91,13 @@ function ed11yBuildEditorHeadingLevel(options) {
 const ed11yInit = {};
 
 ed11yInit.varDiv = document.getElementById('editoria11y-init');
-if (ed11yInit.varDiv) {
-  // Only run if initiation JSON is available.
+if (!ed11yInit.varDiv) {
+  // Init JSON absent — module loaded on an admin screen with no editor.
+  // PHP gates the enqueue to wp_enqueue_editor screens; this guard is a
+  // safety net for unusual contexts (e.g. another plugin enqueueing this
+  // module directly) so the rest of the file can't crash on null.
+  console.warn('[editoria11y] editor init JSON missing; skipping checker boot.');
+} else {
   ed11yInit.options = JSON.parse(ed11yInit.varDiv.innerHTML);
   // Start the fetch immediately on script load. Both init paths (block /
   // classic) await this promise inside getOptions() before doing the
@@ -188,7 +125,16 @@ if (ed11yInit.varDiv) {
           data,
         })
       }).then(function (response) {
+        if (response.status === 401 || response.status === 403) {
+          // Nonce lifetime is ~12-24h; an editor left open past it can no
+          // longer sync. Name the cause instead of failing silently.
+          console.warn('Editoria11y: sync rejected (' + response.status + '). Your login session likely expired; reload the page to resume syncing dismissals.');
+        } else if (!response.ok) {
+          console.warn('Editoria11y: sync failed with HTTP ' + response.status + '.');
+        }
         return response.json();
+      }).catch(function (err) {
+        console.warn('Editoria11y: sync request failed.', err);
       });
     };
 
@@ -196,21 +142,27 @@ if (ed11yInit.varDiv) {
       if (!ed11yInit.ed11yCanSync) {
         return;
       }
-      if (ed11yInit.editorType === 'mce') {
-        if (!ed11yInit.options.title) {
-          const title = document.querySelector('#title');
-          ed11yInit.title = 'New content';
-          if (title && title?.value?.length > 0) {
-            ed11yInit.title = title.value;
-          }
+      if (ed11yInit.editorType === 'mce' && !ed11yInit.title) {
+        // Guard and assignment use the same variable — the old guard read
+        // the (usually present) init-blob title, skipped detection, and
+        // then sent the never-assigned ed11yInit.title as undefined.
+        const title = document.querySelector('#title');
+        if (title && title?.value?.length > 0) {
+          ed11yInit.title = title.value;
         }
       }
       if (detail) {
+        const pageUrl = State.option.currentPage;
         let data = {
-          page_url: State.option.currentPage,
-          entity_type: ed11yInit.entity_type,
-          page_total: UI.totalCount,
-          page_title: ed11yInit.title,
+          // varchar(190) column; truncate exactly like the front-end
+          // results sender so both writers key on one string.
+          page_url: pageUrl.length > 190 ? pageUrl.substring(0, 189) : pageUrl,
+          // entity_type lives on the init blob (options), not on
+          // ed11yInit itself — the old read was always undefined, which
+          // blanked the dashboard's Type column for editor dismissals.
+          entity_type: ed11yInit.options.entity_type,
+          page_count: UI.totalCount,
+          page_title: ed11yInit.title || ed11yInit.options.title || 'New content',
           result_key: detail.dismissTest,
           element_id: detail.dismissKey,
           dismissal_status: detail.dismissAction,
@@ -244,7 +196,7 @@ if (ed11yInit.varDiv) {
     ed11yApplyOptionTranslations(ed11yInit.options);
 
     // CSA: build splitConfiguration + enable dev/contrast/readability
-    // plugins when the per-page blob set profile. No-op otherwise.
+    // plugins when the per-page blob set profile.
     
 
     // Pin the merged dual-language dictionary so the library uses it during
@@ -265,11 +217,22 @@ if (ed11yInit.varDiv) {
       ? `${adminPreventChecking}, ${ed11yInit.noRun}, .block-editor-block-preview__content-iframe`
       : `${ed11yInit.noRun}, .block-editor-block-preview__content-iframe`;
 
-    //ed11yInit.options['ignoreByKey'] = { img: '' }; Restore default ignores.
-    ed11yInit.options['ignoreByKey'] = {
-      table: '.is-selected.wp-block-table table, [role="presentation"]',
+    // Exempt the table currently being edited (typing produces transient
+    // half-built markup) and presentation-role tables from the table
+    // checks. The library's 2.x element-keyed `ignoreByKey` map is gone;
+    // 3.x reads `ignoreByTest`, keyed by test name, matched against the
+    // FLAGGED element — the table itself for MISSING_HEADINGS /
+    // INVALID_HEADERS_REF, a descendant (heading / th) for the other two,
+    // hence the `*` variants.
+    const tableExempt = '.is-selected.wp-block-table table, [role="presentation"]';
+    const tableInnerExempt = '.is-selected.wp-block-table table *, [role="presentation"] *';
+    ed11yInit.options.ignoreByTest = {
+      TABLES_MISSING_HEADINGS: tableExempt,
+      TABLES_INVALID_HEADERS_REF: tableExempt,
+      TABLES_SEMANTIC_HEADING: tableInnerExempt,
+      TABLES_EMPTY_HEADING: tableInnerExempt,
     };
-    ed11yInit.options['headingsOnlyFromCheckRoots'] = true;
+    ed11yInit.options.ignoreContentOutsideRoots = true;
     ed11yInit.options['ignoreAriaOnElements'] = 'h1,h2,h3,h4,h5,h6,.wp-element-button,.block-editor-rich-text__editable,.wp-block-table';
     ed11yInit.options['altPlaceholder'] = 'This image has an empty alt attribute;';
 
@@ -294,8 +257,6 @@ if (ed11yInit.varDiv) {
       ed11yInit.options['syncedDismissals'] = false;
       ed11yInit.options['allowOK'] = false;
     }
-    // Ignore elementor-hidden content.
-    ed11yInit.options['containerIgnore'] += ', body.elementor-editor-active .block-editor-block-list__layout *';
   };
 
   ed11yInit.shutMenusOnPop = function () {
@@ -324,27 +285,14 @@ if (ed11yInit.varDiv) {
 
   ed11yInit.firstCheck = function () {
     if (!ed11yInit.once) {
-      window.setTimeout(() => {
-        ed11yInit.once = true;
-        new Ed11y(ed11yInit.options); // eslint-disable-line no-new
-        window.Ed11y = Ed11y;
-        window.Ed11y.State = State;
-        window.Ed11y.UI = UI;
-        window.Ed11y.Lang = Lang;
-        window.Ed11y.refresh = refresh;
-        window.Ed11y.createDismissalKey = createDismissalKey;
-        window.Ed11y.computeAccessibleName = computeAccessibleName;
-        window.Ed11y.getElements = getElements;
-        window.Ed11y.sanitizeHTML = sanitizeHTML;
-        window.Ed11y.setFixedRoots = setFixedRoots;
-        window.Ed11y.version = version;
-      }, 0); // Defer to ensure this runs after any pending UI updates from the editor.
+      ed11yInit.once = true;
+      new Ed11y(ed11yInit.options); // eslint-disable-line no-new
     }
   };
 
   ed11yInit.buttonBlockTest = function () {
 
-    ed11yInit.options['customTests'] = Number.parseInt(ed11yInit.options['customTests']) + 1;
+    ed11yInit.options['customTests'] = (Number.parseInt(ed11yInit.options['customTests'], 10) || 0) + 1;
 
     document.addEventListener('ed11yRunCustomTests', function () {
 
@@ -362,8 +310,8 @@ if (ed11yInit.varDiv) {
           // Nothing was stripped AND we weren't warned.
           if (
             !(
-              (State.option.linkIgnoreSelector &&
-                el?.querySelector(State.option.linkIgnoreSelector))
+              (State.option.linkIgnoreSpan &&
+                el?.querySelector(State.option.linkIgnoreSpan))
               || linkText.toLowerCase().match(State.option.linkStringsNewWindows)
             )
           ) {
@@ -371,7 +319,11 @@ if (ed11yInit.varDiv) {
             State.results.push({
               element: el,
               test: 'linkNewWindow',
-              content: Lang.sprintf('LINK_NEW_WINDOW') || '<p>Link opens in a new window.</p>', // @todo verify message key.
+              // Lang.translate() returns the raw key for unknown strings
+              // (never falsy), so a wrong key here renders AS the key text —
+              // these must match the lang packs exactly. LINK_NEW_TAB takes
+              // the link text as its %(TEXT) argument.
+              content: Lang.sprintf('LINK_NEW_TAB', linkText),
               position: 'beforebegin',
               dismissalKey: dismissKey,
             });
@@ -383,8 +335,8 @@ if (ed11yInit.varDiv) {
         // Tests to see if this link is empty
         if (
           linkText.replace(/"|'|\?|\.|-|\s+/g, '').length === 0 &&
-          !(State.option.linkIgnoreSelector &&
-            el.querySelector(State.option.linkIgnoreSelector)
+          !(State.option.linkIgnoreSpan &&
+            el.querySelector(State.option.linkIgnoreSpan)
           )
         ) {
           // Link with no text at all.
@@ -392,7 +344,7 @@ if (ed11yInit.varDiv) {
             State.results.push({
               element: el,
               test: 'linkNoText',
-              content: Lang.sprintf('LINK_NO_TEXT') || '<p>Link has no text.</p>', // @todo verify message key.
+              content: Lang.sprintf('LINK_EMPTY'),
               position: 'beforebegin',
               dismissalKey: false,
             });
@@ -400,7 +352,7 @@ if (ed11yInit.varDiv) {
             State.results.push({
               element: el,
               test: 'altEmptyLinked',
-              content: Lang.sprintf('LINK_IMAGE_NO_ALT_TEXT') || '<p>Linked image is missing alt text.</p>', // @todo verify message key.
+              content: Lang.sprintf('LINK_IMAGE_NO_ALT_TEXT'),
               position: 'beforebegin',
               dismissalKey: false,
             });
@@ -478,7 +430,7 @@ if (ed11yInit.varDiv) {
             {
               element: el,
               test: 'linkDocument',
-              content: Lang.sprintf('LINK_DOCUMENT') || '<p>Linked document.</p>', // @todo verify message key.
+              content: Lang.sprintf('QA_DOCUMENT', el?.getAttribute('href') ?? ''),
               position: 'beforebegin',
               dismissalKey: dismissKey,
             });
@@ -545,7 +497,7 @@ if (ed11yInit.varDiv) {
       // liveH2/H3/H4 selectors are appended after, so a custom-block plugin
       // that nests further down can pin the inner H-level without
       // disturbing the post-title detection above.
-      ed11yInit.options.editorHeadingLevel = [
+      ed11yInit.options.initialHeadingLevel = [
         { selector: '.editor-visual-editor__post-title-wrapper', previousHeading: 0 },
         { selector: '.editor-styles-wrapper > .is-root-container', previousHeading: 1 },
         ...ed11yBuildEditorHeadingLevel(ed11yInit.options),
@@ -557,7 +509,9 @@ if (ed11yInit.varDiv) {
       ed11yInit.options.watchForChanges = 'checkRoots';
 
       if (iframe) {
-        // Iframed canvas (default in WP 6.3+): library scans the iframe body via fixedRoots.
+        // Iframed canvas (default in WP 6.3+): library scans the iframe body via
+        // fixedRoots; framePositioners is the parallel array of frame wrappers
+        // used to offset annotations into main-document coordinates.
         const body = iframe.contentWindow.document.body;
         ed11yInit.options.fixedRoots = [body];
         ed11yInit.options.framePositioners = [iframe];
@@ -587,39 +541,24 @@ if (ed11yInit.varDiv) {
       ed11yInit.syncDismissals();
       ed11yInit.activeIframe = iframe || null;
 
-      // Establish the baseline state upon load
-      /*
-      let currentSelectedId = wp?.data?.select('core/block-editor')?.getSelectedBlockClientId();
-
-      if (currentSelectedId) {
-        // Listen to every update emitted by the global state container
-        const unsubscribe = wp.data.subscribe(() => {
-          const nextSelectedId = wp?.data?.select('core/block-editor')?.getSelectedBlockClientId();
-
-          // Check if the current ID differs from the previous tick
-          if (currentSelectedId !== nextSelectedId) {
-            console.log('Selection changed to block:', nextSelectedId);
-
-            // Handle block deselect cases (returns null if no block is highlighted)
-            if (nextSelectedId) {
-              const blockDetails = wp.data.select('core/block-editor').getBlock(nextSelectedId);
-              console.log('Selected block details:', blockDetails);
-            }
-
-            // Sync baseline state
-            currentSelectedId = nextSelectedId;
-          }
-        });
-      }*/
-
       // Watch for canvas swaps: Visual ↔ Code editor, post navigation that
       // remounts without a full reload, or the iframe being added/removed when
       // an editor setting changes. setFixedRoots() handles the in-place update.
+      // Debounced: this observes the whole body subtree, and Gutenberg
+      // mutates constantly while typing — running querySelector on every
+      // mutation burst is an unbounded tax. Canvas swaps are rare and a
+      // 250ms detection delay is invisible next to canvasReady's polling.
       ed11yInit.canvasObserver = new MutationObserver(() => {
-        const next = ed11yInit.findBlockIframe();
-        if (next !== ed11yInit.activeIframe) {
-          ed11yInit.handleCanvasSwap(next);
+        if (ed11yInit.canvasSwapCheck) {
+          return;
         }
+        ed11yInit.canvasSwapCheck = window.setTimeout(() => {
+          ed11yInit.canvasSwapCheck = null;
+          const next = ed11yInit.findBlockIframe();
+          if (next !== ed11yInit.activeIframe) {
+            ed11yInit.handleCanvasSwap(next);
+          }
+        }, 250);
       });
       ed11yInit.canvasObserver.observe(document.body, { childList: true, subtree: true });
     });
@@ -657,10 +596,15 @@ if (ed11yInit.varDiv) {
         await ed11yInit.getOptions();
         ed11yInit.options['ignoreAllIfAbsent'] = false;
         ed11yInit.options['watchForChanges'] = false;
-        ed11yInit.options['editorHeadingLevel'] = [];
-        ed11yInit.options['headingsOnlyFromCheckRoots'] = true;
+        ed11yInit.options.initialHeadingLevel = [];
+        ed11yInit.options.ignoreContentOutsideRoots = true;
         ed11yInit.options['buttonZIndex'] = 998;
-        ed11yInit.options['ignoreByKey']['a'] = '[aria-hidden][tabindex], .mce-item-anchor';
+        // Exempt MCE's invisible anchor/bookmark markers from the link
+        // checks. 3.x replaced the element-keyed ignoreByKey.a with the
+        // `linkIgnore` selector option; [aria-hidden][tabindex] is a
+        // superset of the library default [aria-hidden="true"][tabindex="-1"],
+        // so replacing the default loses nothing.
+        ed11yInit.options.linkIgnore = '[aria-hidden][tabindex], .mce-item-anchor';
 
         // Todo: preventChecking would be better than ignore all, but fails to restore at the moment.
         // ed11yInit.options['preventCheckingIfPresent'] = '#content-html[aria-pressed="true"]';
@@ -676,7 +620,7 @@ if (ed11yInit.varDiv) {
         // MCE-specific defaults; admin-configured liveH2/H3/H4 selectors
         // append after so the wildcard `selector: '*'` floor doesn't
         // override them (library walks the array in order).
-        ed11yInit.options.editorHeadingLevel = [
+        ed11yInit.options.initialHeadingLevel = [
           // need to set this up per frame
           {
             selector: '.mce-content-body',
@@ -762,6 +706,7 @@ if (ed11yInit.varDiv) {
       ed11yInit.ed11yBlockOuterInit();
     } else if (document.querySelector('.mce-edit-area iframe') && window.innerWidth > 600) {
       ed11yInit.editorType = 'mce';
+      console.log('classic editor detected');
       ed11yInit.ed11yCanSync = !window.location.href.includes('-new.php');
       ed11yInit.ed11yOuterClassicInit();
     } else if (ed11yInit.ed11yReadyCount < 60) {

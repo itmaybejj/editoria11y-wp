@@ -106,6 +106,7 @@ class NetworkSettingsPage {
 		// premium build. The preprocessor strips the block from the free
 		// build; the runtime gate keeps free-mode multisite installs from
 		// rendering a tab to a stripped page.
+		
 
 		echo '<h2 class="nav-tab-wrapper">';
 		foreach ( $tabs as $slug => $label ) {
@@ -121,6 +122,26 @@ class NetworkSettingsPage {
 	}
 
 	/**
+	 * Human-readable disclosure of the "all sites" / "lock" propagation
+	 * semantics (finding A2).
+	 *
+	 * The backfill decides whether a site is "still tracking the network"
+	 * by VALUE EQUALITY — it overwrites a site's stored value when that
+	 * value is absent, equals a previous network default, or equals the
+	 * hardcoded Editoria11y default (see
+	 * {@see NetworkDefaultsWorker::apply_dirty_to_option()}). A per-site
+	 * value that coincides with a default is therefore replaced. We do not
+	 * track per-site "locally-owned" intent, so this surface warns admins
+	 * of the overwrite rule rather than silently applying it.
+	 */
+	public static function propagation_help_text(): string {
+		return __(
+			'Heads up: "Default for all sites" and "Override for all sites" overwrite a site\'s current value whenever that value is still an Editoria11y default or a previous network default — including a per-site value that happens to match a default. Sites where an admin has chosen a different value are left untouched. "Default for new sites" only affects sites created from now on.',
+			'editoria11y'
+		);
+	}
+
+	/**
 	 * Render the page shell, then re-emit the per-site settings sections.
 	 *
 	 * One form, one submit. The save handler processes both option blobs
@@ -130,7 +151,24 @@ class NetworkSettingsPage {
 		if ( ! current_user_can( 'manage_network_options' ) ) {
 			wp_die( esc_html__( 'Insufficient privileges.', 'editoria11y' ) );
 		}
-		$saved_notice = isset( $_GET['updated'] ) && '1' === $_GET['updated']; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$saved_notice  = isset( $_GET['updated'] ) && '1' === $_GET['updated']; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$orphan_notice = isset( $_GET['orphans'] ) && '1' === $_GET['orphans']; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$orphan_keys   = array();
+		if ( $orphan_notice ) {
+			$transient_key = 'ed11y_network_orphans_' . get_current_user_id();
+			$stored        = get_transient( $transient_key );
+			if ( is_array( $stored ) ) {
+				$orphan_keys = array_values(
+					array_filter(
+						array_map( 'strval', $stored ),
+						static function ( $value ) {
+							return '' !== $value;
+						}
+					)
+				);
+			}
+			delete_transient( $transient_key );
+		}
 		?>
 		<div class="wrap">
 			<h1><?php esc_html_e( 'Editoria11y default or locked network settings', 'editoria11y' ); ?></h1>
@@ -140,7 +178,22 @@ class NetworkSettingsPage {
 					<p><?php esc_html_e( 'Network defaults saved.', 'editoria11y' ); ?></p>
 				</div>
 			<?php endif; ?>
+			<?php if ( ! empty( $orphan_keys ) ) : ?>
+				<div class="notice notice-error">
+					<p>
+						<strong><?php esc_html_e( 'Network defaults were not saved.', 'editoria11y' ); ?></strong>
+						<?php esc_html_e( 'You changed the following settings, but their propagation dropdown is still set to "No network default" — your change would not reach any site. Set the dropdown to "Default for new sites", "Default for all sites", or "Override for all sites" — or revert the value — and save again.', 'editoria11y' ); ?>
+					</p>
+					<ul style="list-style: disc; margin-left: 2em;">
+						<?php foreach ( $orphan_keys as $label ) : ?>
+							<li><code><?php echo esc_html( $label ); ?></code></li>
+						<?php endforeach; ?>
+					</ul>
+				</div>
+			<?php endif; ?>
 			<?php self::render_backfill_status(); ?>
+
+			<p class="description ed11y-propagation-help"><?php echo esc_html( self::propagation_help_text() ); ?></p>
 
 			<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" autocomplete="off" class="ed11y-form-network">
 				<input type="hidden" name="action" value="<?php echo esc_attr( self::SAVE_ACTION ); ?>" />
@@ -377,37 +430,60 @@ class NetworkSettingsPage {
 	 * @param string $html Buffered output of `do_settings_sections('ed11y')`.
 	 */
 	public static function rewrite_field_names( string $html ): string {
+		// Each pattern matches BOTH `name=` and `data-when-input=` carriers:
+		// ConditionalFields stores the trigger field's name in a
+		// `data-when-input` attribute, and its JS drops any rule whose
+		// recorded name no longer matches a rendered input — so leaving the
+		// attribute un-rewritten silently disabled conditional reveals on
+		// the network page (finding F5).
+		//
 		// CSA-nested per-key fields: ed11y_plugin_settings[csa_settings][KEY → csa_values[KEY
 		// The trailing portion ("]" alone OR "][SLUG]" for the roles
 		// checkbox group) is left alone, so role checkboxes still post as
 		// csa_values[roles][SLUG] which the sanitizer treats as an
 		// assoc-array equivalent of the CSV form.
 		$html = (string) preg_replace(
-			'/name="ed11y_plugin_settings\[csa_settings\]\[([A-Za-z0-9_]+)\]/',
-			'name="csa_values[$1]',
+			'/(name|data-when-input)="ed11y_plugin_settings\[csa_settings\]\[([A-Za-z0-9_]+)\]/',
+			'$1="csa_values[$2]',
 			$html
 		);
 
 		// CSA-mode 3-way per-test routing → network_tests_state[KEY].
 		$html = (string) preg_replace(
-			'/name="ed11y_plugin_settings\[tests_state\]\[([A-Za-z0-9_]+)\]"/',
-			'name="network_tests_state[$1]"',
+			'/(name|data-when-input)="ed11y_plugin_settings\[tests_state\]\[([A-Za-z0-9_]+)\]"/',
+			'$1="network_tests_state[$2]"',
 			$html
 		);
 
 		// Free-mode per-test checkboxes → network_tests_enabled[KEY].
 		$html = (string) preg_replace(
-			'/name="ed11y_plugin_settings\[tests_enabled\]\[([A-Za-z0-9_]+)\]"/',
-			'name="network_tests_enabled[$1]"',
+			'/(name|data-when-input)="ed11y_plugin_settings\[tests_enabled\]\[([A-Za-z0-9_]+)\]"/',
+			'$1="network_tests_enabled[$2]"',
 			$html
 		);
 
 		// Generic flat keys → free_values[KEY].
 		$html = (string) preg_replace(
-			'/name="ed11y_plugin_settings\[([A-Za-z0-9_]+)\]"/',
-			'name="free_values[$1]"',
+			'/(name|data-when-input)="ed11y_plugin_settings\[([A-Za-z0-9_]+)\]"/',
+			'$1="free_values[$2]"',
 			$html
 		);
+
+		// Fail-loud guard (finding A1). Any per-site field whose name shape
+		// matched none of the four patterns above still carries its
+		// `ed11y_plugin_settings[...]` name, so it posts into a bucket the
+		// network save handler never reads — its network default silently
+		// never saves. The parity test class-test-network-field-rewrite.php
+		// asserts this can't happen for the shipped field set; this runtime
+		// log catches a field shape that slips past the test (e.g. a
+		// build-conditional field) so it surfaces in the error log instead
+		// of vanishing without a trace.
+		if ( false !== strpos( $html, 'name="ed11y_plugin_settings[' )
+			|| false !== strpos( $html, 'data-when-input="ed11y_plugin_settings[' )
+		) {
+			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- diagnostic for a silent network-defaults save gap.
+			error_log( '[Editoria11y] NetworkSettingsPage::rewrite_field_names left an un-rewritten ed11y_plugin_settings[...] field; its network default will not save. See finding A1.' );
+		}
 
 		return $html;
 	}
@@ -449,6 +525,7 @@ class NetworkSettingsPage {
 			'values' => array(),
 			'modes'  => array(),
 		);
+		
 
 		$free_blob = NetworkSettingsValidator::validate_free( (array) $post );
 
@@ -456,15 +533,40 @@ class NetworkSettingsPage {
 			'values' => array(),
 			'modes'  => array(),
 		);
+		
 
-		// Normalize for the backfill diff below. Every dropdown now carries a
-		// propagating mode (the floor is 'new'), so there is no "value stored
-		// but going nowhere" state to validate against — a blank field simply
-		// has its mode dropped by the validator and never propagates.
+		// Orphan validation: reject the save outright when a value changed
+		// but the matching propagation-mode dropdown is "No network
+		// default" — the admin almost certainly meant to also flip the
+		// dropdown. Done BEFORE the option writes so the previous storage
+		// stays intact on rejection (the "revert" half of block + revert).
 		$new_free_norm = ed11y_normalize_network_default_storage( $free_blob );
 		$new_csa_norm  = ed11y_normalize_network_default_storage( $csa_blob );
+		$orphans       = NetworkDefaultsWorker::detect_orphan_changed_keys(
+			$old_free,
+			$new_free_norm,
+			$old_csa,
+			$new_csa_norm
+		);
+		if ( ! empty( $orphans ) ) {
+			set_transient(
+				'ed11y_network_orphans_' . get_current_user_id(),
+				$orphans,
+				MINUTE_IN_SECONDS
+			);
+			$redirect = add_query_arg(
+				array(
+					'page'    => self::SLUG,
+					'orphans' => '1',
+				),
+				network_admin_url( 'settings.php' )
+			);
+			wp_safe_redirect( $redirect );
+			exit;
+		}
 
 		update_site_option( 'ed11y_network_default_settings', $free_blob );
+		
 
 		// Queue the backfill — only `'all'`-mode keys whose value/mode
 		// actually changed end up in the dirty set. No-op when nothing
@@ -472,11 +574,11 @@ class NetworkSettingsPage {
 		try {
 			$main_dirty = NetworkDefaultsWorker::diff_dirty_keys( $old_free, $new_free_norm );
 			$csa_dirty  = array();
-
+			
 			// Cross-blob bundle expansion: tests_off has destinations in
 			// both blobs, so it cannot be diffed by the per-blob walks
 			// above (the bundle mode lives only in CSA modes).
-
+			
 			NetworkDefaultsWorker::enqueue( $main_dirty, $csa_dirty );
 		} catch ( \Throwable $e ) {
 			// Worker / autoload failure must not block the form save —

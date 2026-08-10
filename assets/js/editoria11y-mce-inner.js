@@ -19,12 +19,15 @@ const letsGo = function() {
     document.addEventListener('click', () => {
       parent.Ed11y.UI.interaction = true;
     });
+    // Debounced: scroll fires continuously and refresh() re-walks tip
+    // positions — undebounced this ran a full recompute per scroll frame.
+    let ed11yScrollTimer = null;
     document.addEventListener('scroll', function() {
-      // @todo verify: scrollPending / updateTipLocations / alignTip not exported in 3.x.
       // Trigger a refresh so the public API recomputes positions.
       // Trigger on scrolling other containers, unless it will flicker a tip.
       if (parent.Ed11y.UI?.openTip?.button) {
-        parent.Ed11y.refresh();
+        window.clearTimeout(ed11yScrollTimer);
+        ed11yScrollTimer = window.setTimeout(() => parent.Ed11y.refresh(), 150);
       }
     }, true);
     const debounce = (callback, wait) => {

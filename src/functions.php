@@ -76,12 +76,18 @@ function ed11y_get_default_options( string $option = '' ) {
 		'ed11y_livecheck'           => 'all',
 		'ed11y_alert_mode'          => 'polite',
 
-		// Ignore for content editors.
-		'ed11y_ignore_elements'     => '#comments *, .wp-block-post-comments *, img.avatar, .sharedaddy *',
+		// ADDITIVE keys: these append to always-applied baselines, so their
+		// default is empty and clearing the field means "baseline only".
+		// `ed11y_ignore_elements` appends to ed11y_container_ignore_baseline();
+		// the three media-source lists append to the library's built-in
+		// detection lists (youtube, vimeo, soundcloud, tableau, powerbi, …)
+		// via checks.EMBED_*.sources — see ed11yApplyOptionTranslations().
+		// Storing the old suggestion lists here only duplicated built-ins.
+		'ed11y_ignore_elements'     => '',
 
-		'ed11y_videoContent'        => 'youtube.com, vimeo.com, yuja.com, panopto.com',
-		'ed11y_audioContent'        => 'soundcloud.com, simplecast.com, podbean.com, buzzsprout.com, blubrry.com, transistor.fm, fusebox.fm, libsyn.com',
-		'ed11y_datavizContent'      => 'datastudio.google.com, tableau',
+		'ed11y_videoContent'        => '',
+		'ed11y_audioContent'        => '',
+		'ed11y_datavizContent'      => '',
 
 		// Static settings getter resolves these to a real bool before
 		// emitting `checkVisible` to JS.
@@ -134,6 +140,17 @@ function ed11y_get_default_options( string $option = '' ) {
 }
 
 /**
+ * The always-applied `containerIgnore` baseline: WordPress chrome and
+ * theme-generated fragments editors cannot fix. Site/network values from
+ * `ed11y_ignore_elements` are APPENDED to this list in the JS payload —
+ * the field's stored default is empty, so clearing it means "baseline
+ * only", not "ignore nothing at all".
+ */
+function ed11y_container_ignore_baseline(): string {
+	return '#wpadminbar *, #comments *, .wp-block-post-comments *, img.avatar';
+}
+
+/**
  * Default values for the separate CSA settings option.
  *
  * Mirrors Drupal's `editoria11y_csa.settings` config object. Stored as a
@@ -150,7 +167,7 @@ function ed11y_get_csa_default_options( string $option = '' ) {
 	// (validator, settings-page renderer) are already runtime-gated by
 	// `ed11y_is_csa_active()`, which is false in the free build, so the
 	// empty-return path is unreachable there but provides a safe fallback.
-
+	
 	return '' !== $option ? '' : array();
 }
 
@@ -169,7 +186,7 @@ function ed11y_get_csa_default_options( string $option = '' ) {
  */
 function ed11y_get_developer_role_options(): array {
 	$out = array();
-
+	
 	return $out;
 }
 
@@ -183,7 +200,7 @@ function ed11y_get_developer_role_options(): array {
  * @return array<string, mixed>
  */
 function ed11y_get_csa_settings(): array {
-
+	
 	return array();
 }
 
@@ -310,7 +327,7 @@ function ed11y_effective_network_csa_lock( string $key ): array {
  * @return mixed Effective value, or null if the key is unknown.
  */
 function ed11y_get_csa_setting( string $key ) {
-
+	
 	return null;
 }
 
@@ -324,7 +341,7 @@ function ed11y_get_csa_setting( string $key ) {
  * @return string Stored value cast to string, or empty string if unset.
  */
 function ed11y_get_csa_raw_setting( string $key ): string {
-
+	
 	return '';
 }
 
@@ -370,7 +387,7 @@ function ed11y_is_csa_active(): bool {
  * Map an arbitrary WP locale (or bare language slug) to the bundled
  * lang-pack filename.
  *
- * The bundled library ships ~20 lang packs in [assets/lib/js/lang/](../assets/lib/js/lang/);
+ * The bundled library ships ~30 lang packs in [assets/lib/js/lang/](../assets/lib/js/lang/);
  * this is the shared matcher behind both the UI-locale pack
  * ({@see ed11y_lang_pack_filename()}) and the content-locale pack
  * ({@see ed11y_content_lang_pack_filename()}). It maps `en_US`, `de_DE`,
@@ -385,13 +402,16 @@ function ed11y_is_csa_active(): bool {
  *
  * The available list is hardcoded rather than globbed — globbing at every
  * page load is wasteful, the upstream file set is stable per release, and
- * `scripts/get.sh` is the only thing that adds files here.
+ * `scripts/get.sh` is the only thing that adds files here. Keep it in sync
+ * with the non-umd `.js` files on disk (pinned by the lang-pack test).
  *
  * @param string $locale A WP locale (`en_US`) or bare language slug (`es`).
  * @return string Lang-pack filename without `.js` extension.
  */
 function ed11y_resolve_lang_pack( string $locale ): string {
 	$available = array(
+		'bg',
+		'cs',
 		'da',
 		'de',
 		'el',
@@ -400,17 +420,28 @@ function ed11y_resolve_lang_pack( string $locale ): string {
 		'en-gb',
 		'en-us',
 		'es',
+		'et',
+		'fi',
 		'fr',
 		'fr-ca',
 		'hu',
+		'id',
 		'it',
 		'ja',
+		'ko',
+		'lt',
+		'lv',
 		'nb',
 		'nl',
 		'pl',
 		'pt-br',
 		'pt-pt',
+		'ro',
+		'sk',
+		'sl',
 		'sv',
+		'ta',
+		'tr',
 		'uk',
 		'zh',
 	);
@@ -642,7 +673,15 @@ function ed11y_get_network_default_settings_storage(): array {
 
 /**
  * Normalize a raw network-defaults blob into the canonical
- * `array( values, modes )` shape, migrating legacy `locked[]` storage.
+ * `array( values, modes )` shape.
+ *
+ * A blob without a `modes[]` array yields empty modes — the values are
+ * kept (they still prefill the network form) but nothing propagates or
+ * locks. The only writer of a modes-less blob was the pre-release
+ * `locked[]` dev shape (commits 7b49f32..dc1cd90, never tagged or
+ * released; no public site ever ran it), whose lossy `values → 'all'`
+ * remapping silently changed read-time semantics. A dev sandbox from
+ * that window just re-saves the network defaults form once.
  *
  * @param array<string,mixed> $raw Raw storage as returned by `get_site_option`.
  * @return array{values: array<string,mixed>, modes: array<string,string>}
@@ -650,33 +689,12 @@ function ed11y_get_network_default_settings_storage(): array {
 function ed11y_normalize_network_default_storage( array $raw ): array {
 	$values = isset( $raw['values'] ) && is_array( $raw['values'] ) ? $raw['values'] : array();
 
+	$modes = array();
 	if ( isset( $raw['modes'] ) && is_array( $raw['modes'] ) ) {
-		$modes = array();
 		foreach ( $raw['modes'] as $key => $mode ) {
 			if ( is_string( $mode ) && in_array( $mode, array( 'new', 'all', 'lock' ), true ) ) {
 				$modes[ $key ] = $mode;
 			}
-		}
-		return array(
-			'values' => $values,
-			'modes'  => $modes,
-		);
-	}
-
-	// Legacy shape: derive modes from `locked[]`. Keys with stored values
-	// default to `'all'` (the closest analog to "unlocked default propagated
-	// on read" in the old code), and keys flagged as locked map to `'lock'`.
-	// Bundle locks (lock flag set with no matching value, e.g.
-	// SettingsValidator::BUNDLE_LOCK_TESTS_AND_ROLES) are preserved as
-	// `'lock'` so they keep coercing on save.
-	$legacy_locked = isset( $raw['locked'] ) && is_array( $raw['locked'] ) ? $raw['locked'] : array();
-	$modes         = array();
-	foreach ( $values as $key => $_unused ) {
-		$modes[ $key ] = ! empty( $legacy_locked[ $key ] ) ? 'lock' : 'all';
-	}
-	foreach ( $legacy_locked as $key => $flag ) {
-		if ( ! empty( $flag ) && ! array_key_exists( $key, $modes ) ) {
-			$modes[ $key ] = 'lock';
 		}
 	}
 	return array(
@@ -789,6 +807,27 @@ function ed11y_get_raw_setting( string $key ): string {
 	return (string) $value;
 }
 
+/**
+ * Capability required to read sitewide issue reports.
+ *
+ * Single source for every reader of cross-site scan data — the dashboard
+ * menu, the GET /dashboard and GET /dismiss REST readers, the crawler
+ * metadata endpoint, and the CSV export. Sitewide reports expose every
+ * tracked page plus author and dismissing-user display names, which an Author role
+ * has no business seeing, so the floor is `edit_others_posts`; the
+ * `ed11y_report_restrict` setting raises it to `manage_options`.
+ *
+ * The PUT writers deliberately stay at `edit_posts` (authors scanning
+ * their own drafts must be able to report results) — do not route them
+ * through this helper.
+ *
+ * @return string Capability name.
+ */
+function ed11y_report_reader_capability(): string {
+	return '1' === ed11y_get_raw_setting( 'ed11y_report_restrict' )
+		? 'manage_options'
+		: 'edit_others_posts';
+}
 
 /**
  * Returns the hashed form of a (result_key, element_id) pair.
@@ -831,20 +870,42 @@ function ed11y_hash_element_id( string $result_key, string $element_id ): string
  * @return int
  */
 function ed11y_get_config_version(): int {
-	return absint( get_option( 'ed11y_config_version', 1 ) );
+	// Per-blog counter + network-wide counter. Network-scope saves (network
+	// defaults, network custom rules) fire their option hooks in the main
+	// site's blog context only, so a per-blog counter alone can never reach
+	// subsite config URLs — every blog folds the network counter in instead.
+	return absint( get_option( 'ed11y_config_version', 1 ) )
+		+ absint( get_site_option( 'ed11y_config_version_network', 0 ) );
 }
 
 /**
- * Increment the cache-bust counter.
+ * Increment the per-blog cache-bust counter.
  *
  * Hooked off `add_option_*` and `update_option_*` for option names that
  * influence the static config payload — see the `add_action()` registrations
  * at the bottom of this block. Page-scoped dismissal writes do NOT hit this:
  * they only affect the per-page payload (rebuilt every request) so a cache
  * bump would be wasted invalidation.
+ *
+ * Reads the raw option (not ed11y_get_config_version(), which folds in the
+ * network counter) so each bump advances the blog counter by exactly one.
  */
 function ed11y_bump_config_version(): void {
-	update_option( 'ed11y_config_version', ed11y_get_config_version() + 1, true );
+	update_option( 'ed11y_config_version', absint( get_option( 'ed11y_config_version', 1 ) ) + 1, true );
+}
+
+/**
+ * Increment the network-wide cache-bust counter.
+ *
+ * Hooked off the `*_site_option_*` writes for network-scope storage (network
+ * defaults, network custom rules). Those writes change the effective config
+ * on EVERY blog (locks and unlocks are read-time overlays), but their hooks
+ * fire only in the main site's blog context — this counter is the piece
+ * `ed11y_get_config_version()` adds on every blog so subsite config URLs
+ * change too. Falls back to a regular option on single-site installs.
+ */
+function ed11y_bump_network_config_version(): void {
+	update_site_option( 'ed11y_config_version_network', absint( get_site_option( 'ed11y_config_version_network', 0 ) ) + 1 );
 }
 
 /**
@@ -1049,7 +1110,7 @@ function ed11y_build_ignore_tests( string $tests_off_csv ): array {
 	// preprocessor strips the premium-only override below, leaving the
 	// unconditional merge in the free build.
 	$ignore = array_merge( $ignore, TestNames::template_tests() );
-
+	
 	return array_values( array_unique( $ignore ) );
 }
 
@@ -1130,18 +1191,29 @@ function ed11y_get_static_settings(): array {
 	$watch_raw         = (string) $settings['watch_for_changes'];
 	$watch_for_changes = 'false' === $watch_raw ? false : $watch_raw;
 
+	// ADDITIVE: site selectors append to the always-applied baseline (the
+	// admin bar plus core comment/avatar chrome editors can't fix). An
+	// empty site value means "baseline only" — a reachable configuration
+	// now that the stored default is empty.
+	$container_ignore = ed11y_container_ignore_baseline();
+	$site_ignore      = trim( (string) $settings['ed11y_ignore_elements'] );
+	if ( '' !== $site_ignore ) {
+		$container_ignore .= ', ' . $site_ignore;
+	}
+
 	return array(
 		// Theme + scan area.
 		'theme'                      => $settings['ed11y_theme'],
 		'checkRoot'                  => $check_root,
-		// Always prepend the wp-admin bar selector — never user-configurable.
-		// `ed11y_get_settings()`'s empty-overlay guarantees the user value
-		// is never an empty string here, so no trailing-comma worry.
-		'containerIgnore'            => '#wpadminbar *,' . $settings['ed11y_ignore_elements'],
+		'containerIgnore'            => $container_ignore,
 
-		// Embed-content selectors (keyed by *Content for the editor's library
-		// fall-through; the `embeddedContentWarning` field below feeds
-		// options.checks.EMBED_CUSTOM in the JS shim).
+		// Embed-content source lists. video/audio/dataViz are ADDITIVE —
+		// the JS shim maps them into checks.EMBED_*.sources, which the
+		// library appends to its built-in detection lists. documentLinks
+		// REPLACES the library's document list when non-empty (library
+		// post-processing; QA_PDF keeps its own built-in). The
+		// `embeddedContentWarning` field below feeds
+		// options.checks.EMBED_CUSTOM in the JS shim.
 		'videoContent'               => $settings['ed11y_videoContent'],
 		'audioContent'               => $settings['ed11y_audioContent'],
 		'documentLinks'              => $settings['ed11y_documentContent'],
@@ -1266,6 +1338,17 @@ add_action( 'update_option_ed11y_network_custom_rules', 'ed11y_bump_config_versi
 add_action( 'add_option_ed11y_disabled_network_rules', 'ed11y_bump_config_version', 10, 0 );
 add_action( 'update_option_ed11y_disabled_network_rules', 'ed11y_bump_config_version', 10, 0 );
 
+// Network-scope writes must also bump the NETWORK counter: the per-blog
+// bumps above fire in the saving request's blog context (the main site),
+// which subsites never see. `update_site_option` fires these hooks on
+// single-site too, so the wiring is multisite-agnostic.
+add_action( 'add_site_option_ed11y_network_default_settings', 'ed11y_bump_network_config_version', 10, 0 );
+add_action( 'update_site_option_ed11y_network_default_settings', 'ed11y_bump_network_config_version', 10, 0 );
+add_action( 'add_site_option_ed11y_network_default_csa_settings', 'ed11y_bump_network_config_version', 10, 0 );
+add_action( 'update_site_option_ed11y_network_default_csa_settings', 'ed11y_bump_network_config_version', 10, 0 );
+add_action( 'add_site_option_ed11y_network_custom_rules', 'ed11y_bump_network_config_version', 10, 0 );
+add_action( 'update_site_option_ed11y_network_custom_rules', 'ed11y_bump_network_config_version', 10, 0 );
+
 /**
  * Loads the scripts for the plugin.
  */
@@ -1367,6 +1450,155 @@ function ed11y_enqueue_editor_content_assets() {
 // and the script would crash trying to read it.
 
 /**
+ * Fills in the entity identity keys for a rendered front-end request.
+ *
+ * Sets `title`, `post_id`, `entity_type` and `currentPage` from the main
+ * query. Kept as a sibling of `ed11y_add_editing_entity_params()` so the
+ * two label the same entity the same way — both writers land in one
+ * `ed11y_urls` row per URL.
+ *
+ * Ref https://wordpress.stackexchange.com/questions/83887/return-current-page-type .
+ *
+ * @param array $vals Params under construction.
+ *
+ * @return array
+ *
+ * @SuppressWarnings(PHPMD.CyclomaticComplexity) One flat conditional-type ladder; splitting it would only scatter the mapping.
+ */
+function ed11y_add_viewing_entity_params( array $vals ): array {
+	$vals['title'] = trim( wp_title( '', false, 'right' ) );
+
+	// Get entity type and post id (if single).
+	$vals['post_id']     = get_the_ID();
+	$vals['entity_type'] = 'other';
+	if ( is_page() ) {
+		$vals['entity_type'] = is_front_page() ? 'Front' : 'Page';
+	} elseif ( is_home() ) {
+		$vals['entity_type'] = 'Home';
+		$vals['post_id']     = 0;
+	} elseif ( is_single() ) {
+		$vals['entity_type'] = ( is_attachment() ) ? 'Attachment' : 'Post';
+	} elseif ( is_category() ) {
+		$vals['entity_type'] = 'Category';
+		$vals['post_id']     = 0;
+	} elseif ( is_tag() ) {
+		$vals['entity_type'] = 'Tag';
+		$vals['post_id']     = 0;
+	} elseif ( is_tax() ) {
+		$vals['entity_type'] = 'Taxonomy';
+		$vals['post_id']     = 0;
+	} elseif ( is_archive() ) {
+		$vals['post_id'] = 0;
+		if ( is_author() ) {
+			$vals['entity_type'] = 'Author';
+		} else {
+			$vals['entity_type'] = 'Archive';
+		}
+	} elseif ( is_search() ) {
+		$vals['post_id']     = 0;
+		$vals['entity_type'] = 'Search';
+	} elseif ( is_404() ) {
+		$vals['post_id']     = 0;
+		$vals['entity_type'] = '404';
+	}
+
+	global $wp;
+
+	// Use permalink as sync URL if available, otherwise use query path.
+	if ( $vals['post_id'] > 0 ) {
+		$vals['currentPage'] = get_permalink( $vals['post_id'] );
+	} else {
+		$vals['currentPage'] = home_url( $wp->request );
+	}
+
+	return $vals;
+}
+
+/**
+ * Fills in the entity identity keys for an editor screen.
+ *
+ * Admin requests have no main query, so the `is_page()` / `is_single()`
+ * ladder in `ed11y_add_viewing_entity_params()` is false across the board
+ * there: every editor session used to report `entity_type` 'other' with an
+ * empty title. That is not cosmetic — the dismissal writer inserts
+ * `entity_type` into `ed11y_urls` and its ON DUPLICATE KEY UPDATE never
+ * corrects the column, so the first dismissal made from the editor pinned a
+ * permanently wrong Type on the row (invisible to the dashboard's Type
+ * filter, and skipped by the post_id backfill query, which only walks
+ * 'Page' and 'Post'). Derive the same identity the frontend would report
+ * for the post being edited instead.
+ *
+ * @param array $vals Params under construction.
+ *
+ * @return array
+ */
+function ed11y_add_editing_entity_params( array $vals ): array {
+	$post = get_post();
+
+	// `wp_editor()` also runs on screens with no post behind it: the classic
+	// Text widget, term-description editors, plugin settings pages. There is
+	// no entity to key results on, and the viewing fallback
+	// (`home_url( $wp->request )`, which collapses to the bare site home URL
+	// in admin) filed those dismissals against the front page. Report no page
+	// at all instead — with both post_id and page_url empty the REST writers
+	// no-op rather than corrupting the home page's row.
+	if ( ! $post instanceof WP_Post ) {
+		$vals['title']       = '';
+		$vals['post_id']     = 0;
+		$vals['entity_type'] = 'other';
+		$vals['currentPage'] = '';
+		return $vals;
+	}
+
+	// Empty on a brand-new post; the editor JS falls back to the live title
+	// field (classic) or the canvas H1 (block), then to 'New content'.
+	$vals['title']       = get_the_title( $post );
+	$vals['post_id']     = $post->ID;
+	$vals['currentPage'] = (string) get_permalink( $post );
+	$vals['entity_type'] = ed11y_entity_type_for_post( $post );
+
+	// The blog-posts page is `is_home()` — not `is_page()` — on the frontend,
+	// and that branch zeroes post_id. Mirror it so both writers agree on the
+	// shared row.
+	if ( 'Home' === $vals['entity_type'] ) {
+		$vals['post_id'] = 0;
+	}
+
+	return $vals;
+}
+
+/**
+ * Maps a post to the `entity_type` its rendered page would report.
+ *
+ * @param WP_Post $post Post being edited.
+ *
+ * @return string One of the `Editoria11y\Validate::entity_type()` labels, or 'other'.
+ */
+function ed11y_entity_type_for_post( WP_Post $post ): string {
+	// Reusable blocks, templates, nav menus and friends never render as a
+	// page of their own, so none of the frontend labels describe them. They
+	// keep an identity (post_id + permalink) so dismissals still persist per
+	// block, but they stay out of the page-type vocabulary.
+	if ( ! is_post_type_viewable( $post->post_type ) ) {
+		return 'other';
+	}
+	if ( 'attachment' === $post->post_type ) {
+		return 'Attachment';
+	}
+	if ( 'page' === $post->post_type ) {
+		if ( (int) get_option( 'page_on_front' ) === $post->ID ) {
+			return 'Front';
+		}
+		if ( (int) get_option( 'page_for_posts' ) === $post->ID ) {
+			return 'Home';
+		}
+		return 'Page';
+	}
+	// Posts and public custom post types: `is_single()` on the frontend.
+	return 'Post';
+}
+
+/**
  * Returns page-specific config for the Editoria11y library.
  *
  * @SuppressWarnings(PHPMD.StaticAccess)
@@ -1379,17 +1611,28 @@ function ed11y_get_params( object $user, string $context = 'viewing' ) {
 	// 'editoria11y_settings' — earlier versions wrote to that key but read from
 	// 'editoria11y_settinges' (typo), which meant the cache effectively never
 	// hit and the blob was rebuilt on every editor page load.
-	$ed1vals = get_site_transient( 'editoria11y_settings' );
-	if ( false === $ed1vals ) {
+	//
+	// PER-BLOG transient, not a site transient: the payload is built from the
+	// current blog's options/theme/adminUrl, and a network-scoped cache let
+	// whichever blog warmed it first poison every other blog for the TTL.
+	// The blob carries the config version it was built at; any settings write
+	// bumps that version (including validator-bypassing canonical writes and
+	// network-scope saves via the network counter), so a stamp mismatch
+	// discards the cache instead of serving up to 360s of stale values.
+	$expected_version = ed11y_get_config_version();
+	$ed1vals          = get_transient( 'editoria11y_settings' );
+	if ( ! is_array( $ed1vals ) || ( $ed1vals['_config_version'] ?? -1 ) !== $expected_version ) {
 		// Static (site-wide) keys come from the shared helper so the static
 		// config REST endpoint and this per-page payload can never disagree.
 		$ed1vals = ed11y_get_static_settings();
 		// alertMode is per-request: the static helper omits it because the
 		// post-modification heuristic below upgrades it to 'assertive' for
 		// recently-edited posts. Pull the effective default here.
-		$ed1vals['alertMode'] = ed11y_get_setting( 'ed11y_alert_mode' );
-		set_site_transient( 'editoria11y_settings', $ed1vals, 360 );
+		$ed1vals['alertMode']       = ed11y_get_setting( 'ed11y_alert_mode' );
+		$ed1vals['_config_version'] = $expected_version;
+		set_transient( 'editoria11y_settings', $ed1vals, 360 );
 	}
+	unset( $ed1vals['_config_version'] );
 
 	// URL of the static config endpoint. Lives outside the transient cache
 	// because the version segment can change between transient builds (any
@@ -1398,50 +1641,14 @@ function ed11y_get_params( object $user, string $context = 'viewing' ) {
 	// regardless).
 	$ed1vals['config_url'] = ed11y_get_config_url();
 
-	$ed1vals['title'] = trim( wp_title( '', false, 'right' ) );
-
-	// Get entity type and post id (if single).
-	$ed1vals['post_id']     = get_the_ID();
-	$ed1vals['entity_type'] = 'other';
-	// Ref https://wordpress.stackexchange.com/questions/83887/return-current-page-type .
-	if ( is_page() ) {
-		$ed1vals['entity_type'] = is_front_page() ? 'Front' : 'Page';
-	} elseif ( is_home() ) {
-		$ed1vals['entity_type'] = 'Home';
-		$ed1vals['post_id']     = 0;
-	} elseif ( is_single() ) {
-		$ed1vals['entity_type'] = ( is_attachment() ) ? 'Attachment' : 'Post';
-	} elseif ( is_category() ) {
-		$ed1vals['entity_type'] = 'Category';
-		$ed1vals['post_id']     = 0;
-	} elseif ( is_tag() ) {
-		$ed1vals['entity_type'] = 'Tag';
-		$ed1vals['post_id']     = 0;
-	} elseif ( is_tax() ) {
-		$ed1vals['entity_type'] = 'Taxonomy';
-		$ed1vals['post_id']     = 0;
-	} elseif ( is_archive() ) {
-		$ed1vals['post_id'] = 0;
-		if ( is_author() ) {
-			$ed1vals['entity_type'] = 'Author';
-		} else {
-			$ed1vals['entity_type'] = 'Archive';
-		}
-	} elseif ( is_search() ) {
-		$ed1vals['post_id']     = 0;
-		$ed1vals['entity_type'] = 'Search';
-	} elseif ( is_404() ) {
-		$ed1vals['post_id']     = 0;
-		$ed1vals['entity_type'] = '404';
-	}
-
-	global $wp;
-
-	// Use permalink as sync URL if available, otherwise use query path.
-	if ( $ed1vals['post_id'] > 0 ) {
-		$ed1vals['currentPage'] = get_permalink( $ed1vals['post_id'] );
+	// Identify the thing being scanned: title, post_id, entity_type,
+	// currentPage. The editor and the frontend scanner share one
+	// `ed11y_urls` row per URL, so both branches must agree on what they
+	// call the same entity — see ed11y_add_editing_entity_params().
+	if ( 'editing' === $context ) {
+		$ed1vals = ed11y_add_editing_entity_params( $ed1vals );
 	} else {
-		$ed1vals['currentPage'] = home_url( $wp->request );
+		$ed1vals = ed11y_add_viewing_entity_params( $ed1vals );
 	}
 
 	// Mode is assertive from 0ms to 10minutes after a post is modified.
@@ -1473,6 +1680,17 @@ function ed11y_get_params( object $user, string $context = 'viewing' ) {
 	// already see the elements.
 	$ed1vals['pepper'] = Installer::get_pepper();
 
+	// Strings for the WP-specific custom test and tip chrome. The bundled
+	// library's lang packs can't carry these (they are plugin-side tests),
+	// so they ride the init blob; the shims fall back to English if a
+	// stale cached blob predates a key.
+	$ed1vals['i18n'] = array(
+		'emptyWpButtonName'  => __( 'Empty button-style link', 'editoria11y' ),
+		'emptyWpButtonTitle' => __( 'Empty link', 'editoria11y' ),
+		'emptyWpButtonTip'   => __( 'The button style link is missing its URL.', 'editoria11y' ),
+		'editMedia'          => __( 'Edit Media', 'editoria11y' ),
+	);
+
 	// Page-scoped dismissals only — the okAll (site-wide) branch lives on
 	// the static config endpoint where it can be browser-cached for 30 days
 	// alongside the rest of the global config. The JS merge layer in
@@ -1499,6 +1717,7 @@ function ed11y_get_params( object $user, string $context = 'viewing' ) {
 	// active. The preprocessor strips the inner block from the free build,
 	// where the JS that reads `profile` is itself stripped.
 	$ed1vals['profile'] = false;
+	
 
 	return( $ed1vals );
 }
@@ -1516,10 +1735,17 @@ function ed11y_init() {
 		$allowed_user_roles = array_intersect( $allowed_roles, $user->roles );
 		if ( $allowed_user_roles || current_user_can( 'edit_posts' ) || current_user_can( 'edit_pages' ) ) {
 
+			// One printer, two contexts: `wp_footer` on the rendered page,
+			// `admin_print_footer_scripts` on an editor screen. The context
+			// argument was never passed, so admin requests took the frontend
+			// branch — which reports no entity at all outside the loop — and
+			// the documented `editoria11y_editing_params` filter never fired.
+			$context = is_admin() ? 'editing' : 'viewing';
+
 			// At the moment, PHP escapes HTML breakouts. This would not be safe in other languages.
 			echo '
 			<script id="editoria11y-init" type="application/json">
-				' . wp_json_encode( ed11y_get_params( $user ) ) . '
+				' . wp_json_encode( ed11y_get_params( $user, $context ) ) . '
 			</script>
 			';
 		}
@@ -1565,7 +1791,21 @@ add_filter( 'old_slug_redirect_url', 'ed11y_old_slug_redirect_url_filter' );
 function ed11y_editor_init() {
 	if ( 'none' !== ed11y_get_setting( 'ed11y_livecheck' ) ) {
 		ed11y_enqueue_editor_content_assets();
-		add_action( 'admin_footer', 'ed11y_init' );
+		// NOT `admin_footer`: the two editors fire `wp_enqueue_editor` at very
+		// different points. The block editor fires it mid-page render
+		// (wp-admin/edit-form-blocks.php), so `admin_footer` is still ahead of
+		// us. The classic editor fires it from `_WP_Editors::enqueue_scripts()`,
+		// hooked to `admin_print_footer_scripts` priority 1 — and
+		// `admin_print_footer_scripts` runs *after* `admin_footer` has already
+		// completed, so an `admin_footer` callback registered there is silently
+		// dropped and the init JSON never reaches the page.
+		//
+		// `admin_print_footer_scripts` at priority 5 is later than the classic
+		// editor's priority-1 cursor (WordPress runs callbacks added to a
+		// higher priority while an action is in flight) and earlier than
+		// WP_Script_Modules' own priority 9/10 output, so the blob keeps its
+		// existing position ahead of the module tags on both editors.
+		add_action( 'admin_print_footer_scripts', 'ed11y_init', 5 );
 	}
 }
 add_action( 'wp_enqueue_editor', 'ed11y_editor_init' );

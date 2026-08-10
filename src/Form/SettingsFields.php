@@ -61,7 +61,7 @@ class SettingsFields {
 	 */
 	public static function getting_started_section_intro() {
 		// @todo: update Configuration guide URL when Ed11y site guide is ready.
-
+		
 		?>
 		<p class="description">
 			<?php
@@ -158,7 +158,7 @@ class SettingsFields {
 		// rules submenu (super-admin only). Mirrors the per-site button
 		// pair but operates on `NetworkCustomRules` storage.
 		if ( SettingsContext::is_network() ) {
-
+			
 			return;
 		}
 		// Entire CSA-active branch is wrapped in the preprocessor gate
@@ -166,7 +166,7 @@ class SettingsFields {
 		// from the free build via the @fs_premium_only header in
 		// editoria11y.php. Section registration is similarly gated in
 		// SettingsPage::register_sections_and_fields().
-
+		
 		?>
 		<p class="description">
 			<?php
@@ -267,7 +267,6 @@ class SettingsFields {
 	/** Ignore-elements field (`ed11y_ignore_elements`). */
 	public static function ignore_elements_field() {
 		$settings = SettingsContext::get_raw_setting( 'ed11y_ignore_elements' );
-		$default  = ed11y_get_default_options( 'ed11y_ignore_elements' );
 		?>
 		<?php SettingsContext::print_lock_note( 'ed11y_ignore_elements' ); ?>
 		<textarea autocomplete="off"
@@ -296,25 +295,20 @@ class SettingsFields {
 				);
 			?>
 		</p>
-		<p class="description">Default: <code><?php echo esc_attr( $default ); ?></code></p>
+		<p class="description">
+			<?php
+				echo wp_kses(
+					sprintf(
+						/* translators: %s is the built-in list of always-ignored CSS selectors. */
+						__( 'Selectors you add are appended to the built-in list, which is always ignored: %s', 'editoria11y' ),
+						'<code>' . esc_html( ed11y_container_ignore_baseline() ) . '</code>'
+					),
+					SettingsPage::allowed_html()
+				);
+			?>
+		</p>
 		<?php SettingsContext::print_mode_dropdown( 'ed11y_ignore_elements' ); ?>
 		
-		<?php
-	}
-
-	/** Document-content selectors field (`ed11y_documentContent`). */
-	public static function document_content_field() {
-		$settings = SettingsContext::get_raw_setting( 'ed11y_documentContent' );
-		$default  = ed11y_get_default_options( 'ed11y_documentContent' );
-		?>
-		<?php SettingsContext::print_lock_note( 'ed11y_documentContent' ); ?>
-		<textarea id="ed11y_documentContent" name="ed11y_plugin_settings[ed11y_documentContent]"
-		cols="45" rows="3"
-		<?php echo SettingsContext::field_disabled_attr( 'ed11y_documentContent' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>><?php echo esc_html( $settings ); ?></textarea>
-		<?php SettingsContext::print_mode_dropdown( 'ed11y_documentContent' ); ?>
-		<p>By default, Editoria11y will flag links to these document types: <code><?php echo esc_attr( $default ); ?></code></p>
-		<p>If you would like to override this to flag more or fewer document types, copy and paste that list into this field and adjust to your liking.
-			If you do not want any document links flagged, set this field to <code>false</code></p>
 		<?php
 	}
 
@@ -399,10 +393,12 @@ class SettingsFields {
 		// Method body wrapped so the free build keeps an empty method
 		// shell — any leftover settings-API callback reference still
 		// resolves but renders nothing.
+		
 	}
 
 	/** Render the always_ignore textarea. */
 	public static function csa_always_ignore_field() {
+		
 	}
 
 	/**
@@ -414,6 +410,7 @@ class SettingsFields {
 	 * appears in the CSV's slug list.
 	 */
 	public static function csa_roles_field() {
+		
 	}
 
 	/**
@@ -422,6 +419,7 @@ class SettingsFields {
 	 * @todo implement, test, update wording upstream in Drupal.
 	 */
 	public static function csa_dev_assertiveness_field() {
+		
 	}
 
 	/* === Per-test renderers === */
@@ -476,6 +474,7 @@ class SettingsFields {
 		$csa_off_set     = array();
 		$csa_dev_set     = array();
 		$csa_content_set = array();
+		
 
 		// Bundle lock applies to the test-routing widgets as a unit. In
 		// site context, disable the inputs and surface the "Managed at
@@ -485,6 +484,20 @@ class SettingsFields {
 		// gate on `is_network()`.
 		$tests_locked  = ! SettingsContext::is_network() && ed11y_is_bundle_locked();
 		$disabled_attr = $tests_locked ? ' disabled' : '';
+
+		// Free-mode form marker. Unchecked checkboxes vanish from a POST, so
+		// an all-unchecked save is otherwise indistinguishable from input
+		// that never came from this form — and the validator only re-derives
+		// `tests_off` from checkbox state for real form saves (see
+		// SettingsValidator::validate()). The sentinel guarantees the
+		// `tests_enabled` array is always present on a form POST. Suppressed
+		// when the bundle lock disables the checkboxes: disabled inputs
+		// don't post, and the absent array is how the validator knows to
+		// preserve the stored value instead of deriving "everything off".
+		// CSA mode needs no marker — its `<select>`s always post.
+		if ( ! $is_csa && ! $tests_locked ) {
+			echo '<input type="hidden" name="ed11y_plugin_settings[tests_enabled][__form]" value="1" />';
+		}
 
 		foreach ( $group_labels as $group_id => $group_label ) {
 			if ( TestNames::group_set( $group_id ) !== $set ) {
@@ -642,15 +655,21 @@ class SettingsFields {
 		if ( 'embeds' === $group_id ) {
 			self::compat_textarea(
 				'ed11y_datavizContent',
-				__( 'Embeds flagged as needing manual review', 'editoria11y' )
+				__( 'Embeds flagged as needing manual review', 'editoria11y' ),
+				__( 'Added to the built-in detection list (Looker/Data Studio, Tableau, Power BI, Qlik). Provide a comma-separated list of domains or URL fragments. To stop flagging visualizations entirely, disable that test above.', 'editoria11y' ),
+				'dashboards.example.edu'
 			);
 			self::compat_textarea(
 				'ed11y_videoContent',
-				__( 'Videos flagged as needing a manual check for captions', 'editoria11y' )
+				__( 'Videos flagged as needing a manual check for captions', 'editoria11y' ),
+				__( 'Added to the built-in detection list (YouTube, Vimeo, Panopto, Wistia, Dailymotion, Brightcove, Vidyard and generic video URLs). Provide a comma-separated list of domains or URL fragments, e.g. yuja.com. To stop flagging videos entirely, disable that test above.', 'editoria11y' ),
+				'yuja.com, mediaspace.example.edu'
 			);
 			self::compat_textarea(
 				'ed11y_audioContent',
-				__( 'Audio flagged as needing a manual check for transcripts', 'editoria11y' )
+				__( 'Audio flagged as needing a manual check for transcripts', 'editoria11y' ),
+				__( 'Added to the built-in detection list (SoundCloud, Simplecast, Podbean, Buzzsprout, Spotify, Apple Podcasts and other major hosts). Provide a comma-separated list of domains or URL fragments. To stop flagging audio entirely, disable that test above.', 'editoria11y' ),
+				'podcasts.example.edu'
 			);
 			self::compat_textarea(
 				'embedded_content_warning',
@@ -660,6 +679,7 @@ class SettingsFields {
 			echo '<hr>';
 			return;
 		}
+		
 	}
 
 	/* === Advanced-settings stack === */
@@ -688,6 +708,9 @@ class SettingsFields {
 				<label for="ed11y-alert_mode"><strong><?php esc_html_e( 'Checker mode for content roles', 'editoria11y' ); ?></strong></label>
 			</p>
 			<?php self::alert_mode_field(); ?>
+			<?php
+			
+			?>
 			<p>
 				<label for="ed11y-livecheck"><strong><?php esc_html_e( 'Checker mode inside editor', 'editoria11y' ); ?></strong></label>
 			</p>
@@ -936,10 +959,13 @@ class SettingsFields {
 	 * @param string $key         Storage key (under `ed11y_plugin_settings`).
 	 * @param string $label       Translated field label.
 	 * @param string $description Translated description / help text.
+	 * @param string $placeholder Placeholder override. Defaults to the key's
+	 *                            hardcoded default — pass an example value
+	 *                            for additive keys whose default is empty.
 	 */
-	public static function compat_textarea( string $key, string $label, string $description = '' ) {
+	public static function compat_textarea( string $key, string $label, string $description = '', string $placeholder = '' ) {
 		$value    = SettingsContext::get_raw_setting( $key );
-		$default  = (string) ed11y_get_default_options( $key );
+		$default  = '' !== $placeholder ? $placeholder : (string) ed11y_get_default_options( $key );
 		$field_id = 'ed11y_field_' . sanitize_html_class( $key );
 		?>
 		<p>

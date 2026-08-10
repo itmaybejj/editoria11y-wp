@@ -137,6 +137,7 @@ class ApiConfig {
 		// @fs_premium_only) and never emits CSA-only keys the free JS
 		// has no consumer for. The runtime `ed11y_is_csa_active()` check
 		// gates trial/license state inside the premium build.
+		
 
 		return new WP_REST_Response( $payload, 200 );
 	}
@@ -169,6 +170,7 @@ class ApiConfig {
 		// both removed via @fs_premium_only) without leaving the negated
 		// form the preprocessor does not understand. See the freemius skill.
 		$merged = array();
+		
 
 		return array_values( $merged );
 	}
@@ -212,9 +214,15 @@ class ApiConfig {
 		};
 
 		$element_set_csv = $str( $rule, 'element_set' );
-		$element_set     = '' === $element_set_csv
-			? array()
-			: array_values( array_filter( array_map( 'trim', explode( ',', $element_set_csv ) ) ) );
+		$element_set     = array_values( array_filter( array_map( 'trim', explode( ',', $element_set_csv ) ) ) );
+		if ( empty( $element_set ) ) {
+			// An empty stored set means "no element restriction", but the
+			// library's checkCustomRuleset() iterates elementSet — an empty
+			// array silently never executes the rule at all. Map the
+			// unrestricted state to the 'Everything' preset so selector-only
+			// and include-text-only rules actually run.
+			$element_set = array( 'Everything' );
+		}
 
 		return array(
 			'testKey'        => $str( $rule, 'test_key' ),

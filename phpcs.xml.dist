@@ -66,12 +66,4 @@
 			</property>
 		</properties>
 	</rule>
-	<!-- FREE BUILD ONLY — injected by scripts/build-free.sh; absent from
-	     the premium ruleset. Stripping __premium_only blocks turns several
-	     functions into stubs whose parameter is now unused but whose
-	     signature must stay (e.g. ed11y_get_csa_setting( $key )). Expected
-	     in the generated free tree, so silence the sniff here only. -->
-	<rule ref="Generic.CodeAnalysis.UnusedFunctionParameter">
-		<severity>0</severity>
-	</rule>
 </ruleset>

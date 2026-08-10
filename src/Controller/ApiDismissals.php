@@ -48,10 +48,10 @@ class ApiDismissals extends WP_REST_Controller {
 			'/' . $base,
 			array(
 				array(
-					// Report results for a URL.
+					// Sitewide dismissal report for the dashboard.
 					'methods'             => WP_REST_Server::READABLE,
 					'callback'            => array( $this, 'get_dismissals' ),
-					'permission_callback' => array( $this, 'update_item_permissions_check' ),
+					'permission_callback' => array( $this, 'read_dismissals_permissions_check' ),
 					'args'                => $this->get_endpoint_args_for_item_schema( true ),
 				),
 				array(
@@ -88,11 +88,30 @@ class ApiDismissals extends WP_REST_Controller {
 	 * Attempts to send item to DB
 	 *
 	 * @param WP_REST_Request $request Full data about the request.
+	 *
+	 * @SuppressWarnings(PHPMD.CyclomaticComplexity) Sequential guard clauses (shape, pid, status whitelist) ahead of one split reset/insert branch; extracting pieces would obscure the single write path.
 	 */
 	public function send_dismissal( WP_REST_Request $request ) {
 		$params  = $request->get_params();
 		$results = $params['data'];
-		$now     = gmdate( 'Y-m-d H:i:s' );
+		if ( ! is_array( $results ) ) {
+			return null;
+		}
+		// Defaults for optional keys (PHP 8 warns on undefined keys; the
+		// URL-row insert below reads all of these), plus the JS senders'
+		// varchar(190) truncation so dismissals and results key long URLs
+		// on the same string.
+		$results += array(
+			'post_id'     => 0,
+			'page_url'    => '',
+			'entity_type' => '',
+			'page_title'  => '',
+			'page_count'  => 0,
+		);
+		if ( mb_strlen( (string) $results['page_url'] ) > 190 ) {
+			$results['page_url'] = mb_substr( (string) $results['page_url'], 0, 189 );
+		}
+		$now = gmdate( 'Y-m-d H:i:s' );
 		global $wpdb;
 
 		// Get Page ID so we can avoid complex joins in subsequent queries.
@@ -117,6 +136,14 @@ class ApiDismissals extends WP_REST_Controller {
 		$element_id = (string) ( $results['element_id'] ?? '' );
 
 		if ( 'reset' === $status ) {
+			// Scoping is deliberate (reviewed 2026-07: keep as-is): `okAll`
+			// and `ok` dismissals are shared, collaborative state, so any
+			// user who can dismiss (edit_posts) can also restore them —
+			// including rows created by someone else. Only `hide` is a
+			// private, per-user dismissal, so its reset is scoped to the
+			// caller. Do not "fix" the asymmetry by user-scoping the first
+			// DELETE.
+			//
 			// Split the DELETE so we can tell whether an `okAll` row was
 			// removed — that, and only that, invalidates the static config
 			// payload (which carries `globalDismissals` for 30 days). Page-
@@ -216,9 +243,30 @@ class ApiDismissals extends WP_REST_Controller {
 		$validate = new Validate();
 
 		// Sanitize all params before use.
-		$params      = $request->get_params();
-		$count       = intval( $params['count'] );
-		$offset      = intval( $params['offset'] );
+		$params = $request->get_params();
+		// Defensive defaults, matching ApiResults::get_results(): PHP 8
+		// raises "Undefined array key" for any param the caller omits, and
+		// an omitted count would otherwise become `LIMIT 0` — a silently
+		// empty report. `+=` preserves keys the caller did set.
+		$defaults = array(
+			'count'       => 25,
+			'offset'      => 0,
+			'direction'   => 'DESC',
+			'sort'        => '',
+			'result_key'  => '',
+			'entity_type' => '',
+			'dismissor'   => '',
+		);
+		$params  += $defaults;
+		// Enforce scalars: an array-valued param would stringify to the
+		// literal "Array" downstream and silently filter on nothing.
+		foreach ( array_keys( $defaults ) as $key ) {
+			if ( ! is_scalar( $params[ $key ] ) ) {
+				$params[ $key ] = $defaults[ $key ];
+			}
+		}
+		$count       = Validate::count( $params['count'] );
+		$offset      = Validate::offset( $params['offset'] );
 		$direction   = 'ASC' === $params['direction'] ? 'ASC' : 'DESC';
 		$order_by    = ! empty( $params['sort'] ) && $validate->sort( $params['sort'] ) ? $params['sort'] : false;
 		$entity_type = ! empty( $params['entity_type'] ) && $validate->entity_type( $params['entity_type'] ) ? $params['entity_type'] : false;
@@ -229,8 +277,12 @@ class ApiDismissals extends WP_REST_Controller {
 
 		// Get top pages.
 
-		// Sort by sanitized param; page total is default.
-		$order_by = $order_by ? $order_by : 'created';
+		// Sort by sanitized param; created is the default. The global
+		// whitelist covers all readers; only columns this query actually
+		// selects may pass (others would be prefixed onto the dismissals
+		// table below and error).
+		$dismiss_sorts = array( 'pid', 'page_url', 'page_title', 'entity_type', 'user', 'result_key', 'result_name', 'dismissal_status', 'created', 'stale' );
+		$order_by      = $order_by && in_array( $order_by, $dismiss_sorts, true ) ? $order_by : 'created';
 
 		// Build where clause based on sanitized params.
 		$where = '';
@@ -250,7 +302,7 @@ class ApiDismissals extends WP_REST_Controller {
 			$where = $where . "{$dtable}.user = '{$dismissor}'";
 		}
 
-		if ( 'page_title' === $order_by ) {
+		if ( in_array( $order_by, array( 'page_title', 'page_url', 'entity_type' ), true ) ) {
 			$order_by = "{$utable}.{$order_by}";
 		} else {
 			$order_by = "{$dtable}.{$order_by}";
@@ -289,10 +341,13 @@ class ApiDismissals extends WP_REST_Controller {
 					;"
 		);
 
-		// Get_var with COUNT(*) would be more performant, but I can't figure out how to work it with join+group+aggregation.
-		$rowcounter = $wpdb->get_results(
-			"SELECT
-					MAX({$dtable}.created) AS created
+		// COUNT(*) over the grouped set as a derived table: the previous
+		// version materialized every grouped row in PHP just to read
+		// $wpdb->num_rows, which scaled with the whole dismissals table on
+		// every request.
+		$rowcount = (int) $wpdb->get_var(
+			"SELECT COUNT(*) FROM (
+					SELECT 1
 					FROM {$dtable}
 					INNER JOIN {$utable} ON ({$dtable}.pid={$utable}.pid)
 					{$where}
@@ -302,26 +357,31 @@ class ApiDismissals extends WP_REST_Controller {
 					{$dtable}.result_key,
 					{$dtable}.dismissal_status,
 					{$dtable}.stale
+					) AS grouped_dismissals
 					;"
 		);
-		$rowcount   = $wpdb->num_rows;
 
-		// Get user display names.
+		// Get user display names. An empty `include` array would make
+		// WP_User_Query drop the filter and return EVERY user, so only
+		// query when the page of rows actually references dismissers.
+		$users    = array();
 		$user_ids = [];
 		foreach ( $data as $value ) {
 			if ( $value->user && !in_array($value->user, $user_ids ) )
 				$user_ids[] = $value->user;
 		}
-		$user_query = new WP_User_Query(
-			array(
-				'include' => $user_ids,
-				'fields'  => array(
-					'ID',
-					'display_name',
-				),
-			)
-		);
-		$users = $user_query->get_results();
+		if ( ! empty( $user_ids ) ) {
+			$user_query = new WP_User_Query(
+				array(
+					'include' => $user_ids,
+					'fields'  => array(
+						'ID',
+						'display_name',
+					),
+				)
+			);
+			$users = $user_query->get_results();
+		}
 
 		// phpcs:enable
 		return new WP_REST_Response( array( $data, $rowcount, $users ), 200 );
@@ -373,7 +433,11 @@ class ApiDismissals extends WP_REST_Controller {
 			);
 		}
 		if ( empty( $pid ) && ! $recursion ) {
-			// Insert results.
+			// Insert results. ON DUPLICATE KEY (page_url is UNIQUE as of
+			// schema 2.1): a concurrent scan/dismissal of the same URL that
+			// won the race folds into the existing row instead of erroring.
+			// Placeholders repeated rather than VALUES()/alias syntax — the
+			// only form both MySQL 8.4+ and MariaDB accept.
 			$wpdb->query( // phpcs:ignore
 				$wpdb->prepare(
 					"INSERT INTO {$wpdb->prefix}ed11y_urls
@@ -382,11 +446,16 @@ class ApiDismissals extends WP_REST_Controller {
 					entity_type,
 					page_title,
 					page_total)
-				VALUES (%s, %d, %s, %s, %d);",
+				VALUES (%s, %d, %s, %s, %d)
+				ON DUPLICATE KEY UPDATE
+					page_title = %s,
+					page_total = %d;",
 					array(
 						$results['page_url'],
 						$results['post_id'],
 						$results['entity_type'],
+						$results['page_title'],
+						$results['page_count'],
 						$results['page_title'],
 						$results['page_count'],
 					)
@@ -408,7 +477,7 @@ class ApiDismissals extends WP_REST_Controller {
 		if ( 'broken' === Installer::schema_state() ) {
 			return new WP_Error(
 				'ed11y_schema_unavailable',
-				__( 'Editoria11y database upgrade did not complete; writes are paused until an administrator retries the upgrade.', 'editoria11y' ),
+				__( 'Editoria11y database update did not complete; writes are paused until an administrator retries the update.', 'editoria11y' ),
 				array( 'status' => 503 )
 			);
 		}
@@ -416,12 +485,27 @@ class ApiDismissals extends WP_REST_Controller {
 	}
 
 	/**
-	 * Check if a given request has access to delete a specific item
+	 * Check if a given request has access to read the sitewide dismissal report.
+	 *
+	 * The PUT writer keeps `edit_posts` so any logged-in editor — including
+	 * authors on their own drafts — can dismiss and reset alerts. The GET
+	 * reader is stricter: it surfaces every tracked page's dismissals plus
+	 * the dismissing users' display names, the same class of data as
+	 * GET /dashboard, so it shares the report-reader gate
+	 * (manage_options when `ed11y_report_restrict` is on, else
+	 * edit_others_posts).
 	 *
 	 * @param WP_REST_Request $request Full data about the request.
 	 * @return WP_Error|bool
 	 */
-	public function delete_item_permissions_check( $request ) { // phpcs:ignore
-		return current_user_can( 'edit_others_posts' );
+	public function read_dismissals_permissions_check( $request ) { // phpcs:ignore
+		if ( 'broken' === Installer::schema_state() ) {
+			return new WP_Error(
+				'ed11y_schema_unavailable',
+				__( 'Editoria11y database update did not complete; the dashboard is paused until an administrator retries the update.', 'editoria11y' ),
+				array( 'status' => 503 )
+			);
+		}
+		return current_user_can( ed11y_report_reader_capability() );
 	}
 }

@@ -4,7 +4,7 @@
  *
  * Plugin Name:       Editoria11y Accessibility Checker
  * Plugin URI:        https://wordpress.org/plugins/editoria11y-accessibility-checker/
- * Version:           3.0.0-alpha2
+ * Version:           3.0.0
  * Requires PHP:      7.4
  * Requires at least: 6.0
  * Tested up to:      7.0
@@ -21,6 +21,7 @@
  * @author          John Jameson, Princeton University
  * @copyright       2025 The Trustees of Princeton University
  * @license         GPL v2 or later
+ *
  */
 
 // Exit if accessed directly.
@@ -142,6 +143,11 @@ if ( file_exists( __DIR__ . '/vendor/autoload.php' ) ) {
  * Defined here at file-load (rather than inside a class method on
  * plugins_loaded:1) so PSR-4 autoload-resolved classes can use ED11Y_SRC /
  * ED11Y_BASE directly and __FILE__ refers to the actual plugin entry.
+ *
+ * The `! defined()` guard keeps a premium-over-free activation request (both
+ * files loaded once, before the yield/sentinel can help — see
+ * plugin_sandbox_scrape()) from emitting three "Constant already defined"
+ * warnings as unexpected activation output.
  */
 if ( ! defined( 'ED11Y_BASE' ) ) {
 	define( 'ED11Y_BASE', plugin_basename( __FILE__ ) );
@@ -185,7 +191,16 @@ if ( ! function_exists( 'ed11ycsa' ) ) {
 					'type'                => 'plugin',
 					'public_key'          => 'pk_5dd521a7afe891a30befe5040b0a6',
 					'is_premium'          => false,
-					'is_live'             => true,
+					'is_live'           => true,
+					// The CSA build's Plugin Name header ends in " (CSA)" so
+					// the two builds are distinguishable on the plugins list
+					// (the free build's header is rewritten by the strip —
+					// see scripts/strip-premium-only.php step 4e). Declaring
+					// the same suffix here tells the SDK to trim it when
+					// deriving the base product name (set_name() strips a
+					// matching " (csa)" tail), so SDK-composed premium titles
+					// render "… (CSA)" instead of "… (CSA) (Premium)".
+					'premium_suffix'      => '(CSA)',
 					// Freemium, not premium-only: the free build is a fully
 					// functional accessibility checker, with CSA features gated
 					// behind the license/markers. is_premium_only => true would
@@ -199,11 +214,22 @@ if ( ! function_exists( 'ed11ycsa' ) ) {
 					'has_addons'          => false,
 					'has_paid_plans'      => true,
 					'is_org_compliant'    => true,
-					// Premium build: license holders connect their account, so the
-					// SDK's opt-in/connection flow stays enabled here (anonymous_mode
-					// => false). The strip flips this to true for the free build so
-					// WP.org users are never pestered with opt-in nags and the plugin
-					// runs fully anonymous. Mirrors the is_premium flip.
+					// Never ask free users for their email. The strip flips this
+					// to true for the free build (scripts/strip-premium-only.php
+					// step 4d): the SDK then simulates the "skipped" state on
+					// every request, which turns off activation mode — no opt-in
+					// screen (including the "Thank you for updating" interstitial
+					// on v2 → v3 upgrades), no "You are just one step away"
+					// update-nag, no sticky "We made a few tweaks" notice — while
+					// pricing, checkout, and trial start keep working (the hosted
+					// checkout collects the email at purchase/trial time, and
+					// get_reconnect_url()'s reset_anonymous_mode action restores
+					// opt-in when a flow needs it). Stays false in the CSA build:
+					// its forced-delegation + NetworkLicenseWorker flow is
+					// verified as-is and licensing resets anonymous state anyway.
+					// NOT opt_in_moderation: its `new => 0` makes
+					// should_turn_fs_on() return false, turning the SDK OFF for
+					// the install — which would also kill the upgrade surfaces.
 					'anonymous_mode'      => true,
 					// Automatically removed in the free version. If you're not using the
 					// auto-generated free version, delete this line before uploading to wp.org.
@@ -241,6 +267,15 @@ if ( ! function_exists( 'ed11ycsa' ) ) {
 
 			// Replace unprofessional SDK strings.
 			\Editoria11y\FreemiusOverrides::apply( $ed11ycsa );
+
+			// Throttle the SDK's opt-in nag to once per login.
+			\Editoria11y\FreemiusOptInNag::apply( $ed11ycsa );
+
+			// Send SDK redirects aimed at the phantom
+			// `network/options-general.php` parent (a file that does not
+			// exist in network admin) to the plugin's real network page —
+			// License in the CSA build, network Defaults in the free build.
+			\Editoria11y\FreemiusNetworkUrls::apply( $ed11ycsa );
 
 			// Catch-all for stray `options-general.php?page=ed11y-contact`
 			// links the SDK emits from places we can't intercept
@@ -283,7 +318,7 @@ if ( ! function_exists( 'ed11ycsa' ) ) {
 			// Restrict the SDK's network-admin pages to super-admins and
 			// pin the "Activate License" modal to all-sites mode so very
 			// large multisites are not enumerated row-by-row in the DOM.
-
+			
 		}
 
 		return $ed11ycsa;
@@ -316,14 +351,30 @@ register_uninstall_hook( __FILE__, array( '\\Editoria11y\\Installer', 'uninstall
 // blog's ID. No-op on single-site (filter never fires there).
 add_filter( 'wpmu_drop_tables', array( '\\Editoria11y\\Installer', 'wpmu_drop_tables_filter' ), 10, 2 );
 
-// Register the 15-minute schedule used by the dismissal element_id rehash worker.
+// Register the recurring schedules used by the plugin's background
+// workers. Two separate slugs so each worker's cadence can be tuned
+// without silently retuning the other:
+// - editoria11y_five_minutes — the dismissal element_id rehash drain.
+// WP-Cron runs in its own loopback request, so cadence has no
+// visitor-facing cost; 5 minutes × REHASH_BATCH_SIZE indexed updates
+// drains a 100k-row dismissals table in roughly 8 hours instead of
+// the old 250-rows-per-15-minutes' multi-day crawl.
+// - editoria11y_fifteen_minutes — the CSA network-license worker's
+// stall watchdog (premium builds; the spare registration is one
+// harmless array entry in the free build).
 add_filter(
-	'cron_schedules',
+	'cron_schedules', // phpcs:ignore WordPress.WP.CronInterval.CronSchedulesInterval -- deliberate sub-15-min cadence; rationale on the interval line below.
 	function ( $schedules ) {
 		if ( ! isset( $schedules[ \Editoria11y\Installer::REHASH_CRON_SCHEDULE ] ) ) {
 			$schedules[ \Editoria11y\Installer::REHASH_CRON_SCHEDULE ] = array(
+				'interval' => 5 * MINUTE_IN_SECONDS, // phpcs:ignore WordPress.WP.CronInterval.CronSchedulesInterval -- deliberate: batches run in WP-Cron's loopback request (no visitor cost) and 5 min x 1000 rows drains large tables in hours, not days.
+				'display'  => __( 'Every five minutes (Editoria11y rehash)', 'editoria11y' ),
+			);
+		}
+		if ( ! isset( $schedules['editoria11y_fifteen_minutes'] ) ) {
+			$schedules['editoria11y_fifteen_minutes'] = array(
 				'interval' => 15 * MINUTE_IN_SECONDS,
-				'display'  => __( 'Every fifteen minutes (Editoria11y rehash)', 'editoria11y' ),
+				'display'  => __( 'Every fifteen minutes (Editoria11y license watchdog)', 'editoria11y' ),
 			);
 		}
 		return $schedules;

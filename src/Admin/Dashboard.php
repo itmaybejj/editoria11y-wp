@@ -30,8 +30,7 @@ class Dashboard {
 
 	/** Add the dashboard to the wp-admin sidebar. */
 	public static function register_menu() {
-		$setting    = ed11y_get_raw_setting( 'ed11y_report_restrict' );
-		$capability = '1' === $setting ? 'manage_options' : 'edit_others_posts';
+		$capability = ed11y_report_reader_capability();
 		$hook       = add_menu_page(
 			esc_html__( 'Editoria11y Accessibility Report', 'editoria11y' ),
 			esc_html__( 'Accessibility', 'editoria11y' ),
@@ -67,8 +66,17 @@ class Dashboard {
 
 		// Lazy-create DB if network activation failed.
 		if ( ! Installer::check_tables() ) {
-			echo '<div class="notice notice-error notice-alt notice-large"><p><strong>Error:</strong> Editoria11y database tables are missing.</p>
-        <p>Try deactivating and reactivating the plugin to reset config and recreate the tables, or <a href="https://github.com/itmaybejj/editoria11y-wp/issues">post a bug report</a>  with the information from the WordPress, Server and Database sections on your <a href="' . esc_attr( get_admin_url() . 'site-health.php?tab=debug' ) . '">site health page</a>.</p></div>';
+			printf(
+				'<div class="notice notice-error notice-alt notice-large"><p><strong>%1$s</strong> %2$s</p><p>%3$s</p></div>',
+				esc_html__( 'Error:', 'editoria11y' ),
+				esc_html__( 'Editoria11y database tables are missing.', 'editoria11y' ),
+				sprintf(
+					/* translators: 1: bug report link, 2: site health page link. */
+					esc_html__( 'Try deactivating and reactivating the plugin to reset config and recreate the tables, or %1$s with the information from the WordPress, Server and Database sections on your %2$s.', 'editoria11y' ),
+					'<a href="https://github.com/itmaybejj/editoria11y-wp/issues">' . esc_html__( 'post a bug report', 'editoria11y' ) . '</a>',
+					'<a href="' . esc_url( get_admin_url() . 'site-health.php?tab=debug' ) . '">' . esc_html__( 'site health page', 'editoria11y' ) . '</a>'
+				)
+			);
 			return;
 		}
 
@@ -133,6 +141,7 @@ class Dashboard {
 				/* translators: %s: post-status label, e.g. "Published" or "Draft". */
 				'statusPages'             => __( '%s pages', 'editoria11y' ),
 				'apiError'                => __( 'API error.', 'editoria11y' ),
+				'sessionExpired'          => __( 'Your login session expired. Reload this page to continue.', 'editoria11y' ),
 				'loading'                 => __( 'loading...', 'editoria11y' ),
 				/* translators: %d: pagination page number. */
 				'pageN'                   => __( 'Page %d', 'editoria11y' ),
@@ -163,7 +172,7 @@ class Dashboard {
 				'no'                      => __( 'No', 'editoria11y' ),
 				'yes'                     => __( 'Yes', 'editoria11y' ),
 				'na'                      => __( 'n/a', 'editoria11y' ),
-				'emptyWpButton'           => __( 'Empty Link', 'editoria11y' ),
+				'emptyWpButton'           => __( 'Empty button-style link', 'editoria11y' ),
 				/* translators: tooltip on a column header that's currently sorted descending. */
 				'sortDescending'          => __( 'descending', 'editoria11y' ),
 				/* translators: tooltip on a column header that's currently sorted ascending. */
@@ -174,16 +183,12 @@ class Dashboard {
 					/* translators: %d: number of result rows returned (plural form). */
 					__( '%d results', 'editoria11y' ),
 				),
-				// Translated labels for the post statuses the dashboard surfaces.
-				// Keyed on the raw WP slug so the JS can index by `result.post_status`.
-				'statusLabels'            => array(
-					'publish' => __( 'Published', 'editoria11y' ),
-					'future'  => __( 'Scheduled', 'editoria11y' ),
-					'draft'   => __( 'Draft', 'editoria11y' ),
-					'pending' => __( 'Pending', 'editoria11y' ),
-					'private' => __( 'Private', 'editoria11y' ),
-					'trash'   => __( 'Trash', 'editoria11y' ),
-				),
+				// Translated labels for every registered post status, keyed on
+				// the raw WP slug so the JS can index by `result.post_status`.
+				// Built from the registry (like CrawlerPage::status_options())
+				// so custom editorial-workflow statuses get labels too instead
+				// of falling back to their raw slug in the report table.
+				'statusLabels'            => self::status_labels(),
 			),
 		);
 
@@ -216,5 +221,18 @@ class Dashboard {
 		<script id="editoria11y-dash-config" type="application/json">
 			' . wp_json_encode( $config ) . '
 		</script>';
+	}
+
+	/**
+	 * Slug → translated label for every registered post status.
+	 *
+	 * @return array<string, string>
+	 */
+	private static function status_labels(): array {
+		$labels = array();
+		foreach ( get_post_stati( array(), 'objects' ) as $slug => $status ) {
+			$labels[ $slug ] = (string) $status->label;
+		}
+		return $labels;
 	}
 }

@@ -40,6 +40,29 @@ class Validate {
 	}
 
 	/**
+	 * Clamp a pagination count param to a usable LIMIT.
+	 *
+	 * Negative values would render as `LIMIT -25` — a MySQL syntax error
+	 * that nulls the whole payload — and huge values would let a single
+	 * request buffer an unbounded slice of the table. Callers supply their
+	 * own default (typically 25) before clamping.
+	 *
+	 * @param mixed $user_input Raw request param.
+	 */
+	public static function count( $user_input ): int {
+		return min( 500, max( 1, intval( $user_input ) ) );
+	}
+
+	/**
+	 * Clamp a pagination offset param (`OFFSET -5` is a syntax error).
+	 *
+	 * @param mixed $user_input Raw request param.
+	 */
+	public static function offset( $user_input ): int {
+		return max( 0, intval( $user_input ) );
+	}
+
+	/**
 	 * Validate filters and sorts.
 	 *
 	 * @param string $user_input Allowed field names.

@@ -1,6 +1,12 @@
 import { Ed11y, Lang, State, UI, findElements, elements, computeAccessibleName, createDismissalKey, getElements, refresh, sanitizeHTML, setFixedRoots, version } from 'editoria11y-js';
 import { lang as ed11yUiLang } from 'editoria11y-lang';
 import { lang as ed11yContentLang } from 'editoria11y-lang-content';
+import {
+  ed11yLoadStaticConfig,
+  ed11yApplyStaticConfig,
+  ed11yApplyOptionTranslations as ed11ySharedOptionTranslations,
+} from './editoria11y-option-translations.js';
+
 
 // Build the dual-language dictionary the bundled library consumes.
 //
@@ -37,127 +43,21 @@ const ed11yLang = ed11yBuildLang(ed11yUiLang, ed11yContentLang);
 Lang.addI18n(ed11yLang.strings);
 Lang.testNames = { ...(Lang.testNames || {}), ...(ed11yUiLang.testNames || {}) };
 
-// Fetch static config from /wp-json/ed11y/v1/config.
-// Browser-cached for 30 days via Cache-Control: immutable; cachebust is the
-// ?v=<n> in the URL. 
-// X-WP-Nonce is needed because REST requests are processed as anonymous.
-async function ed11yLoadStaticConfig(configUrl) {
-  if (!configUrl) return null;
-  const headers = {};
-  if (typeof wpApiSettings !== 'undefined' && wpApiSettings && wpApiSettings.nonce) {
-    headers['X-WP-Nonce'] = wpApiSettings.nonce;
-  }
-  try {
-    const res = await fetch(configUrl, {
-      credentials: 'same-origin',
-      cache: 'force-cache',
-      headers,
-    });
-    if (!res.ok) return null;
-    return await res.json();
-  } catch (e) {
-    console.warn('Editoria11y: static config fetch failed', e);
-    return null;
-  }
-}
 
-// Apply the static config payload.
-// Duplicate keys may be present during the 3.0.0 migration cron.
-function ed11yApplyStaticConfig(data, options) {
-  if (!data) return;
-  if (data.testNames && typeof data.testNames === 'object') {
-    Lang.testNames = { ...Lang.testNames, ...data.testNames };
-  }
-  if (!options) return;
 
-  if (data.globalDismissals && typeof data.globalDismissals === 'object') {
-    const synced = (options.syncedDismissals && typeof options.syncedDismissals === 'object')
-      ? options.syncedDismissals
-      : {};
-    for (const [resultKey, elementMap] of Object.entries(data.globalDismissals)) {
-      synced[resultKey] = { ...(synced[resultKey] || {}), ...elementMap };
-    }
-    options.syncedDismissals = synced;
-  }
-  for (const [key, value] of Object.entries(data)) {
-    if (key === 'testNames' || key === 'globalDismissals') continue;
-    if (value !== undefined && value !== null) {
-      options[key] = value;
-    }
-  }
-}
 
-// Mirrors `editoria11yOptions.options()` in Drupal. Exported for the
-// unit suite; runs in both the free and premium builds.
+
+
+
+
+
+// Shared translation layer (see editoria11y-option-translations.js).
+// Front-end binding: autodetect a checkRoot fallback when the admin
+// configured none. Exported for the unit suite.
 export function ed11yApplyOptionTranslations(options) {
-  if (!options || typeof options !== 'object') return;
-
-  if (!options.checkRoot) {
-    options.checkRoot = document.querySelector('main') ? 'main' : 'body > *:not(#wpadminbar, script, style, .ed11y-element)';
-  }
-
-  options.linkIgnore = '[aria-hidden="true"][tabindex="-1"], [href*="/wp-admin/"]';
-
-  // `linkStringsNewWindows` is a /pipe|delimited|phrases/g regex used to
-  // detect "opens in a new tab" warnings inside link text.
-  options.linkStringsNewWindows = options.linkStringsNewWindows
-    ? new RegExp(options.linkStringsNewWindows, 'g')
-    : /window|\stab|download/g;
-
-  // `linkIgnoreStrings` strips from link text *before* running the 
-  // empty/meaningless-text checks. Library wants an array.
-  if (typeof options.linkIgnoreStrings === 'string' && options.linkIgnoreStrings.length > 0) {
-    options.linkIgnoreStrings = options.linkIgnoreStrings.split('|').map((s) => s.trim()).filter(Boolean);
-  } else if (!Array.isArray(options.linkIgnoreStrings)) {
-    options.linkIgnoreStrings = [];
-  }
-
-  // The library's checkCustomRuleset() iterates `EMBED_CUSTOM.sources`
-  // selectors and pushes EMBED_GENERAL warnings for each match.
-  if (typeof options.embeddedContentWarning === 'string' && options.embeddedContentWarning.trim().length > 0) {
-    options.checks = options.checks || {};
-    options.checks.EMBED_CUSTOM = { sources: options.embeddedContentWarning };
-  }
-
-  // Tests are ignored by setting options.checks[KEY] = false.
-  // CSA mode reprocesses this with more complexity.
-  if (Array.isArray(options.ignoreTests)) {
-    options.checks = options.checks || {};
-    options.ignoreTests.forEach((key) => {
-      if (typeof key === 'string' && key.length > 0) {
-        options.checks[key] = false;
-      }
-    });
-  }
-
-  // CSA: if `profile === 'dev'`, pick the other alert mode.
-  if (options.profile === 'dev' && options.devAssertiveness) {
-    options.alertMode = options.devAssertiveness;
-  }
+  ed11ySharedOptionTranslations(options, { autodetectCheckRoot: true });
 }
 
-// Build the library's CSA dev/content split configuration.
-//
-// Mirrors the `if (!!dS.profile)` branch of Drupal's editoria11yOptions.js
-// (the source of truth — keep the devChecks map below in lockstep; the
-// parity guard in tests/js/unit/devchecks-parity.test.js enforces it).
-//
-// Two distinct jobs:
-//   1. `Object.assign(options.checks, devChecks)` turns ON the library
-//      tests that ship disabled-by-default (contrast, forms, ARIA, page
-//      meta, developer checks) and sets a few default-on tests, so the
-//      library actually RUNS them. Without this merge they fall through to
-//      their disabled defaults — the original "showing up false even when
-//      enabled" bug.
-//   2. `splitConfiguration.devChecks` is the separate *visibility* list:
-//      which running tests are shown to developers only vs. everyone.
-//
-// `export`ed for the Jest unit suite; the export lives inside the
-// premium markers so the free build strips the whole function. This is
-// the rendered front end, so `editors` is always false (matches Drupal's
-// `options.editors` on non-edit routes) — page-level checks like
-// HEADING_MISSING_ONE / META_* surface here. The in-editor variant in
-// editoria11y-editor.js sets it true and suppresses them.
 
 
 let ed11yOptions = {};
@@ -241,7 +141,16 @@ function ed11ySync() {
         data,
       })
     }).then(function (response) {
+      if (response.status === 401 || response.status === 403) {
+        // Nonce lifetime is ~12-24h; a page left open past it can no
+        // longer sync. Name the cause instead of failing silently.
+        console.warn('Editoria11y: sync rejected (' + response.status + '). Your login session likely expired; reload the page to resume syncing results and dismissals.');
+      } else if (!response.ok) {
+        console.warn('Editoria11y: sync failed with HTTP ' + response.status + '.');
+      }
       return response.json();
+    }).catch(function (err) {
+      console.warn('Editoria11y: sync request failed.', err);
     });
   };
 
@@ -335,9 +244,16 @@ function ed11ySync() {
   let sendDismissal = function (detail) {
     if (detail) {
       let data = {
-        page_url: State.option.currentPage,
+        // Reuse the truncated `url` from the results sender: the column is
+        // varchar(190), and a dismissal keyed on the full URL while the
+        // result row keyed on the truncated one would never match.
+        page_url: url,
+        page_title: ed11yOptions.title,
+        entity_type: ed11yOptions.entity_type,
+        page_count: UI.totalCount,
         result_key: detail.dismissTest, // which test is sending a result
         element_id: detail.dismissKey, // some recognizable attribute of the item marked
+        // Todo MVP: okAll.
         dismissal_status: detail.dismissAction, // ok, ignore or reset
         post_id: ed11yOptions.post_id ? ed11yOptions.post_id : 0,
       };
@@ -356,14 +272,19 @@ const ed11yCustomTests = function () {
     // Find empty WP buttons.
     findElements('emptyWpButton', 'a.wp-element-button:not([href], [tabindex])');
 
-    // Register a human-readable test name.
-    Lang.testNames.emptyWpButton = 'Empty button-style link';
+    // Register a human-readable test name. Strings ride the init blob
+    // (this is a plugin-side test the library lang packs don't know);
+    // English fallbacks cover a stale cached blob. The name here must
+    // match the label the dashboard blob ships for the same key, so the
+    // tip, front-end panel and report all agree.
+    const i18n = ed11yOptions.i18n || {};
+    Lang.testNames.emptyWpButton = i18n.emptyWpButtonName || 'Empty button-style link';
     const wrapper = document.createElement('div');
     const title = document.createElement('div');
-    title.textContent = 'Empty link';
+    title.textContent = i18n.emptyWpButtonTitle || 'Empty link';
     title.classList.add('title');
     const p = document.createElement('p');
-    p.textContent = 'The button style link is missing its URL.';
+    p.textContent = i18n.emptyWpButtonTip || 'The button style link is missing its URL.';
     wrapper.appendChild(title);
     wrapper.appendChild(p);
 
@@ -394,7 +315,7 @@ const ed11yInit = async function () {
     );
 
     // +1 for the built-in `emptyWpButton` test.
-    ed11yOptions.customTests = Number.parseInt(ed11yOptions.customTests) + 1;
+    ed11yOptions.customTests = (Number.parseInt(ed11yOptions.customTests, 10) || 0) + 1;
 
     // Hard-coded known conflicts for panel placement.
     ed11yOptions.panelNoCover = ed11yOptions.panelNoCover
@@ -509,13 +430,14 @@ const ed11yInit = async function () {
         // upload.php?item=, whose details modal only opens in the media
         // library's grid view and silently no-ops in list view.
         linkButton.href = `${ed11yOptions.adminUrl}post.php?post=${imageId}&action=edit`;
-        linkButton.textContent = 'Edit Media';
+        linkButton.textContent = ed11yOptions.i18n?.editMedia || 'Edit Media';
         linkButton.prepend(editIcon);
         const buttonBar = e.detail.tip.shadowRoot.querySelector('.ed11y-custom-edit-links > div');
         buttonBar?.appendChild(linkButton);
       }
       e.detail.tip.dataset.alreadyDecorated = 'true';
     });
+
 
     window.ed11y = new Ed11y(ed11yOptions);
     // Expose the library's State / UI / Lang namespaces alongside the

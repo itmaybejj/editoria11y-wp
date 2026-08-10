@@ -140,6 +140,38 @@ class NetworkSettingsValidator {
 	}
 
 	/**
+	 * Mirror a CSA-mode save's "nobody" content-test routing into the MAIN
+	 * blob's `tests_off` (finding F4).
+	 *
+	 * The per-site validator does this inside apply_csa_routing()
+	 * (`routed['main_off']`), but the network form in CSA mode renders
+	 * 3-way selects — never the free-mode checkboxes — so validate_free()
+	 * never authors the main blob's `tests_off`. Three consumers read
+	 * exactly that key: the bundle-lock read overlay in
+	 * ed11y_get_settings(), the bundle arm of
+	 * SettingsValidator::enforce_network_locks(), and the worker's bundle
+	 * seeding. Without the mirror, network "Off" routing never reaches
+	 * free-mode/expired sites.
+	 *
+	 * No-op when the POST carries no `network_tests_state` (free-mode
+	 * form: validate_free()'s own derivation stands).
+	 *
+	 * @param array{values: array<string,mixed>, modes: array<string,string>} $free_blob Output of validate_free().
+	 * @param array<string,mixed>                                             $posted    Raw POST.
+	 * @return array{values: array<string,mixed>, modes: array<string,string>}
+	 */
+	public static function mirror_main_tests_off( array $free_blob, array $posted ): array {
+		$state_post = isset( $posted['network_tests_state'] ) && is_array( $posted['network_tests_state'] )
+			? $posted['network_tests_state']
+			: null;
+		if ( null === $state_post ) {
+			return $free_blob;
+		}
+		$free_blob['values']['tests_off'] = TestStateNormalizer::from_csa_post( $state_post )['main_off'];
+		return $free_blob;
+	}
+
+	/**
 	 * Apply per-key sanitizers from the shared registry; drop unknown keys.
 	 *
 	 * @param array<string,mixed> $raw          Raw posted values.

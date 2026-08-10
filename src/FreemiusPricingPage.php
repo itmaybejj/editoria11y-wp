@@ -85,9 +85,14 @@ final class FreemiusPricingPage {
 
 		// 2. Template filter. The SDK applies this filter to the full
 		// rendered output of `templates/pricing.php` (see
-		// vendor/.../class-freemius.php around line 23470). We append
-		// our enterprise banner inside the SDK's outer #fs_pricing
-		// wrap so it inherits the pricing-page max-width / margins.
+		// vendor/.../class-freemius.php around line 23470). We PREPEND our
+		// enterprise banner before that output — the banner is a
+		// self-contained `.ed11ycsa-enterprise-banner` block styled by
+		// assets/css/editoria11y-pricing.css, so it does not depend on
+		// living inside the SDK's `#fs_pricing` wrap. (If it should ever
+		// inherit that wrap's max-width/margins, splice it after the
+		// `#fs_pricing` opener instead — a deliberate change, not the
+		// current behavior. See finding B3.)
 		$ed11ycsa->add_filter(
 			'templates/pricing.php',
 			array( __CLASS__, 'inject_enterprise_banner' ),
@@ -178,7 +183,7 @@ final class FreemiusPricingPage {
 	 * page.
 	 *
 	 * @param string $html Rendered output of vendor/.../templates/pricing.php.
-	 * @return string Modified HTML with the banner injected inside #fs_pricing.
+	 * @return string Modified HTML with the banner prepended before the SDK output.
 	 */
 	public static function inject_enterprise_banner( $html ) {
 		$banner = self::render_enterprise_banner();
@@ -226,21 +231,18 @@ final class FreemiusPricingPage {
 
 		$p_not_free = esc_html__( 'Editoria11y is not, however, free to develop or support.', 'editoria11y' );
 
-		$p_csa = wp_kses(
-			__( 'The "Community Supported Add-ons" (CSA) project fills the gap: project members support the development of the Editoria11y library, its CMS plugins, and the CSA suite: a rapidly growing set of quality assurance tools that provide similar functionality to commercial products, open-source and on-prem. In return, they get access to premium features like <strong>developer and contrast tests, the custom rule builder and a site crawler</strong>.', 'editoria11y' ),
-			$inline_strong
-		);
+		$p_csa = esc_html__( 'The Community Supported Add-ons (CSA) project fills the gap: project members support the development of the Editoria11y library, its CMS plugins, and the CSA suite: a rapidly growing set of quality assurance tools that provide similar functionality to commercial products, open-source and on-prem. In return, they get access to premium features and support.', 'editoria11y' );
 
 		$supporters_link = sprintf(
 			'<a href="%1$s"><strong>%2$s</strong></a>',
 			esc_url( 'https://editoria11y.com/license/' ),
-			esc_html__( 'CSA supporters page', 'editoria11y' )
+			esc_html__( 'lower (or higher!) support levels', 'editoria11y' )
 		);
 
 		$p_contribute = wp_kses(
 			sprintf(
-				/* translators: %s: link to the CSA supporters page. */
-				__( 'This is a <strong>contribute what you can</strong> model; the quick checkout prices below are for full support. The %s has options for different support levels (from 10%% to 150%%), cross-platform (WordPress plus Drupal) licenses, unlimited-site options, and non-financial paths to project membership.', 'editoria11y' ),
+				/* translators: %s: link to the CSA supporters page and drop the "farmshare" word in languages without the concept. */
+				__( 'This is a <strong>contribute what you can</strong> "farmshare" model. The Editoria11y LLC site has options for %s, options to contribute as a coder or tester instead, and options for cross-platform and unlimited-site licenses.', 'editoria11y' ),
 				$supporters_link
 			),
 			array(

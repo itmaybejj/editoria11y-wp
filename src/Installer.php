@@ -28,8 +28,13 @@
  * |                        | transient state — check_tables() pushes it through a one-shot |
  * |                        | key-translation pass and advances to 2.0. Fresh installs and  |
  * |                        | newly-completed migrations skip 1.4 entirely.                 |
- * | 2.0                    | Final v3 shape: hashed element_ids, UPPER_SNAKE result_keys,  |
- * |                        | aligned with the bundled JS library.                          |
+ * | 2.0                    | v3 data shape: hashed element_ids, UPPER_SNAKE result_keys,   |
+ * |                        | aligned with the bundled JS library. Transient — check_tables |
+ * |                        | immediately runs the 2.1 hardening pass from here.            |
+ * | 2.1-failed             | Mid-migrate_to_2_1() hardening run. Sticky until retry, but   |
+ * |                        | NOT disabling: the v3 shape is intact and functional.         |
+ * | 2.1                    | Terminal: hardening pass applied (user column width, unique   |
+ * |                        | page_url). The check_tables() hot-path short-circuit.         |
  *
  * The '-failed' markers are written BEFORE the destructive step and only
  * flipped to the success value AFTER it completes, so any partial DDL leaves
@@ -41,6 +46,7 @@
 
 namespace Editoria11y;
 
+use Editoria11y\Form\SettingsStorage;
 use Editoria11y\UpdateHelpers;
 use Exception;
 
@@ -53,13 +59,25 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class Installer {
 
-	/** Batch size for the dismissal element_id rehash worker. */
-	const REHASH_BATCH_SIZE = 250;
+	/**
+	 * Batch size for the dismissal element_id rehash worker. Each batch is
+	 * REHASH_BATCH_SIZE indexed single-row UPDATEs inside WP-Cron's
+	 * loopback request — off the visitor path — so the sizing question is
+	 * drain time, not page performance: 1000 rows every 5 minutes clears a
+	 * 100k-row dismissals table in ~8 hours (the old 250/15-minute pairing
+	 * took over 4 days).
+	 */
+	const REHASH_BATCH_SIZE = 1000;
 
 	/** Cron action name for the rehash worker. */
 	const REHASH_CRON_HOOK = 'editoria11y_rehash_dismissals';
 
-	/** Custom cron schedule slug registered in cron_schedules. */
+	/**
+	 * Custom cron schedule slug registered in cron_schedules (a true five
+	 * minutes — interval set in editoria11y.php). The license worker's
+	 * watchdog has its own fifteen-minute slug so retuning one cadence
+	 * can't silently retune the other.
+	 */
 	const REHASH_CRON_SCHEDULE = 'editoria11y_five_minutes';
 
 	/**
@@ -112,22 +130,58 @@ class Installer {
 
 	/**
 	 * Plugin uninstall: drops all three tables and clears every option the
-	 * migration touches plus the settings transient.
+	 * migration touches plus the settings transient, on every site.
 	 *
-	 * Multisite behavior: WordPress fires register_uninstall_hook once per
-	 * blog when network-uninstalling, so the per-blog DROP / delete_option
-	 * calls below do the right thing on every site. Network-scoped options
-	 * (stored in wp_sitemeta) need to be cleared too, but only need to be
-	 * cleared once for the whole network. delete_site_option() is
-	 * idempotent on multisite and falls through to delete_option on
-	 * single-site, so we can call it unconditionally on every invocation
-	 * without worrying about which blog context fires last.
+	 * No capability check here: `uninstall_plugin()` only runs from
+	 * contexts that already passed the `delete_plugins` gate (the admin
+	 * plugins screen) or are inherently privileged (WP-CLI, which runs
+	 * with no current user — an earlier `current_user_can()` check here
+	 * made `wp plugin uninstall` silently skip all cleanup).
+	 *
+	 * Multisite behavior: WordPress fires the uninstall hook exactly ONCE,
+	 * in the network-admin (base prefix) blog context — NOT once per blog.
+	 * We iterate the sites ourselves so subsite tables and options aren't
+	 * orphaned. Network-scoped options (wp_sitemeta) are cleared once at
+	 * the end; delete_site_option() falls through to delete_option on
+	 * single-site, so those calls are unconditional.
 	 */
 	public static function uninstall(): void {
-		if ( ! current_user_can( 'activate_plugins' ) ) {
-			return;
+		if ( is_multisite() ) {
+			$site_ids = get_sites(
+				array(
+					'fields' => 'ids',
+					'number' => 0,
+				)
+			);
+			foreach ( $site_ids as $site_id ) {
+				switch_to_blog( (int) $site_id );
+				self::uninstall_current_blog();
+				restore_current_blog();
+			}
+		} else {
+			self::uninstall_current_blog();
 		}
 
+		// Network-scoped options written by the multisite super-admin
+		// pages and the CSA license worker. Safe to call on single-site
+		// too — delete_site_option falls through to delete_option there.
+		delete_site_option( 'ed11y_config_version_network' );
+		delete_site_option( 'ed11y_network_default_settings' );
+		delete_site_option( 'ed11y_network_default_csa_settings' );
+		delete_site_option( 'ed11y_network_custom_rules' );
+		delete_site_option( 'ed11ycsa_network_license_state' );
+		delete_site_option( 'ed11y_network_defaults_backfill_state' );
+		// Pre-3.0 builds cached the payload in a (network-scoped) site
+		// transient; clear that legacy key too.
+		delete_site_transient( 'editoria11y_settings' );
+	}
+
+	/**
+	 * Per-blog uninstall cleanup: the three tables plus every per-blog
+	 * option/transient this plugin writes. Runs in the current blog
+	 * context; {@see uninstall()} handles the site iteration.
+	 */
+	private static function uninstall_current_blog(): void {
 		global $wpdb;
 
 		$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}ed11y_dismissals" ); // phpcs:ignore
@@ -145,15 +199,9 @@ class Installer {
 		delete_option( 'editoria11y_db_version' );
 		delete_option( 'editoria11y_id_pepper' );
 		delete_option( 'editoria11y_rehash_cursor' );
-		delete_site_transient( 'editoria11y_settings' );
-
-		// Network-scoped options written by the multisite super-admin
-		// pages and the CSA license worker. Safe to call on single-site
-		// too — delete_site_option falls through to delete_option there.
-		delete_site_option( 'ed11y_network_default_settings' );
-		delete_site_option( 'ed11y_network_default_csa_settings' );
-		delete_site_option( 'ed11y_network_custom_rules' );
-		delete_site_option( 'ed11ycsa_network_license_state' );
+		delete_option( 'ed11y_got_post_ids' );
+		delete_option( 'ed11y_disabled_network_rules' );
+		delete_transient( 'editoria11y_settings' );
 	}
 
 	/**
@@ -191,7 +239,7 @@ class Installer {
 	 * columns / element_id type narrowing are handled by migrate_to_1_3() and
 	 * narrow_element_id() under check_tables() orchestration.
 	 */
-	public static function create_database(): void {
+	public static function create_database(): bool {
 		global $wpdb;
 
 		$charset_collate = $wpdb->get_charset_collate();
@@ -214,7 +262,7 @@ class Installer {
 			page_total smallint(4) unsigned NOT NULL,
 			dev_total int unsigned NOT NULL default '0',
 			PRIMARY KEY pid (pid),
-			KEY page_url (page_url),
+			UNIQUE KEY page_url (page_url),
 			KEY post_id (post_id)
 			) ENGINE=InnoDB $charset_collate;";
 
@@ -239,7 +287,7 @@ class Installer {
 			id int(9) unsigned AUTO_INCREMENT NOT NULL,
 			pid int(9) unsigned NOT NULL,
 			result_key varchar(32) NOT NULL,
-			user smallint(6) unsigned NOT NULL,
+			user bigint(20) unsigned NOT NULL,
 			element_id char(64) CHARACTER SET ascii NOT NULL default '',
 			dismissal_status varchar(64) NOT NULL,
 			result_name varchar(255) NOT NULL default '',
@@ -255,9 +303,17 @@ class Installer {
 			) ENGINE=InnoDB $charset_collate;";
 
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
-		maybe_create_table( $table_urls, $sql_urls );
-		maybe_create_table( $table_results, $sql_results );
-		maybe_create_table( $table_dismissals, $sql_dismissals );
+		// Capture each result: maybe_create_table() returns false on a
+		// failed CREATE, and stamping the version as if the schema exists
+		// surfaced the failure much later as a baffling ALTER error on a
+		// missing table (finding I13). The caller leaves the '1.2-failed'
+		// marker in place when this returns false.
+		$created = maybe_create_table( $table_urls, $sql_urls );
+		$created = maybe_create_table( $table_results, $sql_results ) && $created;
+		$created = maybe_create_table( $table_dismissals, $sql_dismissals ) && $created;
+		if ( ! $created ) {
+			return false;
+		}
 
 		// v1.0 → v1.2: backfill post_id on the urls table when missing.
 		// Kept verbatim from the old code path — sites still on v1.0 hit this on
@@ -281,128 +337,111 @@ class Installer {
 			);
 		}
 
-		// Add foreign keys not reliably handled by maybe_create_table.
-		$results_create_table_sql_row = $wpdb->get_row( "SHOW CREATE TABLE $table_results" );
-		if ( $results_create_table_sql_row ) {
-			$results_create_table_sql = $results_create_table_sql_row->{'Create Table'};
-			$results_constraint       = $wpdb->prefix . 'ed11y_results_pid';
+		// Replace any pre-existing (auto-named) pid foreign keys with the
+		// plugin-named ON DELETE CASCADE constraints maybe_create_table()
+		// can't reliably produce.
+		self::ensure_pid_foreign_key( $table_results, $table_urls, $wpdb->prefix . 'ed11y_results_pid' );
+		self::ensure_pid_foreign_key( $table_dismissals, $table_urls, $wpdb->prefix . 'ed11y_dismissal_pid' );
+		// phpcs:enable WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnquotedComplexPlaceholder, PluginCheck.Security.DirectDB.UnescapedDBParameter
+		return true;
+	}
 
-			$result_constraint_matches = preg_match( '/CONSTRAINT `(.+?)` FOREIGN KEY \(`pid`\)/', $results_create_table_sql, $result_matches );
+	/**
+	 * Ensure exactly one plugin-named `pid` foreign key on a child table,
+	 * replacing any pre-existing (auto-named) constraint.
+	 *
+	 * `$wpdb` NEVER throws — the old implementation's try/catch "MariaDB
+	 * fallback" arm was dead code, and a silently failed DROP followed by
+	 * the unconditional ADD could stack a second, plugin-named FK next to
+	 * the survivor. Failure detection and the MySQL→MariaDB syntax
+	 * fallback now go through `$wpdb->last_error`; if neither DROP syntax
+	 * removes the existing constraint, the ADD is skipped so the schema
+	 * keeps exactly one FK either way.
+	 *
+	 * @param string $child_table     Fully-prefixed child table name.
+	 * @param string $parent_table    Fully-prefixed parent (urls) table name.
+	 * @param string $constraint_name Canonical plugin constraint name.
+	 */
+	private static function ensure_pid_foreign_key( string $child_table, string $parent_table, string $constraint_name ): void {
+		global $wpdb;
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnquotedComplexPlaceholder, PluginCheck.Security.DirectDB.UnescapedDBParameter -- One-shot DDL; identifiers are $wpdb->prefix . literals; %1s placeholders are intentional for identifiers.
+		$row = $wpdb->get_row( "SHOW CREATE TABLE $child_table" );
+		if ( ! $row ) {
+			return;
+		}
+		$existing = null;
+		if ( preg_match( '/CONSTRAINT `(.+?)` FOREIGN KEY \(`pid`\)/', (string) $row->{'Create Table'}, $matches ) ) {
+			$existing = $matches[1];
+		}
+		if ( $existing === $constraint_name ) {
+			// Already canonical — repeat runs are a clean no-op.
+			return;
+		}
 
-			$result_foreign_key = null;
-			if ( $result_constraint_matches ) {
-				$result_foreign_key = $result_matches[1];
-			}
+		// Expected-failure branch below (MySQL syntax on MariaDB); keep the
+		// noise out of debug output.
+		$suppress = $wpdb->suppress_errors();
 
-			if ( $result_foreign_key ) {
-				try {
-					// MySQL syntax.
-					$wpdb->get_var( // phpcs:ignore
-						$wpdb->prepare(
-							"ALTER TABLE $table_results
-					DROP FOREIGN KEY %1s;",
-							array( $result_foreign_key )
-						)
-					);
-				} catch ( Exception $e ) {
-					// MariaDB syntax.
-					$wpdb->get_var( // phpcs:ignore
-						$wpdb->prepare(
-							"ALTER TABLE $table_results
-					DROP CONSTRAINT %1s;",
-							array( $result_foreign_key )
-						)
-					);
-				} finally {
-					// Add replacement constraint.
-					$wpdb->get_var( // phpcs:ignore
-						$wpdb->prepare(
-							"ALTER TABLE $table_results
-					ADD CONSTRAINT %1s FOREIGN KEY(pid) REFERENCES $table_urls (pid) ON DELETE CASCADE",
-							$results_constraint
-						)
-					);
-				}
-			} else {
-				// Add new constraint.
-				$wpdb->get_var( // phpcs:ignore
-					$wpdb->prepare(
-						"ALTER TABLE $table_results
-					ADD CONSTRAINT %1s FOREIGN KEY(pid) REFERENCES $table_urls (pid) ON DELETE CASCADE",
-						$results_constraint
-					)
+		if ( null !== $existing ) {
+			$wpdb->last_error = '';
+			$wpdb->query(
+				$wpdb->prepare( "ALTER TABLE $child_table DROP FOREIGN KEY %1s", array( $existing ) )
+			);
+			if ( '' !== $wpdb->last_error ) {
+				$wpdb->last_error = '';
+				$wpdb->query(
+					$wpdb->prepare( "ALTER TABLE $child_table DROP CONSTRAINT %1s", array( $existing ) )
 				);
+			}
+			if ( '' !== $wpdb->last_error ) {
+				// Drop failed under both syntaxes: keep the surviving FK
+				// rather than stacking a second one on the same column.
+				$wpdb->suppress_errors( $suppress );
+				return;
 			}
 		}
 
-		$dismissal_create_table_sql_row = $wpdb->get_row( "SHOW CREATE TABLE $table_dismissals" );
-		if ( $dismissal_create_table_sql_row ) {
-			$dismissal_create_table_sql = $dismissal_create_table_sql_row->{'Create Table'};
-			$dismissal_constraint       = $wpdb->prefix . 'ed11y_dismissal_pid';
-
-			$dismissal_constraint_matches = preg_match( '/CONSTRAINT `(.+?)` FOREIGN KEY \(`pid`\)/', $dismissal_create_table_sql, $dismissal_matches );
-
-			$dismissal_key = null;
-			if ( $dismissal_constraint_matches ) {
-				$dismissal_key = $dismissal_matches[1];
-			}
-
-			if ( $dismissal_key ) {
-				try {
-					// MySQL syntax.
-					$wpdb->get_var( // phpcs:ignore
-						$wpdb->prepare(
-							"ALTER TABLE $table_dismissals
-						DROP FOREIGN KEY %1s;",
-							array( $dismissal_key )
-						)
-					);
-				} catch ( Exception $e ) {
-					// MariaDB syntax.
-					$wpdb->get_var( // phpcs:ignore
-						$wpdb->prepare(
-							"ALTER TABLE $table_dismissals
-						DROP CONSTRAINT %1s;",
-							array( $dismissal_key )
-						)
-					);
-				} finally {
-					// Add new constraint.
-					$wpdb->get_var( // phpcs:ignore
-						$wpdb->prepare(
-							"ALTER TABLE $table_dismissals
-						ADD CONSTRAINT %1s FOREIGN KEY(pid) REFERENCES $table_urls (pid) ON DELETE CASCADE",
-							$dismissal_constraint
-						)
-					);
-				}
-			} else {
-				$wpdb->get_var( // phpcs:ignore
-					$wpdb->prepare(
-						"ALTER TABLE $table_dismissals
-						ADD CONSTRAINT %1s FOREIGN KEY(pid) REFERENCES $table_urls (pid) ON DELETE CASCADE",
-						$dismissal_constraint
-					)
-				);
-			}
-		}
+		$wpdb->query(
+			$wpdb->prepare(
+				"ALTER TABLE $child_table ADD CONSTRAINT %1s FOREIGN KEY(pid) REFERENCES $parent_table (pid) ON DELETE CASCADE",
+				array( $constraint_name )
+			)
+		);
+		$wpdb->suppress_errors( $suppress );
 		// phpcs:enable WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnquotedComplexPlaceholder, PluginCheck.Security.DirectDB.UnescapedDBParameter
 	}
 
 	/**
-	 * Detect whether ed11y_urls already carries the v3 columns.
+	 * Detect whether ALL THREE tables already carry the v3 columns.
 	 *
 	 * Used to short-circuit migration on a fresh install where create_database()
 	 * produced the target shape directly.
+	 *
+	 * Checks the full v3 column set, not a single sentinel column: the
+	 * 1.3 ALTERs run urls-first, so a partial failure (urls succeeded,
+	 * results/dismissals didn't) used to leave `dev_total` present — and a
+	 * sentinel-only check made retry_migration() take THIS fresh-install
+	 * short-circuit and stamp 2.0 over a half-migrated schema.
 	 */
 	public static function tables_already_v3(): bool {
 		global $wpdb;
-		foreach ( $wpdb->get_results( "DESC {$wpdb->prefix}ed11y_urls", ARRAY_A ) as $col ) { // phpcs:ignore
-			if ( 'dev_total' === $col['Field'] ) {
-				return true;
+		$required = array(
+			'ed11y_urls'       => array( 'dev_total' ),
+			'ed11y_results'    => array( 'dev_count', 'result_name' ),
+			'ed11y_dismissals' => array( 'result_name', 'stale_date' ),
+		);
+		foreach ( $required as $table => $columns ) {
+			$existing = array();
+			foreach ( $wpdb->get_results( "DESC {$wpdb->prefix}{$table}", ARRAY_A ) as $col ) { // phpcs:ignore
+				$existing[] = $col['Field'];
+			}
+			foreach ( $columns as $column ) {
+				if ( ! in_array( $column, $existing, true ) ) {
+					return false;
+				}
 			}
 		}
-		return false;
+		return true;
 	}
 
 	// ------------------------------------------------------------------
@@ -417,10 +456,18 @@ class Installer {
 	 * to the success value AFTER it completes — so any partial DDL leaves the
 	 * marker as a circuit breaker. retry_migration() clears it.
 	 *
-	 * Concurrency: the actual DDL body is gated by ed11y_migration_lock so
-	 * two simultaneous requests in the migration window can't race on
-	 * version-marker writes. MySQL serializes DDL on the same table anyway,
-	 * but the marker bookkeeping needs single-writer semantics.
+	 * Concurrency: the DDL body is gated by an ed11y_migration_lock
+	 * `wp_cache_add`. On stock WP (no persistent object-cache drop-in)
+	 * that cache is REQUEST-LOCAL, so this only prevents re-entry within
+	 * one request — two concurrent admin requests can both enter the
+	 * section. That is survivable by design rather than prevented: MySQL
+	 * serializes DDL on the same table, every migrate step is idempotent
+	 * per column, and the version markers converge because both writers
+	 * walk the same forward-only ladder. With a persistent cache the lock
+	 * IS cross-request (60s TTL — can expire under a very long ALTER),
+	 * and the loser's contention branch returns "not functional yet" for
+	 * pre-schema versions, which the Dashboard renders as the tables-
+	 * missing panel for that one request.
 	 */
 	public static function check_tables(): bool {
 		// Settings-side one-shot seed for `panel_no_cover`. Lives above the
@@ -432,24 +479,31 @@ class Installer {
 
 		$version = (string) get_option( 'editoria11y_db_version', '' );
 
-		// Hot path: already at the v3 terminal shape — no lock needed, no
-		// work needed. Note that '1.4' is NOT terminal here: it indicates
-		// the schema is structurally complete but the v3 result_key
-		// translation may not have run, so we push such sites through one
-		// more pass below.
-		if ( '2.0' === $version ) {
+		// Hot path: already at the hardened v3 terminal shape — no lock
+		// needed, no work needed. Note that '1.4' is NOT terminal here: it
+		// indicates the schema is structurally complete but the v3
+		// result_key translation may not have run, and '2.0' pre-dates the
+		// 2.1 hardening pass — both fall through to the ladder below.
+		if ( '2.1' === $version ) {
 			return true;
 		}
 
 		// Sticky -failed states. 1.2/1.3-failed mean the column shape is unknown
-		// (refuse writes); 2.0-failed means only the type narrow is pending so
+		// (refuse writes); 2.0-failed means only the type narrow is pending and
+		// 2.1-failed means only the hardening pass is pending — in both of those
 		// the schema is functional and we can return true.
 		if ( '-failed' === substr( $version, -7 ) ) {
-			return '2.0-failed' === $version;
+			return in_array( $version, array( '2.0-failed', '2.1-failed' ), true );
 		}
 
 		// '2.0-migrating' is also functional; the cron / inline UI handles the rest.
 		if ( '2.0-migrating' === $version ) {
+			// Re-arm the background drain if it isn't queued (cheap no-op
+			// otherwise). deactivate() unschedules the cron, and nothing on
+			// the reactivation path rescheduled it — a deactivate/reactivate
+			// cycle mid-migration stalled the rehash forever, with only the
+			// settings-page AJAX stepper able to finish it.
+			self::schedule_rehash();
 			return true;
 		}
 
@@ -459,7 +513,7 @@ class Installer {
 			// Another request holds the lock; treat the schema as functional
 			// for this request — the holder is doing the work. If they fail,
 			// their -failed marker becomes visible to the next request.
-			return '1.3' === $version || '2.0-narrow-pending' === $version || '1.4' === $version;
+			return '1.3' === $version || '2.0-narrow-pending' === $version || '1.4' === $version || '2.0' === $version;
 		}
 
 		try {
@@ -477,22 +531,32 @@ class Installer {
 			// Pre-1.2: lazy-create using the target (v3-equivalent) shape.
 			if ( empty( $version ) || version_compare( $version, '1.2', '<' ) ) {
 				update_option( 'editoria11y_db_version', '1.2-failed' );
-				self::create_database();
+				if ( ! self::create_database() ) {
+					// A failed CREATE used to be stamped '1.2' anyway and
+					// resurfaced later as a baffling ALTER-on-missing-table
+					// '1.3-failed'; leave the '1.2-failed' marker so the
+					// failure surfaces at the step that actually broke.
+					return false;
+				}
 				update_option( 'editoria11y_db_version', '1.2' );
 				$version = '1.2';
 			}
 
 			// 1.2: either fresh install (already v3 shape) or v2 site needing ALTERs.
-			if ( '1.2' === $version ) {
-				if ( self::tables_already_v3() ) {
+			if ( '1.2' === $version && self::tables_already_v3() ) {
 					// Fresh install short-circuit. ensure_pepper() must still run
 					// here — the migrate_to_1_3() path (which also calls it)
 					// is being skipped, but the JS shim still needs the pepper
-					// to be present in the autoloaded options blob.
+					// to be present in the autoloaded options blob. No early
+					// return: fall through to the 2.1 hardening block, which
+					// is what actually verifies the hardened bits (a wiped
+					// version option over pre-hardening tables lands here too).
 					self::ensure_pepper();
 					update_option( 'editoria11y_db_version', '2.0' );
-					return true;
-				}
+					$version = '2.0';
+			}
+
+			if ( '1.2' === $version ) {
 				update_option( 'editoria11y_db_version', '1.3-failed' );
 				if ( ! self::migrate_to_1_3() ) {
 					return false;
@@ -516,6 +580,7 @@ class Installer {
 				if ( self::narrow_element_id() ) {
 					update_option( 'editoria11y_db_version', '2.0' );
 					self::unschedule_rehash();
+					$version = '2.0';
 				}
 				// On failure, narrow_element_id() either left '2.0-failed' (real
 				// ALTER error — sticky) or rolled back to '2.0-migrating'.
@@ -532,6 +597,18 @@ class Installer {
 				self::translate_results_keys();
 				self::translate_dismissal_keys_only();
 				update_option( 'editoria11y_db_version', '2.0' );
+				$version = '2.0';
+			}
+
+			// 2.0 -> 2.1: hardening pass (user column width, unique page_url).
+			// A failure here is sticky (2.1-failed) but NOT disabling — the
+			// v3 shape is intact, so the schema stays functional and we
+			// still return true; the migration panel surfaces Retry.
+			if ( '2.0' === $version ) {
+				update_option( 'editoria11y_db_version', '2.1-failed' );
+				if ( self::migrate_to_2_1() ) {
+					update_option( 'editoria11y_db_version', '2.1' );
+				}
 			}
 
 			return true;
@@ -565,7 +642,9 @@ class Installer {
 		// the schema is fully usable, so return 'hashed-only' — the
 		// translation pass is the next thing check_tables() will do, but it
 		// doesn't block reads/writes.
-		if ( in_array( $version, array( '1.4', '2.0' ), true ) ) {
+		// '2.1-failed' means only the hardening pass (column width / unique
+		// key) is pending — the v3 shape is intact, so writers stay live.
+		if ( in_array( $version, array( '1.4', '2.0', '2.1', '2.1-failed' ), true ) ) {
 			return 'hashed-only';
 		}
 		if ( in_array( $version, array( '1.3', '2.0-migrating', '2.0-narrow-pending', '2.0-failed' ), true ) ) {
@@ -628,7 +707,11 @@ class Installer {
 		}
 
 		if ( $changed ) {
-			update_option( 'ed11y_plugin_settings', $stored );
+			// Canonical write — must bypass the form validator, which is
+			// attached when check_tables() runs from an admin page render
+			// (Dashboard) and would rewrite tests_off for a blob with no
+			// tests_enabled UI sub-array. See SettingsStorage.
+			SettingsStorage::write_canonical( 'ed11y_plugin_settings', $stored );
 		}
 	}
 
@@ -661,7 +744,9 @@ class Installer {
 			$stored = array();
 		}
 		$stored['panel_no_cover'] = '.interface-interface-skeleton__sidebar';
-		update_option( 'ed11y_plugin_settings', $stored );
+		// Canonical write — see the normalize_options() note re: the form
+		// validator being attached on the Dashboard→check_tables() path.
+		SettingsStorage::write_canonical( 'ed11y_plugin_settings', $stored );
 	}
 
 	/**
@@ -775,6 +860,19 @@ class Installer {
 		global $wpdb;
 		$pepper = (string) get_option( 'editoria11y_id_pepper', '' );
 		if ( '' === $pepper ) {
+			// The miss may be a stale alloptions/notoptions cache: two
+			// uncached first requests racing, or another process winning
+			// the mint between our read and now. Re-read straight through
+			// the cache before generating — add_option() uses INSERT ... ON
+			// DUPLICATE KEY UPDATE, so blindly minting here would silently
+			// OVERWRITE an already-stored pepper and orphan every
+			// element_id hash minted from it.
+			wp_cache_delete( 'editoria11y_id_pepper', 'options' );
+			wp_cache_delete( 'notoptions', 'options' );
+			wp_cache_delete( 'alloptions', 'options' );
+			$pepper = (string) get_option( 'editoria11y_id_pepper', '' );
+		}
+		if ( '' === $pepper ) {
 			$pepper = bin2hex( random_bytes( 16 ) );
 			add_option( 'editoria11y_id_pepper', $pepper, '', 'yes' );
 			return $pepper;
@@ -819,6 +917,102 @@ class Installer {
 	}
 
 	/**
+	 * Hardening pass for the v3.0 → v3.1 schema step. Idempotent.
+	 *
+	 * 1. Widens dismissals.user from the legacy smallint(6) unsigned (which
+	 *    silently clamps — or, in strict SQL mode, rejects — user IDs above
+	 *    65,535) to bigint(20) unsigned, matching wp_users.ID.
+	 * 2. Replaces the plain page_url KEY with a UNIQUE key: the read-then-
+	 *    insert writers could fork one URL into two pid rows under concurrent
+	 *    first-scans, splitting its results and dismissals. Rows already
+	 *    forked are collapsed first — the newest (highest-pid, latest scan)
+	 *    row wins and the losers' children follow via ON DELETE CASCADE.
+	 *
+	 * $wpdb never throws, so each step checks $wpdb->last_error; any error
+	 * leaves the caller's sticky '2.1-failed' marker in place. That state
+	 * is NOT disabling — the v3 shape is intact — it just resurfaces the
+	 * Retry control.
+	 *
+	 * @return bool True when both hardened shapes are verified in place.
+	 */
+	public static function migrate_to_2_1(): bool {
+		global $wpdb;
+		$utable = $wpdb->prefix . 'ed11y_urls';
+		$dtable = $wpdb->prefix . 'ed11y_dismissals';
+
+		// Errors are handled via $wpdb->last_error below; suppress wpdb's
+		// direct printing so an expected failure (e.g. a stale '2.0' version
+		// option with the tables gone) doesn't corrupt admin output.
+		$suppress = $wpdb->suppress_errors();
+		try {
+			return self::migrate_to_2_1_body( $utable, $dtable );
+		} finally {
+			$wpdb->suppress_errors( $suppress );
+		}
+	}
+
+	/**
+	 * DDL body for {@see migrate_to_2_1()}; split out so the error-output
+	 * suppression wrapper stays try/finally-clean.
+	 *
+	 * @param string $utable Prefixed urls table name.
+	 * @param string $dtable Prefixed dismissals table name.
+	 *
+	 * @SuppressWarnings(PHPMD.CyclomaticComplexity) Linear verify-then-alter ladder; every branch is an early-return error check on the preceding DDL statement.
+	 */
+	private static function migrate_to_2_1_body( string $utable, string $dtable ): bool {
+		global $wpdb;
+
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery, PluginCheck.Security.DirectDB.UnescapedDBParameter -- table names are $wpdb->prefix.literal; migration-time DDL gated by check_tables().
+		$user_column = $wpdb->get_row( "SHOW COLUMNS FROM $dtable LIKE 'user'", ARRAY_A );
+		if ( ! is_array( $user_column ) ) {
+			return false;
+		}
+		if ( false === stripos( (string) ( $user_column['Type'] ?? '' ), 'bigint' ) ) {
+			$wpdb->last_error = '';
+			$wpdb->query( "ALTER TABLE $dtable MODIFY user bigint(20) unsigned NOT NULL" );
+			if ( '' !== $wpdb->last_error ) {
+				return false;
+			}
+		}
+
+		$already_unique = false;
+		$has_plain_key  = false;
+		foreach ( (array) $wpdb->get_results( "SHOW INDEX FROM $utable", ARRAY_A ) as $index ) {
+			if ( 'page_url' === ( $index['Key_name'] ?? '' ) ) {
+				if ( '0' === (string) $index['Non_unique'] ) {
+					$already_unique = true;
+				} else {
+					$has_plain_key = true;
+				}
+			}
+		}
+		if ( $already_unique ) {
+			return true;
+		}
+
+		$wpdb->last_error = '';
+		$wpdb->query(
+			"DELETE older FROM $utable AS older
+			INNER JOIN $utable AS newer
+				ON older.page_url = newer.page_url AND older.pid < newer.pid"
+		);
+		if ( '' !== $wpdb->last_error ) {
+			return false;
+		}
+
+		if ( $has_plain_key ) {
+			$wpdb->query( "ALTER TABLE $utable DROP KEY page_url" );
+			if ( '' !== $wpdb->last_error ) {
+				return false;
+			}
+		}
+		$wpdb->query( "ALTER TABLE $utable ADD UNIQUE KEY page_url (page_url)" );
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery, PluginCheck.Security.DirectDB.UnescapedDBParameter
+		return '' === $wpdb->last_error;
+	}
+
+	/**
 	 * Clear a -failed marker by stepping back to the most recent good state, then
 	 * re-run check_tables(). Called by the admin "Retry migration" button.
 	 */
@@ -832,6 +1026,9 @@ class Installer {
 				// to 2.0-narrow-pending so the next check_tables() retries
 				// the ALTER MODIFY and, on success, advances to 2.0.
 				'2.0-failed' => '2.0-narrow-pending',
+				// 2.1-failed: only the hardening pass failed; the v3 shape
+				// is intact. Roll back to 2.0 so check_tables() re-runs it.
+				'2.1-failed' => '2.0',
 			);
 			update_option( 'editoria11y_db_version', $rollback[ $version ] ?? '' );
 		}
@@ -920,7 +1117,14 @@ class Installer {
 			$last_id     = (int) $row->id;
 			$current_key = (string) $row->result_key;
 			$current_id  = (string) $row->element_id;
-			$is_hashed   = ( 64 === strlen( $current_id ) && ctype_xdigit( $current_id ) );
+			// Lowercase-only, matching the narrow pre-flight's
+			// `REGEXP '^[0-9a-f]{64}$'` exactly. ctype_xdigit() also
+			// accepted uppercase hex, and on a case-sensitive (_bin)
+			// collation the two predicates disagreeing meant an
+			// uppercase-hex row was skipped here yet counted as a
+			// straggler there — an endless narrow-pending ↔ migrating
+			// ping-pong. All hashes we mint are lowercase bin2hex.
+			$is_hashed = (bool) preg_match( '/^[0-9a-f]{64}$/', $current_id );
 
 			// v3 key translation. The linkDocument+pdf special case relies on
 			// the RAW element_id, so it only fires when $is_hashed is false.

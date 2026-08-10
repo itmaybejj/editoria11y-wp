@@ -1,7 +1,7 @@
 === Editoria11y Accessibility Checker ===
 Contributors: itmaybejj, partyka
 Tags: accessibility checker, automated testing, quality assurance, SEO
-Stable tag: 3.0.0-alpha2
+Stable tag: 3.0.0
 Tested up to: 7.0
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -10,13 +10,18 @@ Content accessibility checker written to be intuitive and useful for non-technic
 
 == Description ==
 
-Editoria11y ("editorial accessibility ally") is a quality assurance tool built for an author's workflow:
+Editoria11y ("editorial accessibility ally") is a multilingual, automatic, open source accessibility checker that provides live feedback as you work, with site-wide issue reporting and dismissals.
 
-1. It provides instant feedback in the post and page editors. Authors do not need to remember to press a button or visit a dashboard to check their work.
-2. It checks in context on pages, not just within the post editor, allowing it to test content edited in widgets or theme features.
-3. The core plugin focuses exclusively on **content** issues: assisting authors at improving the things that are their responsibility.
+Editoria11y is built around four key needs for ongoing quality assurance, both before and after a site launch:
 
-This plugin is the official WordPress implementation of the open-source [Editoria11y library](https://editoria11y.princeton.edu). Tests run in the browser and findings are stored in your own database; nothing is sent to any third party. It is meant to **supplement**, not replace, [testing your code and visual design](https://webaim.org/resources/evalquickref/) with developer-focused tools and testing practices.
+* Tests run in real-time, offering inline corrections and advice as authors type in CKEditor in Gutenberg.
+* It checks rendered content in published pages and previews, allowing it to detect issues that only appear after Drupal assembles the content.
+* Tips use plain language, to both correct and teach.
+* All data is private. Tests run in-browser, and reports are stored on your own server.
+
+Editoria11y is meant to supplement, not replace, [testing with comprehensive tools and real assistive devices](https://webaim.org/resources/evalquickref/).
+
+This plugin is the official WordPress implementation of the open-source [Editoria11y library](https://editoria11y.com). Tests run in the browser and findings are stored in your own database; nothing is sent to any third party. It is meant to **supplement**, not replace, [testing your code and visual design](https://webaim.org/resources/evalquickref/) with developer-focused tools and testing practices.
 
 [Project supporters](https://editoria11y.com/license/), through code contributions, testing, help translating or purchasing a license, can also enable a [developer and auditor tools suite](https://editoria11y.com/features/#csa): ~50 additional tests for code and contrast problems, a custom test builder and a site crawler. We are at ~30% of our goal for 2026 support, which should be enough to sponsor work to add a link checker. Check the [project roadmap for active projects](https://editoria11y.com/features/#projects) and ideas for future work.
 
@@ -33,12 +38,6 @@ Check out a [demo of the checker itself](https://editoria11y.com/demo/).
 
 * Filterable reports let you explore recent issues, which pages have the most issues, which issues are most common, and which issues have been dismissed. These populate and update when published content is viewed by logged-in authors.
 * Various settings are available to constrain checks to specific parts of the page and tweak the sensitivity of several tests.
-
-## Is it free?
-
-Mostly. Editoria11y promotes accessibility in a unique way. Its tools are highly effective at helping non-technical authors prepare content that can be enjoyed equally by disabled Web users. We consider this a public good, so Editoria11y's <strong>core test suite and reports are free to use</strong> -- which are its unique features. If you are using an accessible base theme or have a good manual testing workflow and don't mess with colors in the block editor, that should be all you need.
-
-Editoria11y is not, however, free to develop or support, so "convenience" features for developers and auditors ask for contributions in the form of CSA subscriptions, via a ["contribute what you can"](https://editoria11y.com/license/#subscription) model, with [free tiers for active code, testing and translation contributors](https://editoria11y.com/license/#code). We do not want financial limitations to prevent anyone from using any of the accessibility testing features, so [contact us](https://editoria11y.com/contacts/) if the lowest support tier is still too high and you are not able to contribute in another way.
 
 ## The tests
 
@@ -73,6 +72,14 @@ Editoria11y is not, however, free to develop or support, so "convenience" featur
     * Video embeds, reminding the user to add closed captions
     * Audio embeds, reminding the user to provide a transcript
     * Social media embeds, reminding the user to provide alt attributes
+
+## Is it free?
+
+Yes. Mostly.
+
+Editoria11y promotes accessibility in a unique way. Its tools are highly effective at helping non-technical authors prepare content that can be enjoyed equally by disabled Web users. We consider this a public good, so <strong>this plugin, with Editoria11y's core test suite and reports, is free to use.</strong> If you are using an accessible base theme or have a good manual testing workflow and don't mess with colors in the block editor, that should be all you need.
+
+Editoria11y is not, however, free to develop or support, so quality assurance features for developers and auditors ask for a CSA subscription, via a ["contribute what you can"](https://editoria11y.com/license/#subscription) model, with [free tiers for active code, testing and translation contributors](https://editoria11y.com/license/#code). We do not want financial limitations to prevent anyone from using any of the accessibility testing features, so [contact us](https://editoria11y.com/contacts/) if the lowest support tier would present an undue burden and you are not able to contribute in another way.
 
 ### Supporter tools
 
@@ -173,9 +180,9 @@ Editoria11y's WordPress plugin was created by Princeton University's [Web Develo
 * [Brian Osborne](https://github.com/bkosborne): Code review
 * [Michael Muzzie](https://www.drupal.org/u/notmike): Wapuu photos
 
-Editoria11y began as a fork of the Toronto Metropolitan University's [Sa11y Accessibility Checker](https://sa11y.netlify.app/), and our teams regularly pass new code and ideas back and forth.
+Editoria11y's core test suite is co-maintained code with Toronto Metropolitan University's [Sa11y Accessibility Checker](https://sa11y.netlify.app/).
 
-New feature development is usually sponsored by grants from academic institutions, or contributions from project users through [Editoria11y CSA](https://editoria11y.com) participants and subscribers.
+New feature development comes through by grants from academic institutions and companies, as well as direct contributions from project users through [Editoria11y CSA](https://editoria11y.com) subscriptions.
 
 == Screenshots ==
 1. Checker with an open "manual check" request, for an image without alt text.
@@ -185,15 +192,18 @@ New feature development is usually sponsored by grants from academic institution
 
 == Changelog ==
 
-= 3.0.0-alpha2 =
+= 3.0.0 =
 * Adds many new content editor tests and translations.
-* Adds robust multisite configuration management (defaults and overrides).
+* Adds robust multisite configuration management, both for pushing and overriding settings across a network and for setting defaults for newly created sites.
 * Adds a [supporter tier](https://editoria11y.com/license/) with developer tests, a custom test builder, role-based split configuration (who sees which test) and a crawler.
 
 = 2.1.13 =
 * Add hooks for modifying CSV exports.
 
 == Upgrade Notice ==
+
+= 3.0.0 =
+The database upgrades itself the first time an administrator visits each site's dashboard; dismissal records are re-keyed by a background job (a progress notice shows until it finishes). On multisite, each site upgrades on its own first admin visit. Supporters switching to the CSA build: network-activate it (the free build deactivates automatically), then activate your license under Network Admin, Settings, Editoria11y License.
 
 = 2.1.0 =
 As-you-type checking is now compatible with both the block and classic editors.

@@ -90,9 +90,9 @@ final class FieldSanitizer {
 	public static function main_map(): array {
 		return array(
 			// Selects / single-line text.
-			'ed11y_theme'               => 'sanitize_enum_chars',
-			'ed11y_alert_mode'          => 'sanitize_enum_chars',
-			'ed11y_livecheck'           => 'sanitize_enum_chars',
+			'ed11y_theme'               => 'sanitize_theme',
+			'ed11y_alert_mode'          => 'sanitize_alert_mode',
+			'ed11y_livecheck'           => 'sanitize_livecheck',
 			'ed11y_checkvisibility'     => 'sanitize_checkvisibility',
 			'panel_pin'                 => 'sanitize_panel_pin',
 			'watch_for_changes'         => 'sanitize_watch_for_changes',
@@ -240,6 +240,40 @@ final class FieldSanitizer {
 	}
 
 	/**
+	 * Enum for the `ed11y_theme` select. Invalid values (only reachable by
+	 * a forged/scripted POST — the form is a fixed-choice select) store ''
+	 * so the read overlay falls back to the hardcoded default, matching
+	 * the other fixed-choice enums instead of persisting arbitrary
+	 * alphanumeric strings into the JS payload.
+	 *
+	 * @param mixed $value Posted value.
+	 */
+	private static function sanitize_theme( $value ): string {
+		$choices = array( 'sleekTheme', 'lightTheme', 'darkTheme' );
+		return in_array( (string) $value, $choices, true ) ? (string) $value : '';
+	}
+
+	/**
+	 * Enum for the `ed11y_alert_mode` select (library alertMode vocabulary).
+	 *
+	 * @param mixed $value Posted value.
+	 */
+	private static function sanitize_alert_mode( $value ): string {
+		$choices = array( 'polite', 'assertive', 'active', 'minimized' );
+		return in_array( (string) $value, $choices, true ) ? (string) $value : '';
+	}
+
+	/**
+	 * Enum for the `ed11y_livecheck` select.
+	 *
+	 * @param mixed $value Posted value.
+	 */
+	private static function sanitize_livecheck( $value ): string {
+		$choices = array( 'all', 'minimized', 'errors', 'none' );
+		return in_array( (string) $value, $choices, true ) ? (string) $value : '';
+	}
+
+	/**
 	 * Enum 'right' / 'left' for the panel-pin radio.
 	 *
 	 * @param mixed $value Posted value.
@@ -270,12 +304,17 @@ final class FieldSanitizer {
 	}
 
 	/**
-	 * Enum 'assertive' / 'smart' / 'polite' for CSA `dev_assertiveness`.
+	 * Enum for CSA `dev_assertiveness` — the developer-profile panel
+	 * behavior, expressed in the library's alertMode vocabulary. Must match
+	 * the `<option>` set the SettingsFields renderer emits; the old
+	 * whitelist listed a `smart` value the form never offered while
+	 * rejecting two values it did (`active`, `minimized`), silently
+	 * coercing those choices to 'assertive' on save.
 	 *
 	 * @param mixed $value Posted value.
 	 */
 	private static function sanitize_dev_assertiveness( $value ): string {
-		$choices = array( 'assertive', 'smart', 'polite' );
+		$choices = array( 'assertive', 'polite', 'active', 'minimized' );
 		return in_array( (string) $value, $choices, true ) ? (string) $value : 'assertive';
 	}
 

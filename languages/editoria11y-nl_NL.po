@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: editoria11y 3.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/editoria11y\n"
-"POT-Creation-Date: 2026-06-14T16:00:44-04:00\n"
+"POT-Creation-Date: 2026-08-05T19:54:53-04:00\n"
 "PO-Revision-Date: 2026-2-12 10:00+0000\n"
 "Language-Team: Editoria11y\n"
 "Language: nl\n"
@@ -13,8 +13,8 @@ msgstr ""
 
 #. Plugin Name of the plugin
 #: editoria11y.php
-msgid "Editoria11y Accessibility Checker"
-msgstr "Editoria11y Accessibility Checker"
+msgid "Editoria11y Accessibility Checker (CSA)"
+msgstr "Editoria11y Accessibility Checker (CSA)"
 
 #. Plugin URI of the plugin
 #: editoria11y.php
@@ -23,8 +23,8 @@ msgstr "https://wordpress.org/plugins/editoria11y-accessibility-checker/"
 
 #. Description of the plugin
 #: editoria11y.php
-msgid "User friendly content quality assurance. Checks automatically, highlights issues inline, and provides straightforward, easy-to-understand tips."
-msgstr "Gebruiksvriendelijke kwaliteitscontrole van content. Controleert automatisch, markeert problemen ter plekke en geeft duidelijke, begrijpelijke tips."
+msgid "User friendly content quality assurance, plus the CSA developer suite: ~50 additional code and contrast tests, a custom test builder, role-based test configuration, and a site crawler."
+msgstr "Gebruiksvriendelijke kwaliteitsborging voor content, plus de CSA developer suite: ~50 extra code- en contrasttests, een aangepaste testbouwer, rolgebaseerde testconfiguratie en een sitecrawler."
 
 #. Author of the plugin
 #: editoria11y.php
@@ -40,331 +40,362 @@ msgstr "https://editoria11y.com"
 msgid "Editoria11y is missing its vendored dependencies. Run \"composer install\" inside the plugin directory or reinstall the plugin from a complete release archive."
 msgstr "De vendored dependencies van Editoria11y ontbreken. Voer \"composer install\" uit in de plugin-map of installeer de plugin opnieuw vanuit een volledig release-archief."
 
-#: editoria11y.php:282
-msgid "Every fifteen minutes (Editoria11y rehash)"
-msgstr "Elke vijftien minuten (Editoria11y-rehash)"
+#: editoria11y.php:321
+msgid "Every five minutes (Editoria11y rehash)"
+msgstr "Elke vijf minuten (Editoria11y-rehash)"
 
-#: src/Admin/Dashboard.php:36 src/Admin/Dashboard.php:54
-#: src/Admin/Dashboard.php:197
+#: editoria11y.php:327
+msgid "Every fifteen minutes (Editoria11y license watchdog)"
+msgstr "Elke vijftien minuten (Editoria11y-licentiewatchdog)"
+
+#: src/Admin/CsvExport.php:161 src/Admin/Dashboard.php:150
+msgid "Page"
+msgstr "Pagina"
+
+#: src/Admin/CsvExport.php:162
+msgid "URL"
+msgstr "URL"
+
+#: src/Admin/CsvExport.php:163
+msgid "Issue"
+msgstr "Probleem"
+
+#: src/Admin/CsvExport.php:164 src/Admin/Dashboard.php:158
+msgid "Count"
+msgstr "Aantal"
+
+#: src/Admin/CsvExport.php:165 src/Admin/Dashboard.php:155
+msgid "Author"
+msgstr "Auteur"
+
+#: src/Admin/CsvExport.php:166
+msgid "Page Type"
+msgstr "Paginatype"
+
+#: src/Admin/CsvExport.php:167
+msgid "Detected on"
+msgstr "Gedetecteerd op"
+
+#: src/Admin/CsvExport.php:168 src/Admin/Dashboard.php:153
+#: src/Form/CrawlerPage.php:206 src/Form/CustomRulesPage.php:194
+#: src/Form/NetworkCustomRulesPage.php:154
+msgid "Status"
+msgstr "Status"
+
+#: src/Admin/CsvExport.php:169 src/Form/CustomRulesPage.php:317
+#: src/Form/NetworkCustomRulesPage.php:192
+msgid "Edit"
+msgstr "Bewerken"
+
+#: src/Admin/Dashboard.php:35 src/Admin/Dashboard.php:53
+#: src/Admin/Dashboard.php:202
 msgid "Editoria11y Accessibility Report"
 msgstr "Editoria11y-toegankelijkheidsrapport"
 
-#: src/Admin/Dashboard.php:37
+#: src/Admin/Dashboard.php:36
 msgid "Accessibility"
 msgstr "Toegankelijkheid"
 
-#: src/Admin/Dashboard.php:121
+#: src/Admin/Dashboard.php:71
+msgid "Error:"
+msgstr "Fout:"
+
+#: src/Admin/Dashboard.php:72
+msgid "Editoria11y database tables are missing."
+msgstr "De Editoria11y-databasetabellen ontbreken."
+
+#. translators: 1: bug report link, 2: site health page link.
+#: src/Admin/Dashboard.php:75
+#, php-format
+msgid "Try deactivating and reactivating the plugin to reset config and recreate the tables, or %1$s with the information from the WordPress, Server and Database sections on your %2$s."
+msgstr "Probeer de plugin te deactiveren en opnieuw te activeren om de configuratie te resetten en de tabellen opnieuw aan te maken, of %1$s met de informatie uit de secties WordPress, Server en Database op je %2$s."
+
+#: src/Admin/Dashboard.php:76
+msgid "post a bug report"
+msgstr "een bugrapport plaatsen"
+
+#: src/Admin/Dashboard.php:77
+msgid "site health page"
+msgstr "sitegezondheidspagina"
+
+#: src/Admin/Dashboard.php:129
 msgid "View all issues"
 msgstr "Alle problemen bekijken"
 
-#: src/Admin/Dashboard.php:122
+#: src/Admin/Dashboard.php:130
 msgid "View issues on all pages"
 msgstr "Problemen op alle pagina’s bekijken"
 
 #. translators: %s: name of an alert/test, e.g. "Image is missing alt text".
-#: src/Admin/Dashboard.php:124
+#: src/Admin/Dashboard.php:132
 #, php-format
 msgid "Alert report: \"%s\""
 msgstr "Alertrapport: \"%s\""
 
 #. translators: %s: post type slug, e.g. "page" or "post".
-#: src/Admin/Dashboard.php:126
+#: src/Admin/Dashboard.php:134
 #, php-format
 msgid "Alerts on pages of type \"%s\""
 msgstr "Alerts op pagina’s van type \"%s\""
 
-#: src/Admin/Dashboard.php:127
+#: src/Admin/Dashboard.php:135
 msgid "Alerts on pages created by author"
 msgstr "Alerts op pagina’s aangemaakt door auteur"
 
 #. translators: %s: author display name.
-#: src/Admin/Dashboard.php:129
+#: src/Admin/Dashboard.php:137
 #, php-format
 msgid "Alerts on pages created by %s"
 msgstr "Alerts op pagina’s aangemaakt door %s"
 
-#: src/Admin/Dashboard.php:130
+#: src/Admin/Dashboard.php:138
 msgid "Alerts dismissed by"
 msgstr "Alerts afgewezen door"
 
 #. translators: %s: user display name of the dismissor.
-#: src/Admin/Dashboard.php:132
+#: src/Admin/Dashboard.php:140
 #, php-format
 msgid "Alerts dismissed by %s"
 msgstr "Alerts afgewezen door %s"
 
 #. translators: %s: post-status label, e.g. "Published" or "Draft".
-#: src/Admin/Dashboard.php:134
+#: src/Admin/Dashboard.php:142
 #, php-format
 msgid "%s pages"
 msgstr "%s pagina’s"
 
-#: src/Admin/Dashboard.php:135
+#: src/Admin/Dashboard.php:143
 msgid "API error."
 msgstr "API-fout."
 
-#: src/Admin/Dashboard.php:136
+#: src/Admin/Dashboard.php:144
+msgid "Your login session expired. Reload this page to continue."
+msgstr "Je inlogsessie is verlopen. Laad deze pagina opnieuw om door te gaan."
+
+#: src/Admin/Dashboard.php:145
 msgid "loading..."
 msgstr "laden..."
 
 #. translators: %d: pagination page number.
-#: src/Admin/Dashboard.php:138
+#: src/Admin/Dashboard.php:147
 #, php-format
 msgid "Page %d"
 msgstr "Pagina %d"
 
-#: src/Admin/Dashboard.php:139
+#: src/Admin/Dashboard.php:148
 msgid "Alerts"
 msgstr "Alerts"
 
-#: src/Admin/Dashboard.php:140
+#: src/Admin/Dashboard.php:149
 msgid "Dev alerts"
 msgstr "Dev‑alerts"
 
-#: src/Admin/Dashboard.php:141
-msgid "Page"
-msgstr "Pagina"
-
-#: src/Admin/Dashboard.php:142
+#: src/Admin/Dashboard.php:151
 msgid "Path"
 msgstr "Pad"
 
-#: src/Admin/Dashboard.php:143
+#: src/Admin/Dashboard.php:152
 msgid "Type"
 msgstr "Type"
 
-#: src/Admin/Dashboard.php:144 src/Form/CrawlerPage.php:205
-#: src/Form/CustomRulesPage.php:194 src/Form/NetworkCustomRulesPage.php:154
-msgid "Status"
-msgstr "Status"
-
-#: src/Admin/Dashboard.php:145
+#: src/Admin/Dashboard.php:154
 msgid "Updated"
 msgstr "Bijgewerkt"
 
-#: src/Admin/Dashboard.php:146
-msgid "Author"
-msgstr "Auteur"
-
-#: src/Admin/Dashboard.php:147
+#: src/Admin/Dashboard.php:156
 msgid "Detected"
 msgstr "Gedetecteerd"
 
-#: src/Admin/Dashboard.php:148
+#: src/Admin/Dashboard.php:157
 msgid "Alert"
 msgstr "Alert"
 
-#: src/Admin/Dashboard.php:149
-msgid "Count"
-msgstr "Aantal"
-
-#: src/Admin/Dashboard.php:150
+#: src/Admin/Dashboard.php:159
 msgid "Pages"
 msgstr "Pagina’s"
 
-#: src/Admin/Dashboard.php:151
+#: src/Admin/Dashboard.php:160
 msgid "On"
 msgstr "Op"
 
-#: src/Admin/Dashboard.php:152
+#: src/Admin/Dashboard.php:161
 msgid "Dismissed alert"
 msgstr "Afgewezen alert"
 
-#: src/Admin/Dashboard.php:153
+#: src/Admin/Dashboard.php:162
 msgid "Marked"
 msgstr "Gemarkeerd"
 
-#: src/Admin/Dashboard.php:154
+#: src/Admin/Dashboard.php:163
 msgid "Current"
 msgstr "Huidig"
 
-#: src/Admin/Dashboard.php:155
+#: src/Admin/Dashboard.php:164
 msgid "By"
 msgstr "Door"
 
-#: src/Admin/Dashboard.php:156
+#: src/Admin/Dashboard.php:165
 msgid "Alerts by page"
 msgstr "Alerts per pagina"
 
-#: src/Admin/Dashboard.php:157
+#: src/Admin/Dashboard.php:166
 msgid "Recent alerts"
 msgstr "Recente problemen"
 
-#: src/Admin/Dashboard.php:158
+#: src/Admin/Dashboard.php:167
 msgid "Alert types"
 msgstr "Alerttypen"
 
-#: src/Admin/Dashboard.php:159
+#: src/Admin/Dashboard.php:168
 msgid "Dismissals"
 msgstr "Afwijzingen"
 
-#: src/Admin/Dashboard.php:160
+#: src/Admin/Dashboard.php:169
 msgid "Recent dismissals"
 msgstr "Recente afwijzingen"
 
-#: src/Admin/Dashboard.php:161
+#: src/Admin/Dashboard.php:170
 msgid "Download results as CSV"
 msgstr "Resultaten downloaden als CSV"
 
-#: src/Admin/Dashboard.php:162
+#: src/Admin/Dashboard.php:171
 msgid "None"
 msgstr "Geen"
 
-#: src/Admin/Dashboard.php:163
+#: src/Admin/Dashboard.php:172
 msgid "No"
 msgstr "Nee"
 
-#: src/Admin/Dashboard.php:164
+#: src/Admin/Dashboard.php:173
 msgid "Yes"
 msgstr "Ja"
 
-#: src/Admin/Dashboard.php:165
+#: src/Admin/Dashboard.php:174
 msgid "n/a"
 msgstr "n.v.t."
 
-#: src/Admin/Dashboard.php:166
-msgid "Empty Link"
-msgstr "Lege link"
+#: src/Admin/Dashboard.php:175 src/functions.php:1607
+msgid "Empty button-style link"
+msgstr "Lege link in knopstijl"
 
 #. translators: tooltip on a column header that's currently sorted descending.
-#: src/Admin/Dashboard.php:168
+#: src/Admin/Dashboard.php:177
 msgid "descending"
 msgstr "aflopend"
 
 #. translators: tooltip on a column header that's currently sorted ascending.
-#: src/Admin/Dashboard.php:170
+#: src/Admin/Dashboard.php:179
 msgid "ascending"
 msgstr "oplopend"
 
 #. translators: %d: number of result rows returned (singular form).
-#: src/Admin/Dashboard.php:173
+#: src/Admin/Dashboard.php:182
 #, php-format
 msgid "%d result"
 msgstr "%d resultaat"
 
 #. translators: %d: number of result rows returned (plural form).
-#: src/Admin/Dashboard.php:175
+#: src/Admin/Dashboard.php:184
 #, php-format
 msgid "%d results"
 msgstr "%d resultaten"
-
-#: src/Admin/Dashboard.php:180
-msgid "Published"
-msgstr "Gepubliceerd"
-
-#: src/Admin/Dashboard.php:181
-msgid "Scheduled"
-msgstr "Gepland"
-
-#: src/Admin/Dashboard.php:182
-msgid "Draft"
-msgstr "Concept"
-
-#: src/Admin/Dashboard.php:183
-msgid "Pending"
-msgstr "In afwachting"
-
-#: src/Admin/Dashboard.php:184
-msgid "Private"
-msgstr "Privé"
-
-#: src/Admin/Dashboard.php:185
-msgid "Trash"
-msgstr "Prullenbak"
 
 #: src/Controller/ApiCrawler.php:122
 msgid "The crawler is a premium feature."
 msgstr "De crawler is een premium-functie."
 
 #: src/Controller/ApiCrawler.php:129
-msgid "Editoria11y database upgrade did not complete; the crawler is paused until an administrator retries the upgrade."
-msgstr "De Editoria11y-database-upgrade is niet voltooid; de crawler is gepauzeerd totdat een beheerder de upgrade opnieuw uitvoert."
+msgid "Editoria11y database update did not complete; the crawler is paused until an administrator retries the update."
+msgstr "De Editoria11y-database-update is niet voltooid; de crawler is gepauzeerd totdat een beheerder de update opnieuw uitvoert."
 
 #: src/Controller/ApiDismissals.php:83
 msgid "Results not recorded"
 msgstr "Resultaten niet opgeslagen"
 
-#: src/Controller/ApiDismissals.php:411 src/Controller/ApiResults.php:687
-msgid "Editoria11y database upgrade did not complete; writes are paused until an administrator retries the upgrade."
-msgstr "De Editoria11y-database-upgrade is niet voltooid; schrijfacties zijn gepauzeerd totdat een beheerder de upgrade opnieuw uitvoert."
+#: src/Controller/ApiDismissals.php:480 src/Controller/ApiResults.php:857
+msgid "Editoria11y database update did not complete; writes are paused until an administrator retries the update."
+msgstr "De Editoria11y-database-update is niet voltooid; schrijfacties zijn gepauzeerd totdat een beheerder de update opnieuw uitvoert."
 
-#: src/Controller/ApiResults.php:712
-msgid "Editoria11y database upgrade did not complete; the dashboard is paused until an administrator retries the upgrade."
-msgstr "De Editoria11y-database-upgrade is niet voltooid; het dashboard is gepauzeerd totdat een beheerder de upgrade opnieuw uitvoert."
+#: src/Controller/ApiDismissals.php:505 src/Controller/ApiResults.php:882
+msgid "Editoria11y database update did not complete; the dashboard is paused until an administrator retries the update."
+msgstr "De Editoria11y-database-update is niet voltooid; het dashboard is gepauzeerd totdat een beheerder de update opnieuw uitvoert."
 
-#: src/CustomRules.php:349
+#: src/CustomRules.php:273
 msgid "Machine name is required."
 msgstr "Machinenaam is verplicht."
 
-#: src/CustomRules.php:352
+#: src/CustomRules.php:276
 msgid "Machine name must be lowercase letters, digits, and underscores, starting with a letter."
 msgstr "Machinenaam mag alleen kleine letters, cijfers en underscores bevatten en moet beginnen met een letter."
 
-#: src/CustomRules.php:357
+#: src/CustomRules.php:281
 msgid "Admin label is required."
 msgstr "Beheerlabel is verplicht."
 
-#: src/CustomRules.php:362
+#: src/CustomRules.php:286
 msgid "Test grouping ID is required."
 msgstr "Testgroeperings-ID is verplicht."
 
-#: src/CustomRules.php:369
+#: src/CustomRules.php:293
 msgid "Test grouping ID may only contain letters, digits, and underscores."
 msgstr "Testgroeperings-ID mag alleen letters, cijfers en underscores bevatten."
 
 #. translators: %s is a reserved test key like TABLES_SEMANTIC_HEADING.
-#: src/CustomRules.php:374
+#: src/CustomRules.php:298
 #, php-format
 msgid "Test grouping ID \"%s\" is reserved by the v3 migration drop list and cannot be used."
 msgstr "Testgroeperings-ID \"%s\" is gereserveerd door de v3-migratie-droplist en kan niet worden gebruikt."
 
-#: src/CustomRules.php:381
+#: src/CustomRules.php:305
 msgid "Tip title is required."
 msgstr "Tip-titel is verplicht."
 
-#: src/CustomRules.php:388
+#: src/CustomRules.php:312
 msgid "Tip details must contain some visible text."
 msgstr "Tip-details moeten zichtbare tekst bevatten."
 
-#: src/CustomRules.php:393
+#: src/CustomRules.php:317
 msgid "Alert type must be Error or Manual check."
 msgstr "Alerttype moet Fout of Handmatige controle zijn."
 
-#: src/CustomRules.php:399
+#: src/CustomRules.php:323
 msgid "Dismiss key must be Text content or Attributes."
 msgstr "Sleutel voor sluiten moet Tekstinhoud of Attributen zijn."
 
-#: src/CustomRules.php:405
+#: src/CustomRules.php:329
 msgid "Filter selector looks like a CSS rule block, not a selector. Remove the curly braces."
 msgstr "Filterselector lijkt op een CSS-regelblok, geen selector. Verwijder de accolades."
 
-#: src/CustomRules.php:415
+#: src/CustomRules.php:332
+msgid "Filter selector has an unclosed quote, bracket, or parenthesis. The browser would reject it and skip every custom rule on the page."
+msgstr "Filterselector heeft een niet-gesloten aanhalingsteken, blokhaak of ronde haak. De browser zou deze afwijzen en elke aangepaste regel op de pagina overslaan."
+
+#: src/CustomRules.php:342
 msgid "At least one rule criterion is required: a filter selector OR one or more include-text strings."
 msgstr "Ten minste één regelcriterium is vereist: een filterselector OF een of meer include-text-strings."
 
 #. translators: %s is an unknown element-set value.
-#: src/CustomRules.php:425
+#: src/CustomRules.php:352
 #, php-format
 msgid "Element set \"%s\" is not one of the recognized element categories."
 msgstr "Elementset \"%s\" is geen erkende elementcategorie."
 
-#: src/Form/CrawlerPage.php:59
+#: src/Form/CrawlerPage.php:59 src/Form/CrawlerPage.php:60
 msgid "Editoria11y Crawler"
 msgstr "Editoria11y-crawler"
-
-#: src/Form/CrawlerPage.php:60 src/Form/CrawlerPage.php:146
-#: src/Form/SettingsPage.php:303
-msgid "Crawler"
-msgstr "Crawler"
 
 #: src/Form/CrawlerPage.php:126
 msgid "You do not have permission to use the crawler."
 msgstr "Je hebt geen rechten om de crawler te gebruiken."
 
 #: src/Form/CrawlerPage.php:130 src/Form/CustomRulesPage.php:111
-#: src/Form/SettingsPage.php:259 src/Form/SettingsPage.php:260
+#: src/Form/SettingsPage.php:236 src/Form/SettingsPage.php:237
 msgid "Editoria11y"
 msgstr "Editoria11y"
+
+#: src/Form/CrawlerPage.php:146 src/Form/SettingsPage.php:288
+msgid "Crawler"
+msgstr "Crawler"
 
 #: src/Form/CrawlerPage.php:149
 msgid "The crawler is a CSA feature. Activate CSA to schedule sitewide accessibility scans across posts, pages, and custom post types."
@@ -378,192 +409,199 @@ msgstr "Handmatige crawl"
 msgid "Editoria11y reports populate and update in real time as editors work, so a manual crawl is generally only helpful when first installing the plugin or after making major theme or configuration changes."
 msgstr "Editoria11y-rapporten worden in real time gevuld en bijgewerkt terwijl editors werken, dus een handmatige crawl is meestal alleen nuttig bij de eerste installatie van de plugin of na grote wijzigingen aan thema of configuratie."
 
-#: src/Form/CrawlerPage.php:175 src/Form/CustomRulesPage.php:501
+#: src/Form/CrawlerPage.php:176 src/Form/CustomRulesPage.php:501
 #: src/Form/NetworkCustomRulesPage.php:288 src/Form/NetworkLicensePage.php:416
 msgid "Cancel"
 msgstr "Annuleren"
 
-#: src/Form/CrawlerPage.php:180
+#: src/Form/CrawlerPage.php:181
 msgid "This tab needs to remain open and in the foreground during the crawl."
 msgstr "Deze tab moet tijdens het crawlen open en op de voorgrond blijven."
 
-#: src/Form/CrawlerPage.php:187
+#: src/Form/CrawlerPage.php:188
 msgid "Browsers pause API operations in background tabs."
 msgstr "Browsers pauzeren API-bewerkingen in achtergrondtabbladen."
 
-#: src/Form/CrawlerPage.php:195
+#: src/Form/CrawlerPage.php:196
 msgid "Filter which pages will be crawled"
 msgstr "Filter welke pagina’s moeten worden gecrawld"
 
-#: src/Form/CrawlerPage.php:199
+#: src/Form/CrawlerPage.php:200
 msgid "Content type"
 msgstr "Contenttype"
 
-#: src/Form/CrawlerPage.php:217
+#: src/Form/CrawlerPage.php:218
 msgid "Filter by"
 msgstr "Filteren op"
 
-#: src/Form/CrawlerPage.php:220 src/Form/CrawlerPage.php:253
+#: src/Form/CrawlerPage.php:221 src/Form/CrawlerPage.php:254
 msgid "Date created"
 msgstr "Aanmaakdatum"
 
-#: src/Form/CrawlerPage.php:221 src/Form/CrawlerPage.php:254
+#: src/Form/CrawlerPage.php:222 src/Form/CrawlerPage.php:255
 msgid "Date modified"
 msgstr "Wijzigingsdatum"
 
-#: src/Form/CrawlerPage.php:223
+#: src/Form/CrawlerPage.php:224
 msgid "From"
 msgstr "Van"
 
-#: src/Form/CrawlerPage.php:225
+#: src/Form/CrawlerPage.php:226
 msgid "To"
 msgstr "Tot"
 
-#: src/Form/CrawlerPage.php:230
+#: src/Form/CrawlerPage.php:231
 msgid "Content alerts"
 msgstr "Content‑alerts"
 
-#: src/Form/CrawlerPage.php:233 src/Form/CrawlerPage.php:243
+#: src/Form/CrawlerPage.php:234 src/Form/CrawlerPage.php:244
 msgid "Any"
 msgstr "Alle"
 
-#: src/Form/CrawlerPage.php:234
+#: src/Form/CrawlerPage.php:235
 msgid "Has alerts"
 msgstr "Bevat alerts"
 
-#: src/Form/CrawlerPage.php:235
+#: src/Form/CrawlerPage.php:236
 msgid "No alerts"
 msgstr "Geen alerts"
 
-#: src/Form/CrawlerPage.php:240
+#: src/Form/CrawlerPage.php:241
 msgid "Developer alerts"
 msgstr "Developer‑alerts"
 
-#: src/Form/CrawlerPage.php:244
+#: src/Form/CrawlerPage.php:245
 msgid "Has dev alerts"
 msgstr "Bevat dev‑alerts"
 
-#: src/Form/CrawlerPage.php:245
+#: src/Form/CrawlerPage.php:246
 msgid "No dev alerts"
 msgstr "Geen dev‑alerts"
 
-#: src/Form/CrawlerPage.php:250
+#: src/Form/CrawlerPage.php:251
 msgid "Sort by"
 msgstr "Sorteren op"
 
-#: src/Form/CrawlerPage.php:255
+#: src/Form/CrawlerPage.php:256
 msgid "Title"
 msgstr "Titel"
 
-#: src/Form/CrawlerPage.php:258
+#: src/Form/CrawlerPage.php:259
 msgid "Newest first"
 msgstr "Nieuwste eerst"
 
-#: src/Form/CrawlerPage.php:259
+#: src/Form/CrawlerPage.php:260
 msgid "Oldest first"
 msgstr "Oudste eerst"
 
-#: src/Form/CrawlerPage.php:265
+#: src/Form/CrawlerPage.php:266
 msgid "Apply filters"
 msgstr "Filters toepassen"
 
-#: src/Form/CrawlerPage.php:268
+#: src/Form/CrawlerPage.php:269
 msgid "Crawl preview"
 msgstr "Crawl-voorbeeld"
 
-#: src/Form/CrawlerPage.php:287
+#: src/Form/CrawlerPage.php:288
 msgid "Crawl delay"
 msgstr "Crawl-vertraging"
 
 #. translators: %d: number of milliseconds between iframe loads.
-#: src/Form/CrawlerPage.php:289
+#: src/Form/CrawlerPage.php:290
 #, php-format
 msgid "%d ms"
 msgstr "%d ms"
 
-#: src/Form/CrawlerPage.php:290
+#: src/Form/CrawlerPage.php:291
 msgid "Start crawling"
 msgstr "Crawl starten"
 
-#: src/Form/CrawlerPage.php:291
+#: src/Form/CrawlerPage.php:292
 msgid "Pause crawl"
 msgstr "Crawl pauzeren"
 
-#: src/Form/CrawlerPage.php:292
+#: src/Form/CrawlerPage.php:293
 msgid "Resume crawl"
 msgstr "Crawl hervatten"
 
-#: src/Form/CrawlerPage.php:293
+#: src/Form/CrawlerPage.php:294
 msgid "Back to dashboard"
 msgstr "Terug naar dashboard"
 
-#: src/Form/CrawlerPage.php:294
+#: src/Form/CrawlerPage.php:295
 msgid "No matching content. Adjust the filters and apply."
 msgstr "Geen overeenkomende content. Pas de filters aan en pas ze toe."
 
-#. translators: %s: human-readable duration like "30 seconds" or "5 minutes".
 #: src/Form/CrawlerPage.php:296
+msgid "Could not load the page list. Reload this page to retry; if the problem persists, your login session may have expired."
+msgstr "De paginalijst kon niet worden geladen. Laad deze pagina opnieuw om het nog eens te proberen; als het probleem blijft bestaan, is je inlogsessie mogelijk verlopen."
+
+#. translators: %s: human-readable duration like "30 seconds" or "5 minutes".
+#: src/Form/CrawlerPage.php:298
 #, php-format
 msgid "Estimated time: %s"
 msgstr "Geschatte tijd: %s"
 
 #. translators: 1: number of URLs shown in this batch, 2: total matching URLs across all batches (singular form).
-#: src/Form/CrawlerPage.php:299
+#: src/Form/CrawlerPage.php:301
 #, php-format
 msgid "Showing %1$d of %2$d matching page."
 msgstr "%1$d van %2$d overeenkomende pagina wordt getoond."
 
 #. translators: 1: number of URLs shown in this batch, 2: total matching URLs across all batches (plural form).
-#: src/Form/CrawlerPage.php:301
+#: src/Form/CrawlerPage.php:303
 #, php-format
 msgid "Showing %1$d of %2$d matching pages."
 msgstr "%1$d van %2$d overeenkomende pagina’s worden getoond."
 
 #. translators: %d: whole-number count of seconds remaining (singular form).
-#: src/Form/CrawlerPage.php:305
+#: src/Form/CrawlerPage.php:307
 #, php-format
 msgid "%d second"
 msgstr "%d seconde"
 
 #. translators: %d: whole-number count of seconds remaining (plural form).
-#: src/Form/CrawlerPage.php:307
+#: src/Form/CrawlerPage.php:309
 #, php-format
 msgid "%d seconds"
 msgstr "%d seconden"
 
 #. translators: %d: whole-number count of minutes remaining (singular form).
-#: src/Form/CrawlerPage.php:311
+#: src/Form/CrawlerPage.php:313
 #, php-format
 msgid "%d minute"
 msgstr "%d minuut"
 
 #. translators: %d: whole-number count of minutes remaining (plural form).
-#: src/Form/CrawlerPage.php:313
+#: src/Form/CrawlerPage.php:315
 #, php-format
 msgid "%d minutes"
 msgstr "%d minuten"
 
 #. translators: %s: hours remaining as a decimal, e.g. "2.5" (singular form).
-#: src/Form/CrawlerPage.php:317
+#: src/Form/CrawlerPage.php:319
 #, php-format
 msgid "%s hour"
 msgstr "%s uur"
 
 #. translators: %s: hours remaining as a decimal, e.g. "2.5" (plural form).
-#: src/Form/CrawlerPage.php:319
+#: src/Form/CrawlerPage.php:321
 #, php-format
 msgid "%s hours"
 msgstr "%s uur"
 
 #: src/Form/CustomRulesPage.php:84 src/Form/CustomRulesPage.php:85
-#: src/Form/CustomRulesPage.php:143 src/Form/CustomRulesPage.php:174
-msgid "Custom Rules"
-msgstr "Aangepaste regels"
+msgid "Editoria11y Custom Rules"
+msgstr "Editoria11y aangepaste regels"
 
 #: src/Form/CustomRulesPage.php:104 src/Form/CustomRulesPage.php:338
 #: src/Form/CustomRulesPage.php:880 src/Form/CustomRulesPage.php:1030
 msgid "You do not have permission to manage custom rules."
 msgstr "Je hebt geen rechten om aangepaste regels te beheren."
+
+#: src/Form/CustomRulesPage.php:143 src/Form/CustomRulesPage.php:174
+msgid "Custom Rules"
+msgstr "Aangepaste regels"
 
 #: src/Form/CustomRulesPage.php:146
 msgid "Custom rules are a CSA feature. Activate CSA to add and edit rules; existing rules remain stored and become editable again on reactivation."
@@ -611,7 +649,7 @@ msgstr "Overschreven door een siteregel met hetzelfde ID"
 
 #: src/Form/CustomRulesPage.php:245 src/Form/CustomRulesPage.php:304
 #: src/Form/CustomRulesPage.php:600 src/Form/CustomRulesPage.php:604
-#: src/Form/NetworkCustomRulesPage.php:176 src/Form/SettingsFields.php:787
+#: src/Form/NetworkCustomRulesPage.php:176 src/Form/SettingsFields.php:786
 msgid "Active"
 msgstr "Actief"
 
@@ -642,10 +680,6 @@ msgstr "Vergrendeld door de netwerkbeheerder"
 #: src/Form/CustomRulesPage.php:305 src/Form/NetworkCustomRulesPage.php:177
 msgid "Disabled"
 msgstr "Uitgeschakeld"
-
-#: src/Form/CustomRulesPage.php:317 src/Form/NetworkCustomRulesPage.php:192
-msgid "Edit"
-msgstr "Bewerken"
 
 #: src/Form/CustomRulesPage.php:322
 msgid "This site"
@@ -790,8 +824,8 @@ msgid "Attributes on tag (e.g. href and src)"
 msgstr "Attributen op tag (bijv. href en src)"
 
 #: src/Form/CustomRulesPage.php:703
-msgid "How dismissals are tracked. 'Text' uses its text content, 'Attributes' uses its attributes (href, id, class, src)."
-msgstr "Hoe sluitingen worden bijgehouden. 'Text' gebruikt de tekstinhoud, 'Attributes' gebruikt de attributen (href, id, class, src)."
+msgid "How dismissals are tracked. 'Text content' uses the text inside the element, 'Attributes on tag' uses its attributes (href, id, class, src)."
+msgstr "Hoe sluitingen worden bijgehouden. 'Tekstinhoud' gebruikt de tekst binnen het element, 'Attributen op tag' gebruikt de attributen (href, id, class, src)."
 
 #: src/Form/CustomRulesPage.php:712
 msgid "Elements to check"
@@ -890,28 +924,28 @@ msgid "Custom rule deleted."
 msgstr "Aangepaste regel verwijderd."
 
 #: src/Form/MigrationPanel.php:77
-msgid "Editoria11y needs to upgrade its database tables."
-msgstr "Editoria11y moet de databasetabellen upgraden."
+msgid "Editoria11y needs to update its database tables."
+msgstr "Editoria11y moet de databasetabellen updaten."
 
 #: src/Form/MigrationPanel.php:81
-msgid "Editoria11y database upgrade encountered an error during finalization."
-msgstr "De Editoria11y-database-upgrade kreeg een fout tijdens de afronding."
+msgid "Editoria11y database update encountered an error during finalization."
+msgstr "De Editoria11y-database-update kreeg een fout tijdens de afronding."
 
 #: src/Form/MigrationPanel.php:82
-msgid "Editoria11y is upgrading existing dismissal records in the background."
+msgid "Editoria11y is updating existing dismissal records in the background."
 msgstr "Editoria11y werkt op de achtergrond bestaande afwijzingsregistraties bij."
 
 #: src/Form/MigrationPanel.php:85
-msgid "Editoria11y database upgrade failed and writes are paused."
-msgstr "De Editoria11y-database-upgrade is mislukt en schrijfacties zijn gepauzeerd."
+msgid "Editoria11y database update failed and writes are paused."
+msgstr "De Editoria11y-database-update is mislukt en schrijfacties zijn gepauzeerd."
 
 #: src/Form/MigrationPanel.php:94
 msgid "Open Editoria11y settings"
 msgstr "Editoria11y-instellingen openen"
 
 #: src/Form/MigrationPanel.php:121
-msgid "Upgrade failed. Please retry."
-msgstr "Upgrade mislukt. Probeer het opnieuw."
+msgid "Update failed. Please retry."
+msgstr "Update mislukt. Probeer het opnieuw."
 
 #. translators: 1: number of legacy dismissals already migrated, 2: total count detected at start.
 #: src/Form/MigrationPanel.php:123
@@ -920,42 +954,42 @@ msgid "Migrating dismissals: %1$d of %2$d processed."
 msgstr "Afwijzingen migreren: %1$d van %2$d verwerkt."
 
 #: src/Form/MigrationPanel.php:124
-msgid "Database upgrade complete."
-msgstr "Database-upgrade voltooid."
+msgid "Database update complete."
+msgstr "Database-update voltooid."
 
 #: src/Form/MigrationPanel.php:125
 msgid "Working…"
 msgstr "Bezig…"
 
 #: src/Form/MigrationPanel.php:126
-msgid "A previous upgrade attempt did not finish."
-msgstr "Een eerdere upgradepoging is niet afgerond."
+msgid "A previous update attempt did not finish."
+msgstr "Een eerdere updatepoging is niet afgerond."
 
 #: src/Form/MigrationPanel.php:127
-msgid "A schema upgrade is required."
-msgstr "Een schema-upgrade is vereist."
+msgid "A schema update is required."
+msgstr "Een schema-update is vereist."
 
 #: src/Form/MigrationPanel.php:128
-msgid "Background data rewrite is in progress. Click below to drive it to completion now."
-msgstr "Het herschrijven van data op de achtergrond is bezig. Klik hieronder om dit nu te voltooien."
+msgid "Background data update is in progress. Click below to drive it to completion now."
+msgstr "Het bijwerken van data op de achtergrond is bezig. Klik hieronder om dit nu te voltooien."
 
 #: src/Form/MigrationPanel.php:132
-msgid "Database upgrade"
-msgstr "Database-upgrade"
+msgid "Editoria11y database update"
+msgstr "Editoria11y-database-update"
 
 #: src/Form/MigrationPanel.php:134
 msgid "Checking schema state…"
 msgstr "Schemastatus controleren…"
 
 #: src/Form/MigrationPanel.php:138
-msgid "Run upgrade now"
-msgstr "Upgrade nu uitvoeren"
+msgid "Run update now"
+msgstr "Update nu uitvoeren"
 
 #: src/Form/MigrationPanel.php:141
 msgid "Retry"
 msgstr "Opnieuw proberen"
 
-#: src/Form/MigrationPanel.php:256 src/Form/NetworkLicensePage.php:196
+#: src/Form/MigrationPanel.php:268 src/Form/NetworkLicensePage.php:196
 msgid "Insufficient permissions."
 msgstr "Onvoldoende rechten."
 
@@ -967,8 +1001,8 @@ msgstr "Editoria11y aangepaste netwerkregels"
 
 #: src/Form/NetworkCustomRulesPage.php:107
 #: src/Form/NetworkCustomRulesPage.php:311
-#: src/Form/NetworkCustomRulesPage.php:384 src/Form/NetworkSettingsPage.php:134
-#: src/Form/NetworkSettingsPage.php:436
+#: src/Form/NetworkCustomRulesPage.php:384 src/Form/NetworkSettingsPage.php:154
+#: src/Form/NetworkSettingsPage.php:511
 msgid "Insufficient privileges."
 msgstr "Onvoldoende rechten."
 
@@ -1028,11 +1062,15 @@ msgstr "Geen overeenkomende netwerkregel gevonden om te verwijderen."
 msgid "Network custom rule deleted."
 msgstr "Aangepaste netwerkregel verwijderd."
 
+#: src/Form/NetworkDefaultsWorker.php:478
+msgid "Tests + roles assignment"
+msgstr "Tests en roltoewijzing"
+
 #: src/Form/NetworkLicensePage.php:58 src/Form/NetworkLicensePage.php:59
 msgid "Editoria11y license"
 msgstr "Editoria11y-licentie"
 
-#: src/Form/NetworkLicensePage.php:83 src/FreemiusAccessControl.php:294
+#: src/Form/NetworkLicensePage.php:83 src/FreemiusAccessControl.php:281
 msgid "Only network administrators can manage the Editoria11y license."
 msgstr "Alleen netwerkbeheerders kunnen de Editoria11y-licentie beheren."
 
@@ -1103,7 +1141,7 @@ msgstr "De Editoria11y CSA-licentie op alle sites in dit netwerk deactiveren? De
 
 #: src/Form/NetworkLicensePage.php:113
 msgid "Activate a license network-wide"
-msgstr "Een licentie voor het hele netwerk activeren"
+msgstr "Licentie voor het hele netwerk activeren"
 
 #: src/Form/NetworkLicensePage.php:114
 msgid "Deactivate licenses network-wide"
@@ -1123,7 +1161,7 @@ msgstr "Editoria11y CSA-licentie"
 
 #: src/Form/NetworkLicensePage.php:123
 msgid "Background licensing tasks run slowly via WP-Cron; leave this page open to run a batch every 15 seconds."
-msgstr "Licentietaken op de achtergrond verlopen traag via WP-Cron; laat deze pagina open om elke 15 seconden een batch uit te voeren."
+msgstr "Achtergrondtaken voor licenties verlopen traag via WP-Cron; laat deze pagina open om elke 15 seconden een batch te verwerken."
 
 #: src/Form/NetworkLicensePage.php:138
 msgid "JavaScript is required to use this page."
@@ -1173,43 +1211,43 @@ msgstr "Geannuleerd"
 msgid "Errors"
 msgstr "Fouten"
 
-#: src/Form/NetworkLicenseWorker.php:329
+#: src/Form/NetworkLicenseWorker.php:171
 msgid "License key is required."
 msgstr "Licentiesleutel is verplicht."
 
-#: src/Form/NetworkLicenseWorker.php:337 src/Form/NetworkLicenseWorker.php:393
+#: src/Form/NetworkLicenseWorker.php:179 src/Form/NetworkLicenseWorker.php:231
 msgid "An activation run is already in progress."
 msgstr "Er is al een activering bezig."
 
-#: src/Form/NetworkLicenseWorker.php:465
+#: src/Form/NetworkLicenseWorker.php:299
 msgid "No previous errors to retry."
 msgstr "Geen eerdere fouten om opnieuw te proberen."
 
-#: src/Form/NetworkLicenseWorker.php:475
+#: src/Form/NetworkLicenseWorker.php:309
 msgid "License key is no longer stored. Start a new activation."
 msgstr "De licentiesleutel is niet meer opgeslagen. Start een nieuwe activering."
 
-#: src/Form/NetworkLicenseWorker.php:554
+#: src/Form/NetworkLicenseWorker.php:397
 msgid "Freemius SDK wrapper unavailable."
 msgstr "Freemius SDK-wrapper niet beschikbaar."
 
-#: src/Form/NetworkLicenseWorker.php:676
+#: src/Form/NetworkLicenseWorker.php:519
 msgid "SDK _deactivate_license() method unavailable."
 msgstr "SDK-methode _deactivate_license() niet beschikbaar."
 
-#: src/Form/NetworkLicenseWorker.php:726
+#: src/Form/NetworkLicenseWorker.php:569
 msgid "Deactivation API call did not clear the install license."
-msgstr "De deactiverings-API-aanroep heeft de installatielicentie niet gewist."
+msgstr "De deactiverings-API-aanroep heeft de installatielijcentie niet gewist."
 
-#: src/Form/NetworkLicenseWorker.php:822
+#: src/Form/NetworkLicenseWorker.php:659
 msgid "No valid sites in batch."
 msgstr "Geen geldige sites in de batch."
 
-#: src/Form/NetworkLicenseWorker.php:929
+#: src/Form/NetworkLicenseWorker.php:765
 msgid "Activation API returned an unspecified error."
 msgstr "De activerings-API heeft een niet-gespecificeerde fout geretourneerd."
 
-#: src/Form/NetworkLicenseWorker.php:931
+#: src/Form/NetworkLicenseWorker.php:767
 msgid "Install record not created after API call."
 msgstr "Installatierecord niet aangemaakt na de API-aanroep."
 
@@ -1221,77 +1259,93 @@ msgstr "Editoria11y-standaarden"
 msgid "Defaults"
 msgstr "Standaarden"
 
-#: src/Form/NetworkSettingsPage.php:110 src/Form/SettingsPage.php:302
+#: src/Form/NetworkSettingsPage.php:110 src/Form/SettingsPage.php:287
 msgid "Custom rules"
 msgstr "Aangepaste regels"
 
-#: src/Form/NetworkSettingsPage.php:139
+#: src/Form/NetworkSettingsPage.php:140
+msgid "Heads up: \"Default for all sites\" and \"Override for all sites\" overwrite a site's current value whenever that value is still an Editoria11y default or a previous network default — including a per-site value that happens to match a default. Sites where an admin has chosen a different value are left untouched. \"Default for new sites\" only affects sites created from now on."
+msgstr "Let op: “Standaard voor alle sites” en “Overschrijven voor alle sites” overschrijven de huidige waarde van een site zodra die waarde nog een Editoria11y-standaardwaarde of een eerdere netwerkstandaard is — ook als een site-specifieke waarde toevallig overeenkomt met een standaardwaarde. Sites waarvoor een beheerder een andere waarde heeft gekozen, blijven ongewijzigd. “Standaard voor nieuwe sites” heeft alleen invloed op sites die vanaf nu worden aangemaakt."
+
+#: src/Form/NetworkSettingsPage.php:176
 msgid "Editoria11y default or locked network settings"
 msgstr "Editoria11y standaard- of vergrendelde netwerkinstellingen"
 
-#: src/Form/NetworkSettingsPage.php:143
+#: src/Form/NetworkSettingsPage.php:180
 msgid "Network defaults saved."
 msgstr "Netwerkstandaarden opgeslagen."
 
-#: src/Form/NetworkSettingsPage.php:161
+#: src/Form/NetworkSettingsPage.php:186
+msgid "Network defaults were not saved."
+msgstr "Netwerkstandaarden zijn niet opgeslagen."
+
+#: src/Form/NetworkSettingsPage.php:187
+msgid "You changed the following settings, but their propagation dropdown is still set to \"No network default\" — your change would not reach any site. Set the dropdown to \"Default for new sites\", \"Default for all sites\", or \"Override for all sites\" — or revert the value — and save again."
+msgstr "U hebt de volgende instellingen gewijzigd, maar de bijbehorende verspreidingskeuzelijst staat nog op “Geen netwerkstandaard” — uw wijziging bereikt daarmee geen enkele site. Stel de keuzelijst in op “Standaard voor nieuwe sites”, “Standaard voor alle sites” of “Overschrijven voor alle sites” — of herstel de waarde — en sla opnieuw op."
+
+#: src/Form/NetworkSettingsPage.php:213
 msgid "Save network defaults"
 msgstr "Netwerkstandaarden opslaan"
 
 #. translators: 1: processed sites, 2: total sites, 3: sites updated
-#: src/Form/NetworkSettingsPage.php:259
+#: src/Form/NetworkSettingsPage.php:311
 #, php-format
 msgid "%1$s of %2$s sites visited (%3$s updated)."
 msgstr "%1$s van %2$s sites bezocht (%3$s bijgewerkt)."
 
 #. translators: %s: human-readable duration estimate
-#: src/Form/NetworkSettingsPage.php:275
+#: src/Form/NetworkSettingsPage.php:327
 #, php-format
 msgid "Estimated %s remaining."
 msgstr "Geschatte resterende tijd: %s."
 
 #. translators: %s: number of errors recorded
-#: src/Form/NetworkSettingsPage.php:288
+#: src/Form/NetworkSettingsPage.php:340
 #, php-format
 msgid "Errors: %s (most recent retained). Check server logs for details."
 msgstr "Fouten: %s (meest recente bewaard). Raadpleeg de serverlogboeken voor details."
 
-#: src/Form/NetworkSettingsPage.php:297
+#: src/Form/NetworkSettingsPage.php:349
 msgid "Saving the form now will restart propagation with the new settings."
 msgstr "Het formulier nu opslaan herstart de verspreiding met de nieuwe instellingen."
 
-#: src/Form/NetworkSettingsPage.php:360
+#: src/Form/NetworkSettingsPage.php:412
 msgid "Propagating network defaults to existing sites…"
 msgstr "Netwerkstandaarden verspreiden naar bestaande sites…"
 
-#: src/Form/NetworkSettingsPage.php:363
+#: src/Form/NetworkSettingsPage.php:415
 msgid "Network defaults propagated."
 msgstr "Netwerkstandaarden verspreid."
 
-#: src/Form/NetworkSettingsPage.php:366
+#: src/Form/NetworkSettingsPage.php:418
 msgid "Network defaults propagation failed."
 msgstr "Verspreiding van netwerkstandaarden mislukt."
 
-#: src/Form/NetworkSettingsPage.php:369
+#: src/Form/NetworkSettingsPage.php:421
 msgid "Network defaults propagation idle."
 msgstr "Verspreiding van netwerkstandaarden inactief."
 
-#: src/Form/SettingsContext.php:214
+#: src/Form/SettingsContext.php:181
 msgid "Managed at the network level"
 msgstr "Beheerd op netwerkniveau"
 
-#: src/Form/SettingsContext.php:283 src/Form/SettingsContext.php:328
+#: src/Form/SettingsContext.php:250 src/Form/SettingsContext.php:285
+msgid "— No network default —"
+msgstr "— Geen netwerkstandaard —"
+
+#: src/Form/SettingsContext.php:251 src/Form/SettingsContext.php:286
 msgid "Default for new sites"
 msgstr "Standaard voor nieuwe sites"
 
-#: src/Form/SettingsContext.php:284 src/Form/SettingsContext.php:329
-msgid "Default for all sites (keep custom settings)"
-msgstr "Standaard voor alle sites (aangepaste instellingen behouden)"
+#: src/Form/SettingsContext.php:252 src/Form/SettingsContext.php:287
+msgid "Default for all sites (skip custom values)"
+msgstr "Standaard voor alle sites (aangepaste waarden overslaan)"
 
-#: src/Form/SettingsContext.php:285 src/Form/SettingsContext.php:330
-msgid "Overwrite for all sites (delete custom settings)"
-msgstr "Overschrijven voor alle sites (aangepaste instellingen verwijderen)"
+#: src/Form/SettingsContext.php:253 src/Form/SettingsContext.php:288
+msgid "Override for all sites (delete custom values)"
+msgstr "Overschrijven voor alle sites (aangepaste waarden verwijderen)"
 
-#: src/Form/SettingsContext.php:338
+#: src/Form/SettingsContext.php:293
 msgid "Propagation"
 msgstr "Verspreiding"
 
@@ -1325,7 +1379,7 @@ msgstr "Bepaal welke delen van elke pagina Editoria11y controleert. Door CSA te 
 
 #: src/Form/SettingsFields.php:98
 msgid "These tests detect issues content editors can fix. Checks can be individually turned off; sites with CSA licenses can split tests between roles."
-msgstr "Deze tests detecteren problemen die contenteditors kunnen oplossen. Controles kunnen afzonderlijk worden uitgeschakeld; sites met een CSA-licentie kunnen tests over rollen verdelen."
+msgstr "Deze tests detecteren problemen die contenteditors kunnen oplossen. Controles kunnen afzonderlijk worden uitgeschakeld; sites met een CSA-licentie kunnen tests verdelen over rollen."
 
 #: src/Form/SettingsFields.php:114
 msgid "Apply all the tests and role assignments below to"
@@ -1333,11 +1387,11 @@ msgstr "Alle onderstaande tests en roltoewijzingen toepassen op"
 
 #: src/Form/SettingsFields.php:123
 msgid "These tests detect issues that usually need theme or plugin changes to fix, and are part of the CSA license for site administrators and developers."
-msgstr "Deze tests detecteren problemen die meestal thema- of pluginwijzigingen vereisen, en maken deel uit van de CSA-licentie voor sitebeheerders en developers."
+msgstr "Deze tests detecteren problemen die meestal thema- of pluginwijzigingen vereisen om op te lossen, en zijn onderdeel van de CSA-licentie voor sitebeheerders en developers."
 
 #: src/Form/SettingsFields.php:133
 msgid "The \"tests + roles assignment\" propagation setting under \"Modify content tests\" above also governs the template-test selection — both are stored together."
-msgstr "De propagatie-instelling “tests en roltoewijzing” onder “Contenttests aanpassen” hierboven geldt ook voor de sjabloontest-selectie — beide worden samen opgeslagen."
+msgstr "De verspreidingsinstelling “tests en roltoewijzing” onder “Contenttests aanpassen” hierboven geldt ook voor de sjabloontest-selectie — beide worden samen opgeslagen."
 
 #: src/Form/SettingsFields.php:160
 msgid "Managed at the network level."
@@ -1387,7 +1441,7 @@ msgstr "Geef CSS-selectors op. Contentauteurs zien meldingen alleen binnen deze 
 msgid "The default is <code>main</code> or <code>body</code>, depending on theme."
 msgstr "De standaard is <code>main</code> of <code>body</code>, afhankelijk van het thema."
 
-#: src/Form/SettingsFields.php:366
+#: src/Form/SettingsFields.php:365
 msgid ""
 "If Editoria11y is flagging things editors cannot fix, e.g., theme-generated \"read more\" links or social media widgets,\n"
 "\t\t\t\tprovide CSS selectors for elements you would like it to ignore. Be specific, e.g. <code>.read-more a, .wp-block-post-excerpt__more-link, #comments h3</code>"
@@ -1395,453 +1449,472 @@ msgstr ""
 "Als Editoria11y dingen markeert die editors niet kunnen oplossen, bijv. door het thema gegenereerde \"read more\"-links of social-media-widgets,\n"
 "\t\t\t\tgeef dan CSS-selectors op voor elementen die je wilt laten negeren. Wees specifiek, bijv. <code>.read-more a, .wp-block-post-excerpt__more-link, #comments h3</code>"
 
-#: src/Form/SettingsFields.php:377
+#: src/Form/SettingsFields.php:376
 msgid "If you are new at this, start by opening your browser's developer tools, inspecting the element you do not want flagged, and looking for unique-looking CSS selectors."
 msgstr "Als je hier nieuw mee bent, open dan de ontwikkelaarstools van je browser, inspecteer het element dat je niet gemarkeerd wilt hebben en zoek naar unieke CSS-selectors."
 
-#: src/Form/SettingsFields.php:440
+#. translators: %s is the built-in list of always-ignored CSS selectors.
+#: src/Form/SettingsFields.php:387
+#, php-format
+msgid "Selectors you add are appended to the built-in list, which is always ignored: %s"
+msgstr "De selectors die je toevoegt, worden toegevoegd aan de ingebouwde lijst, die altijd wordt genegeerd: %s"
+
+#: src/Form/SettingsFields.php:434
 msgid "Set to the number of other themes or plugins that will be injecting custom result JS events. Editoria11y will wait until it receives this number of <code>ed11yResume</code> notifications before showing results."
 msgstr "Stel dit in op het aantal andere thema’s of plugins dat aangepaste JS-events voor resultaten zal injecteren. Editoria11y wacht totdat dit aantal <code>ed11yResume</code>-meldingen is ontvangen voordat resultaten worden getoond."
 
-#: src/Form/SettingsFields.php:463
+#: src/Form/SettingsFields.php:457
 msgid "Used to block checking on site sections or admin pages."
 msgstr "Wordt gebruikt om controles op sitedelen of beheerderspagina’s te blokkeren."
 
-#: src/Form/SettingsFields.php:495
+#: src/Form/SettingsFields.php:485
 msgid "Autodetect"
 msgstr "Automatisch detecteren"
 
-#: src/Form/SettingsFields.php:496
+#: src/Form/SettingsFields.php:486
 msgid "Only user-editable content"
 msgstr "Alleen door gebruikers bewerkbare content"
 
-#: src/Form/SettingsFields.php:497
+#: src/Form/SettingsFields.php:487
 msgid "Other"
 msgstr "Anders"
 
-#: src/Form/SettingsFields.php:502
+#: src/Form/SettingsFields.php:492
 msgid "Developer scan area"
 msgstr "Developer-scangebied"
 
-#: src/Form/SettingsFields.php:520
+#: src/Form/SettingsFields.php:510
 msgid "\"Autodetect\" selects:<br><em><code>body &gt; *:not(#wpadminbar, script, style, .ed11y-element)</code></em>"
 msgstr "\"Automatisch detecteren\" selecteert:<br><em><code>body &gt; *:not(#wpadminbar, script, style, .ed11y-element)</code></em>"
 
-#: src/Form/SettingsFields.php:537
+#: src/Form/SettingsFields.php:527
 msgid "Specify regions to check"
 msgstr "Te controleren regio’s opgeven"
 
-#: src/Form/SettingsFields.php:552
+#: src/Form/SettingsFields.php:542
 msgid "Alerts in these regions will be shown to both developers and editors. One selector per line."
 msgstr "Alerts in deze regio's worden getoond aan zowel developers als contenteditors. Eén selector per regel."
 
-#: src/Form/SettingsFields.php:584
+#: src/Form/SettingsFields.php:574
 msgid "These parts of the page will be ignored entirely."
 msgstr "Deze delen van de pagina worden volledig genegeerd."
 
-#: src/Form/SettingsFields.php:618
+#: src/Form/SettingsFields.php:608
 msgid "Developer roles"
 msgstr "Developer‑rollen"
 
-#: src/Form/SettingsFields.php:636
+#: src/Form/SettingsFields.php:626
 msgid "Unchecked roles only see content checks."
 msgstr "Niet-aangevinkte rollen zien alleen contentcontroles."
 
-#: src/Form/SettingsFields.php:664
+#: src/Form/SettingsFields.php:649
 msgid "Start open if there are new alerts"
 msgstr "Open starten als er nieuwe alerts zijn"
 
-#: src/Form/SettingsFields.php:665
+#: src/Form/SettingsFields.php:650
 msgid "Start open if there are any alerts"
 msgstr "Open starten als er alerts zijn"
 
-#: src/Form/SettingsFields.php:666
+#: src/Form/SettingsFields.php:651
 msgid "Always start open"
 msgstr "Altijd open starten"
 
-#: src/Form/SettingsFields.php:667
+#: src/Form/SettingsFields.php:652
 msgid "Start minimized"
 msgstr "Geminimaliseerd starten"
 
-#: src/Form/SettingsFields.php:781
+#: src/Form/SettingsFields.php:780
 msgid "Rule"
 msgstr "Regel"
 
-#: src/Form/SettingsFields.php:785
+#: src/Form/SettingsFields.php:784
 msgid "Show to"
 msgstr "Tonen aan"
 
-#: src/Form/SettingsFields.php:826
+#: src/Form/SettingsFields.php:825
 msgid "Everyone"
 msgstr "Iedereen"
 
-#: src/Form/SettingsFields.php:827
+#: src/Form/SettingsFields.php:826
 msgid "Developers only"
 msgstr "Alleen developers"
 
-#: src/Form/SettingsFields.php:828
+#: src/Form/SettingsFields.php:827
 msgid "Off"
 msgstr "Uit"
 
-#: src/Form/SettingsFields.php:845
+#: src/Form/SettingsFields.php:844
 msgid "(Part of CSA suite)"
 msgstr "(Onderdeel van de CSA-suite)"
 
-#: src/Form/SettingsFields.php:883
+#: src/Form/SettingsFields.php:882
 msgid "Remind the editor that these linked documents need a manual check"
 msgstr "Contenteditor eraan herinneren dat deze gekoppelde documenten handmatig gecontroleerd moeten worden"
 
-#: src/Form/SettingsFields.php:884
+#: src/Form/SettingsFields.php:883
 msgid "Add or remove filetypes. Set to \"false\" to disable the test altogether. Providing any value will override the default."
 msgstr "Voeg bestandstypen toe of verwijder ze. Zet op \"false\" om de test volledig uit te schakelen. Elke ingevoerde waarde overschrijft de standaard."
 
-#: src/Form/SettingsFields.php:888
+#: src/Form/SettingsFields.php:887
 msgid "Remove elements that match these selectors before testing link text"
 msgstr "Verwijder elementen die overeenkomen met deze selectors vóór het testen van koppelingstekst"
 
-#: src/Form/SettingsFields.php:889
+#: src/Form/SettingsFields.php:888
 msgid "Provide a CSS selector for elements your themes or plugins programmatically add to links (usually external or open-in-new-window markers), so they can be ignored when the link text is checked for the \"link has no text\" and \"link text is not meaningful\" tests."
 msgstr "Geef een CSS-selector op voor elementen die je thema’s of plugins programmatisch aan links toevoegen (meestal markeringen voor externe of in-nieuw-venster-links), zodat ze genegeerd kunnen worden bij de tests \"link heeft geen tekst\" en \"linktekst is niet betekenisvol\"."
 
-#: src/Form/SettingsFields.php:893
+#: src/Form/SettingsFields.php:892
 msgid "Remove these strings before testing link text"
 msgstr "Deze strings verwijderen voor het testen van de linktekst"
 
-#: src/Form/SettingsFields.php:894
+#: src/Form/SettingsFields.php:893
 msgid "Provide a pipe-separated (\"|\") list of phrases your themes or plugins programmatically add to links to hint a purpose (external, mail, phone, open-in-new-window), so they can be ignored when the link text is checked for the \"link has no text\" and \"link text is not meaningful\" tests; e.g.: (link is external)|(link sends email)."
 msgstr "Geef een met pipes (\"|\") gescheiden lijst met frasen op die je thema’s of plugins programmatisch aan links toevoegen om een doel aan te geven (extern, mail, telefoon, in-nieuw-venster), zodat ze genegeerd kunnen worden bij de tests \"link heeft geen tekst\" en \"linktekst is niet betekenisvol\"; bijv.: (link is external)|(link sends email)."
 
-#: src/Form/SettingsFields.php:898
+#: src/Form/SettingsFields.php:897
 msgid "Strings in links that indicate new tabs"
 msgstr "Tekststrings in links die nieuwe tabbladen aanduiden"
 
-#: src/Form/SettingsFields.php:899
+#: src/Form/SettingsFields.php:898
 msgid "Provide a pipe-separated list of phrases your site uses to warn users a link opens in a new tab; e.g.: new tab|new window|external."
 msgstr "Geef een met pipes gescheiden lijst met frasen op waarmee je site gebruikers waarschuwt dat een link in een nieuw tabblad opent; bijv.: new tab|new window|external."
 
-#: src/Form/SettingsFields.php:907
+#: src/Form/SettingsFields.php:906
 msgid "Embeds flagged as needing manual review"
 msgstr "Embeds gemarkeerd als handmatig te beoordelen"
 
-#: src/Form/SettingsFields.php:911
+#: src/Form/SettingsFields.php:907
+msgid "Added to the built-in detection list (Looker/Data Studio, Tableau, Power BI, Qlik). Provide a comma-separated list of domains or URL fragments. To stop flagging visualizations entirely, disable that test above."
+msgstr "Toegevoegd aan de ingebouwde detectielijst (Looker/Data Studio, Tableau, Power BI, Qlik). Geef een kommagescheiden lijst met domeinen of URL-fragmenten op. Om visualisaties helemaal niet meer te markeren, schakel de test hierboven uit."
+
+#: src/Form/SettingsFields.php:912
 msgid "Videos flagged as needing a manual check for captions"
 msgstr "Video’s gemarkeerd als handmatig te controleren op ondertiteling"
 
-#: src/Form/SettingsFields.php:915
+#: src/Form/SettingsFields.php:913
+msgid "Added to the built-in detection list (YouTube, Vimeo, Panopto, Wistia, Dailymotion, Brightcove, Vidyard and generic video URLs). Provide a comma-separated list of domains or URL fragments, e.g. yuja.com. To stop flagging videos entirely, disable that test above."
+msgstr "Toegevoegd aan de ingebouwde detectielijst (YouTube, Vimeo, Panopto, Wistia, Dailymotion, Brightcove, Vidyard en algemene video-URL's). Geef een kommagescheiden lijst met domeinen of URL-fragmenten op, bijv. yuja.com. Om video's helemaal niet meer te markeren, schakel de test hierboven uit."
+
+#: src/Form/SettingsFields.php:918
 msgid "Audio flagged as needing a manual check for transcripts"
 msgstr "Audio gemarkeerd als handmatig te controleren op transcripties"
 
 #: src/Form/SettingsFields.php:919
+msgid "Added to the built-in detection list (SoundCloud, Simplecast, Podbean, Buzzsprout, Spotify, Apple Podcasts and other major hosts). Provide a comma-separated list of domains or URL fragments. To stop flagging audio entirely, disable that test above."
+msgstr "Toegevoegd aan de ingebouwde detectielijst (SoundCloud, Simplecast, Podbean, Buzzsprout, Spotify, Apple Podcasts en andere grote hostingdiensten). Geef een kommagescheiden lijst met domeinen of URL-fragmenten op. Om audio helemaal niet meer te markeren, schakel de test hierboven uit."
+
+#: src/Form/SettingsFields.php:924
 msgid "Remind editor that content in these embeds needs manual review"
 msgstr "Contenteditor eraan herinneren dat content in deze embeds handmatig gecontroleerd moet worden"
 
-#: src/Form/SettingsFields.php:920
+#: src/Form/SettingsFields.php:925
 msgid "Provide a comma-separated list of selectors you wish to flag for the editor, e.g.: .my-embedded-feed, #my-social-link-block."
 msgstr "Geef een kommagescheiden lijst met selectors op die je voor de contenteditor wilt markeren, bijv.: .my-embedded-feed, #my-social-link-block."
 
-#: src/Form/SettingsFields.php:932
+#: src/Form/SettingsFields.php:937
 msgid "Do not check contrast for these elements"
 msgstr "Contrast niet controleren voor deze elementen"
 
-#: src/Form/SettingsFields.php:945
+#: src/Form/SettingsFields.php:950
 msgid "Provide a comma-separated list of selectors for elements to ignore for all users."
 msgstr "Geef een door komma's gescheiden lijst van selectors op voor elementen die voor alle gebruikers genegeerd moeten worden."
 
-#: src/Form/SettingsFields.php:975
+#: src/Form/SettingsFields.php:980
 msgid "Assertiveness"
 msgstr "Opvallendheid"
 
-#: src/Form/SettingsFields.php:977
+#: src/Form/SettingsFields.php:982
 msgid "Checker mode for content roles"
 msgstr "Checker-modus voor contentrollen"
 
-#: src/Form/SettingsFields.php:985
+#: src/Form/SettingsFields.php:990
 msgid "Checker mode for developer roles"
 msgstr "Checker‑modus voor developerrollen"
 
-#: src/Form/SettingsFields.php:993
+#: src/Form/SettingsFields.php:998
 msgid "Checker mode inside editor"
 msgstr "Checker-modus binnen de editor"
 
-#: src/Form/SettingsFields.php:999
+#: src/Form/SettingsFields.php:1004
 msgid "Theme and plugin compatibility"
 msgstr "Thema- en plugin-compatibiliteit"
 
-#: src/Form/SettingsFields.php:1001
+#: src/Form/SettingsFields.php:1006
 msgid "Editoria11y theme"
 msgstr "Editoria11y-thema"
 
-#: src/Form/SettingsFields.php:1006
+#: src/Form/SettingsFields.php:1011
 msgid "Pin panel to"
 msgstr "Paneel vastzetten aan"
 
-#: src/Form/SettingsFields.php:1012
+#: src/Form/SettingsFields.php:1017
 msgid "Right"
 msgstr "Rechts"
 
-#: src/Form/SettingsFields.php:1013
+#: src/Form/SettingsFields.php:1018
 msgid "Left"
 msgstr "Links"
 
-#: src/Form/SettingsFields.php:1019
+#: src/Form/SettingsFields.php:1024
 msgid "Shift panel position if it overlaps these elements"
 msgstr "Verschuif de paneelpositie als deze overlapt met deze elementen"
 
-#: src/Form/SettingsFields.php:1020
+#: src/Form/SettingsFields.php:1025
 msgid "Comma-separated selectors for competing widgets, e.g. .interface-interface-skeleton__sidebar."
 msgstr "Kommagescheiden selectors voor concurrerende widgets, bijv. .interface-interface-skeleton__sidebar."
 
-#: src/Form/SettingsFields.php:1025
+#: src/Form/SettingsFields.php:1030
 msgid "Do not check on pages with these elements"
 msgstr "Niet controleren op pagina's met deze elementen"
 
-#: src/Form/SettingsFields.php:1029
+#: src/Form/SettingsFields.php:1034
 msgid "JS injected custom rules"
 msgstr "Via JS geïnjecteerde aangepaste regels"
 
-#: src/Form/SettingsFields.php:1035
+#: src/Form/SettingsFields.php:1040
 msgid "Don't show edit links on tips in these containers"
 msgstr "Geen bewerken-links tonen op tips in deze containers"
 
-#: src/Form/SettingsFields.php:1036
+#: src/Form/SettingsFields.php:1041
 msgid "Provide a comma-separated list of page sections where edit links should not show. To hide the links everywhere, set this field to an asterisk (*)."
 msgstr "Geef een door komma's gescheiden lijst op van paginasecties waar bewerken-links niet moeten verschijnen. Om de links overal te verbergen, vul je in dit veld een sterretje (*) in."
 
-#: src/Form/SettingsFields.php:1055
+#: src/Form/SettingsFields.php:1060
 msgid "Handling tips on hidden content"
 msgstr "Tips voor verborgen content afhandelen"
 
-#: src/Form/SettingsFields.php:1057
+#: src/Form/SettingsFields.php:1062
 msgid "Warn users if elements might not be visible when jumping to tips"
 msgstr "Waarschuw gebruikers als elementen mogelijk niet zichtbaar zijn bij het springen naar tips"
 
-#: src/Form/SettingsFields.php:1064
+#: src/Form/SettingsFields.php:1069
 msgid "Elements with overflow hidden"
 msgstr "Elementen met overflow hidden"
 
-#: src/Form/SettingsFields.php:1065
+#: src/Form/SettingsFields.php:1070
 msgid "Sometimes buttons get drawn and visually truncated outside the bounds of a positioned element. Provide a selector list."
 msgstr "Soms worden knoppen getekend en visueel afgekapt buiten de grenzen van een gepositioneerd element. Geef een lijst met selectors op."
 
-#: src/Form/SettingsFields.php:1070
+#: src/Form/SettingsFields.php:1075
 msgid "Theme JS will handle revealing hidden tooltips inside these containers"
 msgstr "Thema-JS zal verborgen tooltips in deze containers onthullen"
 
-#: src/Form/SettingsFields.php:1071
+#: src/Form/SettingsFields.php:1076
 msgid "Editoria11y detects hidden tooltips and warns the user when they try to jump to them from the panel. For elements on this list, Editoria11y will dispatch a JS event instead of a warning, so custom JS in your theme can first reveal the hidden tip (e.g., open an accordion or tab panel)."
 msgstr "Editoria11y detecteert verborgen tooltips en waarschuwt de gebruiker wanneer die er vanuit het paneel naartoe probeert te springen. Voor elementen in deze lijst stuurt Editoria11y een JS-event in plaats van een waarschuwing, zodat aangepaste JS in je thema de verborgen tip eerst zichtbaar kan maken (bijv. een accordeon of tabpaneel openen)."
 
-#: src/Form/SettingsFields.php:1082
+#: src/Form/SettingsFields.php:1087
 msgid "Detecting dynamic and shadow content"
 msgstr "Detecteren van dynamische en shadow-content"
 
-#: src/Form/SettingsFields.php:1085
+#: src/Form/SettingsFields.php:1090
 msgid "Dynamically refresh if new content appears"
 msgstr "Dynamisch vernieuwen als er nieuwe content verschijnt"
 
-#: src/Form/SettingsFields.php:1091
+#: src/Form/SettingsFields.php:1096
 msgid "Watch for changes anywhere on the page"
 msgstr "Overal op de pagina op wijzigingen letten"
 
-#: src/Form/SettingsFields.php:1092
+#: src/Form/SettingsFields.php:1097
 msgid "Only watch for changes to content containers present on load"
 msgstr "Kijk alleen naar wijzigingen in inhoudcontainers die aanwezig zijn bij het laden"
 
-#: src/Form/SettingsFields.php:1093
+#: src/Form/SettingsFields.php:1098
 msgid "Do not watch for changes"
 msgstr "Niet op wijzigingen letten"
 
-#: src/Form/SettingsFields.php:1096
+#: src/Form/SettingsFields.php:1101
 msgid "Set to \"anywhere\" if changes are being missed; set to \"do not watch\" if you notice performance issues."
 msgstr "Zet op \"anywhere\" als wijzigingen worden gemist; zet op \"do not watch\" als je prestatieproblemen opmerkt."
 
-#: src/Form/SettingsFields.php:1100
+#: src/Form/SettingsFields.php:1105
 msgid "Check inside these specific Web components"
 msgstr "Binnen deze specifieke Web components controleren"
 
-#: src/Form/SettingsFields.php:1101
+#: src/Form/SettingsFields.php:1106
 msgid "Provide selectors for elements with shadow DOM you want tested. E.g.: my-fancy-accordion-widget, my-magical-slideshow."
 msgstr "Geef selectors op voor elementen met shadow DOM die je wilt laten testen. Bijv.: my-fancy-accordion-widget, my-magical-slideshow."
 
-#: src/Form/SettingsFields.php:1105
+#: src/Form/SettingsFields.php:1110
 msgid "Auto-detect any Web components"
 msgstr "Web components automatisch detecteren"
 
-#: src/Form/SettingsFields.php:1106
+#: src/Form/SettingsFields.php:1111
 msgid "This is easier to configure than specifying components, but may slow test runs on very complicated pages."
 msgstr "Dit is eenvoudiger te configureren dan afzonderlijke componenten opgeven, maar kan testruns op zeer complexe pagina's vertragen."
 
-#: src/Form/SettingsFields.php:1117
+#: src/Form/SettingsFields.php:1122
 msgid "Syncing results to reports"
 msgstr "Resultaten synchroniseren naar rapporten"
 
-#: src/Form/SettingsFields.php:1134
+#: src/Form/SettingsFields.php:1139
 msgid "Only admins can view reports"
 msgstr "Alleen beheerders kunnen rapporten bekijken"
 
-#: src/Form/SettingsFields.php:1139
+#: src/Form/SettingsFields.php:1144
 msgid "By default both admins and editors can view reports."
 msgstr "Standaard kunnen zowel beheerders als editors rapporten bekijken."
 
-#: src/Form/SettingsFields.php:1152
+#: src/Form/SettingsFields.php:1157
 msgid "Hide reports shortcut on toggle"
 msgstr "Snelkoppeling naar rapporten in toggle verbergen"
 
-#: src/Form/SettingsFields.php:1159
+#: src/Form/SettingsFields.php:1164
 msgid "Reports will still be available on the WordPress admin dashboard."
 msgstr "Rapporten blijven beschikbaar op het WordPress-beheerdersdashboard."
 
-#: src/Form/SettingsFields.php:1169
+#: src/Form/SettingsFields.php:1174
 msgid "Remove redundant base url from URLs"
 msgstr "Overbodige basis-URL uit URL's verwijderen"
 
-#: src/Form/SettingsFields.php:1181
+#: src/Form/SettingsFields.php:1186
 msgid "Provide base URL (\"/mysite\") if your site is installed in a subdirectory. Subdirectories tend to get duplicated (/mysite/mysite/mypage) and throw errors from the API."
 msgstr "Geef de basis-URL op (\"/mysite\") als je site in een submap is geïnstalleerd. Submappen worden vaak gedupliceerd (/mysite/mysite/mypage) en veroorzaken fouten vanuit de API."
 
-#: src/Form/SettingsFields.php:1186
+#: src/Form/SettingsFields.php:1191
 msgid "Preserve query parameters"
 msgstr "Queryparameters behouden"
 
-#: src/Form/SettingsFields.php:1187
+#: src/Form/SettingsFields.php:1192
 msgid "The dashboard ignores most parameters: results for both /news?f=1 and /news?f=2 will show up as just /news. Provide a comma-separated list of parameters that are meaningful and should appear as separate pages in results."
 msgstr "Het dashboard negeert de meeste parameters: resultaten voor zowel /news?f=1 als /news?f=2 verschijnen als /news. Geef een kommagescheiden lijst op van parameters die betekenisvol zijn en als aparte pagina’s in resultaten moeten verschijnen."
 
-#: src/Form/SettingsFields.php:1191
+#: src/Form/SettingsFields.php:1196
 msgid "Disable sync altogether"
 msgstr "Synchronisatie volledig uitschakelen"
 
-#: src/Form/SettingsFields.php:1192
+#: src/Form/SettingsFields.php:1197
 msgid "Syncing test results is required for the issue dashboard, dismissal dashboard, and \"mark OK\" buttons."
 msgstr "Het synchroniseren van testresultaten is vereist voor het probleemdashboard, het afwijzingsdashboard en de \"mark OK\"-knoppen."
 
-#: src/Form/SettingsFields.php:1203
+#: src/Form/SettingsFields.php:1208
 msgid "Heading outline position of editable content"
 msgstr "Koppenniveau van bewerkbare content"
 
-#: src/Form/SettingsFields.php:1205
+#: src/Form/SettingsFields.php:1210
 msgid "To check headings while editing, Editoria11y needs to know what the first heading level should be in each editable field. Body fields should generally be at the H2 level."
 msgstr "Om koppen tijdens het bewerken te controleren moet Editoria11y weten wat het eerste koppenniveau in elk bewerkbaar veld moet zijn. Bodyvelden moeten doorgaans op H2-niveau beginnen."
 
-#: src/Form/SettingsFields.php:1210
+#: src/Form/SettingsFields.php:1215
 msgid "H2 level content (body content)"
 msgstr "Content op H2-niveau (hoofdcontent)"
 
-#: src/Form/SettingsFields.php:1211
+#: src/Form/SettingsFields.php:1216
 msgid "Body fields are preceded by an H1 (the post or page title), so their highest heading level should be H2."
 msgstr "Bodyvelden worden voorafgegaan door een H1 (de bericht- of paginatitel), dus hun hoogste koppenniveau moet H2 zijn."
 
-#: src/Form/SettingsFields.php:1215
+#: src/Form/SettingsFields.php:1220
 msgid "H3 level content (blocks or widgets with separate titles)"
 msgstr "Content op H3-niveau (blokken of widgets met eigen titels)"
 
-#: src/Form/SettingsFields.php:1216
+#: src/Form/SettingsFields.php:1221
 msgid "The highest heading level should be H3."
 msgstr "Het hoogste koppenniveau moet H3 zijn."
 
-#: src/Form/SettingsFields.php:1220
+#: src/Form/SettingsFields.php:1225
 msgid "H4 level content (deeply nested blocks or widgets)"
 msgstr "Content op H4-niveau (diep geneste blokken of widgets)"
 
-#: src/Form/SettingsFields.php:1221
+#: src/Form/SettingsFields.php:1226
 msgid "The highest heading level should be H4."
 msgstr "Het hoogste koppenniveau moet H4 zijn."
 
-#: src/Form/SettingsPage.php:122 src/Form/SettingsPage.php:183
+#: src/Form/SettingsPage.php:126
 msgid "becoming a supporter"
 msgstr "supporter worden"
 
-#: src/Form/SettingsPage.php:127
+#: src/Form/SettingsPage.php:139
 msgid "free version at WordPress.org"
 msgstr "gratis versie op WordPress.org"
 
 #. translators: %s: link reading "free version at WordPress.org".
-#: src/Form/SettingsPage.php:136
+#: src/Form/SettingsPage.php:146
 #, php-format
 msgid "This site has the community-supported \"CSA\" version of Editoria11y installed rather than the %s."
 msgstr "Op deze site is de door de community ondersteunde “CSA”-versie van Editoria11y geïnstalleerd, in plaats van de %s."
 
 #. translators: %s: link reading "becoming a supporter".
-#: src/Form/SettingsPage.php:145
+#: src/Form/SettingsPage.php:155
 #, php-format
 msgid "To activate the community-supported features and continue receiving updates, either enter your existing license key or view options for %s."
 msgstr "Om de door de community ondersteunde functies te activeren en updates te blijven ontvangen, voer je je bestaande licentiesleutel in of bekijk je de opties voor %s."
 
-#: src/Form/SettingsPage.php:188
-msgid "This site is running the free version of Editoria11y from WordPress.org. The community-supported (CSA) features like developer and contrast tests, the custom test builder and site crawler, are not yet installed."
-msgstr "Op deze site draait de gratis versie van Editoria11y van WordPress.org. De door de community ondersteunde (CSA) functies, zoals developer- en contrasttests, de aangepaste testbouwer en de sitecrawler, zijn nog niet geïnstalleerd."
+#: src/Form/SettingsPage.php:169
+msgid "This site is running the free version of Editoria11y from WordPress.org. The community-supported (CSA) features are not active."
+msgstr "Deze site draait op de gratis versie van Editoria11y van WordPress.org. De door de community ondersteunde (CSA-)functies zijn niet actief."
 
 #. translators: %s: link reading "becoming a supporter".
-#: src/Form/SettingsPage.php:194
+#: src/Form/SettingsPage.php:175
 #, php-format
-msgid "Unlock the community-supported features and help ongoing work on the free version by %s."
-msgstr "Ontgrendel de door de community ondersteunde functies en steun het doorlopende werk aan de gratis versie door %s."
+msgid "Unlock the community-supported features and continued updates by %s."
+msgstr "Ontgrendel de door de community ondersteunde functies en doorlopende updates door %s."
 
-#: src/Form/SettingsPage.php:224
+#: src/Form/SettingsPage.php:203
 msgid "Editoria11y License & Account"
 msgstr "Editoria11y-licentie & -account"
 
-#: src/Form/SettingsPage.php:291
+#: src/Form/SettingsPage.php:262
 msgid "Settings"
 msgstr "Instellingen"
 
-#: src/Form/SettingsPage.php:299 src/Form/SettingsPage.php:306
+#: src/Form/SettingsPage.php:272 src/Form/SettingsPage.php:284
+#: src/Form/SettingsPage.php:291
 msgid "License & Account"
 msgstr "Licentie & account"
 
-#: src/Form/SettingsPage.php:579
+#: src/Form/SettingsPage.php:550
 msgid "Getting started"
 msgstr "Aan de slag"
 
-#: src/Form/SettingsPage.php:588
+#: src/Form/SettingsPage.php:559
 msgid "Modify content tests"
 msgstr "Contenttests aanpassen"
 
-#: src/Form/SettingsPage.php:594 src/Form/SettingsPage.php:608
+#: src/Form/SettingsPage.php:565 src/Form/SettingsPage.php:579
 msgid "Tests by group"
 msgstr "Tests per groep"
 
-#: src/Form/SettingsPage.php:602
+#: src/Form/SettingsPage.php:573
 msgid "Modify template tests"
 msgstr "Sjabloontests aanpassen"
 
-#: src/Form/SettingsPage.php:619
+#: src/Form/SettingsPage.php:590
 msgid "Custom rules (CSA)"
 msgstr "Aangepaste regels (CSA)"
 
-#: src/Form/SettingsPage.php:634
+#: src/Form/SettingsPage.php:605
 msgid "Parts of the page to test"
 msgstr "Delen van de pagina om te testen"
 
-#: src/Form/SettingsPage.php:642
+#: src/Form/SettingsPage.php:613
 msgid "Do not check for any errors inside these elements"
 msgstr "Controleer niet op fouten binnen deze elementen"
 
-#: src/Form/SettingsPage.php:653
+#: src/Form/SettingsPage.php:624
 msgid "Page regions with user-editable content"
 msgstr "Paginagebieden met door gebruikers bewerkbare content"
 
-#: src/Form/SettingsPage.php:663
+#: src/Form/SettingsPage.php:634
 msgid "Do not check for content errors inside these elements"
 msgstr "Controleer niet op contentfouten binnen deze elementen"
 
-#: src/Form/SettingsPage.php:666
+#: src/Form/SettingsPage.php:637
 msgid "Errors in these elements should only be shown to developers"
 msgstr "Fouten in deze elementen mogen alleen aan developers getoond worden"
 
-#: src/Form/SettingsPage.php:682
+#: src/Form/SettingsPage.php:653
 msgid "Roles that will see developer alerts"
 msgstr "Rollen die developer‑alerts zien"
 
-#: src/Form/SettingsPage.php:697
+#: src/Form/SettingsPage.php:668
 msgid "Advanced settings"
 msgstr "Geavanceerde instellingen"
 
-#: src/Form/SettingsPage.php:715
+#: src/Form/SettingsPage.php:686
 msgid "Editoria11y Settings"
 msgstr "Editoria11y‑instellingen"
 
-#: src/Form/SettingsPage.php:753
+#: src/Form/SettingsPage.php:701
 msgid "Save Settings"
 msgstr "Instellingen opslaan"
 
@@ -1855,88 +1928,100 @@ msgstr "onbekend"
 msgid "Editoria11y CSA: the loaded Freemius SDK (version %1$s) is newer than the highest tested version (%2$s). Another Freemius-using plugin on this site has bundled a newer SDK build. The network license activation page may not behave as expected; review release notes or contact support if you hit issues."
 msgstr "Editoria11y CSA: de geladen Freemius SDK (versie %1$s) is nieuwer dan de hoogst geteste versie (%2$s). Een andere plugin op deze site heeft een nieuwere SDK-versie meegeleverd. De netwerklicentiepagina kan zich anders gedragen dan verwacht; raadpleeg de release-opmerkingen of neem contact op met de ondersteuning als u problemen ondervindt."
 
-#: src/FreemiusAccessControl.php:455
+#: src/FreemiusAccessControl.php:501
 msgid "Editoria11y network licenses are activated from a dedicated page that walks every site in the network in cron-driven batches. This avoids the SDK's 1,000-site limit and keeps the page responsive on large multisites."
-msgstr "Editoria11y-netwerklicenties worden geactiveerd via een speciale pagina die elke site in het netwerk doorloopt in door cron aangestuurde batches. Dit vermijdt de limiet van 1.000 sites van de SDK en houdt de pagina responsief op grote multisites."
+msgstr "Editoria11y-netwerklicentïes worden geactiveerd via een speciale pagina die elke site in het netwerk doorloopt in door cron aangestuurde batches. Dit vermijdt de limiet van 1.000 sites van de SDK en houdt de pagina responsief op grote multisites."
 
-#: src/FreemiusAccessControl.php:461
+#: src/FreemiusAccessControl.php:507
 msgid "Open Editoria11y license page"
 msgstr "Editoria11y-licentiepagina openen"
 
-#: src/FreemiusAccessControl.php:517
+#: src/FreemiusAccessControl.php:563
 msgid "Per-site license rows are not shown to keep this page responsive on large networks. The license you choose below applies to every site in the network. To activate or deactivate on individual sites, visit each site's per-site Settings → Editoria11y → License & Account."
 msgstr "Licentierijen per site worden niet getoond om deze pagina responsief te houden op grote netwerken. De licentie die u hieronder kiest, geldt voor alle sites op het netwerk. Om afzonderlijke sites te activeren of deactiveren, gaat u naar Instellingen → Editoria11y → Licentie & account op de betreffende site."
 
-#: src/FreemiusContactFallback.php:117 src/FreemiusContactFallback.php:118
-#: src/FreemiusContactFallback.php:146 src/FreemiusContactFallback.php:206
+#: src/FreemiusContactFallback.php:121 src/FreemiusContactFallback.php:122
+#: src/FreemiusContactFallback.php:150 src/FreemiusContactFallback.php:210
 msgid "Contact Editoria11y"
-msgstr "Contact opnemen met Editoria11y"
+msgstr "Contact met Editoria11y"
 
-#: src/FreemiusContactFallback.php:202
+#: src/FreemiusContactFallback.php:206
 msgid "Editoria11y library forums"
-msgstr "Editoria11y-libraryforums"
+msgstr "Editoria11y library forums"
 
 #. translators: 1: @itmaybejj GitHub profile link, 2: #Drupal Slack invite link, 3: #WordPress Slack chat link, 4: #WPCampus Slack invite link, 5: #DigiCol Slack invite link.
-#: src/FreemiusContactFallback.php:211
+#: src/FreemiusContactFallback.php:215
 #, php-format
 msgid "Lead maintainer %1$s can usually be found on Slack for informal support, configuration tips and debugging any time the sun is up in the western hemisphere in %2$s, %3$s, %4$s and %5$s."
-msgstr "Hoofdbeheerder %1$s is doorgaans te vinden op Slack voor informele ondersteuning, configuratietips en debuggen zolang de zon op is op het westelijk halfrond, in %2$s, %3$s, %4$s en %5$s."
+msgstr "Hoofdontwikkelaar %1$s is via Slack meestal bereikbaar voor informele ondersteuning, configuratietips en debugging, op elk moment dat de zon op is in het westelijk halfrond, in %2$s, %3$s, %4$s en %5$s."
 
 #. translators: %s: link to the Editoria11y library GitHub discussions page.
-#: src/FreemiusContactFallback.php:224
+#: src/FreemiusContactFallback.php:228
 #, php-format
 msgid "Check the %s for roadmap proposals and discussions."
 msgstr "Bekijk de %s voor roadmapvoorstellen en discussies."
 
-#: src/FreemiusContactFallback.php:230
+#: src/FreemiusContactFallback.php:234
 msgid "Formal support:"
 msgstr "Formele ondersteuning:"
 
-#: src/FreemiusContactFallback.php:233
-msgid "Editoria11y Library issue queue"
-msgstr "Issuequeue van de Editoria11y-library"
-
-#: src/FreemiusContactFallback.php:235
-msgid "Editoria11y WordPress issue queue"
-msgstr "Issuequeue van Editoria11y voor WordPress"
-
 #: src/FreemiusContactFallback.php:237
-msgid "Editoria11y Drupal issue queue"
-msgstr "Issuequeue van Editoria11y voor Drupal"
+msgid "Editoria11y Library issue queue"
+msgstr "Editoria11y Library issue queue"
 
 #: src/FreemiusContactFallback.php:239
-msgid "Submit a support request"
-msgstr "Een ondersteuningsverzoek indienen"
+msgid "Editoria11y WordPress issue queue"
+msgstr "Editoria11y WordPress issue queue"
 
-#: src/FreemiusPricingPage.php:158
+#: src/FreemiusContactFallback.php:241
+msgid "Editoria11y Drupal issue queue"
+msgstr "Editoria11y Drupal issue queue"
+
+#: src/FreemiusContactFallback.php:243
+msgid "Submit a support request"
+msgstr "Een supportverzoek indienen"
+
+#: src/FreemiusPricingPage.php:163
 msgid "Editoria11y CSA pricing"
 msgstr "Editoria11y CSA-prijzen"
 
-#: src/FreemiusPricingPage.php:220
+#: src/FreemiusPricingPage.php:225
 msgid "Support the project"
 msgstr "Steun het project"
 
-#: src/FreemiusPricingPage.php:223
+#: src/FreemiusPricingPage.php:228
 msgid "Editoria11y promotes accessibility in a unique way. Its tools are highly effective at helping non-technical authors prepare content that can be enjoyed equally by disabled Web users. We consider this a public good, so <strong>Editoria11y will always be free to use</strong>."
-msgstr "Editoria11y bevordert toegankelijkheid op een unieke manier. De tools zijn zeer effectief in het helpen van niet-technische auteurs bij het opstellen van content waar webgebruikers met een beperking evenveel van kunnen genieten. Wij beschouwen dit als een publiek goed, dus <strong>Editoria11y zal altijd gratis te gebruiken zijn</strong>."
+msgstr "Editoria11y bevordert toegankelijkheid op een unieke manier. De tools zijn zeer effectief om niet-technische auteurs te helpen content te maken die ook gebruikers met een beperking op het web net zo goed kunnen gebruiken. Wij zien dit als een publiek goed, dus <strong>Editoria11y zal altijd gratis te gebruiken zijn</strong>."
 
-#: src/FreemiusPricingPage.php:227
+#: src/FreemiusPricingPage.php:232
 msgid "Editoria11y is not, however, free to develop or support."
-msgstr "Het ontwikkelen en ondersteunen van Editoria11y is echter niet gratis."
+msgstr "Editoria11y is echter niet gratis om te ontwikkelen of te ondersteunen."
 
-#: src/FreemiusPricingPage.php:230
-msgid "The \"Community Supported Add-ons\" (CSA) project fills the gap: project members support the development of the Editoria11y library, its CMS plugins, and the CSA suite: a rapidly growing set of quality assurance tools that provide similar functionality to commercial products, open-source and on-prem. In return, they get access to premium features like <strong>developer and contrast tests, the custom rule builder and a site crawler</strong>."
-msgstr "Het project \"Community Supported Add-ons\" (CSA) vult dit gat op: projectleden ondersteunen de ontwikkeling van de Editoria11y-library, de bijbehorende CMS-plugins en de CSA-suite: een snelgroeiende set kwaliteitsborgingstools die vergelijkbare functionaliteit biedt als commerciële producten, opensource en on-premise. In ruil daarvoor krijgen ze toegang tot premiumfuncties zoals <strong>developer- en contrasttests, de aangepaste regelbouwer en een sitecrawler</strong>."
+#: src/FreemiusPricingPage.php:234
+msgid "The Community Supported Add-ons (CSA) project fills the gap: project members support the development of the Editoria11y library, its CMS plugins, and the CSA suite: a rapidly growing set of quality assurance tools that provide similar functionality to commercial products, open-source and on-prem. In return, they get access to premium features and support."
+msgstr "Het Community Supported Add-ons-project (CSA) vult dat gat: projectleden ondersteunen de ontwikkeling van de Editoria11y library, de bijbehorende CMS-plugins en de CSA-suite: een snel groeiende verzameling kwaliteitsborgingstools die vergelijkbare functionaliteit bieden als commerciële, opensource- en on-premise-producten. In ruil daarvoor krijgen zij toegang tot premiumfuncties en ondersteuning."
 
-#: src/FreemiusPricingPage.php:237
-msgid "CSA supporters page"
-msgstr "CSA-supporterspagina"
+#: src/FreemiusPricingPage.php:239
+msgid "lower (or higher!) support levels"
+msgstr "lagere (of hogere!) supportniveaus"
 
-#. translators: %s: link to the CSA supporters page.
-#: src/FreemiusPricingPage.php:243
+#. translators: %s: link to the CSA supporters page and drop the "farmshare" word in languages without the concept.
+#: src/FreemiusPricingPage.php:245
 #, php-format
-msgid "This is a <strong>contribute what you can</strong> model; the quick checkout prices below are for full support. The %s has options for different support levels (from 10%% to 150%%), cross-platform (WordPress plus Drupal) licenses, unlimited-site options, and non-financial paths to project membership."
-msgstr "Dit is een model waarbij je <strong>bijdraagt wat je kunt</strong>; de prijzen voor snel afrekenen hieronder gelden voor volledige ondersteuning. De %s biedt opties voor verschillende ondersteuningsniveaus (van 10%% tot 150%%), cross-platformlicenties (WordPress plus Drupal), opties voor onbeperkt aantal sites en niet-financiële manieren om projectlid te worden."
+msgid "This is a <strong>contribute what you can</strong> \"farmshare\" model. The Editoria11y LLC site has options for %s, options to contribute as a coder or tester instead, and options for cross-platform and unlimited-site licenses."
+msgstr "Dit is een <strong>bijdragen wat je kunt</strong>-model. De site van Editoria11y LLC biedt opties voor %s, opties om in plaats daarvan als coder of tester bij te dragen, en opties voor cross-platform- en unlimited-site-licenties."
+
+#: src/functions.php:1608
+msgid "Empty link"
+msgstr "Lege link"
+
+#: src/functions.php:1609
+msgid "The button style link is missing its URL."
+msgstr "De link in knopstijl heeft geen URL."
+
+#: src/functions.php:1610
+msgid "Edit Media"
+msgstr "Media bewerken"
 
 #: src/TestNames.php:46
 msgid "This alt text is a filename, not a description"
@@ -2028,7 +2113,7 @@ msgstr "Frame mist een “title”‑attribuut"
 
 #: src/TestNames.php:69
 msgid "Frame with tabindex=\"-1\" will not be keyboard accessible."
-msgstr "Frame met tabindex=\"‑1\" is niet toetsenbordtoegankelijk"
+msgstr "Frame met tabindex=\"-1\" is niet toetsenbordtoegankelijk"
 
 #: src/TestNames.php:70
 msgid "Is this video accurately captioned?"
@@ -2059,12 +2144,12 @@ msgid "This heading is tagged at the wrong level"
 msgstr "Deze kop heeft een onjuist niveau"
 
 #: src/TestNames.php:77
-msgid "This heading is unpronounceable"
-msgstr "Deze kop is niet uitsprekbaar"
-
-#: src/TestNames.php:78
 msgid "This element cannot be described by screen readers"
 msgstr "Dit element kan niet door schermlezers worden beschreven"
+
+#: src/TestNames.php:78
+msgid "This heading is unpronounceable"
+msgstr "Deze kop is niet uitsprekbaar"
 
 #: src/TestNames.php:79
 msgid "Can this alt text be shorter?"
@@ -2152,7 +2237,7 @@ msgstr "Deze link bevat geen woorden."
 
 #: src/TestNames.php:101
 msgid "Link with invalid \"aria-labelledby\" attribute"
-msgstr "Link heeft een ongeldig “aria‑labelledby”‑attribuut"
+msgstr "Link heeft een ongeldig “aria-labelledby”‑attribuut"
 
 #: src/TestNames.php:102
 msgid "This link needs a label"

@@ -61,12 +61,13 @@ defined( 'ABSPATH' ) || exit;
 final class FreemiusContactFallback {
 
 	/**
-	 * Slug the SDK uses for its contact submenu, namespaced by the
-	 * `slug` / `premium_slug` in `fs_dynamic_init()` (see editoria11y.php
-	 * — `slug => editoria11y-accessibility-checker`,
-	 * `premium_slug => editoria11y-wp-csa`, menu slug `ed11ycsa`).
+	 * Slug the SDK uses for its contact submenu: `{menu_slug}-contact`,
+	 * derived from the unified menu slug exactly the way the SDK derives
+	 * it (see FreemiusMenu). Building it from the shared constant keeps
+	 * this fallback and the network-admin guard pointing at the same slug
+	 * if the menu slug ever changes.
 	 */
-	const SLUG = 'ed11y-contact';
+	const SLUG = FreemiusMenu::MENU_SLUG . '-contact';
 
 	/**
 	 * Wire the fallback registration to both per-site and network admin
@@ -106,7 +107,10 @@ final class FreemiusContactFallback {
 		// (otherwise both render callbacks fire on one request). In the free
 		// build the SDK exposes "Contact Us" only as an external link, never a
 		// ?page= route, so this fallback is what catches its stray links.
-		$parent = fs_is_network_admin() ? 'settings.php' : 'options-general.php';
+		// Parent selection is shared with the network-admin guard via
+		// FreemiusMenu (finding A5) so an SDK menu-structure change is a
+		// one-place edit.
+		$parent = FreemiusMenu::sdk_parent_slug( fs_is_network_admin() );
 		if ( isset( $GLOBALS['_registered_pages'][ get_plugin_page_hookname( self::SLUG, $parent ) ] ) ) {
 			return;
 		}
