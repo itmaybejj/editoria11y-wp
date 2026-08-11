@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: editoria11y 3.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/editoria11y\n"
-"POT-Creation-Date: 2026-08-05T19:54:53-04:00\n"
+"POT-Creation-Date: 2026-08-10T21:11:15-04:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Language-Team: Editoria11y\n"
 "Language: id\n"
@@ -36,15 +36,15 @@ msgstr "Universitas Princeton, WDS"
 msgid "https://editoria11y.com"
 msgstr "https://editoria11y.com"
 
-#: editoria11y.php:58
+#: editoria11y.php:131
 msgid "Editoria11y is missing its vendored dependencies. Run \"composer install\" inside the plugin directory or reinstall the plugin from a complete release archive."
 msgstr "Editoria11y kehilangan dependensi vendor-nya. Jalankan \"composer install\" di dalam direktori plugin atau instal ulang plugin dari arsip rilis yang lengkap."
 
-#: editoria11y.php:321
+#: editoria11y.php:399
 msgid "Every five minutes (Editoria11y rehash)"
 msgstr "Setiap lima menit (Rehash Editoria11y)"
 
-#: editoria11y.php:327
+#: editoria11y.php:405
 msgid "Every fifteen minutes (Editoria11y license watchdog)"
 msgstr "Setiap lima belas menit (Pengawas lisensi Editoria11y)"
 
@@ -274,7 +274,7 @@ msgstr "Ya"
 msgid "n/a"
 msgstr "n/a"
 
-#: src/Admin/Dashboard.php:175 src/functions.php:1607
+#: src/Admin/Dashboard.php:175 src/functions.php:1795
 msgid "Empty button-style link"
 msgstr "Tautan kosong bergaya tombol"
 
@@ -300,6 +300,10 @@ msgstr "%d hasil"
 msgid "%d results"
 msgstr "%d hasil"
 
+#: src/CoActivationGuard.php:139
+msgid "A duplicate copy of Editoria11y Accessibility Checker (the free version) was deactivated here: Editoria11y CSA is already active and provides the same checks."
+msgstr "Salinan duplikat Pemeriksa Aksesibilitas Editoria11y (versi gratis) dinonaktifkan di sini: Editoria11y CSA sudah aktif dan menyediakan pemeriksaan yang sama."
+
 #: src/Controller/ApiCrawler.php:122
 msgid "The crawler is a premium feature."
 msgstr "Crawler adalah fitur premium."
@@ -312,11 +316,11 @@ msgstr "Pembaruan basis data Editoria11y tidak selesai; crawler dijeda hingga ad
 msgid "Results not recorded"
 msgstr "Hasil tidak dicatat"
 
-#: src/Controller/ApiDismissals.php:480 src/Controller/ApiResults.php:857
+#: src/Controller/ApiDismissals.php:572 src/Controller/ApiResults.php:925
 msgid "Editoria11y database update did not complete; writes are paused until an administrator retries the update."
 msgstr "Pembaruan basis data Editoria11y tidak selesai; penulisan dijeda hingga administrator mencoba ulang pembaruan tersebut."
 
-#: src/Controller/ApiDismissals.php:505 src/Controller/ApiResults.php:882
+#: src/Controller/ApiDismissals.php:597 src/Controller/ApiResults.php:950
 msgid "Editoria11y database update did not complete; the dashboard is paused until an administrator retries the update."
 msgstr "Pembaruan basis data Editoria11y tidak selesai; dasbor dijeda hingga administrator mencoba ulang pembaruan tersebut."
 
@@ -1070,7 +1074,7 @@ msgstr "Penetapan tes + peran"
 msgid "Editoria11y license"
 msgstr "Lisensi Editoria11y"
 
-#: src/Form/NetworkLicensePage.php:83 src/FreemiusAccessControl.php:281
+#: src/Form/NetworkLicensePage.php:83 src/FreemiusAccessControl.php:283
 msgid "Only network administrators can manage the Editoria11y license."
 msgstr "Hanya administrator jaringan yang dapat mengelola lisensi Editoria11y."
 
@@ -1211,43 +1215,43 @@ msgstr "Dibatalkan"
 msgid "Errors"
 msgstr "Kesalahan"
 
-#: src/Form/NetworkLicenseWorker.php:171
+#: src/Form/NetworkLicenseWorker.php:392
 msgid "License key is required."
 msgstr "Kunci lisensi wajib diisi."
 
-#: src/Form/NetworkLicenseWorker.php:179 src/Form/NetworkLicenseWorker.php:231
+#: src/Form/NetworkLicenseWorker.php:400 src/Form/NetworkLicenseWorker.php:456
 msgid "An activation run is already in progress."
 msgstr "Proses aktivasi sudah sedang berjalan."
 
-#: src/Form/NetworkLicenseWorker.php:299
+#: src/Form/NetworkLicenseWorker.php:528
 msgid "No previous errors to retry."
 msgstr "Tidak ada kesalahan sebelumnya untuk dicoba lagi."
 
-#: src/Form/NetworkLicenseWorker.php:309
+#: src/Form/NetworkLicenseWorker.php:538
 msgid "License key is no longer stored. Start a new activation."
 msgstr "Kunci lisensi tidak lagi tersimpan. Mulai aktivasi baru."
 
-#: src/Form/NetworkLicenseWorker.php:397
+#: src/Form/NetworkLicenseWorker.php:626
 msgid "Freemius SDK wrapper unavailable."
 msgstr "Pembungkus SDK Freemius tidak tersedia."
 
-#: src/Form/NetworkLicenseWorker.php:519
+#: src/Form/NetworkLicenseWorker.php:803
 msgid "SDK _deactivate_license() method unavailable."
 msgstr "Metode SDK _deactivate_license() tidak tersedia."
 
-#: src/Form/NetworkLicenseWorker.php:569
+#: src/Form/NetworkLicenseWorker.php:853
 msgid "Deactivation API call did not clear the install license."
 msgstr "Panggilan API penonaktifan tidak menghapus lisensi instalasi."
 
-#: src/Form/NetworkLicenseWorker.php:659
+#: src/Form/NetworkLicenseWorker.php:947
 msgid "No valid sites in batch."
 msgstr "Tidak ada situs yang valid dalam batch."
 
-#: src/Form/NetworkLicenseWorker.php:765
+#: src/Form/NetworkLicenseWorker.php:1053
 msgid "Activation API returned an unspecified error."
 msgstr "API aktivasi mengembalikan kesalahan yang tidak ditentukan."
 
-#: src/Form/NetworkLicenseWorker.php:767
+#: src/Form/NetworkLicenseWorker.php:1055
 msgid "Install record not created after API call."
 msgstr "Catatan instalasi tidak dibuat setelah panggilan API."
 
@@ -1325,27 +1329,27 @@ msgstr "Penyebaran default jaringan gagal."
 msgid "Network defaults propagation idle."
 msgstr "Penyebaran default jaringan tidak aktif."
 
-#: src/Form/SettingsContext.php:181
+#: src/Form/SettingsContext.php:214
 msgid "Managed at the network level"
 msgstr "Dikelola di tingkat jaringan"
 
-#: src/Form/SettingsContext.php:250 src/Form/SettingsContext.php:285
+#: src/Form/SettingsContext.php:283 src/Form/SettingsContext.php:318
 msgid "— No network default —"
 msgstr "— Tidak ada default jaringan —"
 
-#: src/Form/SettingsContext.php:251 src/Form/SettingsContext.php:286
+#: src/Form/SettingsContext.php:284 src/Form/SettingsContext.php:319
 msgid "Default for new sites"
 msgstr "Default untuk situs baru"
 
-#: src/Form/SettingsContext.php:252 src/Form/SettingsContext.php:287
+#: src/Form/SettingsContext.php:285 src/Form/SettingsContext.php:320
 msgid "Default for all sites (skip custom values)"
 msgstr "Default untuk semua situs (lewati nilai kustom)"
 
-#: src/Form/SettingsContext.php:253 src/Form/SettingsContext.php:288
+#: src/Form/SettingsContext.php:286 src/Form/SettingsContext.php:321
 msgid "Override for all sites (delete custom values)"
 msgstr "Timpa untuk semua situs (hapus nilai kustom)"
 
-#: src/Form/SettingsContext.php:293
+#: src/Form/SettingsContext.php:326
 msgid "Propagation"
 msgstr "Propagasi"
 
@@ -1545,275 +1549,275 @@ msgstr "Nonaktif"
 msgid "(Part of CSA suite)"
 msgstr "(Bagian dari rangkaian CSA)"
 
-#: src/Form/SettingsFields.php:882
+#: src/Form/SettingsFields.php:881
 msgid "Remind the editor that these linked documents need a manual check"
 msgstr "Ingatkan editor bahwa dokumen tertaut ini memerlukan pemeriksaan manual"
 
-#: src/Form/SettingsFields.php:883
+#: src/Form/SettingsFields.php:882
 msgid "Add or remove filetypes. Set to \"false\" to disable the test altogether. Providing any value will override the default."
 msgstr "Tambah atau hapus tipe berkas. Atur ke \"false\" untuk menonaktifkan tes sepenuhnya. Memberikan nilai apa pun akan menimpa setelan default."
 
-#: src/Form/SettingsFields.php:887
+#: src/Form/SettingsFields.php:886
 msgid "Remove elements that match these selectors before testing link text"
 msgstr "Hapus elemen yang cocok dengan selektor ini sebelum menguji teks tautan"
 
-#: src/Form/SettingsFields.php:888
+#: src/Form/SettingsFields.php:887
 msgid "Provide a CSS selector for elements your themes or plugins programmatically add to links (usually external or open-in-new-window markers), so they can be ignored when the link text is checked for the \"link has no text\" and \"link text is not meaningful\" tests."
 msgstr "Berikan selektor CSS untuk elemen yang ditambahkan oleh tema atau plugin Anda secara terprogram ke tautan (biasanya penanda eksternal atau buka-di-jendela-baru), sehingga dapat diabaikan saat teks tautan diperiksa untuk tes \"tautan tidak memiliki teks\" dan \"teks tautan tidak bermakna\"."
 
-#: src/Form/SettingsFields.php:892
+#: src/Form/SettingsFields.php:891
 msgid "Remove these strings before testing link text"
 msgstr "Hapus string ini sebelum menguji teks tautan"
 
-#: src/Form/SettingsFields.php:893
+#: src/Form/SettingsFields.php:892
 msgid "Provide a pipe-separated (\"|\") list of phrases your themes or plugins programmatically add to links to hint a purpose (external, mail, phone, open-in-new-window), so they can be ignored when the link text is checked for the \"link has no text\" and \"link text is not meaningful\" tests; e.g.: (link is external)|(link sends email)."
 msgstr "Berikan daftar frasa yang dipisahkan dengan garis tegak (\"|\") yang ditambahkan oleh tema atau plugin Anda ke tautan untuk memberi petunjuk tujuan (eksternal, surel, telepon, buka-di-jendela-baru), sehingga dapat diabaikan saat teks tautan diperiksa untuk tes \"tautan tidak memiliki teks\" dan \"teks tautan tidak bermakna\"; misal: (tautan eksternal)|(tautan mengirim surel)."
 
-#: src/Form/SettingsFields.php:897
+#: src/Form/SettingsFields.php:896
 msgid "Strings in links that indicate new tabs"
 msgstr "String dalam tautan yang menunjukkan tab baru"
 
-#: src/Form/SettingsFields.php:898
+#: src/Form/SettingsFields.php:897
 msgid "Provide a pipe-separated list of phrases your site uses to warn users a link opens in a new tab; e.g.: new tab|new window|external."
 msgstr "Berikan daftar frasa yang dipisahkan dengan garis tegak yang digunakan situs Anda untuk memperingatkan pengguna bahwa tautan terbuka di tab baru; misal: tab baru|jendela baru|eksternal."
 
-#: src/Form/SettingsFields.php:906
+#: src/Form/SettingsFields.php:905
 msgid "Embeds flagged as needing manual review"
 msgstr "Sematan yang ditandai perlu peninjauan manual"
 
-#: src/Form/SettingsFields.php:907
+#: src/Form/SettingsFields.php:906
 msgid "Added to the built-in detection list (Looker/Data Studio, Tableau, Power BI, Qlik). Provide a comma-separated list of domains or URL fragments. To stop flagging visualizations entirely, disable that test above."
 msgstr "Ditambahkan ke daftar deteksi bawaan (Looker/Data Studio, Tableau, Power BI, Qlik). Berikan daftar domain atau fragmen URL yang dipisahkan dengan koma. Untuk berhenti menandai visualisasi sepenuhnya, nonaktifkan tes tersebut di atas."
 
-#: src/Form/SettingsFields.php:912
+#: src/Form/SettingsFields.php:911
 msgid "Videos flagged as needing a manual check for captions"
 msgstr "Video yang ditandai memerlukan pemeriksaan manual untuk takarir"
 
-#: src/Form/SettingsFields.php:913
+#: src/Form/SettingsFields.php:912
 msgid "Added to the built-in detection list (YouTube, Vimeo, Panopto, Wistia, Dailymotion, Brightcove, Vidyard and generic video URLs). Provide a comma-separated list of domains or URL fragments, e.g. yuja.com. To stop flagging videos entirely, disable that test above."
 msgstr "Ditambahkan ke daftar deteksi bawaan (YouTube, Vimeo, Panopto, Wistia, Dailymotion, Brightcove, Vidyard, dan URL video generik). Berikan daftar domain atau fragmen URL yang dipisahkan dengan koma, misal yuja.com. Untuk berhenti menandai video sepenuhnya, nonaktifkan tes tersebut di atas."
 
-#: src/Form/SettingsFields.php:918
+#: src/Form/SettingsFields.php:917
 msgid "Audio flagged as needing a manual check for transcripts"
 msgstr "Audio yang ditandai memerlukan pemeriksaan manual untuk transkrip"
 
-#: src/Form/SettingsFields.php:919
+#: src/Form/SettingsFields.php:918
 msgid "Added to the built-in detection list (SoundCloud, Simplecast, Podbean, Buzzsprout, Spotify, Apple Podcasts and other major hosts). Provide a comma-separated list of domains or URL fragments. To stop flagging audio entirely, disable that test above."
 msgstr "Ditambahkan ke daftar deteksi bawaan (SoundCloud, Simplecast, Podbean, Buzzsprout, Spotify, Apple Podcasts, dan host besar lainnya). Berikan daftar domain atau fragmen URL yang dipisahkan dengan koma. Untuk berhenti menandai audio sepenuhnya, nonaktifkan tes tersebut di atas."
 
-#: src/Form/SettingsFields.php:924
+#: src/Form/SettingsFields.php:923
 msgid "Remind editor that content in these embeds needs manual review"
 msgstr "Ingatkan editor bahwa konten dalam sematan ini memerlukan peninjauan manual"
 
-#: src/Form/SettingsFields.php:925
+#: src/Form/SettingsFields.php:924
 msgid "Provide a comma-separated list of selectors you wish to flag for the editor, e.g.: .my-embedded-feed, #my-social-link-block."
 msgstr "Berikan daftar selektor yang dipisahkan dengan koma yang ingin Anda tandai untuk editor, misal: .my-embedded-feed, #my-social-link-block."
 
-#: src/Form/SettingsFields.php:937
+#: src/Form/SettingsFields.php:936
 msgid "Do not check contrast for these elements"
 msgstr "Jangan periksa kontras untuk elemen-elemen ini"
 
-#: src/Form/SettingsFields.php:950
+#: src/Form/SettingsFields.php:949
 msgid "Provide a comma-separated list of selectors for elements to ignore for all users."
 msgstr "Berikan daftar selektor yang dipisahkan dengan koma untuk elemen yang diabaikan bagi semua pengguna."
 
-#: src/Form/SettingsFields.php:980
+#: src/Form/SettingsFields.php:978
 msgid "Assertiveness"
 msgstr "Ketegasan"
 
-#: src/Form/SettingsFields.php:982
+#: src/Form/SettingsFields.php:980
 msgid "Checker mode for content roles"
 msgstr "Mode pemeriksa untuk peran konten"
 
-#: src/Form/SettingsFields.php:990
+#: src/Form/SettingsFields.php:988
 msgid "Checker mode for developer roles"
 msgstr "Mode pemeriksa untuk peran developer"
 
-#: src/Form/SettingsFields.php:998
+#: src/Form/SettingsFields.php:996
 msgid "Checker mode inside editor"
 msgstr "Mode pemeriksa di dalam editor"
 
-#: src/Form/SettingsFields.php:1004
+#: src/Form/SettingsFields.php:1002
 msgid "Theme and plugin compatibility"
 msgstr "Kompatibilitas tema dan plugin"
 
-#: src/Form/SettingsFields.php:1006
+#: src/Form/SettingsFields.php:1004
 msgid "Editoria11y theme"
 msgstr "Tema Editoria11y"
 
-#: src/Form/SettingsFields.php:1011
+#: src/Form/SettingsFields.php:1009
 msgid "Pin panel to"
 msgstr "Sematkan panel ke"
 
-#: src/Form/SettingsFields.php:1017
+#: src/Form/SettingsFields.php:1015
 msgid "Right"
 msgstr "Kanan"
 
-#: src/Form/SettingsFields.php:1018
+#: src/Form/SettingsFields.php:1016
 msgid "Left"
 msgstr "Kiri"
 
-#: src/Form/SettingsFields.php:1024
+#: src/Form/SettingsFields.php:1022
 msgid "Shift panel position if it overlaps these elements"
 msgstr "Geser posisi panel jika tumpang tindih dengan elemen-elemen ini"
 
-#: src/Form/SettingsFields.php:1025
+#: src/Form/SettingsFields.php:1023
 msgid "Comma-separated selectors for competing widgets, e.g. .interface-interface-skeleton__sidebar."
 msgstr "Selektor yang dipisahkan koma untuk widget yang bersaing, mis. .interface-interface-skeleton__sidebar."
 
-#: src/Form/SettingsFields.php:1030
+#: src/Form/SettingsFields.php:1028
 msgid "Do not check on pages with these elements"
 msgstr "Jangan periksa pada halaman dengan elemen-elemen ini"
 
-#: src/Form/SettingsFields.php:1034
+#: src/Form/SettingsFields.php:1032
 msgid "JS injected custom rules"
 msgstr "Aturan kustom yang disuntikkan JS"
 
-#: src/Form/SettingsFields.php:1040
+#: src/Form/SettingsFields.php:1038
 msgid "Don't show edit links on tips in these containers"
 msgstr "Jangan tampilkan tautan edit pada tip di wadah ini"
 
-#: src/Form/SettingsFields.php:1041
+#: src/Form/SettingsFields.php:1039
 msgid "Provide a comma-separated list of page sections where edit links should not show. To hide the links everywhere, set this field to an asterisk (*)."
 msgstr "Berikan daftar bagian halaman yang dipisahkan dengan koma di mana tautan edit tidak boleh muncul. Untuk menyembunyikan tautan di mana saja, atur bidang ini ke tanda bintang (*)."
 
-#: src/Form/SettingsFields.php:1060
+#: src/Form/SettingsFields.php:1058
 msgid "Handling tips on hidden content"
 msgstr "Menangani tip pada konten tersembunyi"
 
-#: src/Form/SettingsFields.php:1062
+#: src/Form/SettingsFields.php:1060
 msgid "Warn users if elements might not be visible when jumping to tips"
 msgstr "Berikan peringatan kepada pengguna jika elemen mungkin tidak terlihat saat melompat ke tip"
 
-#: src/Form/SettingsFields.php:1069
+#: src/Form/SettingsFields.php:1067
 msgid "Elements with overflow hidden"
 msgstr "Elemen dengan overflow tersembunyi"
 
-#: src/Form/SettingsFields.php:1070
+#: src/Form/SettingsFields.php:1068
 msgid "Sometimes buttons get drawn and visually truncated outside the bounds of a positioned element. Provide a selector list."
 msgstr "Terkadang tombol digambar dan terpotong secara visual di luar batas elemen yang diposisikan. Berikan daftar selektor."
 
-#: src/Form/SettingsFields.php:1075
+#: src/Form/SettingsFields.php:1073
 msgid "Theme JS will handle revealing hidden tooltips inside these containers"
 msgstr "JS tema akan menangani pengungkapan tooltip tersembunyi di dalam wadah ini"
 
-#: src/Form/SettingsFields.php:1076
+#: src/Form/SettingsFields.php:1074
 msgid "Editoria11y detects hidden tooltips and warns the user when they try to jump to them from the panel. For elements on this list, Editoria11y will dispatch a JS event instead of a warning, so custom JS in your theme can first reveal the hidden tip (e.g., open an accordion or tab panel)."
 msgstr "Editoria11y mendeteksi tooltip tersembunyi dan memperingatkan pengguna saat mereka mencoba melompat ke sana dari panel. Untuk elemen dalam daftar ini, Editoria11y akan mengirimkan peristiwa JS alih-alih peringatan, sehingga JS kustom di tema Anda dapat terlebih dahulu mengungkapkan tip yang tersembunyi (misal, membuka akordion atau panel tab)."
 
-#: src/Form/SettingsFields.php:1087
+#: src/Form/SettingsFields.php:1085
 msgid "Detecting dynamic and shadow content"
 msgstr "Mendeteksi konten dinamis dan shadow"
 
-#: src/Form/SettingsFields.php:1090
+#: src/Form/SettingsFields.php:1088
 msgid "Dynamically refresh if new content appears"
 msgstr "Segarkan secara dinamis jika muncul konten baru"
 
-#: src/Form/SettingsFields.php:1096
+#: src/Form/SettingsFields.php:1094
 msgid "Watch for changes anywhere on the page"
 msgstr "Pantau perubahan di mana saja pada halaman"
 
-#: src/Form/SettingsFields.php:1097
+#: src/Form/SettingsFields.php:1095
 msgid "Only watch for changes to content containers present on load"
 msgstr "Hanya pantau perubahan pada wadah konten yang ada saat pemuatan"
 
-#: src/Form/SettingsFields.php:1098
+#: src/Form/SettingsFields.php:1096
 msgid "Do not watch for changes"
 msgstr "Jangan pantau perubahan"
 
-#: src/Form/SettingsFields.php:1101
+#: src/Form/SettingsFields.php:1099
 msgid "Set to \"anywhere\" if changes are being missed; set to \"do not watch\" if you notice performance issues."
 msgstr "Atur ke \"di mana saja\" jika ada perubahan yang terlewat; atur ke \"jangan pantau\" jika Anda menyadari adanya masalah performa."
 
-#: src/Form/SettingsFields.php:1105
+#: src/Form/SettingsFields.php:1103
 msgid "Check inside these specific Web components"
 msgstr "Periksa di dalam komponen Web spesifik ini"
 
-#: src/Form/SettingsFields.php:1106
+#: src/Form/SettingsFields.php:1104
 msgid "Provide selectors for elements with shadow DOM you want tested. E.g.: my-fancy-accordion-widget, my-magical-slideshow."
 msgstr "Berikan selektor untuk elemen dengan Shadow DOM yang ingin Anda uji. Misal: my-fancy-accordion-widget, my-magical-slideshow."
 
-#: src/Form/SettingsFields.php:1110
+#: src/Form/SettingsFields.php:1108
 msgid "Auto-detect any Web components"
 msgstr "Deteksi otomatis semua komponen Web"
 
-#: src/Form/SettingsFields.php:1111
+#: src/Form/SettingsFields.php:1109
 msgid "This is easier to configure than specifying components, but may slow test runs on very complicated pages."
 msgstr "Ini lebih mudah dikonfigurasi daripada menentukan komponen secara spesifik, tetapi dapat memperlambat proses pengujian pada halaman yang sangat rumit."
 
-#: src/Form/SettingsFields.php:1122
+#: src/Form/SettingsFields.php:1120
 msgid "Syncing results to reports"
 msgstr "Menyinkronkan hasil ke laporan"
 
-#: src/Form/SettingsFields.php:1139
+#: src/Form/SettingsFields.php:1137
 msgid "Only admins can view reports"
 msgstr "Hanya admin yang dapat melihat laporan"
 
-#: src/Form/SettingsFields.php:1144
+#: src/Form/SettingsFields.php:1142
 msgid "By default both admins and editors can view reports."
 msgstr "Secara default, baik admin maupun editor dapat melihat laporan."
 
-#: src/Form/SettingsFields.php:1157
+#: src/Form/SettingsFields.php:1155
 msgid "Hide reports shortcut on toggle"
 msgstr "Sembunyikan pintasan laporan pada sakelar (toggle)"
 
-#: src/Form/SettingsFields.php:1164
+#: src/Form/SettingsFields.php:1162
 msgid "Reports will still be available on the WordPress admin dashboard."
 msgstr "Laporan akan tetap tersedia di dasbor admin WordPress."
 
-#: src/Form/SettingsFields.php:1174
+#: src/Form/SettingsFields.php:1172
 msgid "Remove redundant base url from URLs"
 msgstr "Hapus URL dasar yang redundan dari URL"
 
-#: src/Form/SettingsFields.php:1186
+#: src/Form/SettingsFields.php:1184
 msgid "Provide base URL (\"/mysite\") if your site is installed in a subdirectory. Subdirectories tend to get duplicated (/mysite/mysite/mypage) and throw errors from the API."
 msgstr "Berikan URL dasar (\"/mysite\") jika situs Anda diinstal di subdirektori. Subdirektori cenderung terduplikasi (/mysite/mysite/mypage) dan menyebabkan kesalahan dari API."
 
-#: src/Form/SettingsFields.php:1191
+#: src/Form/SettingsFields.php:1189
 msgid "Preserve query parameters"
 msgstr "Pertahankan parameter kueri"
 
-#: src/Form/SettingsFields.php:1192
+#: src/Form/SettingsFields.php:1190
 msgid "The dashboard ignores most parameters: results for both /news?f=1 and /news?f=2 will show up as just /news. Provide a comma-separated list of parameters that are meaningful and should appear as separate pages in results."
 msgstr "Dasbor mengabaikan sebagian besar parameter: hasil untuk /news?f=1 dan /news?f=2 akan muncul hanya sebagai /news. Berikan daftar parameter yang dipisahkan dengan koma yang bermakna dan harus muncul sebagai halaman terpisah dalam hasil."
 
-#: src/Form/SettingsFields.php:1196
+#: src/Form/SettingsFields.php:1194
 msgid "Disable sync altogether"
 msgstr "Nonaktifkan sinkronisasi sepenuhnya"
 
-#: src/Form/SettingsFields.php:1197
+#: src/Form/SettingsFields.php:1195
 msgid "Syncing test results is required for the issue dashboard, dismissal dashboard, and \"mark OK\" buttons."
 msgstr "Sinkronisasi hasil pengujian diperlukan untuk dasbor masalah, dasbor pengabaian, dan tombol \"tandai OK\"."
 
-#: src/Form/SettingsFields.php:1208
+#: src/Form/SettingsFields.php:1206
 msgid "Heading outline position of editable content"
 msgstr "Posisi garis besar judul (heading outline) dari konten yang dapat diedit"
 
-#: src/Form/SettingsFields.php:1210
+#: src/Form/SettingsFields.php:1208
 msgid "To check headings while editing, Editoria11y needs to know what the first heading level should be in each editable field. Body fields should generally be at the H2 level."
 msgstr "Untuk memeriksa judul saat mengedit, Editoria11y perlu mengetahui tingkat judul pertama yang seharusnya ada di setiap bidang yang dapat diedit. Bidang body umumnya harus berada pada tingkat H2."
 
-#: src/Form/SettingsFields.php:1215
+#: src/Form/SettingsFields.php:1213
 msgid "H2 level content (body content)"
 msgstr "Konten tingkat H2 (konten body)"
 
-#: src/Form/SettingsFields.php:1216
+#: src/Form/SettingsFields.php:1214
 msgid "Body fields are preceded by an H1 (the post or page title), so their highest heading level should be H2."
 msgstr "Bidang body didahului oleh H1 (judul postingan atau halaman), jadi tingkat judul tertinggi mereka haruslah H2."
 
-#: src/Form/SettingsFields.php:1220
+#: src/Form/SettingsFields.php:1218
 msgid "H3 level content (blocks or widgets with separate titles)"
 msgstr "Konten tingkat H3 (blok atau widget dengan judul terpisah)"
 
-#: src/Form/SettingsFields.php:1221
+#: src/Form/SettingsFields.php:1219
 msgid "The highest heading level should be H3."
 msgstr "Tingkat judul tertinggi haruslah H3."
 
-#: src/Form/SettingsFields.php:1225
+#: src/Form/SettingsFields.php:1223
 msgid "H4 level content (deeply nested blocks or widgets)"
 msgstr "Konten tingkat H4 (blok atau widget yang bersarang dalam)"
 
-#: src/Form/SettingsFields.php:1226
+#: src/Form/SettingsFields.php:1224
 msgid "The highest heading level should be H4."
 msgstr "Tingkat judul tertinggi haruslah H4."
 
@@ -1860,81 +1864,81 @@ msgstr "Pengaturan"
 msgid "License & Account"
 msgstr "Lisensi & Akun"
 
-#: src/Form/SettingsPage.php:550
+#: src/Form/SettingsPage.php:548
 msgid "Getting started"
 msgstr "Memulai"
 
-#: src/Form/SettingsPage.php:559
+#: src/Form/SettingsPage.php:557
 msgid "Modify content tests"
 msgstr "Modifikasi tes konten"
 
-#: src/Form/SettingsPage.php:565 src/Form/SettingsPage.php:579
+#: src/Form/SettingsPage.php:563 src/Form/SettingsPage.php:577
 msgid "Tests by group"
 msgstr "Tes berdasarkan grup"
 
-#: src/Form/SettingsPage.php:573
+#: src/Form/SettingsPage.php:571
 msgid "Modify template tests"
 msgstr "Modifikasi tes templat"
 
-#: src/Form/SettingsPage.php:590
+#: src/Form/SettingsPage.php:588
 msgid "Custom rules (CSA)"
 msgstr "Aturan kustom (CSA)"
 
-#: src/Form/SettingsPage.php:605
+#: src/Form/SettingsPage.php:603
 msgid "Parts of the page to test"
 msgstr "Bagian halaman untuk diuji"
 
-#: src/Form/SettingsPage.php:613
+#: src/Form/SettingsPage.php:611
 msgid "Do not check for any errors inside these elements"
 msgstr "Jangan periksa adanya kesalahan di dalam elemen-elemen ini"
 
-#: src/Form/SettingsPage.php:624
+#: src/Form/SettingsPage.php:622
 msgid "Page regions with user-editable content"
 msgstr "Wilayah halaman dengan konten yang dapat diedit pengguna"
 
-#: src/Form/SettingsPage.php:634
+#: src/Form/SettingsPage.php:632
 msgid "Do not check for content errors inside these elements"
 msgstr "Jangan periksa kesalahan konten di dalam elemen-elemen ini"
 
-#: src/Form/SettingsPage.php:637
+#: src/Form/SettingsPage.php:635
 msgid "Errors in these elements should only be shown to developers"
 msgstr "Kesalahan pada elemen ini hanya boleh ditampilkan kepada developer"
 
-#: src/Form/SettingsPage.php:653
+#: src/Form/SettingsPage.php:651
 msgid "Roles that will see developer alerts"
 msgstr "Peran yang akan melihat peringatan developer"
 
-#: src/Form/SettingsPage.php:668
+#: src/Form/SettingsPage.php:666
 msgid "Advanced settings"
 msgstr "Pengaturan lanjutan"
 
-#: src/Form/SettingsPage.php:686
+#: src/Form/SettingsPage.php:684
 msgid "Editoria11y Settings"
 msgstr "Pengaturan Editoria11y"
 
-#: src/Form/SettingsPage.php:701
+#: src/Form/SettingsPage.php:699
 msgid "Save Settings"
 msgstr "Simpan Pengaturan"
 
-#: src/FreemiusAccessControl.php:220
+#: src/FreemiusAccessControl.php:222
 msgid "unknown"
 msgstr "tidak diketahui"
 
 #. translators: 1: loaded SDK version, 2: highest tested SDK version
-#: src/FreemiusAccessControl.php:225
+#: src/FreemiusAccessControl.php:227
 #, php-format
 msgid "Editoria11y CSA: the loaded Freemius SDK (version %1$s) is newer than the highest tested version (%2$s). Another Freemius-using plugin on this site has bundled a newer SDK build. The network license activation page may not behave as expected; review release notes or contact support if you hit issues."
 msgstr "Editoria11y CSA: SDK Freemius yang dimuat (versi %1$s) lebih baru dari versi yang paling tinggi diuji (%2$s). Plugin lain yang menggunakan Freemius di situs ini telah menyertakan build SDK yang lebih baru. Halaman aktivasi lisensi jaringan mungkin tidak berperilaku seperti yang diharapkan; tinjau catatan rilis atau hubungi dukungan jika Anda mengalami masalah."
 
-#: src/FreemiusAccessControl.php:501
+#: src/FreemiusAccessControl.php:503
 msgid "Editoria11y network licenses are activated from a dedicated page that walks every site in the network in cron-driven batches. This avoids the SDK's 1,000-site limit and keeps the page responsive on large multisites."
 msgstr "Lisensi jaringan Editoria11y diaktifkan dari halaman khusus yang menjelajahi setiap situs dalam jaringan dalam batch yang digerakkan oleh cron. Ini menghindari batas 1.000 situs SDK dan menjaga halaman tetap responsif pada multisite yang besar."
 
-#: src/FreemiusAccessControl.php:507
+#: src/FreemiusAccessControl.php:509
 msgid "Open Editoria11y license page"
 msgstr "Buka halaman lisensi Editoria11y"
 
-#: src/FreemiusAccessControl.php:563
+#: src/FreemiusAccessControl.php:565
 msgid "Per-site license rows are not shown to keep this page responsive on large networks. The license you choose below applies to every site in the network. To activate or deactivate on individual sites, visit each site's per-site Settings → Editoria11y → License & Account."
 msgstr "Baris lisensi per situs tidak ditampilkan agar halaman ini tetap responsif pada jaringan yang besar. Lisensi yang Anda pilih di bawah ini berlaku untuk setiap situs dalam jaringan. Untuk mengaktifkan atau menonaktifkan pada situs individual, kunjungi Pengaturan per situs → Editoria11y → Lisensi & Akun di setiap situs."
 
@@ -2009,15 +2013,19 @@ msgstr "tingkat dukungan yang lebih rendah (atau lebih tinggi!)"
 msgid "This is a <strong>contribute what you can</strong> \"farmshare\" model. The Editoria11y LLC site has options for %s, options to contribute as a coder or tester instead, and options for cross-platform and unlimited-site licenses."
 msgstr "Ini adalah model <strong>kontribusi sesuai kemampuan Anda</strong>. Situs Editoria11y LLC memiliki opsi untuk %s, opsi untuk berkontribusi sebagai coder atau tester, dan opsi untuk lisensi lintas platform dan situs tak terbatas."
 
-#: src/functions.php:1608
+#: src/functions.php:234
+msgid "Network Super Admin"
+msgstr "Super Admin Jaringan"
+
+#: src/functions.php:1796
 msgid "Empty link"
 msgstr "Tautan kosong"
 
-#: src/functions.php:1609
+#: src/functions.php:1797
 msgid "The button style link is missing its URL."
 msgstr "Tautan bergaya tombol ini tidak memiliki URL."
 
-#: src/functions.php:1610
+#: src/functions.php:1798
 msgid "Edit Media"
 msgstr "Edit Media"
 
@@ -2051,7 +2059,7 @@ msgstr "Tombol memiliki label ARIA yang tidak valid"
 
 #: src/TestNames.php:54
 msgid "Button name repeats the word \"button\""
-msgstr "Nama tombol mengulang kata \"button\""
+msgstr "Nama tombol mengulang kata “button”"
 
 #: src/TestNames.php:55
 msgid "This button is unpronounceable"
@@ -2107,7 +2115,7 @@ msgstr "Iframe yang disematkan perlu diperiksa secara manual"
 
 #: src/TestNames.php:68
 msgid "Frame missing \"title\" attribute"
-msgstr "Frame tidak memiliki atribut \"title\""
+msgstr "Frame tidak memiliki atribut “title”"
 
 #: src/TestNames.php:69
 msgid "Frame with tabindex=\"-1\" will not be keyboard accessible."
@@ -2223,7 +2231,7 @@ msgstr "Gambar tertaut memerlukan teks alt yang dapat diucapkan"
 
 #: src/TestNames.php:98
 msgid "Manual check: link contains \"click here\""
-msgstr "Tautan ini mengandung kata \"klik di sini\""
+msgstr "Tautan ini mengandung kata “klik di sini”"
 
 #: src/TestNames.php:99
 msgid "Link article titles, not DOI numbers"
@@ -2235,7 +2243,7 @@ msgstr "Tautan ini tidak mengandung kata apa pun"
 
 #: src/TestNames.php:101
 msgid "Link with invalid \"aria-labelledby\" attribute"
-msgstr "Tautan dengan atribut \"aria-labelledby\" yang tidak valid"
+msgstr "Tautan dengan atribut “aria-labelledby” yang tidak valid"
 
 #: src/TestNames.php:102
 msgid "This link needs a label"
