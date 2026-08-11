@@ -167,7 +167,7 @@ function ed11y_get_csa_default_options( string $option = '' ) {
 	// (validator, settings-page renderer) are already runtime-gated by
 	// `ed11y_is_csa_active()`, which is false in the free build, so the
 	// empty-return path is unreachable there but provides a safe fallback.
-
+	
 	return '' !== $option ? '' : array();
 }
 
@@ -186,7 +186,7 @@ function ed11y_get_csa_default_options( string $option = '' ) {
  */
 function ed11y_get_developer_role_options(): array {
 	$out = array();
-
+	
 	return $out;
 }
 
@@ -200,7 +200,7 @@ function ed11y_get_developer_role_options(): array {
  * @return array<string, mixed>
  */
 function ed11y_get_csa_settings(): array {
-
+	
 	return array();
 }
 
@@ -286,7 +286,7 @@ function ed11y_effective_network_csa_lock( string $key ): array {
 	// each of its four governed CSA keys is locked as a unit even with an
 	// empty stored value — the super-admin's "everyone gets the network
 	// default set" is a valid configuration. Mirrors the save-time
-	// coercion in {@see \Editoria11y\Form\SettingsValidator::enforce_network_csa_locks__premium_only()}.
+	// coercion in {@see \Editoria11y\Form\SettingsValidator::enforce_network_csa_locks()}.
 	if (
 		in_array( $key, \Editoria11y\Form\SettingsValidator::BUNDLE_LOCK_TESTS_AND_ROLES_KEYS, true )
 		&& ed11y_is_bundle_locked()
@@ -325,11 +325,9 @@ function ed11y_effective_network_csa_lock( string $key ): array {
  *
  * @param string $key Setting key.
  * @return mixed Effective value, or null if the key is unknown.
- *
- * @SuppressWarnings(PHPMD.UnusedFormalParameter) `$key` feeds only the CSA branch; the free build strips it and always returns the fallback.
  */
-function ed11y_get_csa_setting( string $key ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter -- `$key` feeds only the CSA branch; the free build strips it.
-
+function ed11y_get_csa_setting( string $key ) {
+	
 	return null;
 }
 
@@ -341,11 +339,9 @@ function ed11y_get_csa_setting( string $key ) { // phpcs:ignore Generic.CodeAnal
  *
  * @param string $key Setting key.
  * @return string Stored value cast to string, or empty string if unset.
- *
- * @SuppressWarnings(PHPMD.UnusedFormalParameter) `$key` feeds only the CSA branch; the free build strips it and always returns the fallback.
  */
-function ed11y_get_csa_raw_setting( string $key ): string { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter -- `$key` feeds only the CSA branch; the free build strips it.
-
+function ed11y_get_csa_raw_setting( string $key ): string {
+	
 	return '';
 }
 
@@ -1114,7 +1110,7 @@ function ed11y_build_ignore_tests( string $tests_off_csv ): array {
 	// preprocessor strips the premium-only override below, leaving the
 	// unconditional merge in the free build.
 	$ignore = array_merge( $ignore, TestNames::template_tests() );
-
+	
 	return array_values( array_unique( $ignore ) );
 }
 
@@ -1721,6 +1717,14 @@ function ed11y_get_params( object $user, string $context = 'viewing' ) {
 	// active. The preprocessor strips the inner block from the free build,
 	// where the JS that reads `profile` is itself stripped.
 	$ed1vals['profile'] = false;
+	// Whether this user may create global ("OK on all pages") dismissals. The
+	// front-end shim reads it to decide whether to inject the site-wide button.
+	// Gated on the same capability the dismiss REST writer enforces
+	// (`edit_posts`), and only while CSA is active — global dismissals are a
+	// CSA feature. Stays in the per-page payload (like `profile`) because it is
+	// per-user; the free build strips the reader with the rest of the okAll UI.
+	$ed1vals['allowOkAll'] = false;
+	
 
 	return( $ed1vals );
 }

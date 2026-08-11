@@ -61,7 +61,7 @@ class SettingsFields {
 	 */
 	public static function getting_started_section_intro() {
 		// @todo: update Configuration guide URL when Ed11y site guide is ready.
-
+		
 		?>
 		<p class="description">
 			<?php
@@ -158,7 +158,7 @@ class SettingsFields {
 		// rules submenu (super-admin only). Mirrors the per-site button
 		// pair but operates on `NetworkCustomRules` storage.
 		if ( SettingsContext::is_network() ) {
-
+			
 			return;
 		}
 		// Entire CSA-active branch is wrapped in the preprocessor gate
@@ -166,7 +166,7 @@ class SettingsFields {
 		// from the free build via the @fs_premium_only header in
 		// editoria11y.php. Section registration is similarly gated in
 		// SettingsPage::register_sections_and_fields().
-
+		
 		?>
 		<p class="description">
 			<?php
@@ -393,10 +393,12 @@ class SettingsFields {
 		// Method body wrapped so the free build keeps an empty method
 		// shell — any leftover settings-API callback reference still
 		// resolves but renders nothing.
+		
 	}
 
 	/** Render the always_ignore textarea. */
 	public static function csa_always_ignore_field() {
+		
 	}
 
 	/**
@@ -408,6 +410,7 @@ class SettingsFields {
 	 * appears in the CSV's slug list.
 	 */
 	public static function csa_roles_field() {
+		
 	}
 
 	/**
@@ -416,6 +419,7 @@ class SettingsFields {
 	 * @todo implement, test, update wording upstream in Drupal.
 	 */
 	public static function csa_dev_assertiveness_field() {
+		
 	}
 
 	/* === Per-test renderers === */
@@ -470,6 +474,7 @@ class SettingsFields {
 		$csa_off_set     = array();
 		$csa_dev_set     = array();
 		$csa_content_set = array();
+		
 
 		// Bundle lock applies to the test-routing widgets as a unit. In
 		// site context, disable the inputs and surface the "Managed at
@@ -520,7 +525,7 @@ class SettingsFields {
 						(<?php echo count( $tests_in_group ); ?>)
 					</span>
 				</summary>
-				<?php self::render_group_refinements( $group_id ); ?>
+				<?php self::render_group_refinements( $group_id, $is_csa ); ?>
 				<table class="widefat striped" style="margin-top: 0.5em;">
 					<thead>
 						<tr>
@@ -619,8 +624,9 @@ class SettingsFields {
 	 *
 	 * @param string $group_id Group identifier from
 	 *                         `TestNames::group_for_key()`.
+	 * @param bool   $is_csa   Whether CSA mode is active.
 	 */
-	public static function render_group_refinements( string $group_id ) {
+	public static function render_group_refinements( string $group_id, bool $is_csa ) {
 		if ( 'links_content' === $group_id ) {
 			// May be Drupal "ed11y_documentContent".
 			self::compat_textarea(
@@ -673,6 +679,7 @@ class SettingsFields {
 			echo '<hr>';
 			return;
 		}
+		
 	}
 
 	/* === Advanced-settings stack === */
@@ -693,6 +700,7 @@ class SettingsFields {
 	 *      each of which already emits its own `<details>`.
 	 */
 	public static function advanced_settings_field() {
+		$is_csa = ed11y_is_csa_active();
 		?>
 		<details class="ed11y-compat-group" style="margin: 0.5em 0; padding: 0.5em 0.75em; border: 1px solid #ccd0d4; border-radius: 4px;">
 			<summary style="cursor: pointer; font-weight: 600;"><?php esc_html_e( 'Assertiveness', 'editoria11y' ); ?></summary>
@@ -700,6 +708,9 @@ class SettingsFields {
 				<label for="ed11y-alert_mode"><strong><?php esc_html_e( 'Checker mode for content roles', 'editoria11y' ); ?></strong></label>
 			</p>
 			<?php self::alert_mode_field(); ?>
+			<?php
+			
+			?>
 			<p>
 				<label for="ed11y-livecheck"><strong><?php esc_html_e( 'Checker mode inside editor', 'editoria11y' ); ?></strong></label>
 			</p>

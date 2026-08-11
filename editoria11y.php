@@ -21,6 +21,7 @@
  * @author          John Jameson, Princeton University
  * @copyright       2025 The Trustees of Princeton University
  * @license         GPL v2 or later
+ *
  */
 
 // Exit if accessed directly.
@@ -190,7 +191,7 @@ if ( ! function_exists( 'ed11ycsa' ) ) {
 					'type'                => 'plugin',
 					'public_key'          => 'pk_5dd521a7afe891a30befe5040b0a6',
 					'is_premium'          => false,
-					'is_live'             => true,
+					'is_live'           => true,
 					// The CSA build's Plugin Name header ends in " (CSA)" so
 					// the two builds are distinguishable on the plugins list
 					// (the free build's header is rewritten by the strip —
@@ -317,7 +318,7 @@ if ( ! function_exists( 'ed11ycsa' ) ) {
 			// Restrict the SDK's network-admin pages to super-admins and
 			// pin the "Activate License" modal to all-sites mode so very
 			// large multisites are not enumerated row-by-row in the DOM.
-
+			
 		}
 
 		return $ed11ycsa;

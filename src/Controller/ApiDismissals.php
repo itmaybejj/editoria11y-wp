@@ -107,6 +107,7 @@ class ApiDismissals extends WP_REST_Controller {
 			'entity_type' => '',
 			'page_title'  => '',
 			'page_count'  => 0,
+			'in_content'  => 1,
 		);
 		if ( mb_strlen( (string) $results['page_url'] ) > 190 ) {
 			$results['page_url'] = mb_substr( (string) $results['page_url'], 0, 189 );
@@ -134,32 +135,117 @@ class ApiDismissals extends WP_REST_Controller {
 		// computes it via createDismissalKey() / dismissDigest() on the client
 		// using State.option.pepper. Server stores the value as-is.
 		$element_id = (string) ( $results['element_id'] ?? '' );
+		// Content (1) vs. developer (0) bucket for a global dismissal, so the
+		// dashboard subtracts it from — and a reset restores it to — the right
+		// column. Defaults to content; ignored for the `ok`/`hide` rows.
+		$in_content = empty( $results['in_content'] ) ? 0 : 1;
 
 		if ( 'reset' === $status ) {
-			// Scoping is deliberate (reviewed 2026-07: keep as-is): `okAll`
-			// and `ok` dismissals are shared, collaborative state, so any
-			// user who can dismiss (edit_posts) can also restore them —
-			// including rows created by someone else. Only `hide` is a
-			// private, per-user dismissal, so its reset is scoped to the
-			// caller. Do not "fix" the asymmetry by user-scoping the first
-			// DELETE.
+			// `okAll` and `ok` are shared, collaborative state: any user who can
+			// dismiss (edit_posts) may restore them, including rows another user
+			// created. Only `hide` is a private, per-user dismissal, scoped to
+			// the caller below. Do not user-scope the shared DELETEs.
 			//
-			// Split the DELETE so we can tell whether an `okAll` row was
-			// removed — that, and only that, invalidates the static config
-			// payload (which carries `globalDismissals` for 30 days). Page-
-			// scoped removals (`ok` / `hide`) only affect the per-page blob,
-			// which is rebuilt every request, so bumping the cachebust on
-			// them would be wasted invalidation for every other browser
-			// already running.
+			// A global dismissal is site-wide, so its reset is too: we clear the
+			// element EVERYWHERE, not just on the page the reset arrived from
+			// (which need not be where it was created). That single DELETE
+			// removes the origin row AND every per-page mapping row the report
+			// path stored — the rows the dashboard subtracts from each affected
+			// page's raw count — so all those counts self-heal on the next
+			// render with no per-page arithmetic. The DELETE is split from the
+			// page-scoped `ok`/`hide` one so we can tell whether an okAll row was
+			// actually removed — that, and only that, invalidates the static
+			// config payload (which carries `globalDismissals` for 30 days);
+			// page-scoped removals only touch the per-page blob, rebuilt every
+			// request.
+			// Restore each affected page's stored count before deleting the
+			// mapping. Stored counts are okAll-ADJUSTED: they excluded this
+			// element while the global dismissal was active. Pages that adjusted
+			// down can't re-scan themselves on a reset, so we add the element
+			// back — into the content or developer bucket each page recorded —
+			// using its per-page okAll rows. Only non-stale rows count: a stale
+			// row means the element is no longer on that page, so its stored
+			// count already excludes it and must not be bumped.
+			//
+			// Not wrapped in an explicit transaction: send_dismissal() stays
+			// non-transactional so the dismissal test suite keeps WP_UnitTestCase's
+			// rollback isolation (see the note in ApiResults::send_results). The
+			// statements are ordered read-restore-then-delete; $wpdb never throws,
+			// and a re-crawl reconciles the rare mid-sequence failure.
+
+			// Page (ed11y_urls) content/dev totals.
+			$wpdb->query( // phpcs:ignore
+				$wpdb->prepare(
+					"UPDATE {$wpdb->prefix}ed11y_urls u
+					INNER JOIN (
+						SELECT pid,
+							SUM( in_content = 1 ) AS content_count,
+							SUM( in_content = 0 ) AS dev_count
+						FROM {$wpdb->prefix}ed11y_dismissals
+						WHERE result_key = %s AND element_id = %s
+							AND dismissal_status = 'okAll' AND stale = 0
+						GROUP BY pid
+					) m ON m.pid = u.pid
+					SET u.page_total = u.page_total + m.content_count,
+						u.dev_total  = u.dev_total + m.dev_count;",
+					array( $result_key, $element_id )
+				)
+			);
+
+			// Per-test (ed11y_results) counts for the pages that still exist.
+			$wpdb->query( // phpcs:ignore
+				$wpdb->prepare(
+					"UPDATE {$wpdb->prefix}ed11y_results r
+					INNER JOIN (
+						SELECT pid,
+							SUM( in_content = 1 ) AS content_count,
+							SUM( in_content = 0 ) AS dev_count
+						FROM {$wpdb->prefix}ed11y_dismissals
+						WHERE result_key = %s AND element_id = %s
+							AND dismissal_status = 'okAll' AND stale = 0
+						GROUP BY pid
+					) m ON m.pid = r.pid AND r.result_key = %s
+					SET r.result_count = r.result_count + m.content_count,
+						r.dev_count    = r.dev_count + m.dev_count;",
+					array( $result_key, $element_id, $result_key )
+				)
+			);
+
+			// Per-test rows that were pruned when every occurrence of this test
+			// on the page was globally dismissed (its stored count hit 0). Insert
+			// them fresh so the "issues by type" totals restore too. result_name
+			// rides the mapping; a mechanical (user 0) row may carry '', which
+			// the next scan of the page corrects.
+			$wpdb->query( // phpcs:ignore
+				$wpdb->prepare(
+					"INSERT INTO {$wpdb->prefix}ed11y_results
+						(pid, result_key, result_count, dev_count, result_name, created, updated)
+					SELECT d.pid, %s,
+						SUM( d.in_content = 1 ),
+						SUM( d.in_content = 0 ),
+						MAX( d.result_name ),
+						%s, %s
+					FROM {$wpdb->prefix}ed11y_dismissals d
+					WHERE d.result_key = %s AND d.element_id = %s
+						AND d.dismissal_status = 'okAll' AND d.stale = 0
+						AND NOT EXISTS (
+							SELECT 1 FROM {$wpdb->prefix}ed11y_results r
+							WHERE r.pid = d.pid AND r.result_key = %s
+						)
+					GROUP BY d.pid;",
+					array( $result_key, $now, $now, $result_key, $element_id, $result_key )
+				)
+			);
+
+			// Now clear the element everywhere: the origin row plus every
+			// per-page mapping row the report path stored.
 			$okall_deleted = (int) $wpdb->query( // phpcs:ignore
 				$wpdb->prepare(
 					"DELETE FROM {$wpdb->prefix}ed11y_dismissals
-					WHERE pid = %d
-					AND result_key = %s
+					WHERE result_key = %s
 					AND element_id = %s
 					AND dismissal_status = 'okAll';",
 					array(
-						$pid,
 						$result_key,
 						$element_id,
 					)
@@ -206,8 +292,9 @@ class ApiDismissals extends WP_REST_Controller {
 					result_name,
 					created,
 					updated,
-					stale)
-				VALUES (%s, %s, %d, %s, %s, %s, %s, %s, %d)
+					stale,
+					in_content)
+				VALUES (%s, %s, %d, %s, %s, %s, %s, %s, %d, %d)
 					;",
 				array(
 					$pid,
@@ -219,6 +306,7 @@ class ApiDismissals extends WP_REST_Controller {
 					$now,
 					$now,
 					0,
+					$in_content,
 				)
 			)
 		);
@@ -285,21 +373,25 @@ class ApiDismissals extends WP_REST_Controller {
 		$order_by      = $order_by && in_array( $order_by, $dismiss_sorts, true ) ? $order_by : 'created';
 
 		// Build where clause based on sanitized params.
-		$where = '';
+		//
+		// Always hide the mechanical per-page okAll mapping rows (user 0) the
+		// report path writes so the dashboard can restore counts on a reset —
+		// they are not human dismissals and would otherwise flood the list with
+		// one entry per page. The origin okAll row (a real dismisser, user > 0)
+		// still shows. Every filter below AND-appends to this base.
+		$where = "WHERE NOT ( {$dtable}.dismissal_status = 'okAll' AND {$dtable}.user = 0 )";
 		if ( $result_key ) {
 			// Filtering by test name.
-			$where = "WHERE {$dtable}.result_key = '{$result_key}'";
+			$where .= " AND {$dtable}.result_key = '{$result_key}'";
 		}
 		if ( $entity_type ) {
 			// Filtering by entity type.
-			$where = empty( $where ) ? 'WHERE ' : $where . 'AND ';
-			$where = $where . "{$utable}.entity_type = '{$entity_type}'";
+			$where .= " AND {$utable}.entity_type = '{$entity_type}'";
 		}
 
 		if ( 0 < $dismissor ) {
 			// Filtering by author ID number, which has been cast to integer.
-			$where = empty( $where ) ? 'WHERE ' : $where . 'AND ';
-			$where = $where . "{$dtable}.user = '{$dismissor}'";
+			$where .= " AND {$dtable}.user = '{$dismissor}'";
 		}
 
 		if ( in_array( $order_by, array( 'page_title', 'page_url', 'entity_type' ), true ) ) {

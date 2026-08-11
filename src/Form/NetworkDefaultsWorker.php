@@ -1013,7 +1013,7 @@ final class NetworkDefaultsWorker {
 	 * false in the free build.
 	 */
 	private static function csa_active(): bool {
-
+		
 		return false;
 	}
 
