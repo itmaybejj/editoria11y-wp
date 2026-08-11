@@ -276,7 +276,7 @@ class SettingsPage {
 		// the free-build tab layout is set above and this block only
 		// widens it for the premium build. The unset/re-add keeps
 		// "License & Account" last in the row.
-		
+
 		// On network-activated installs the Freemius "License & Account"
 		// destination resolves to a network-admin URL (see tab_url() /
 		// Freemius's _get_admin_page_url). A non-super-admin who clicked it
@@ -529,8 +529,6 @@ class SettingsPage {
 	 */
 	public static function register_sections_and_fields() {
 
-		$is_csa = ed11y_is_csa_active();
-
 		add_settings_section(
 			'ed11y_getting_started',
 			__( 'Getting started', 'editoria11y' ),
@@ -570,11 +568,8 @@ class SettingsPage {
 
 		// Custom rules section is a deep-link surface to the dedicated
 		// submenu page that owns the CRUD UI. CSA-only.
-		
 
 		/* --- Getting started: page-area config (the funnel) --- */
-
-		
 
 		add_settings_field(
 			'ed11y_checkRoots',
@@ -589,7 +584,7 @@ class SettingsPage {
 		// shared. Build the free-build label first; the premium-only block
 		// below replaces it when CSA is active at runtime.
 		$ignore_elements_label = esc_html__( 'Do not check for content errors inside these elements', 'editoria11y' );
-		
+
 		add_settings_field(
 			'ed11y_ignore_elements',
 			$ignore_elements_label,
@@ -598,8 +593,6 @@ class SettingsPage {
 			'ed11y_getting_started',
 			array( 'label_for' => 'ed11y_ignore_elements' )
 		);
-
-		
 
 		// Stack of collapsibles for fields that used to live in their own
 		// top-level <h2> sections (Assertiveness / Theme compatibility /
@@ -645,7 +638,6 @@ class SettingsPage {
 					</form>
 					<?php ConditionalFields::print_script(); ?>
 				</div><!-- .post-body-content -->
-
 
 				</div><!-- .editoria11y-settings -->
 				<br class="clear">

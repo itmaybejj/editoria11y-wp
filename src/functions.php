@@ -167,7 +167,7 @@ function ed11y_get_csa_default_options( string $option = '' ) {
 	// (validator, settings-page renderer) are already runtime-gated by
 	// `ed11y_is_csa_active()`, which is false in the free build, so the
 	// empty-return path is unreachable there but provides a safe fallback.
-	
+
 	return '' !== $option ? '' : array();
 }
 
@@ -186,7 +186,7 @@ function ed11y_get_csa_default_options( string $option = '' ) {
  */
 function ed11y_get_developer_role_options(): array {
 	$out = array();
-	
+
 	return $out;
 }
 
@@ -200,7 +200,7 @@ function ed11y_get_developer_role_options(): array {
  * @return array<string, mixed>
  */
 function ed11y_get_csa_settings(): array {
-	
+
 	return array();
 }
 
@@ -325,9 +325,11 @@ function ed11y_effective_network_csa_lock( string $key ): array {
  *
  * @param string $key Setting key.
  * @return mixed Effective value, or null if the key is unknown.
+ *
+ * @SuppressWarnings(PHPMD.UnusedFormalParameter) `$key` is read only in the premium body; the free build strips it but must keep the shared signature.
  */
-function ed11y_get_csa_setting( string $key ) {
-	
+function ed11y_get_csa_setting( string $key ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter -- used in the premium-only body; the free build strips it.
+
 	return null;
 }
 
@@ -339,9 +341,11 @@ function ed11y_get_csa_setting( string $key ) {
  *
  * @param string $key Setting key.
  * @return string Stored value cast to string, or empty string if unset.
+ *
+ * @SuppressWarnings(PHPMD.UnusedFormalParameter) `$key` is read only in the premium body; the free build strips it but must keep the shared signature.
  */
-function ed11y_get_csa_raw_setting( string $key ): string {
-	
+function ed11y_get_csa_raw_setting( string $key ): string { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter -- used in the premium-only body; the free build strips it.
+
 	return '';
 }
 
@@ -1110,7 +1114,7 @@ function ed11y_build_ignore_tests( string $tests_off_csv ): array {
 	// preprocessor strips the premium-only override below, leaving the
 	// unconditional merge in the free build.
 	$ignore = array_merge( $ignore, TestNames::template_tests() );
-	
+
 	return array_values( array_unique( $ignore ) );
 }
 
@@ -1724,7 +1728,6 @@ function ed11y_get_params( object $user, string $context = 'viewing' ) {
 	// CSA feature. Stays in the per-page payload (like `profile`) because it is
 	// per-user; the free build strips the reader with the rest of the okAll UI.
 	$ed1vals['allowOkAll'] = false;
-	
 
 	return( $ed1vals );
 }
@@ -1790,7 +1793,6 @@ function ed11y_old_slug_redirect_url_filter( $link ) {
 	return $link;
 }
 add_filter( 'old_slug_redirect_url', 'ed11y_old_slug_redirect_url_filter' );
-
 
 /**
  * Load live checker when editor is present.

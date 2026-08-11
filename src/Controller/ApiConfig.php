@@ -137,7 +137,6 @@ class ApiConfig {
 		// @fs_premium_only) and never emits CSA-only keys the free JS
 		// has no consumer for. The runtime `ed11y_is_csa_active()` check
 		// gates trial/license state inside the premium build.
-		
 
 		return new WP_REST_Response( $payload, 200 );
 	}
@@ -170,7 +169,6 @@ class ApiConfig {
 		// both removed via @fs_premium_only) without leaving the negated
 		// form the preprocessor does not understand. See the freemius skill.
 		$merged = array();
-		
 
 		return array_values( $merged );
 	}

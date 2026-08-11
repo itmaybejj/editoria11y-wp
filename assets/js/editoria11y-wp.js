@@ -7,7 +7,6 @@ import {
   ed11yApplyOptionTranslations as ed11ySharedOptionTranslations,
 } from './editoria11y-option-translations.js';
 
-
 // Build the dual-language dictionary the bundled library consumes.
 //
 // The checker reads ONE flat string table (Lang.langStrings) for both the
@@ -43,22 +42,12 @@ const ed11yLang = ed11yBuildLang(ed11yUiLang, ed11yContentLang);
 Lang.addI18n(ed11yLang.strings);
 Lang.testNames = { ...(Lang.testNames || {}), ...(ed11yUiLang.testNames || {}) };
 
-
-
-
-
-
-
-
-
 // Shared translation layer (see editoria11y-option-translations.js).
 // Front-end binding: autodetect a checkRoot fallback when the admin
 // configured none. Exported for the unit suite.
 export function ed11yApplyOptionTranslations(options) {
   ed11ySharedOptionTranslations(options, { autodetectCheckRoot: true });
 }
-
-
 
 let ed11yOptions = {};
 let ed11yResetID = false;
@@ -104,7 +93,6 @@ function ed11yWpImageIdFromClass(classAttr) {
 // Gated with the okAll UI it serves: the free build has no site-wide button,
 // so the constant + predicate strip too (the unit suite duplicates the helper
 // rather than importing it, so gating the source doesn't cost coverage).
-
 
 // Notify the parent crawler that this iframe's scan completed (or was
 // skipped for a benign reason — password form, missing config, etc.).
@@ -299,8 +287,6 @@ function ed11ySync() {
     sendResults();
   });
 
-  
-
   let sendDismissal = function (detail) {
     if (detail) {
       let dismissalStatus = detail.dismissAction; // ok, hide or reset
@@ -308,8 +294,6 @@ function ed11ySync() {
       // reset restores each affected page's count into the correct column.
       // Always 1 (content) for non-global dismissals, where the server ignores it.
       let inContent = 1;
-
-      
 
       let data = {
         // Reuse the truncated `url` from the results sender: the column is
@@ -403,7 +387,6 @@ const ed11yInit = async function () {
 
     // CSA: build splitConfiguration + enable dev/contrast/readability
     // plugins when the per-page blob set profile. No-op otherwise.
-    
 
     if (window.location.href.indexOf('preview=true') > -1) {
       ed11yOptions['alertMode'] = 'assertive';
@@ -505,7 +488,6 @@ const ed11yInit = async function () {
       }
       e.detail.tip.dataset.alreadyDecorated = 'true';
     });
-
 
     window.ed11y = new Ed11y(ed11yOptions);
     // Expose the library's State / UI / Lang namespaces alongside the

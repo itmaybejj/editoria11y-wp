@@ -112,7 +112,6 @@ class SettingsValidator {
 		// `if/else`, gates the free branch — Freemius's preprocessor only
 		// removes the `is__premium_only()` block, so a sibling `else`
 		// would be orphaned and parse-fail.
-		
 
 		if ( ! $handled_csa ) {
 			// Only re-derive `tests_off` from checkbox state when the input is
@@ -173,6 +172,7 @@ class SettingsValidator {
 	 * @return array Same array with `tests_off` set.
 	 *
 	 * @SuppressWarnings(PHPMD.CyclomaticComplexity) Sequential input-shape guards (non-form / bundle-locked / full form); flattening would hide the state web.
+	 * @SuppressWarnings(PHPMD.UnusedPrivateMethod) The only call site sits inside an `is__premium_only()` gate; the free build strips the caller but keeps this method.
 	 */
 	private static function apply_csa_routing( array $settings ): array {
 		$has_state = isset( $settings['tests_state'] ) && is_array( $settings['tests_state'] );

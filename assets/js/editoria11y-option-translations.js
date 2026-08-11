@@ -4,7 +4,7 @@ import { Lang } from 'editoria11y-js';
  * Shared WP-blob → library-option translation layer.
  *
  * One copy, imported by editoria11y-wp.js and editoria11y-editor.js.
- * 
+ *
  * Context differences are explicit parameters:
  *   - ed11yApplyOptionTranslations: `autodetectCheckRoot` (front end only).
  *   - ed11yBuildCsaSplitConfiguration: `editors` (suppresses page-level
@@ -80,7 +80,7 @@ export function ed11yApplyOptionTranslations(options, { autodetectCheckRoot = fa
     ? new RegExp(options.linkStringsNewWindows, 'g')
     : /window|\stab|download/g;
 
-  // `linkIgnoreStrings` strips from link text *before* running the 
+  // `linkIgnoreStrings` strips from link text *before* running the
   // empty/meaningless-text checks. Library wants an array.
   if (typeof options.linkIgnoreStrings === 'string' && options.linkIgnoreStrings.length > 0) {
     options.linkIgnoreStrings = options.linkIgnoreStrings.split('|').map((s) => s.trim()).filter(Boolean);
@@ -145,6 +145,5 @@ export function ed11yApplyOptionTranslations(options, { autodetectCheckRoot = fa
 //
 // The whole function lives inside the premium markers so the free build
 // strips it; importers premium-wrap their import statement to match.
-
 
 export { ed11yLoadStaticConfig, ed11yApplyStaticConfig };

@@ -101,7 +101,6 @@ class Plugin {
 				// file is stripped from the free build, so the
 				// preprocessor gate keeps the reference out of the free
 				// shell.
-				
 			}
 
 			$migration_panel = new MigrationPanel();
@@ -111,7 +110,6 @@ class Plugin {
 			// build, removing the references to the @fs_premium_only-stripped
 			// CrawlerPage and CustomRulesPage classes. Dashboard is shared
 			// (free build keeps it) and is instantiated below.
-			
 
 			$dashboard = new Dashboard();
 			$dashboard->init();
@@ -135,6 +133,5 @@ class Plugin {
 		$ed11y_api_dismissals->init();
 		$ed11y_api_config = new ApiConfig();
 		$ed11y_api_config->init();
-		
 	}
 }
