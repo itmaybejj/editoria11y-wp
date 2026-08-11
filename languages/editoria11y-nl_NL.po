@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: editoria11y 3.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/editoria11y\n"
-"POT-Creation-Date: 2026-08-05T19:54:53-04:00\n"
+"POT-Creation-Date: 2026-08-10T21:11:15-04:00\n"
 "PO-Revision-Date: 2026-2-12 10:00+0000\n"
 "Language-Team: Editoria11y\n"
 "Language: nl\n"
@@ -36,15 +36,15 @@ msgstr "Princeton University, WDS"
 msgid "https://editoria11y.com"
 msgstr "https://editoria11y.com"
 
-#: editoria11y.php:58
+#: editoria11y.php:131
 msgid "Editoria11y is missing its vendored dependencies. Run \"composer install\" inside the plugin directory or reinstall the plugin from a complete release archive."
 msgstr "De vendored dependencies van Editoria11y ontbreken. Voer \"composer install\" uit in de plugin-map of installeer de plugin opnieuw vanuit een volledig release-archief."
 
-#: editoria11y.php:321
+#: editoria11y.php:399
 msgid "Every five minutes (Editoria11y rehash)"
 msgstr "Elke vijf minuten (Editoria11y-rehash)"
 
-#: editoria11y.php:327
+#: editoria11y.php:405
 msgid "Every fifteen minutes (Editoria11y license watchdog)"
 msgstr "Elke vijftien minuten (Editoria11y-licentiewatchdog)"
 
@@ -188,7 +188,7 @@ msgstr "Alerts"
 
 #: src/Admin/Dashboard.php:149
 msgid "Dev alerts"
-msgstr "Dev‑alerts"
+msgstr "Dev-alerts"
 
 #: src/Admin/Dashboard.php:151
 msgid "Path"
@@ -274,7 +274,7 @@ msgstr "Ja"
 msgid "n/a"
 msgstr "n.v.t."
 
-#: src/Admin/Dashboard.php:175 src/functions.php:1607
+#: src/Admin/Dashboard.php:175 src/functions.php:1795
 msgid "Empty button-style link"
 msgstr "Lege link in knopstijl"
 
@@ -300,6 +300,10 @@ msgstr "%d resultaat"
 msgid "%d results"
 msgstr "%d resultaten"
 
+#: src/CoActivationGuard.php:139
+msgid "A duplicate copy of Editoria11y Accessibility Checker (the free version) was deactivated here: Editoria11y CSA is already active and provides the same checks."
+msgstr "Een dubbele kopie van Editoria11y Accessibility Checker (de gratis versie) is hier gedeactiveerd: Editoria11y CSA is al actief en biedt dezelfde controles."
+
 #: src/Controller/ApiCrawler.php:122
 msgid "The crawler is a premium feature."
 msgstr "De crawler is een premium-functie."
@@ -312,11 +316,11 @@ msgstr "De Editoria11y-database-update is niet voltooid; de crawler is gepauzeer
 msgid "Results not recorded"
 msgstr "Resultaten niet opgeslagen"
 
-#: src/Controller/ApiDismissals.php:480 src/Controller/ApiResults.php:857
+#: src/Controller/ApiDismissals.php:572 src/Controller/ApiResults.php:925
 msgid "Editoria11y database update did not complete; writes are paused until an administrator retries the update."
 msgstr "De Editoria11y-database-update is niet voltooid; schrijfacties zijn gepauzeerd totdat een beheerder de update opnieuw uitvoert."
 
-#: src/Controller/ApiDismissals.php:505 src/Controller/ApiResults.php:882
+#: src/Controller/ApiDismissals.php:597 src/Controller/ApiResults.php:950
 msgid "Editoria11y database update did not complete; the dashboard is paused until an administrator retries the update."
 msgstr "De Editoria11y-database-update is niet voltooid; het dashboard is gepauzeerd totdat een beheerder de update opnieuw uitvoert."
 
@@ -452,7 +456,7 @@ msgstr "Tot"
 
 #: src/Form/CrawlerPage.php:231
 msgid "Content alerts"
-msgstr "Content‑alerts"
+msgstr "Content-alerts"
 
 #: src/Form/CrawlerPage.php:234 src/Form/CrawlerPage.php:244
 msgid "Any"
@@ -468,15 +472,15 @@ msgstr "Geen alerts"
 
 #: src/Form/CrawlerPage.php:241
 msgid "Developer alerts"
-msgstr "Developer‑alerts"
+msgstr "Developer-alerts"
 
 #: src/Form/CrawlerPage.php:245
 msgid "Has dev alerts"
-msgstr "Bevat dev‑alerts"
+msgstr "Bevat dev-alerts"
 
 #: src/Form/CrawlerPage.php:246
 msgid "No dev alerts"
-msgstr "Geen dev‑alerts"
+msgstr "Geen dev-alerts"
 
 #: src/Form/CrawlerPage.php:251
 msgid "Sort by"
@@ -1070,7 +1074,7 @@ msgstr "Tests en roltoewijzing"
 msgid "Editoria11y license"
 msgstr "Editoria11y-licentie"
 
-#: src/Form/NetworkLicensePage.php:83 src/FreemiusAccessControl.php:281
+#: src/Form/NetworkLicensePage.php:83 src/FreemiusAccessControl.php:283
 msgid "Only network administrators can manage the Editoria11y license."
 msgstr "Alleen netwerkbeheerders kunnen de Editoria11y-licentie beheren."
 
@@ -1211,43 +1215,43 @@ msgstr "Geannuleerd"
 msgid "Errors"
 msgstr "Fouten"
 
-#: src/Form/NetworkLicenseWorker.php:171
+#: src/Form/NetworkLicenseWorker.php:392
 msgid "License key is required."
 msgstr "Licentiesleutel is verplicht."
 
-#: src/Form/NetworkLicenseWorker.php:179 src/Form/NetworkLicenseWorker.php:231
+#: src/Form/NetworkLicenseWorker.php:400 src/Form/NetworkLicenseWorker.php:456
 msgid "An activation run is already in progress."
 msgstr "Er is al een activering bezig."
 
-#: src/Form/NetworkLicenseWorker.php:299
+#: src/Form/NetworkLicenseWorker.php:528
 msgid "No previous errors to retry."
 msgstr "Geen eerdere fouten om opnieuw te proberen."
 
-#: src/Form/NetworkLicenseWorker.php:309
+#: src/Form/NetworkLicenseWorker.php:538
 msgid "License key is no longer stored. Start a new activation."
 msgstr "De licentiesleutel is niet meer opgeslagen. Start een nieuwe activering."
 
-#: src/Form/NetworkLicenseWorker.php:397
+#: src/Form/NetworkLicenseWorker.php:626
 msgid "Freemius SDK wrapper unavailable."
 msgstr "Freemius SDK-wrapper niet beschikbaar."
 
-#: src/Form/NetworkLicenseWorker.php:519
+#: src/Form/NetworkLicenseWorker.php:803
 msgid "SDK _deactivate_license() method unavailable."
 msgstr "SDK-methode _deactivate_license() niet beschikbaar."
 
-#: src/Form/NetworkLicenseWorker.php:569
+#: src/Form/NetworkLicenseWorker.php:853
 msgid "Deactivation API call did not clear the install license."
 msgstr "De deactiverings-API-aanroep heeft de installatielijcentie niet gewist."
 
-#: src/Form/NetworkLicenseWorker.php:659
+#: src/Form/NetworkLicenseWorker.php:947
 msgid "No valid sites in batch."
 msgstr "Geen geldige sites in de batch."
 
-#: src/Form/NetworkLicenseWorker.php:765
+#: src/Form/NetworkLicenseWorker.php:1053
 msgid "Activation API returned an unspecified error."
 msgstr "De activerings-API heeft een niet-gespecificeerde fout geretourneerd."
 
-#: src/Form/NetworkLicenseWorker.php:767
+#: src/Form/NetworkLicenseWorker.php:1055
 msgid "Install record not created after API call."
 msgstr "Installatierecord niet aangemaakt na de API-aanroep."
 
@@ -1325,27 +1329,27 @@ msgstr "Verspreiding van netwerkstandaarden mislukt."
 msgid "Network defaults propagation idle."
 msgstr "Verspreiding van netwerkstandaarden inactief."
 
-#: src/Form/SettingsContext.php:181
+#: src/Form/SettingsContext.php:214
 msgid "Managed at the network level"
 msgstr "Beheerd op netwerkniveau"
 
-#: src/Form/SettingsContext.php:250 src/Form/SettingsContext.php:285
+#: src/Form/SettingsContext.php:283 src/Form/SettingsContext.php:318
 msgid "— No network default —"
 msgstr "— Geen netwerkstandaard —"
 
-#: src/Form/SettingsContext.php:251 src/Form/SettingsContext.php:286
+#: src/Form/SettingsContext.php:284 src/Form/SettingsContext.php:319
 msgid "Default for new sites"
 msgstr "Standaard voor nieuwe sites"
 
-#: src/Form/SettingsContext.php:252 src/Form/SettingsContext.php:287
+#: src/Form/SettingsContext.php:285 src/Form/SettingsContext.php:320
 msgid "Default for all sites (skip custom values)"
 msgstr "Standaard voor alle sites (aangepaste waarden overslaan)"
 
-#: src/Form/SettingsContext.php:253 src/Form/SettingsContext.php:288
+#: src/Form/SettingsContext.php:286 src/Form/SettingsContext.php:321
 msgid "Override for all sites (delete custom values)"
 msgstr "Overschrijven voor alle sites (aangepaste waarden verwijderen)"
 
-#: src/Form/SettingsContext.php:293
+#: src/Form/SettingsContext.php:326
 msgid "Propagation"
 msgstr "Verspreiding"
 
@@ -1501,7 +1505,7 @@ msgstr "Deze delen van de pagina worden volledig genegeerd."
 
 #: src/Form/SettingsFields.php:608
 msgid "Developer roles"
-msgstr "Developer‑rollen"
+msgstr "Developer-rollen"
 
 #: src/Form/SettingsFields.php:626
 msgid "Unchecked roles only see content checks."
@@ -1547,275 +1551,275 @@ msgstr "Uit"
 msgid "(Part of CSA suite)"
 msgstr "(Onderdeel van de CSA-suite)"
 
-#: src/Form/SettingsFields.php:882
+#: src/Form/SettingsFields.php:881
 msgid "Remind the editor that these linked documents need a manual check"
 msgstr "Contenteditor eraan herinneren dat deze gekoppelde documenten handmatig gecontroleerd moeten worden"
 
-#: src/Form/SettingsFields.php:883
+#: src/Form/SettingsFields.php:882
 msgid "Add or remove filetypes. Set to \"false\" to disable the test altogether. Providing any value will override the default."
 msgstr "Voeg bestandstypen toe of verwijder ze. Zet op \"false\" om de test volledig uit te schakelen. Elke ingevoerde waarde overschrijft de standaard."
 
-#: src/Form/SettingsFields.php:887
+#: src/Form/SettingsFields.php:886
 msgid "Remove elements that match these selectors before testing link text"
 msgstr "Verwijder elementen die overeenkomen met deze selectors vóór het testen van koppelingstekst"
 
-#: src/Form/SettingsFields.php:888
+#: src/Form/SettingsFields.php:887
 msgid "Provide a CSS selector for elements your themes or plugins programmatically add to links (usually external or open-in-new-window markers), so they can be ignored when the link text is checked for the \"link has no text\" and \"link text is not meaningful\" tests."
 msgstr "Geef een CSS-selector op voor elementen die je thema’s of plugins programmatisch aan links toevoegen (meestal markeringen voor externe of in-nieuw-venster-links), zodat ze genegeerd kunnen worden bij de tests \"link heeft geen tekst\" en \"linktekst is niet betekenisvol\"."
 
-#: src/Form/SettingsFields.php:892
+#: src/Form/SettingsFields.php:891
 msgid "Remove these strings before testing link text"
 msgstr "Deze strings verwijderen voor het testen van de linktekst"
 
-#: src/Form/SettingsFields.php:893
+#: src/Form/SettingsFields.php:892
 msgid "Provide a pipe-separated (\"|\") list of phrases your themes or plugins programmatically add to links to hint a purpose (external, mail, phone, open-in-new-window), so they can be ignored when the link text is checked for the \"link has no text\" and \"link text is not meaningful\" tests; e.g.: (link is external)|(link sends email)."
 msgstr "Geef een met pipes (\"|\") gescheiden lijst met frasen op die je thema’s of plugins programmatisch aan links toevoegen om een doel aan te geven (extern, mail, telefoon, in-nieuw-venster), zodat ze genegeerd kunnen worden bij de tests \"link heeft geen tekst\" en \"linktekst is niet betekenisvol\"; bijv.: (link is external)|(link sends email)."
 
-#: src/Form/SettingsFields.php:897
+#: src/Form/SettingsFields.php:896
 msgid "Strings in links that indicate new tabs"
 msgstr "Tekststrings in links die nieuwe tabbladen aanduiden"
 
-#: src/Form/SettingsFields.php:898
+#: src/Form/SettingsFields.php:897
 msgid "Provide a pipe-separated list of phrases your site uses to warn users a link opens in a new tab; e.g.: new tab|new window|external."
 msgstr "Geef een met pipes gescheiden lijst met frasen op waarmee je site gebruikers waarschuwt dat een link in een nieuw tabblad opent; bijv.: new tab|new window|external."
 
-#: src/Form/SettingsFields.php:906
+#: src/Form/SettingsFields.php:905
 msgid "Embeds flagged as needing manual review"
 msgstr "Embeds gemarkeerd als handmatig te beoordelen"
 
-#: src/Form/SettingsFields.php:907
+#: src/Form/SettingsFields.php:906
 msgid "Added to the built-in detection list (Looker/Data Studio, Tableau, Power BI, Qlik). Provide a comma-separated list of domains or URL fragments. To stop flagging visualizations entirely, disable that test above."
 msgstr "Toegevoegd aan de ingebouwde detectielijst (Looker/Data Studio, Tableau, Power BI, Qlik). Geef een kommagescheiden lijst met domeinen of URL-fragmenten op. Om visualisaties helemaal niet meer te markeren, schakel de test hierboven uit."
 
-#: src/Form/SettingsFields.php:912
+#: src/Form/SettingsFields.php:911
 msgid "Videos flagged as needing a manual check for captions"
 msgstr "Video’s gemarkeerd als handmatig te controleren op ondertiteling"
 
-#: src/Form/SettingsFields.php:913
+#: src/Form/SettingsFields.php:912
 msgid "Added to the built-in detection list (YouTube, Vimeo, Panopto, Wistia, Dailymotion, Brightcove, Vidyard and generic video URLs). Provide a comma-separated list of domains or URL fragments, e.g. yuja.com. To stop flagging videos entirely, disable that test above."
 msgstr "Toegevoegd aan de ingebouwde detectielijst (YouTube, Vimeo, Panopto, Wistia, Dailymotion, Brightcove, Vidyard en algemene video-URL's). Geef een kommagescheiden lijst met domeinen of URL-fragmenten op, bijv. yuja.com. Om video's helemaal niet meer te markeren, schakel de test hierboven uit."
 
-#: src/Form/SettingsFields.php:918
+#: src/Form/SettingsFields.php:917
 msgid "Audio flagged as needing a manual check for transcripts"
 msgstr "Audio gemarkeerd als handmatig te controleren op transcripties"
 
-#: src/Form/SettingsFields.php:919
+#: src/Form/SettingsFields.php:918
 msgid "Added to the built-in detection list (SoundCloud, Simplecast, Podbean, Buzzsprout, Spotify, Apple Podcasts and other major hosts). Provide a comma-separated list of domains or URL fragments. To stop flagging audio entirely, disable that test above."
 msgstr "Toegevoegd aan de ingebouwde detectielijst (SoundCloud, Simplecast, Podbean, Buzzsprout, Spotify, Apple Podcasts en andere grote hostingdiensten). Geef een kommagescheiden lijst met domeinen of URL-fragmenten op. Om audio helemaal niet meer te markeren, schakel de test hierboven uit."
 
-#: src/Form/SettingsFields.php:924
+#: src/Form/SettingsFields.php:923
 msgid "Remind editor that content in these embeds needs manual review"
 msgstr "Contenteditor eraan herinneren dat content in deze embeds handmatig gecontroleerd moet worden"
 
-#: src/Form/SettingsFields.php:925
+#: src/Form/SettingsFields.php:924
 msgid "Provide a comma-separated list of selectors you wish to flag for the editor, e.g.: .my-embedded-feed, #my-social-link-block."
 msgstr "Geef een kommagescheiden lijst met selectors op die je voor de contenteditor wilt markeren, bijv.: .my-embedded-feed, #my-social-link-block."
 
-#: src/Form/SettingsFields.php:937
+#: src/Form/SettingsFields.php:936
 msgid "Do not check contrast for these elements"
 msgstr "Contrast niet controleren voor deze elementen"
 
-#: src/Form/SettingsFields.php:950
+#: src/Form/SettingsFields.php:949
 msgid "Provide a comma-separated list of selectors for elements to ignore for all users."
 msgstr "Geef een door komma's gescheiden lijst van selectors op voor elementen die voor alle gebruikers genegeerd moeten worden."
 
-#: src/Form/SettingsFields.php:980
+#: src/Form/SettingsFields.php:978
 msgid "Assertiveness"
 msgstr "Opvallendheid"
 
-#: src/Form/SettingsFields.php:982
+#: src/Form/SettingsFields.php:980
 msgid "Checker mode for content roles"
 msgstr "Checker-modus voor contentrollen"
 
-#: src/Form/SettingsFields.php:990
+#: src/Form/SettingsFields.php:988
 msgid "Checker mode for developer roles"
-msgstr "Checker‑modus voor developerrollen"
+msgstr "Checker-modus voor developerrollen"
 
-#: src/Form/SettingsFields.php:998
+#: src/Form/SettingsFields.php:996
 msgid "Checker mode inside editor"
 msgstr "Checker-modus binnen de editor"
 
-#: src/Form/SettingsFields.php:1004
+#: src/Form/SettingsFields.php:1002
 msgid "Theme and plugin compatibility"
 msgstr "Thema- en plugin-compatibiliteit"
 
-#: src/Form/SettingsFields.php:1006
+#: src/Form/SettingsFields.php:1004
 msgid "Editoria11y theme"
 msgstr "Editoria11y-thema"
 
-#: src/Form/SettingsFields.php:1011
+#: src/Form/SettingsFields.php:1009
 msgid "Pin panel to"
 msgstr "Paneel vastzetten aan"
 
-#: src/Form/SettingsFields.php:1017
+#: src/Form/SettingsFields.php:1015
 msgid "Right"
 msgstr "Rechts"
 
-#: src/Form/SettingsFields.php:1018
+#: src/Form/SettingsFields.php:1016
 msgid "Left"
 msgstr "Links"
 
-#: src/Form/SettingsFields.php:1024
+#: src/Form/SettingsFields.php:1022
 msgid "Shift panel position if it overlaps these elements"
 msgstr "Verschuif de paneelpositie als deze overlapt met deze elementen"
 
-#: src/Form/SettingsFields.php:1025
+#: src/Form/SettingsFields.php:1023
 msgid "Comma-separated selectors for competing widgets, e.g. .interface-interface-skeleton__sidebar."
 msgstr "Kommagescheiden selectors voor concurrerende widgets, bijv. .interface-interface-skeleton__sidebar."
 
-#: src/Form/SettingsFields.php:1030
+#: src/Form/SettingsFields.php:1028
 msgid "Do not check on pages with these elements"
 msgstr "Niet controleren op pagina's met deze elementen"
 
-#: src/Form/SettingsFields.php:1034
+#: src/Form/SettingsFields.php:1032
 msgid "JS injected custom rules"
 msgstr "Via JS geïnjecteerde aangepaste regels"
 
-#: src/Form/SettingsFields.php:1040
+#: src/Form/SettingsFields.php:1038
 msgid "Don't show edit links on tips in these containers"
 msgstr "Geen bewerken-links tonen op tips in deze containers"
 
-#: src/Form/SettingsFields.php:1041
+#: src/Form/SettingsFields.php:1039
 msgid "Provide a comma-separated list of page sections where edit links should not show. To hide the links everywhere, set this field to an asterisk (*)."
 msgstr "Geef een door komma's gescheiden lijst op van paginasecties waar bewerken-links niet moeten verschijnen. Om de links overal te verbergen, vul je in dit veld een sterretje (*) in."
 
-#: src/Form/SettingsFields.php:1060
+#: src/Form/SettingsFields.php:1058
 msgid "Handling tips on hidden content"
 msgstr "Tips voor verborgen content afhandelen"
 
-#: src/Form/SettingsFields.php:1062
+#: src/Form/SettingsFields.php:1060
 msgid "Warn users if elements might not be visible when jumping to tips"
 msgstr "Waarschuw gebruikers als elementen mogelijk niet zichtbaar zijn bij het springen naar tips"
 
-#: src/Form/SettingsFields.php:1069
+#: src/Form/SettingsFields.php:1067
 msgid "Elements with overflow hidden"
 msgstr "Elementen met overflow hidden"
 
-#: src/Form/SettingsFields.php:1070
+#: src/Form/SettingsFields.php:1068
 msgid "Sometimes buttons get drawn and visually truncated outside the bounds of a positioned element. Provide a selector list."
 msgstr "Soms worden knoppen getekend en visueel afgekapt buiten de grenzen van een gepositioneerd element. Geef een lijst met selectors op."
 
-#: src/Form/SettingsFields.php:1075
+#: src/Form/SettingsFields.php:1073
 msgid "Theme JS will handle revealing hidden tooltips inside these containers"
 msgstr "Thema-JS zal verborgen tooltips in deze containers onthullen"
 
-#: src/Form/SettingsFields.php:1076
+#: src/Form/SettingsFields.php:1074
 msgid "Editoria11y detects hidden tooltips and warns the user when they try to jump to them from the panel. For elements on this list, Editoria11y will dispatch a JS event instead of a warning, so custom JS in your theme can first reveal the hidden tip (e.g., open an accordion or tab panel)."
 msgstr "Editoria11y detecteert verborgen tooltips en waarschuwt de gebruiker wanneer die er vanuit het paneel naartoe probeert te springen. Voor elementen in deze lijst stuurt Editoria11y een JS-event in plaats van een waarschuwing, zodat aangepaste JS in je thema de verborgen tip eerst zichtbaar kan maken (bijv. een accordeon of tabpaneel openen)."
 
-#: src/Form/SettingsFields.php:1087
+#: src/Form/SettingsFields.php:1085
 msgid "Detecting dynamic and shadow content"
 msgstr "Detecteren van dynamische en shadow-content"
 
-#: src/Form/SettingsFields.php:1090
+#: src/Form/SettingsFields.php:1088
 msgid "Dynamically refresh if new content appears"
 msgstr "Dynamisch vernieuwen als er nieuwe content verschijnt"
 
-#: src/Form/SettingsFields.php:1096
+#: src/Form/SettingsFields.php:1094
 msgid "Watch for changes anywhere on the page"
 msgstr "Overal op de pagina op wijzigingen letten"
 
-#: src/Form/SettingsFields.php:1097
+#: src/Form/SettingsFields.php:1095
 msgid "Only watch for changes to content containers present on load"
 msgstr "Kijk alleen naar wijzigingen in inhoudcontainers die aanwezig zijn bij het laden"
 
-#: src/Form/SettingsFields.php:1098
+#: src/Form/SettingsFields.php:1096
 msgid "Do not watch for changes"
 msgstr "Niet op wijzigingen letten"
 
-#: src/Form/SettingsFields.php:1101
+#: src/Form/SettingsFields.php:1099
 msgid "Set to \"anywhere\" if changes are being missed; set to \"do not watch\" if you notice performance issues."
 msgstr "Zet op \"anywhere\" als wijzigingen worden gemist; zet op \"do not watch\" als je prestatieproblemen opmerkt."
 
-#: src/Form/SettingsFields.php:1105
+#: src/Form/SettingsFields.php:1103
 msgid "Check inside these specific Web components"
 msgstr "Binnen deze specifieke Web components controleren"
 
-#: src/Form/SettingsFields.php:1106
+#: src/Form/SettingsFields.php:1104
 msgid "Provide selectors for elements with shadow DOM you want tested. E.g.: my-fancy-accordion-widget, my-magical-slideshow."
 msgstr "Geef selectors op voor elementen met shadow DOM die je wilt laten testen. Bijv.: my-fancy-accordion-widget, my-magical-slideshow."
 
-#: src/Form/SettingsFields.php:1110
+#: src/Form/SettingsFields.php:1108
 msgid "Auto-detect any Web components"
 msgstr "Web components automatisch detecteren"
 
-#: src/Form/SettingsFields.php:1111
+#: src/Form/SettingsFields.php:1109
 msgid "This is easier to configure than specifying components, but may slow test runs on very complicated pages."
 msgstr "Dit is eenvoudiger te configureren dan afzonderlijke componenten opgeven, maar kan testruns op zeer complexe pagina's vertragen."
 
-#: src/Form/SettingsFields.php:1122
+#: src/Form/SettingsFields.php:1120
 msgid "Syncing results to reports"
 msgstr "Resultaten synchroniseren naar rapporten"
 
-#: src/Form/SettingsFields.php:1139
+#: src/Form/SettingsFields.php:1137
 msgid "Only admins can view reports"
 msgstr "Alleen beheerders kunnen rapporten bekijken"
 
-#: src/Form/SettingsFields.php:1144
+#: src/Form/SettingsFields.php:1142
 msgid "By default both admins and editors can view reports."
 msgstr "Standaard kunnen zowel beheerders als editors rapporten bekijken."
 
-#: src/Form/SettingsFields.php:1157
+#: src/Form/SettingsFields.php:1155
 msgid "Hide reports shortcut on toggle"
 msgstr "Snelkoppeling naar rapporten in toggle verbergen"
 
-#: src/Form/SettingsFields.php:1164
+#: src/Form/SettingsFields.php:1162
 msgid "Reports will still be available on the WordPress admin dashboard."
 msgstr "Rapporten blijven beschikbaar op het WordPress-beheerdersdashboard."
 
-#: src/Form/SettingsFields.php:1174
+#: src/Form/SettingsFields.php:1172
 msgid "Remove redundant base url from URLs"
 msgstr "Overbodige basis-URL uit URL's verwijderen"
 
-#: src/Form/SettingsFields.php:1186
+#: src/Form/SettingsFields.php:1184
 msgid "Provide base URL (\"/mysite\") if your site is installed in a subdirectory. Subdirectories tend to get duplicated (/mysite/mysite/mypage) and throw errors from the API."
 msgstr "Geef de basis-URL op (\"/mysite\") als je site in een submap is geïnstalleerd. Submappen worden vaak gedupliceerd (/mysite/mysite/mypage) en veroorzaken fouten vanuit de API."
 
-#: src/Form/SettingsFields.php:1191
+#: src/Form/SettingsFields.php:1189
 msgid "Preserve query parameters"
 msgstr "Queryparameters behouden"
 
-#: src/Form/SettingsFields.php:1192
+#: src/Form/SettingsFields.php:1190
 msgid "The dashboard ignores most parameters: results for both /news?f=1 and /news?f=2 will show up as just /news. Provide a comma-separated list of parameters that are meaningful and should appear as separate pages in results."
 msgstr "Het dashboard negeert de meeste parameters: resultaten voor zowel /news?f=1 als /news?f=2 verschijnen als /news. Geef een kommagescheiden lijst op van parameters die betekenisvol zijn en als aparte pagina’s in resultaten moeten verschijnen."
 
-#: src/Form/SettingsFields.php:1196
+#: src/Form/SettingsFields.php:1194
 msgid "Disable sync altogether"
 msgstr "Synchronisatie volledig uitschakelen"
 
-#: src/Form/SettingsFields.php:1197
+#: src/Form/SettingsFields.php:1195
 msgid "Syncing test results is required for the issue dashboard, dismissal dashboard, and \"mark OK\" buttons."
 msgstr "Het synchroniseren van testresultaten is vereist voor het probleemdashboard, het afwijzingsdashboard en de \"mark OK\"-knoppen."
 
-#: src/Form/SettingsFields.php:1208
+#: src/Form/SettingsFields.php:1206
 msgid "Heading outline position of editable content"
 msgstr "Koppenniveau van bewerkbare content"
 
-#: src/Form/SettingsFields.php:1210
+#: src/Form/SettingsFields.php:1208
 msgid "To check headings while editing, Editoria11y needs to know what the first heading level should be in each editable field. Body fields should generally be at the H2 level."
 msgstr "Om koppen tijdens het bewerken te controleren moet Editoria11y weten wat het eerste koppenniveau in elk bewerkbaar veld moet zijn. Bodyvelden moeten doorgaans op H2-niveau beginnen."
 
-#: src/Form/SettingsFields.php:1215
+#: src/Form/SettingsFields.php:1213
 msgid "H2 level content (body content)"
 msgstr "Content op H2-niveau (hoofdcontent)"
 
-#: src/Form/SettingsFields.php:1216
+#: src/Form/SettingsFields.php:1214
 msgid "Body fields are preceded by an H1 (the post or page title), so their highest heading level should be H2."
 msgstr "Bodyvelden worden voorafgegaan door een H1 (de bericht- of paginatitel), dus hun hoogste koppenniveau moet H2 zijn."
 
-#: src/Form/SettingsFields.php:1220
+#: src/Form/SettingsFields.php:1218
 msgid "H3 level content (blocks or widgets with separate titles)"
 msgstr "Content op H3-niveau (blokken of widgets met eigen titels)"
 
-#: src/Form/SettingsFields.php:1221
+#: src/Form/SettingsFields.php:1219
 msgid "The highest heading level should be H3."
 msgstr "Het hoogste koppenniveau moet H3 zijn."
 
-#: src/Form/SettingsFields.php:1225
+#: src/Form/SettingsFields.php:1223
 msgid "H4 level content (deeply nested blocks or widgets)"
 msgstr "Content op H4-niveau (diep geneste blokken of widgets)"
 
-#: src/Form/SettingsFields.php:1226
+#: src/Form/SettingsFields.php:1224
 msgid "The highest heading level should be H4."
 msgstr "Het hoogste koppenniveau moet H4 zijn."
 
@@ -1862,81 +1866,81 @@ msgstr "Instellingen"
 msgid "License & Account"
 msgstr "Licentie & account"
 
-#: src/Form/SettingsPage.php:550
+#: src/Form/SettingsPage.php:548
 msgid "Getting started"
 msgstr "Aan de slag"
 
-#: src/Form/SettingsPage.php:559
+#: src/Form/SettingsPage.php:557
 msgid "Modify content tests"
 msgstr "Contenttests aanpassen"
 
-#: src/Form/SettingsPage.php:565 src/Form/SettingsPage.php:579
+#: src/Form/SettingsPage.php:563 src/Form/SettingsPage.php:577
 msgid "Tests by group"
 msgstr "Tests per groep"
 
-#: src/Form/SettingsPage.php:573
+#: src/Form/SettingsPage.php:571
 msgid "Modify template tests"
 msgstr "Sjabloontests aanpassen"
 
-#: src/Form/SettingsPage.php:590
+#: src/Form/SettingsPage.php:588
 msgid "Custom rules (CSA)"
 msgstr "Aangepaste regels (CSA)"
 
-#: src/Form/SettingsPage.php:605
+#: src/Form/SettingsPage.php:603
 msgid "Parts of the page to test"
 msgstr "Delen van de pagina om te testen"
 
-#: src/Form/SettingsPage.php:613
+#: src/Form/SettingsPage.php:611
 msgid "Do not check for any errors inside these elements"
 msgstr "Controleer niet op fouten binnen deze elementen"
 
-#: src/Form/SettingsPage.php:624
+#: src/Form/SettingsPage.php:622
 msgid "Page regions with user-editable content"
 msgstr "Paginagebieden met door gebruikers bewerkbare content"
 
-#: src/Form/SettingsPage.php:634
+#: src/Form/SettingsPage.php:632
 msgid "Do not check for content errors inside these elements"
 msgstr "Controleer niet op contentfouten binnen deze elementen"
 
-#: src/Form/SettingsPage.php:637
+#: src/Form/SettingsPage.php:635
 msgid "Errors in these elements should only be shown to developers"
 msgstr "Fouten in deze elementen mogen alleen aan developers getoond worden"
 
-#: src/Form/SettingsPage.php:653
+#: src/Form/SettingsPage.php:651
 msgid "Roles that will see developer alerts"
-msgstr "Rollen die developer‑alerts zien"
+msgstr "Rollen die developer-alerts zien"
 
-#: src/Form/SettingsPage.php:668
+#: src/Form/SettingsPage.php:666
 msgid "Advanced settings"
 msgstr "Geavanceerde instellingen"
 
-#: src/Form/SettingsPage.php:686
+#: src/Form/SettingsPage.php:684
 msgid "Editoria11y Settings"
-msgstr "Editoria11y‑instellingen"
+msgstr "Editoria11y-instellingen"
 
-#: src/Form/SettingsPage.php:701
+#: src/Form/SettingsPage.php:699
 msgid "Save Settings"
 msgstr "Instellingen opslaan"
 
-#: src/FreemiusAccessControl.php:220
+#: src/FreemiusAccessControl.php:222
 msgid "unknown"
 msgstr "onbekend"
 
 #. translators: 1: loaded SDK version, 2: highest tested SDK version
-#: src/FreemiusAccessControl.php:225
+#: src/FreemiusAccessControl.php:227
 #, php-format
 msgid "Editoria11y CSA: the loaded Freemius SDK (version %1$s) is newer than the highest tested version (%2$s). Another Freemius-using plugin on this site has bundled a newer SDK build. The network license activation page may not behave as expected; review release notes or contact support if you hit issues."
 msgstr "Editoria11y CSA: de geladen Freemius SDK (versie %1$s) is nieuwer dan de hoogst geteste versie (%2$s). Een andere plugin op deze site heeft een nieuwere SDK-versie meegeleverd. De netwerklicentiepagina kan zich anders gedragen dan verwacht; raadpleeg de release-opmerkingen of neem contact op met de ondersteuning als u problemen ondervindt."
 
-#: src/FreemiusAccessControl.php:501
+#: src/FreemiusAccessControl.php:503
 msgid "Editoria11y network licenses are activated from a dedicated page that walks every site in the network in cron-driven batches. This avoids the SDK's 1,000-site limit and keeps the page responsive on large multisites."
 msgstr "Editoria11y-netwerklicentïes worden geactiveerd via een speciale pagina die elke site in het netwerk doorloopt in door cron aangestuurde batches. Dit vermijdt de limiet van 1.000 sites van de SDK en houdt de pagina responsief op grote multisites."
 
-#: src/FreemiusAccessControl.php:507
+#: src/FreemiusAccessControl.php:509
 msgid "Open Editoria11y license page"
 msgstr "Editoria11y-licentiepagina openen"
 
-#: src/FreemiusAccessControl.php:563
+#: src/FreemiusAccessControl.php:565
 msgid "Per-site license rows are not shown to keep this page responsive on large networks. The license you choose below applies to every site in the network. To activate or deactivate on individual sites, visit each site's per-site Settings → Editoria11y → License & Account."
 msgstr "Licentierijen per site worden niet getoond om deze pagina responsief te houden op grote netwerken. De licentie die u hieronder kiest, geldt voor alle sites op het netwerk. Om afzonderlijke sites te activeren of deactiveren, gaat u naar Instellingen → Editoria11y → Licentie & account op de betreffende site."
 
@@ -2011,21 +2015,25 @@ msgstr "lagere (of hogere!) supportniveaus"
 msgid "This is a <strong>contribute what you can</strong> \"farmshare\" model. The Editoria11y LLC site has options for %s, options to contribute as a coder or tester instead, and options for cross-platform and unlimited-site licenses."
 msgstr "Dit is een <strong>bijdragen wat je kunt</strong>-model. De site van Editoria11y LLC biedt opties voor %s, opties om in plaats daarvan als coder of tester bij te dragen, en opties voor cross-platform- en unlimited-site-licenties."
 
-#: src/functions.php:1608
+#: src/functions.php:234
+msgid "Network Super Admin"
+msgstr "Netwerk-superbeheerder"
+
+#: src/functions.php:1796
 msgid "Empty link"
 msgstr "Lege link"
 
-#: src/functions.php:1609
+#: src/functions.php:1797
 msgid "The button style link is missing its URL."
 msgstr "De link in knopstijl heeft geen URL."
 
-#: src/functions.php:1610
+#: src/functions.php:1798
 msgid "Edit Media"
 msgstr "Media bewerken"
 
 #: src/TestNames.php:46
 msgid "This alt text is a filename, not a description"
-msgstr "Deze alt‑tekst is een bestandsnaam, geen beschrijving"
+msgstr "Deze alt-tekst is een bestandsnaam, geen beschrijving"
 
 #: src/TestNames.php:47 src/TestNames.php:48
 msgid "Is this a clear and concise description of the image?"
@@ -2033,11 +2041,11 @@ msgstr "Is dit een duidelijke en beknopte beschrijving van de afbeelding?"
 
 #: src/TestNames.php:49
 msgid "This alt text may be a placeholder"
-msgstr "Deze alt‑tekst is mogelijk een placeholder"
+msgstr "Deze alt-tekst is mogelijk een placeholder"
 
 #: src/TestNames.php:50
 msgid "This alt text is unpronounceable"
-msgstr "Deze alt‑tekst is niet uit te spreken"
+msgstr "Deze alt-tekst is niet uit te spreken"
 
 #: src/TestNames.php:51
 msgid "This custom input field is missing a label"
@@ -2049,7 +2057,7 @@ msgstr "Knop mist een toegankelijk label"
 
 #: src/TestNames.php:53
 msgid "Button has an invalid ARIA label"
-msgstr "Knop heeft een ongeldig ARIA‑label"
+msgstr "Knop heeft een ongeldig ARIA-label"
 
 #: src/TestNames.php:54
 msgid "Button name repeats the word \"button\""
@@ -2073,11 +2081,11 @@ msgstr "Invoerveld heeft onvoldoende contrast om goed leesbaar te zijn"
 
 #: src/TestNames.php:59
 msgid "Placeholder text does not have enough contrast to be easily legible"
-msgstr "Placeholder‑tekst heeft onvoldoende contrast om goed leesbaar te zijn"
+msgstr "Placeholder-tekst heeft onvoldoende contrast om goed leesbaar te zijn"
 
 #: src/TestNames.php:60
 msgid "Does this placeholder text have enough contrast?"
-msgstr "Heeft deze placeholder‑tekst voldoende contrast?"
+msgstr "Heeft deze placeholder-tekst voldoende contrast?"
 
 #: src/TestNames.php:61
 msgid "Does this text have enough contrast?"
@@ -2089,7 +2097,7 @@ msgstr "Heeft deze afbeelding of dit pictogram voldoende contrast?"
 
 #: src/TestNames.php:63
 msgid "Duplicate ID attribute"
-msgstr "Dubbel ID‑attribuut"
+msgstr "Dubbel ID-attribuut"
 
 #: src/TestNames.php:64
 msgid "This link has a tooltip with the same text as the link"
@@ -2105,11 +2113,11 @@ msgstr "Is deze visualisatie toegankelijk?"
 
 #: src/TestNames.php:67
 msgid "Embedded iframes need manual checks"
-msgstr "Ingebedde iframe‑elementen vereisen handmatige controle"
+msgstr "Ingebedde iframe-elementen vereisen handmatige controle"
 
 #: src/TestNames.php:68
 msgid "Frame missing \"title\" attribute"
-msgstr "Frame mist een “title”‑attribuut"
+msgstr "Frame mist een “title”-attribuut"
 
 #: src/TestNames.php:69
 msgid "Frame with tabindex=\"-1\" will not be keyboard accessible."
@@ -2125,7 +2133,7 @@ msgstr "Deze kop heeft geen tekst"
 
 #: src/TestNames.php:72
 msgid "This image is used as a heading, so it needs alt text"
-msgstr "Deze afbeelding wordt als kop gebruikt en heeft daarom alt‑tekst nodig"
+msgstr "Deze afbeelding wordt als kop gebruikt en heeft daarom alt-tekst nodig"
 
 #: src/TestNames.php:73
 msgid "The first heading on this page is a subheading"
@@ -2153,7 +2161,7 @@ msgstr "Deze kop is niet uitsprekbaar"
 
 #: src/TestNames.php:79
 msgid "Can this alt text be shorter?"
-msgstr "Kan deze alt‑tekst korter?"
+msgstr "Kan deze alt-tekst korter?"
 
 #: src/TestNames.php:80
 msgid "Is this image actually meaningless?"
@@ -2165,11 +2173,11 @@ msgstr "Afbeelding in een carrousel of galerij is als decoratief gemarkeerd"
 
 #: src/TestNames.php:82
 msgid "This captioned image has no alt text"
-msgstr "Deze afbeelding met bijschrift heeft geen alt‑tekst"
+msgstr "Deze afbeelding met bijschrift heeft geen alt-tekst"
 
 #: src/TestNames.php:83
 msgid "Alt text should not be the same as caption text"
-msgstr "Alt‑tekst mag niet identiek zijn aan het bijschrift"
+msgstr "Alt-tekst mag niet identiek zijn aan het bijschrift"
 
 #: src/TestNames.php:84
 msgid "Is there a visible label for this field?"
@@ -2193,7 +2201,7 @@ msgstr "Zichtbare label komt niet overeen met de toegankelijke naam"
 
 #: src/TestNames.php:89
 msgid "This image input is missing alt text"
-msgstr "Dit afbeeldingsinvoerveld mist alt‑tekst"
+msgstr "Dit afbeeldingsinvoerveld mist alt-tekst"
 
 #: src/TestNames.php:90
 msgid "This input is not connected to a label"
@@ -2209,19 +2217,19 @@ msgstr "Deze inhoud lijkt in een andere taal te zijn"
 
 #: src/TestNames.php:93
 msgid "This alt text appears to be in a different language"
-msgstr "Deze alt‑tekst lijkt in een andere taal te zijn"
+msgstr "Deze alt-tekst lijkt in een andere taal te zijn"
 
 #: src/TestNames.php:94
 msgid "Alt text used as a link should not be a URL"
-msgstr "Alt‑tekst die als link wordt gebruikt, mag geen URL zijn"
+msgstr "Alt-tekst die als link wordt gebruikt, mag geen URL zijn"
 
 #: src/TestNames.php:95 src/TestNames.php:96
 msgid "This linked alt might not be clear and concise"
-msgstr "Deze gekoppelde alt‑tekst is mogelijk niet duidelijk en beknopt"
+msgstr "Deze gekoppelde alt-tekst is mogelijk niet duidelijk en beknopt"
 
 #: src/TestNames.php:97
 msgid "Linked images need pronounceable alt text"
-msgstr "Gekoppelde afbeeldingen moeten uitspreekbare alt‑tekst hebben"
+msgstr "Gekoppelde afbeeldingen moeten uitspreekbare alt-tekst hebben"
 
 #: src/TestNames.php:98
 msgid "Manual check: link contains \"click here\""
@@ -2229,7 +2237,7 @@ msgstr "Deze link bevat “klik hier”"
 
 #: src/TestNames.php:99
 msgid "Link article titles, not DOI numbers"
-msgstr "Link artikeltitels, niet DOI‑nummers"
+msgstr "Link artikeltitels, niet DOI-nummers"
 
 #: src/TestNames.php:100
 msgid "This link contains no words"
@@ -2237,7 +2245,7 @@ msgstr "Deze link bevat geen woorden."
 
 #: src/TestNames.php:101
 msgid "Link with invalid \"aria-labelledby\" attribute"
-msgstr "Link heeft een ongeldig “aria-labelledby”‑attribuut"
+msgstr "Link heeft een ongeldig “aria-labelledby”-attribuut"
 
 #: src/TestNames.php:102
 msgid "This link needs a label"
@@ -2253,19 +2261,19 @@ msgstr "Links met dezelfde tekst gaan naar verschillende pagina’s"
 
 #: src/TestNames.php:105
 msgid "Does this alt text describe the link or the image?"
-msgstr "Beschrijft deze alt‑tekst de link of de afbeelding?"
+msgstr "Beschrijft deze alt-tekst de link of de afbeelding?"
 
 #: src/TestNames.php:106
 msgid "Does this alt text make sense as part of this link?"
-msgstr "Heeft deze alt‑tekst betekenis in de context van deze link?"
+msgstr "Heeft deze alt-tekst betekenis in de context van deze link?"
 
 #: src/TestNames.php:107
 msgid "Can this linked alt text be shorter?"
-msgstr "Kan de alt‑tekst van het linkbeeld korter?"
+msgstr "Kan de alt-tekst van het linkbeeld korter?"
 
 #: src/TestNames.php:108
 msgid "This linked image needs alt text"
-msgstr "Deze gekoppelde afbeelding heeft alt‑tekst nodig"
+msgstr "Deze gekoppelde afbeelding heeft alt-tekst nodig"
 
 #: src/TestNames.php:109
 msgid "Does this linked image need a description?"
@@ -2281,7 +2289,7 @@ msgstr "Opent deze link een nieuw tabblad zonder waarschuwing?"
 
 #: src/TestNames.php:112
 msgid "This linked alt text may be a placeholder"
-msgstr "Deze gekoppelde alt‑tekst is mogelijk een placeholder"
+msgstr "Deze gekoppelde alt-tekst is mogelijk een placeholder"
 
 #: src/TestNames.php:113
 msgid "This link only contains generic words"
@@ -2293,7 +2301,7 @@ msgstr "Het doel van deze link is visueel verborgen"
 
 #: src/TestNames.php:115
 msgid "Does this image's alt describe the image or the link?"
-msgstr "Beschrijft deze alt‑tekst de afbeelding of de link?"
+msgstr "Beschrijft deze alt-tekst de afbeelding of de link?"
 
 #: src/TestNames.php:116
 msgid "Are the symbols or emoji in this link meaningful?"
@@ -2309,7 +2317,7 @@ msgstr "Linktekst mag geen URL zijn"
 
 #: src/TestNames.php:119
 msgid "Meta tag for page language missing"
-msgstr "Meta‑tag voor paginataal ontbreekt"
+msgstr "Meta-tag voor paginataal ontbreekt"
 
 #: src/TestNames.php:120
 msgid "Did you mean a different language code?"
@@ -2325,31 +2333,31 @@ msgstr "Paginataal komt mogelijk niet overeen met de inhoud"
 
 #: src/TestNames.php:123
 msgid "Meta tag limits how much users can enlarge text"
-msgstr "Meta‑tag beperkt hoeveel gebruikers kunnen inzoomen op tekst"
+msgstr "Meta-tag beperkt hoeveel gebruikers kunnen inzoomen op tekst"
 
 #: src/TestNames.php:124
 msgid "Meta tag automatically refreshes page"
-msgstr "Meta‑tag ververst de pagina automatisch"
+msgstr "Meta-tag ververst de pagina automatisch"
 
 #: src/TestNames.php:125
 msgid "Meta tag prevents users from enlarging text"
-msgstr "Meta‑tag verhindert dat gebruikers tekst vergroten"
+msgstr "Meta-tag verhindert dat gebruikers tekst vergroten"
 
 #: src/TestNames.php:126
 msgid "Meta tag for page title missing"
-msgstr "Meta‑tag voor paginatitel ontbreekt"
+msgstr "Meta-tag voor paginatitel ontbreekt"
 
 #: src/TestNames.php:127
 msgid "Invalid HTML: image has no alt attribute"
-msgstr "Ongeldige HTML: afbeelding zonder alt‑attribuut"
+msgstr "Ongeldige HTML: afbeelding zonder alt-attribuut"
 
 #: src/TestNames.php:128
 msgid "Invalid HTML: linked image missing alt attribute"
-msgstr "Ongeldige HTML: gekoppelde afbeelding zonder alt‑attribuut"
+msgstr "Ongeldige HTML: gekoppelde afbeelding zonder alt-attribuut"
 
 #: src/TestNames.php:129
 msgid "Invalid HTML: image in link missing alt attribute"
-msgstr "Ongeldige HTML: afbeelding in link zonder alt‑attribuut"
+msgstr "Ongeldige HTML: afbeelding in link zonder alt-attribuut"
 
 #: src/TestNames.php:130
 msgid "This link target may be invalid"
@@ -2377,7 +2385,7 @@ msgstr "Interne link werkt niet"
 
 #: src/TestNames.php:136
 msgid "Do not justify text"
-msgstr "Gelieve geen uitgevulde tekst (links‑ en rechtsuitlijning) te gebruiken"
+msgstr "Gelieve geen uitgevulde tekst (links- en rechtsuitlijning) te gebruiken"
 
 #: src/TestNames.php:137
 msgid "Nested interactive layout components"
@@ -2409,11 +2417,11 @@ msgstr "Is deze tekst in hoofdletters noodzakelijk?"
 
 #: src/TestNames.php:144
 msgid "Are there redundant words in this alt text?"
-msgstr "Bevat deze alt‑tekst overbodige woorden?"
+msgstr "Bevat deze alt-tekst overbodige woorden?"
 
 #: src/TestNames.php:145
 msgid "Tabindex overrides interrupt the focus order"
-msgstr "Tabindex‑overrides verstoren de focusvolgorde"
+msgstr "Tabindex-overrides verstoren de focusvolgorde"
 
 #: src/TestNames.php:146
 msgid "This header cell needs text"
@@ -2421,7 +2429,7 @@ msgstr "Deze tabelkopcel heeft tekst nodig"
 
 #: src/TestNames.php:147
 msgid "This table has an invalid headers attribute"
-msgstr "Deze tabel heeft een ongeldig headers‑attribuut"
+msgstr "Deze tabel heeft een ongeldig headers-attribuut"
 
 #: src/TestNames.php:148
 msgid "This table needs a header row and/or column"
@@ -2433,7 +2441,7 @@ msgstr "Inhoudelijke koppen horen niet binnen tabellen"
 
 #: src/TestNames.php:150
 msgid "Invalid HTML list"
-msgstr "Ongeldige HTML‑lijst"
+msgstr "Ongeldige HTML-lijst"
 
 #: src/TestNames.php:379
 msgid "Linked images"

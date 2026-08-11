@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: editoria11y 3.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/editoria11y\n"
-"POT-Creation-Date: 2026-08-05T19:54:53-04:00\n"
+"POT-Creation-Date: 2026-08-10T21:11:15-04:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Language-Team: Editoria11y\n"
 "Language: fi\n"
@@ -36,15 +36,15 @@ msgstr "Princetonin yliopisto, WDS"
 msgid "https://editoria11y.com"
 msgstr "https://editoria11y.com"
 
-#: editoria11y.php:58
+#: editoria11y.php:131
 msgid "Editoria11y is missing its vendored dependencies. Run \"composer install\" inside the plugin directory or reinstall the plugin from a complete release archive."
 msgstr "Editoria11y-lisäosalta puuttuvat vendoroidut riippuvuudet. Suorita \"composer install\" lisäosan hakemistossa tai asenna lisäosa uudelleen täydellisestä julkaisuarkistosta."
 
-#: editoria11y.php:321
+#: editoria11y.php:399
 msgid "Every five minutes (Editoria11y rehash)"
 msgstr "Joka 5. minuutti (Editoria11y-päivitys)"
 
-#: editoria11y.php:327
+#: editoria11y.php:405
 msgid "Every fifteen minutes (Editoria11y license watchdog)"
 msgstr "Joka 15. minuutti (Editoria11y-lisenssivalvonta)"
 
@@ -274,7 +274,7 @@ msgstr "Kyllä"
 msgid "n/a"
 msgstr "ei saatavilla"
 
-#: src/Admin/Dashboard.php:175 src/functions.php:1607
+#: src/Admin/Dashboard.php:175 src/functions.php:1795
 msgid "Empty button-style link"
 msgstr "Tyhjä painiketyylinen linkki"
 
@@ -300,6 +300,10 @@ msgstr "%d tulos"
 msgid "%d results"
 msgstr "%d tulosta"
 
+#: src/CoActivationGuard.php:139
+msgid "A duplicate copy of Editoria11y Accessibility Checker (the free version) was deactivated here: Editoria11y CSA is already active and provides the same checks."
+msgstr "Editoria11y-saavutettavuustarkistuksen (ilmaisversio) kaksoiskappale deaktivoitiin täällä: Editoria11y CSA on jo käytössä ja tekee samat tarkistukset."
+
 #: src/Controller/ApiCrawler.php:122
 msgid "The crawler is a premium feature."
 msgstr "Crawler on maksullinen lisäominaisuus (premium)."
@@ -312,11 +316,11 @@ msgstr "Editoria11y-tietokannan päivitys ei valmistunut; crawler on keskeytetty
 msgid "Results not recorded"
 msgstr "Tuloksia ei tallennettu"
 
-#: src/Controller/ApiDismissals.php:480 src/Controller/ApiResults.php:857
+#: src/Controller/ApiDismissals.php:572 src/Controller/ApiResults.php:925
 msgid "Editoria11y database update did not complete; writes are paused until an administrator retries the update."
 msgstr "Editoria11y-tietokannan päivitys ei valmistunut; tallennukset on keskeytetty, kunnes ylläpitäjä yrittää päivitystä uudelleen."
 
-#: src/Controller/ApiDismissals.php:505 src/Controller/ApiResults.php:882
+#: src/Controller/ApiDismissals.php:597 src/Controller/ApiResults.php:950
 msgid "Editoria11y database update did not complete; the dashboard is paused until an administrator retries the update."
 msgstr "Editoria11y-tietokannan päivitys ei valmistunut; hallintapaneeli on keskeytetty, kunnes ylläpitäjä yrittää päivitystä uudelleen."
 
@@ -1070,7 +1074,7 @@ msgstr "Testit ja roolimääritykset"
 msgid "Editoria11y license"
 msgstr "Editoria11y-lisenssi"
 
-#: src/Form/NetworkLicensePage.php:83 src/FreemiusAccessControl.php:281
+#: src/Form/NetworkLicensePage.php:83 src/FreemiusAccessControl.php:283
 msgid "Only network administrators can manage the Editoria11y license."
 msgstr "Vain verkkoylläpitäjät voivat hallita Editoria11y-lisenssiä."
 
@@ -1211,43 +1215,43 @@ msgstr "Peruutettu"
 msgid "Errors"
 msgstr "Virheet"
 
-#: src/Form/NetworkLicenseWorker.php:171
+#: src/Form/NetworkLicenseWorker.php:392
 msgid "License key is required."
 msgstr "Lisenssiavain on pakollinen."
 
-#: src/Form/NetworkLicenseWorker.php:179 src/Form/NetworkLicenseWorker.php:231
+#: src/Form/NetworkLicenseWorker.php:400 src/Form/NetworkLicenseWorker.php:456
 msgid "An activation run is already in progress."
 msgstr "Aktivointikerta on jo käynnissä."
 
-#: src/Form/NetworkLicenseWorker.php:299
+#: src/Form/NetworkLicenseWorker.php:528
 msgid "No previous errors to retry."
 msgstr "Ei aiempia virheitä, joita yrittää uudelleen."
 
-#: src/Form/NetworkLicenseWorker.php:309
+#: src/Form/NetworkLicenseWorker.php:538
 msgid "License key is no longer stored. Start a new activation."
 msgstr "Lisenssiavainta ei enää ole tallennettuna. Aloita uusi aktivointi."
 
-#: src/Form/NetworkLicenseWorker.php:397
+#: src/Form/NetworkLicenseWorker.php:626
 msgid "Freemius SDK wrapper unavailable."
 msgstr "Freemius SDK -kääre ei ole saatavilla."
 
-#: src/Form/NetworkLicenseWorker.php:519
+#: src/Form/NetworkLicenseWorker.php:803
 msgid "SDK _deactivate_license() method unavailable."
 msgstr "SDK:n _deactivate_license()-metodi ei ole käytettävissä."
 
-#: src/Form/NetworkLicenseWorker.php:569
+#: src/Form/NetworkLicenseWorker.php:853
 msgid "Deactivation API call did not clear the install license."
 msgstr "Deaktivoinnin API-kutsu ei poistanut asennuslisenssiä."
 
-#: src/Form/NetworkLicenseWorker.php:659
+#: src/Form/NetworkLicenseWorker.php:947
 msgid "No valid sites in batch."
 msgstr "Erässä ei ole kelvollisia sivustoja."
 
-#: src/Form/NetworkLicenseWorker.php:765
+#: src/Form/NetworkLicenseWorker.php:1053
 msgid "Activation API returned an unspecified error."
 msgstr "Aktivoinnin API palautti määrittelemättömän virheen."
 
-#: src/Form/NetworkLicenseWorker.php:767
+#: src/Form/NetworkLicenseWorker.php:1055
 msgid "Install record not created after API call."
 msgstr "Asennustietuetta ei luotu API-kutsun jälkeen."
 
@@ -1325,27 +1329,27 @@ msgstr "Verkon oletusarvojen levitys epäonnistui."
 msgid "Network defaults propagation idle."
 msgstr "Verkon oletusarvojen levitys on käyttämättömänä."
 
-#: src/Form/SettingsContext.php:181
+#: src/Form/SettingsContext.php:214
 msgid "Managed at the network level"
 msgstr "Hallinnoidaan verkkotasolla"
 
-#: src/Form/SettingsContext.php:250 src/Form/SettingsContext.php:285
+#: src/Form/SettingsContext.php:283 src/Form/SettingsContext.php:318
 msgid "— No network default —"
 msgstr "— Ei verkon oletusarvoa —"
 
-#: src/Form/SettingsContext.php:251 src/Form/SettingsContext.php:286
+#: src/Form/SettingsContext.php:284 src/Form/SettingsContext.php:319
 msgid "Default for new sites"
 msgstr "Oletus uusille sivustoille"
 
-#: src/Form/SettingsContext.php:252 src/Form/SettingsContext.php:287
+#: src/Form/SettingsContext.php:285 src/Form/SettingsContext.php:320
 msgid "Default for all sites (skip custom values)"
 msgstr "Oletus kaikille sivustoille (ohita mukautetut arvot)"
 
-#: src/Form/SettingsContext.php:253 src/Form/SettingsContext.php:288
+#: src/Form/SettingsContext.php:286 src/Form/SettingsContext.php:321
 msgid "Override for all sites (delete custom values)"
 msgstr "Ylikirjoita kaikille sivustoille (poista mukautetut arvot)"
 
-#: src/Form/SettingsContext.php:293
+#: src/Form/SettingsContext.php:326
 msgid "Propagation"
 msgstr "Levitys"
 
@@ -1547,275 +1551,275 @@ msgstr "Pois"
 msgid "(Part of CSA suite)"
 msgstr "(Osa CSA-pakettia)"
 
-#: src/Form/SettingsFields.php:882
+#: src/Form/SettingsFields.php:881
 msgid "Remind the editor that these linked documents need a manual check"
 msgstr "Muistuta editoria, että nämä linkitetyt asiakirjat tarvitsevat manuaalisen tarkistuksen"
 
-#: src/Form/SettingsFields.php:883
+#: src/Form/SettingsFields.php:882
 msgid "Add or remove filetypes. Set to \"false\" to disable the test altogether. Providing any value will override the default."
 msgstr "Lisää tai poista tiedostotyyppejä. Aseta arvoksi \"false\" poistaaksesi testin kokonaan käytöstä. Mikä tahansa annettu arvo korvaa oletuksen."
 
-#: src/Form/SettingsFields.php:887
+#: src/Form/SettingsFields.php:886
 msgid "Remove elements that match these selectors before testing link text"
 msgstr "Poista näitä valitsimia vastaavat elementit ennen linkkitekstin testaamista"
 
-#: src/Form/SettingsFields.php:888
+#: src/Form/SettingsFields.php:887
 msgid "Provide a CSS selector for elements your themes or plugins programmatically add to links (usually external or open-in-new-window markers), so they can be ignored when the link text is checked for the \"link has no text\" and \"link text is not meaningful\" tests."
 msgstr "Anna CSS-valitsin elementeille, jotka teemasi tai lisäosasi lisäävät ohjelmallisesti linkkeihin (yleensä ulkoinen linkki tai uudessa ikkunassa avautuminen -merkinnät), jotta ne voidaan ohittaa linkkitekstiä testattaessa kohdissa \"linkki ei sisällä tekstiä\" ja \"linkkiteksti ei ole kuvaava\"."
 
-#: src/Form/SettingsFields.php:892
+#: src/Form/SettingsFields.php:891
 msgid "Remove these strings before testing link text"
 msgstr "Poista nämä merkkijonot ennen linkkitekstin testaamista"
 
-#: src/Form/SettingsFields.php:893
+#: src/Form/SettingsFields.php:892
 msgid "Provide a pipe-separated (\"|\") list of phrases your themes or plugins programmatically add to links to hint a purpose (external, mail, phone, open-in-new-window), so they can be ignored when the link text is checked for the \"link has no text\" and \"link text is not meaningful\" tests; e.g.: (link is external)|(link sends email)."
 msgstr "Anna pystyviivalla (\"|\") eroteltu lista lausekkeista, jotka teemasi tai lisäosasi lisäävät ohjelmallisesti linkkeihin viittaamaan tarkoitukseen (ulkoinen, sähköposti, puhelin, avautuu uudessa ikkunassa), jotta ne voidaan ohittaa linkkitekstiä testattaessa; esim.: (link is external)|(link sends email)."
 
-#: src/Form/SettingsFields.php:897
+#: src/Form/SettingsFields.php:896
 msgid "Strings in links that indicate new tabs"
 msgstr "Merkkijonot linkeissä, jotka ilmaisevat uuden välilehden"
 
-#: src/Form/SettingsFields.php:898
+#: src/Form/SettingsFields.php:897
 msgid "Provide a pipe-separated list of phrases your site uses to warn users a link opens in a new tab; e.g.: new tab|new window|external."
 msgstr "Anna pystyviivalla eroteltu lista lausekkeista, joita sivustosi käyttää varoittaakseen käyttäjiä siitä, että linkki avautuu uuteen välilehteen; esim.: uusi välilehti|uusi ikkuna|ulkoinen."
 
-#: src/Form/SettingsFields.php:906
+#: src/Form/SettingsFields.php:905
 msgid "Embeds flagged as needing manual review"
 msgstr "Upotukset, jotka on merkitty manuaaliseen tarkistukseen"
 
-#: src/Form/SettingsFields.php:907
+#: src/Form/SettingsFields.php:906
 msgid "Added to the built-in detection list (Looker/Data Studio, Tableau, Power BI, Qlik). Provide a comma-separated list of domains or URL fragments. To stop flagging visualizations entirely, disable that test above."
 msgstr "Lisätään sisäänrakennettuun tunnistuslistaan (Looker/Data Studio, Tableau, Power BI, Qlik). Anna pilkuilla eroteltu lista verkkotunnuksista tai URL-katkelmista. Jos haluat lopettaa visualisointien merkitsemisen kokonaan, poista yllä oleva testi käytöstä."
 
-#: src/Form/SettingsFields.php:912
+#: src/Form/SettingsFields.php:911
 msgid "Videos flagged as needing a manual check for captions"
 msgstr "Videot, jotka on merkitty vaatimaan manuaalinen tekstitystarkistus"
 
-#: src/Form/SettingsFields.php:913
+#: src/Form/SettingsFields.php:912
 msgid "Added to the built-in detection list (YouTube, Vimeo, Panopto, Wistia, Dailymotion, Brightcove, Vidyard and generic video URLs). Provide a comma-separated list of domains or URL fragments, e.g. yuja.com. To stop flagging videos entirely, disable that test above."
 msgstr "Lisätään sisäänrakennettuun tunnistuslistaan (YouTube, Vimeo, Panopto, Wistia, Dailymotion, Brightcove, Vidyard ja yleiset video-URL-osoitteet). Anna pilkuilla eroteltu lista verkkotunnuksista tai URL-katkelmista, esim. yuja.com. Jos haluat lopettaa videoiden merkitsemisen kokonaan, poista yllä oleva testi käytöstä."
 
-#: src/Form/SettingsFields.php:918
+#: src/Form/SettingsFields.php:917
 msgid "Audio flagged as needing a manual check for transcripts"
 msgstr "Äänitiedostot, jotka on merkitty vaatimaan manuaalinen litteraatiotarkistus"
 
-#: src/Form/SettingsFields.php:919
+#: src/Form/SettingsFields.php:918
 msgid "Added to the built-in detection list (SoundCloud, Simplecast, Podbean, Buzzsprout, Spotify, Apple Podcasts and other major hosts). Provide a comma-separated list of domains or URL fragments. To stop flagging audio entirely, disable that test above."
 msgstr "Lisätään sisäänrakennettuun tunnistuslistaan (SoundCloud, Simplecast, Podbean, Buzzsprout, Spotify, Apple Podcasts ja muut suuret palvelut). Anna pilkuilla eroteltu lista verkkotunnuksista tai URL-katkelmista. Jos haluat lopettaa äänen merkitsemisen kokonaan, poista yllä oleva testi käytöstä."
 
-#: src/Form/SettingsFields.php:924
+#: src/Form/SettingsFields.php:923
 msgid "Remind editor that content in these embeds needs manual review"
 msgstr "Muistuta editoria, että näiden upotuksien sisältö tarvitsee manuaalisen tarkistuksen"
 
-#: src/Form/SettingsFields.php:925
+#: src/Form/SettingsFields.php:924
 msgid "Provide a comma-separated list of selectors you wish to flag for the editor, e.g.: .my-embedded-feed, #my-social-link-block."
 msgstr "Anna pilkuilla eroteltu lista valitsimista, jotka haluat merkitä editorille, esim.: .my-embedded-feed, #my-social-link-block."
 
-#: src/Form/SettingsFields.php:937
+#: src/Form/SettingsFields.php:936
 msgid "Do not check contrast for these elements"
 msgstr "Älä tarkista kontrastia näiden elementtien osalta"
 
-#: src/Form/SettingsFields.php:950
+#: src/Form/SettingsFields.php:949
 msgid "Provide a comma-separated list of selectors for elements to ignore for all users."
 msgstr "Anna pilkuilla eroteltu lista valitsimista elementeille, jotka ohitetaan kaikille käyttäjille."
 
-#: src/Form/SettingsFields.php:980
+#: src/Form/SettingsFields.php:978
 msgid "Assertiveness"
 msgstr "Aktiivisuustaso"
 
-#: src/Form/SettingsFields.php:982
+#: src/Form/SettingsFields.php:980
 msgid "Checker mode for content roles"
 msgstr "Tarkistustila sisältörooleille"
 
-#: src/Form/SettingsFields.php:990
+#: src/Form/SettingsFields.php:988
 msgid "Checker mode for developer roles"
 msgstr "Tarkistustila kehittäjärooleille"
 
-#: src/Form/SettingsFields.php:998
+#: src/Form/SettingsFields.php:996
 msgid "Checker mode inside editor"
 msgstr "Tarkistustila editorin sisällä"
 
-#: src/Form/SettingsFields.php:1004
+#: src/Form/SettingsFields.php:1002
 msgid "Theme and plugin compatibility"
 msgstr "Teema- ja lisäosayhteensopivuus"
 
-#: src/Form/SettingsFields.php:1006
+#: src/Form/SettingsFields.php:1004
 msgid "Editoria11y theme"
 msgstr "Editoria11y-teema"
 
-#: src/Form/SettingsFields.php:1011
+#: src/Form/SettingsFields.php:1009
 msgid "Pin panel to"
 msgstr "Kiinnitä paneeli"
 
-#: src/Form/SettingsFields.php:1017
+#: src/Form/SettingsFields.php:1015
 msgid "Right"
 msgstr "Oikealle"
 
-#: src/Form/SettingsFields.php:1018
+#: src/Form/SettingsFields.php:1016
 msgid "Left"
 msgstr "Vasemmalle"
 
-#: src/Form/SettingsFields.php:1024
+#: src/Form/SettingsFields.php:1022
 msgid "Shift panel position if it overlaps these elements"
 msgstr "Siirrä paneelin sijaintia, jos se peittää nämä elementit"
 
-#: src/Form/SettingsFields.php:1025
+#: src/Form/SettingsFields.php:1023
 msgid "Comma-separated selectors for competing widgets, e.g. .interface-interface-skeleton__sidebar."
 msgstr "Pilkuilla eroteltu lista kilpailevien widgettien valitsimista, esim. .interface-interface-skeleton__sidebar."
 
-#: src/Form/SettingsFields.php:1030
+#: src/Form/SettingsFields.php:1028
 msgid "Do not check on pages with these elements"
 msgstr "Älä tarkista sivuilla, joilla on nämä elementit"
 
-#: src/Form/SettingsFields.php:1034
+#: src/Form/SettingsFields.php:1032
 msgid "JS injected custom rules"
 msgstr "JS:n kautta lisätyt mukautetut säännöt"
 
-#: src/Form/SettingsFields.php:1040
+#: src/Form/SettingsFields.php:1038
 msgid "Don't show edit links on tips in these containers"
 msgstr "Älä näytä muokkauslinkkejä vinkeissä näissä säilöissä"
 
-#: src/Form/SettingsFields.php:1041
+#: src/Form/SettingsFields.php:1039
 msgid "Provide a comma-separated list of page sections where edit links should not show. To hide the links everywhere, set this field to an asterisk (*)."
 msgstr "Anna pilkuilla eroteltu lista sivuosioista, joissa muokkauslinkkejä ei tule näyttää. Piilottaaksesi linkit kaikkialta, aseta tähän kenttään tähti (*)."
 
-#: src/Form/SettingsFields.php:1060
+#: src/Form/SettingsFields.php:1058
 msgid "Handling tips on hidden content"
 msgstr "Vinkkien käsittely piilotetussa sisällössä"
 
-#: src/Form/SettingsFields.php:1062
+#: src/Form/SettingsFields.php:1060
 msgid "Warn users if elements might not be visible when jumping to tips"
 msgstr "Varoita käyttäjiä, jos elementit eivät ehkä ole näkyvissä vinkkeihin siirtyessä"
 
-#: src/Form/SettingsFields.php:1069
+#: src/Form/SettingsFields.php:1067
 msgid "Elements with overflow hidden"
 msgstr "Elementit, joissa overflow on piilotettu"
 
-#: src/Form/SettingsFields.php:1070
+#: src/Form/SettingsFields.php:1068
 msgid "Sometimes buttons get drawn and visually truncated outside the bounds of a positioned element. Provide a selector list."
 msgstr "Joskus painikkeet piirtyvät ja katkaisevat visuaalisesti paikannetun elementin rajojen ulkopuolelle. Anna valitsinlista."
 
-#: src/Form/SettingsFields.php:1075
+#: src/Form/SettingsFields.php:1073
 msgid "Theme JS will handle revealing hidden tooltips inside these containers"
 msgstr "Teeman JS hoitaa piilotettujen työkaluvihjeiden paljastamisen näissä säilöissä"
 
-#: src/Form/SettingsFields.php:1076
+#: src/Form/SettingsFields.php:1074
 msgid "Editoria11y detects hidden tooltips and warns the user when they try to jump to them from the panel. For elements on this list, Editoria11y will dispatch a JS event instead of a warning, so custom JS in your theme can first reveal the hidden tip (e.g., open an accordion or tab panel)."
 msgstr "Editoria11y havaitsee piilotetut työkaluvihjeet ja varoittaa käyttäjää, kun hän yrittää siirtyä niihin paneelista. Tässä listassa oleville elementeille Editoria11y lähettää JS-tapahtuman varoituksen sijaan, jotta teemasi mukautettu JS voi ensin paljastaa piilotetun vinkin (esim. avata accordionin tai välilehtipaneelin)."
 
-#: src/Form/SettingsFields.php:1087
+#: src/Form/SettingsFields.php:1085
 msgid "Detecting dynamic and shadow content"
 msgstr "Dynaamisen ja shadow-sisällön tunnistaminen"
 
-#: src/Form/SettingsFields.php:1090
+#: src/Form/SettingsFields.php:1088
 msgid "Dynamically refresh if new content appears"
 msgstr "Päivitä dynaamisesti, jos uutta sisältöä ilmestyy"
 
-#: src/Form/SettingsFields.php:1096
+#: src/Form/SettingsFields.php:1094
 msgid "Watch for changes anywhere on the page"
 msgstr "Tarkkaile muutoksia missä tahansa sivulla"
 
-#: src/Form/SettingsFields.php:1097
+#: src/Form/SettingsFields.php:1095
 msgid "Only watch for changes to content containers present on load"
 msgstr "Tarkkaile muutoksia vain latauksessa läsnä olevissa sisältösäilöissä"
 
-#: src/Form/SettingsFields.php:1098
+#: src/Form/SettingsFields.php:1096
 msgid "Do not watch for changes"
 msgstr "Älä tarkkaile muutoksia"
 
-#: src/Form/SettingsFields.php:1101
+#: src/Form/SettingsFields.php:1099
 msgid "Set to \"anywhere\" if changes are being missed; set to \"do not watch\" if you notice performance issues."
 msgstr "Aseta arvoksi \"missä tahansa\", jos muutoksia jää havaitsematta; aseta arvoksi \"älä tarkkaile\", jos havaitset suorituskykyongelmia."
 
-#: src/Form/SettingsFields.php:1105
+#: src/Form/SettingsFields.php:1103
 msgid "Check inside these specific Web components"
 msgstr "Tarkista näiden tiettyjen Web-komponenttien sisällä"
 
-#: src/Form/SettingsFields.php:1106
+#: src/Form/SettingsFields.php:1104
 msgid "Provide selectors for elements with shadow DOM you want tested. E.g.: my-fancy-accordion-widget, my-magical-slideshow."
 msgstr "Anna valitsimet shadow DOM -elementeille, jotka haluat testattavan. Esim.: my-fancy-accordion-widget, my-magical-slideshow."
 
-#: src/Form/SettingsFields.php:1110
+#: src/Form/SettingsFields.php:1108
 msgid "Auto-detect any Web components"
 msgstr "Tunnista Web-komponentit automaattisesti"
 
-#: src/Form/SettingsFields.php:1111
+#: src/Form/SettingsFields.php:1109
 msgid "This is easier to configure than specifying components, but may slow test runs on very complicated pages."
 msgstr "Tämä on helpompi konfiguroida kuin komponenttien erittely, mutta saattaa hidastaa testejä erittäin monimutkaisilla sivuilla."
 
-#: src/Form/SettingsFields.php:1122
+#: src/Form/SettingsFields.php:1120
 msgid "Syncing results to reports"
 msgstr "Tulosten synkronointi raportteihin"
 
-#: src/Form/SettingsFields.php:1139
+#: src/Form/SettingsFields.php:1137
 msgid "Only admins can view reports"
 msgstr "Vain ylläpitäjät voivat tarkastella raportteja"
 
-#: src/Form/SettingsFields.php:1144
+#: src/Form/SettingsFields.php:1142
 msgid "By default both admins and editors can view reports."
 msgstr "Oletuksena sekä ylläpitäjät että editorit voivat tarkastella raportteja."
 
-#: src/Form/SettingsFields.php:1157
+#: src/Form/SettingsFields.php:1155
 msgid "Hide reports shortcut on toggle"
 msgstr "Piilota raportien pikakuvake vaihtokytkimessä"
 
-#: src/Form/SettingsFields.php:1164
+#: src/Form/SettingsFields.php:1162
 msgid "Reports will still be available on the WordPress admin dashboard."
 msgstr "Raportit ovat silti saatavilla WordPress-ylläpitohallintapaneelissa."
 
-#: src/Form/SettingsFields.php:1174
+#: src/Form/SettingsFields.php:1172
 msgid "Remove redundant base url from URLs"
 msgstr "Poista toistuva perus-URL URL-osoitteista"
 
-#: src/Form/SettingsFields.php:1186
+#: src/Form/SettingsFields.php:1184
 msgid "Provide base URL (\"/mysite\") if your site is installed in a subdirectory. Subdirectories tend to get duplicated (/mysite/mysite/mypage) and throw errors from the API."
 msgstr "Anna perus-URL (”/mysite”), jos sivustosi on asennettu alihakemistoon. Alihakemistot voivat helposti tuplaantua (/mysite/mysite/mypage) ja aiheuttaa API-virheitä."
 
-#: src/Form/SettingsFields.php:1191
+#: src/Form/SettingsFields.php:1189
 msgid "Preserve query parameters"
 msgstr "Säilytä kyselyparametrit"
 
-#: src/Form/SettingsFields.php:1192
+#: src/Form/SettingsFields.php:1190
 msgid "The dashboard ignores most parameters: results for both /news?f=1 and /news?f=2 will show up as just /news. Provide a comma-separated list of parameters that are meaningful and should appear as separate pages in results."
 msgstr "Hallintapaneeli ohittaa useimmat parametrit: tulokset sekä /news?f=1 että /news?f=2 osalta näkyvät vain muodossa /news. Anna pilkuilla eroteltu lista parametreista, jotka ovat merkityksellisiä ja joiden pitäisi näkyä tuloksissa erillisinä sivuina."
 
-#: src/Form/SettingsFields.php:1196
+#: src/Form/SettingsFields.php:1194
 msgid "Disable sync altogether"
 msgstr "Poista synkronointi kokonaan käytöstä"
 
-#: src/Form/SettingsFields.php:1197
+#: src/Form/SettingsFields.php:1195
 msgid "Syncing test results is required for the issue dashboard, dismissal dashboard, and \"mark OK\" buttons."
 msgstr "Testitulosten synkronointi on tarpeen ongelmaraporttia, hylkäysraporttia ja \"merkitse OK\" -painikkeita varten."
 
-#: src/Form/SettingsFields.php:1208
+#: src/Form/SettingsFields.php:1206
 msgid "Heading outline position of editable content"
 msgstr "Muokattavan sisällön otsikkorakenteen taso"
 
-#: src/Form/SettingsFields.php:1210
+#: src/Form/SettingsFields.php:1208
 msgid "To check headings while editing, Editoria11y needs to know what the first heading level should be in each editable field. Body fields should generally be at the H2 level."
 msgstr "Jotta Editoria11y voi tarkistaa otsikot muokkauksen aikana, sen täytyy tietää, mikä ensimmäinen otsikkotaso pitäisi olla kussakin muokattavassa kentässä. Runkokentät ovat yleensä H2-tasolla."
 
-#: src/Form/SettingsFields.php:1215
+#: src/Form/SettingsFields.php:1213
 msgid "H2 level content (body content)"
 msgstr "H2-tason sisältö (runkosisältö)"
 
-#: src/Form/SettingsFields.php:1216
+#: src/Form/SettingsFields.php:1214
 msgid "Body fields are preceded by an H1 (the post or page title), so their highest heading level should be H2."
 msgstr "Runkokenttiä edeltää H1 (julkaisun tai sivun otsikko), joten niiden korkein otsikkotaso on H2."
 
-#: src/Form/SettingsFields.php:1220
+#: src/Form/SettingsFields.php:1218
 msgid "H3 level content (blocks or widgets with separate titles)"
 msgstr "H3-tason sisältö (lohkot tai widgetit, joilla on erilliset otsikot)"
 
-#: src/Form/SettingsFields.php:1221
+#: src/Form/SettingsFields.php:1219
 msgid "The highest heading level should be H3."
 msgstr "Korkein otsikkotaso on H3."
 
-#: src/Form/SettingsFields.php:1225
+#: src/Form/SettingsFields.php:1223
 msgid "H4 level content (deeply nested blocks or widgets)"
 msgstr "H4-tason sisältö (syvästi sisäkkäiset lohkot tai widgetit)"
 
-#: src/Form/SettingsFields.php:1226
+#: src/Form/SettingsFields.php:1224
 msgid "The highest heading level should be H4."
 msgstr "Korkein otsikkotaso on H4."
 
@@ -1862,81 +1866,81 @@ msgstr "Asetukset"
 msgid "License & Account"
 msgstr "Lisenssi ja tili"
 
-#: src/Form/SettingsPage.php:550
+#: src/Form/SettingsPage.php:548
 msgid "Getting started"
 msgstr "Aloittaminen"
 
-#: src/Form/SettingsPage.php:559
+#: src/Form/SettingsPage.php:557
 msgid "Modify content tests"
 msgstr "Muokkaa sisältötestejä"
 
-#: src/Form/SettingsPage.php:565 src/Form/SettingsPage.php:579
+#: src/Form/SettingsPage.php:563 src/Form/SettingsPage.php:577
 msgid "Tests by group"
 msgstr "Testit ryhmän mukaan"
 
-#: src/Form/SettingsPage.php:573
+#: src/Form/SettingsPage.php:571
 msgid "Modify template tests"
 msgstr "Muokkaa mallipohjatestejä"
 
-#: src/Form/SettingsPage.php:590
+#: src/Form/SettingsPage.php:588
 msgid "Custom rules (CSA)"
 msgstr "Mukautetut säännöt (CSA)"
 
-#: src/Form/SettingsPage.php:605
+#: src/Form/SettingsPage.php:603
 msgid "Parts of the page to test"
 msgstr "Testattavat sivun osat"
 
-#: src/Form/SettingsPage.php:613
+#: src/Form/SettingsPage.php:611
 msgid "Do not check for any errors inside these elements"
 msgstr "Älä tarkista virheitä näiden elementtien sisällä"
 
-#: src/Form/SettingsPage.php:624
+#: src/Form/SettingsPage.php:622
 msgid "Page regions with user-editable content"
 msgstr "Sivualueet, joilla on käyttäjän muokattavissa olevaa sisältöä"
 
-#: src/Form/SettingsPage.php:634
+#: src/Form/SettingsPage.php:632
 msgid "Do not check for content errors inside these elements"
 msgstr "Älä tarkista sisältövirheitä näiden elementtien sisällä"
 
-#: src/Form/SettingsPage.php:637
+#: src/Form/SettingsPage.php:635
 msgid "Errors in these elements should only be shown to developers"
 msgstr "Näiden elementtien virheet näytetään vain kehittäjille"
 
-#: src/Form/SettingsPage.php:653
+#: src/Form/SettingsPage.php:651
 msgid "Roles that will see developer alerts"
 msgstr "Roolit, jotka näkevät kehittäjähälytykset"
 
-#: src/Form/SettingsPage.php:668
+#: src/Form/SettingsPage.php:666
 msgid "Advanced settings"
 msgstr "Lisäasetukset"
 
-#: src/Form/SettingsPage.php:686
+#: src/Form/SettingsPage.php:684
 msgid "Editoria11y Settings"
 msgstr "Editoria11y-asetukset"
 
-#: src/Form/SettingsPage.php:701
+#: src/Form/SettingsPage.php:699
 msgid "Save Settings"
 msgstr "Tallenna asetukset"
 
-#: src/FreemiusAccessControl.php:220
+#: src/FreemiusAccessControl.php:222
 msgid "unknown"
 msgstr "tuntematon"
 
 #. translators: 1: loaded SDK version, 2: highest tested SDK version
-#: src/FreemiusAccessControl.php:225
+#: src/FreemiusAccessControl.php:227
 #, php-format
 msgid "Editoria11y CSA: the loaded Freemius SDK (version %1$s) is newer than the highest tested version (%2$s). Another Freemius-using plugin on this site has bundled a newer SDK build. The network license activation page may not behave as expected; review release notes or contact support if you hit issues."
 msgstr "Editoria11y CSA: ladattu Freemius SDK (versio %1$s) on uudempi kuin korkein testattu versio (%2$s). Jokin muu Freemiusta käyttävä lisäosa tällä sivustolla sisältää uudemman SDK-käännöksen. Verkkolisenssin aktivointisivu saattaa toimia odottamattomasti; tarkista julkaisutiedot tai ota yhteys tukeen, jos kohtaat ongelmia."
 
-#: src/FreemiusAccessControl.php:501
+#: src/FreemiusAccessControl.php:503
 msgid "Editoria11y network licenses are activated from a dedicated page that walks every site in the network in cron-driven batches. This avoids the SDK's 1,000-site limit and keeps the page responsive on large multisites."
 msgstr "Editoria11y-verkkolisenssit aktivoidaan erilliseltä sivulta, joka käy läpi kaikki verkon sivustot cron-ohjatuissa erissä. Tämä kiertää SDK:n 1 000 sivuston rajan ja pitää sivun suorituskykyisenä suurissa monipalvelinympäristöissä."
 
-#: src/FreemiusAccessControl.php:507
+#: src/FreemiusAccessControl.php:509
 msgid "Open Editoria11y license page"
 msgstr "Avaa Editoria11y-lisenssipakin sivu"
 
-#: src/FreemiusAccessControl.php:563
+#: src/FreemiusAccessControl.php:565
 msgid "Per-site license rows are not shown to keep this page responsive on large networks. The license you choose below applies to every site in the network. To activate or deactivate on individual sites, visit each site's per-site Settings → Editoria11y → License & Account."
 msgstr "Sivustokohtaisia lisenssitietoja ei näytetä, jotta sivu pysyy suorituskykyisenä suurissa verkoissa. Alla valitsemasi lisenssi koskee kaikkia verkon sivustoja. Aktivoidaksesi tai deaktivoidaksesi yksittäisillä sivustoilla, siirry kunkin sivuston Asetukset → Editoria11y → Lisenssi ja tili."
 
@@ -2011,15 +2015,19 @@ msgstr "matalammat (tai korkeammat!) tukitasot"
 msgid "This is a <strong>contribute what you can</strong> \"farmshare\" model. The Editoria11y LLC site has options for %s, options to contribute as a coder or tester instead, and options for cross-platform and unlimited-site licenses."
 msgstr "Tämä on <strong>anna sen mukaan kuin pystyt</strong> -tyyppinen kumppanuusmaatalous-malli. Editoria11y LLC:n sivustolla on vaihtoehtoja %s, vaihtoehtoja osallistua sen sijaan koodaajana tai testaajana, sekä vaihtoehtoja monialusta- ja rajoittamattoman sivustomäärän lisensseille."
 
-#: src/functions.php:1608
+#: src/functions.php:234
+msgid "Network Super Admin"
+msgstr "Verkon pääylläpitäjä"
+
+#: src/functions.php:1796
 msgid "Empty link"
 msgstr "Tyhjä linkki"
 
-#: src/functions.php:1609
+#: src/functions.php:1797
 msgid "The button style link is missing its URL."
 msgstr "Tältä painiketyyliseltä linkiltä puuttuu URL-osoite."
 
-#: src/functions.php:1610
+#: src/functions.php:1798
 msgid "Edit Media"
 msgstr "Muokkaa mediaa"
 
@@ -2053,7 +2061,7 @@ msgstr "Painikkeella on virheellinen ARIA-tunniste"
 
 #: src/TestNames.php:54
 msgid "Button name repeats the word \"button\""
-msgstr "Painikkeen nimi toistaa sanan \"button\""
+msgstr "Painikkeen nimi toistaa sanan ”button”"
 
 #: src/TestNames.php:55
 msgid "This button is unpronounceable"
@@ -2109,7 +2117,7 @@ msgstr "Upotetut iframe-elementit tarvitsevat manuaalisen tarkistuksen"
 
 #: src/TestNames.php:68
 msgid "Frame missing \"title\" attribute"
-msgstr "Kehykseltä puuttuu \"title\"-attribuutti"
+msgstr "Kehykseltä puuttuu ”title”-attribuutti"
 
 #: src/TestNames.php:69
 msgid "Frame with tabindex=\"-1\" will not be keyboard accessible."
@@ -2225,7 +2233,7 @@ msgstr "Linkitetyillä kuvilla on oltava lausuttavissa oleva alt-teksti"
 
 #: src/TestNames.php:98
 msgid "Manual check: link contains \"click here\""
-msgstr "Tämä linkki sisältää ilmaisun \"klikkaa tästä\""
+msgstr "Tämä linkki sisältää ilmaisun ”klikkaa tästä”"
 
 #: src/TestNames.php:99
 msgid "Link article titles, not DOI numbers"
@@ -2237,7 +2245,7 @@ msgstr "Tässä linkissä ei ole sanoja"
 
 #: src/TestNames.php:101
 msgid "Link with invalid \"aria-labelledby\" attribute"
-msgstr "Linkillä on virheellinen \"aria-labelledby\"-attribuutti"
+msgstr "Linkillä on virheellinen ”aria-labelledby”-attribuutti"
 
 #: src/TestNames.php:102
 msgid "This link needs a label"

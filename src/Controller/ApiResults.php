@@ -582,22 +582,38 @@ class ApiResults extends WP_REST_Controller {
 		// defaults for optional keys so older client payloads (and PHP 8's
 		// undefined-key warnings / count() TypeError) can't take this down.
 		$results += array(
-			'pid'         => -1,
-			'post_id'     => 0,
-			'entity_type' => '',
-			'page_title'  => '',
-			'page_count'  => 0,
-			'dev_count'   => 0,
-			'results'     => array(),
-			'dismissals'  => array(),
+			'pid'          => -1,
+			'post_id'      => 0,
+			'entity_type'  => '',
+			'page_title'   => '',
+			'page_count'   => 0,
+			'dev_count'    => 0,
+			'results'      => array(),
+			'dismissals'   => array(),
+			'okAllApplied' => array(),
 		);
 		// Mirror the JS senders' varchar(190) truncation so every writer —
 		// results and dismissals alike — keys a long URL on the same string.
 		if ( mb_strlen( (string) $results['page_url'] ) > 190 ) {
 			$results['page_url'] = mb_substr( (string) $results['page_url'], 0, 189 );
 		}
-		$now    = gmdate( 'Y-m-d H:i:s' );
-		$rows   = $results['page_count'] > 0 || count( $results['dismissals'] ) > 0 ? 1 : 0; // If 0 at end, delete URL.
+		// Normalize the optional array payloads before they are counted/iterated.
+		if ( ! is_array( $results['dismissals'] ) ) {
+			$results['dismissals'] = array();
+		}
+		if ( ! is_array( $results['okAllApplied'] ) ) {
+			$results['okAllApplied'] = array();
+		}
+		$now = gmdate( 'Y-m-d H:i:s' );
+		// A page is "empty" (its URL row is deleted at the end) only when it has
+		// no content issues, no developer issues, no page-scoped dismissals to
+		// refresh, and no global-dismissal mapping to store. The old check read
+		// page_count + dismissals only; once counts split into content/dev
+		// buckets that would drop a developer-only (or okAll-only) page.
+		$rows   = ( (int) $results['page_count'] > 0
+			|| (int) $results['dev_count'] > 0
+			|| count( $results['dismissals'] ) > 0
+			|| count( $results['okAllApplied'] ) > 0 ) ? 1 : 0; // If 0 at end, delete URL.
 		$return = array();
 		global $wpdb;
 
@@ -778,6 +794,58 @@ class ApiResults extends WP_REST_Controller {
 						)
 					)
 				);
+				$rows    += $response ? $response : 0;
+				$return[] = $response;
+			}
+
+			// Global-dismissal mapping. Every okAll element the page currently
+			// renders gets one row per (pid, element): the dashboard subtracts
+			// these from the page's raw count (in the row's content/dev bucket),
+			// and a reset finds every affected page through them. Rows are
+			// refreshed here so the stale sweep below leaves them alone; a
+			// missing one is created as a mechanical row (user 0) so the human
+			// dismissals list — which hides user-0 okAll rows — is not flooded
+			// with one entry per page. The origin dismisser's row (user > 0,
+			// written by the dismiss endpoint) is refreshed in place, never
+			// overwritten. See ed11y_get_global_dismissals() / ApiDismissals.
+			foreach ( $results['okAllApplied'] as $applied ) {
+				if ( ! is_array( $applied ) ) {
+					continue;
+				}
+				$applied_key     = (string) ( $applied['result_key'] ?? '' );
+				$applied_element = (string) ( $applied['element_id'] ?? '' );
+				if ( '' === $applied_key || '' === $applied_element ) {
+					continue;
+				}
+				$applied_name   = (string) ( $applied['result_name'] ?? '' );
+				$applied_bucket = empty( $applied['in_content'] ) ? 0 : 1;
+				$existing_id    = $wpdb->get_var( // phpcs:ignore
+					$wpdb->prepare(
+						"SELECT id FROM {$wpdb->prefix}ed11y_dismissals
+						WHERE pid = %d AND result_key = %s AND element_id = %s AND dismissal_status = 'okAll'
+						LIMIT 1;",
+						array( $pid, $applied_key, $applied_element )
+					)
+				);
+				if ( $existing_id ) {
+					$response = $wpdb->query( // phpcs:ignore
+						$wpdb->prepare(
+							"UPDATE {$wpdb->prefix}ed11y_dismissals
+							SET updated = %s, stale = 0, stale_date = NULL, in_content = %d
+							WHERE id = %d;",
+							array( $now, $applied_bucket, $existing_id )
+						)
+					);
+				} else {
+					$response = $wpdb->query( // phpcs:ignore
+						$wpdb->prepare(
+							"INSERT INTO {$wpdb->prefix}ed11y_dismissals
+								(pid, result_key, user, element_id, dismissal_status, result_name, created, updated, stale, in_content)
+							VALUES (%d, %s, %d, %s, 'okAll', %s, %s, %s, 0, %d);",
+							array( $pid, $applied_key, 0, $applied_element, $applied_name, $now, $now, $applied_bucket )
+						)
+					);
+				}
 				$rows    += $response ? $response : 0;
 				$return[] = $response;
 			}

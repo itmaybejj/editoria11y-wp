@@ -260,7 +260,7 @@ class SettingsFields {
 			?>
 		</p>
 		<?php SettingsContext::print_mode_dropdown( 'ed11y_checkRoots' ); ?>
-		
+
 		<?php
 	}
 
@@ -308,7 +308,7 @@ class SettingsFields {
 			?>
 		</p>
 		<?php SettingsContext::print_mode_dropdown( 'ed11y_ignore_elements' ); ?>
-		
+
 		<?php
 	}
 
@@ -558,7 +558,7 @@ class SettingsFields {
 						?>
 						<tr>
 							<td>
-								
+
 								<label for="<?php echo esc_attr( $field_id ); ?>">
 									<p><?php echo esc_html( $label ); ?></p>
 									<p><code><?php echo esc_html( $key ); ?></code></p>
@@ -700,6 +700,7 @@ class SettingsFields {
 				<label for="ed11y-alert_mode"><strong><?php esc_html_e( 'Checker mode for content roles', 'editoria11y' ); ?></strong></label>
 			</p>
 			<?php self::alert_mode_field(); ?>
+
 			<p>
 				<label for="ed11y-livecheck"><strong><?php esc_html_e( 'Checker mode inside editor', 'editoria11y' ); ?></strong></label>
 			</p>
@@ -768,7 +769,7 @@ class SettingsFields {
 				<label for="ed11y-checkvisibility"><strong><?php esc_html_e( 'Warn users if elements might not be visible when jumping to tips', 'editoria11y' ); ?></strong></label>
 			</p>
 			<?php self::checkvisibility_field(); ?>
-			
+
 			<?php
 			self::compat_textarea(
 				'element_hides_overflow',
@@ -826,7 +827,7 @@ class SettingsFields {
 		?>
 		<details class="ed11y-compat-group" style="margin: 0.5em 0; padding: 0.5em 0.75em; border: 1px solid #ccd0d4; border-radius: 4px;">
 			<summary style="cursor: pointer; font-weight: 600;"><?php esc_html_e( 'Syncing results to reports', 'editoria11y' ); ?></summary>
-			
+
 			<?php
 			$report_restrict  = SettingsContext::get_raw_setting( 'ed11y_report_restrict' );
 			$hide_report_link = SettingsContext::get_raw_setting( 'ed11y_hide_report_link' );

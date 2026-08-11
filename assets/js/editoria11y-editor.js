@@ -44,22 +44,12 @@ const ed11yLang = ed11yBuildLang(ed11yUiLang, ed11yContentLang);
 Lang.addI18n(ed11yLang.strings);
 Lang.testNames = { ...(Lang.testNames || {}), ...(ed11yUiLang.testNames || {}) };
 
-
-
-
-
-
-
-
-
 // Shared translation layer (see editoria11y-option-translations.js).
 // Editor binding: NO checkRoot autodetect — every editor mount path sets
 // its own canvas root. Exported for the unit suite.
 export function ed11yApplyOptionTranslations(options) {
   ed11ySharedOptionTranslations(options, { autodetectCheckRoot: false });
 }
-
-
 
 // Translate user-configured H2/H3/H4 selectors (live_h2/h3/h4 in PHP
 // storage; liveH2/H3/H4 in the static config emit) into the library's
@@ -177,7 +167,6 @@ if (!ed11yInit.varDiv) {
 
   };
 
-
   // Async because getOptions has to await the static-config fetch before
   // running the in-place option mutations below (linkStringsNewWindows →
   // RegExp etc.). Both init paths (block / classic) await it.
@@ -197,7 +186,6 @@ if (!ed11yInit.varDiv) {
 
     // CSA: build splitConfiguration + enable dev/contrast/readability
     // plugins when the per-page blob set profile.
-    
 
     // Pin the merged dual-language dictionary so the library uses it during
     // preProcessOptions instead of resetting Lang to its built-in English
@@ -578,7 +566,6 @@ if (!ed11yInit.varDiv) {
       ed11yInit.activeIframe = null;
     }
   };
-
 
   ed11yInit.ed11yOuterClassicInit = function () {
 

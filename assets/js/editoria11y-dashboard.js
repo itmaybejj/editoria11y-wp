@@ -588,7 +588,7 @@ class Ed1 {
 
       head = document.createElement('tr');
       head.insertAdjacentElement('beforeend', Ed1.render.th(config.i18n.colAlerts, 'page_total', 'DESC'));
-      
+
       head.insertAdjacentElement('beforeend', Ed1.render.th(config.i18n.colPage, 'page_title'));
       head.insertAdjacentElement('beforeend', Ed1.render.th(config.i18n.colPath, 'page_url'));
       head.insertAdjacentElement('beforeend', Ed1.render.th(config.i18n.colType, 'entity_type'));
@@ -618,7 +618,7 @@ class Ed1 {
       head.insertAdjacentElement('beforeend', Ed1.render.th(config.i18n.colPath, 'page_url'));
       head.insertAdjacentElement('beforeend', Ed1.render.th(config.i18n.colAlert, 'result_key'));
       head.insertAdjacentElement('beforeend', Ed1.render.th(config.i18n.colCount, 'result_count'));
-      
+
       head.insertAdjacentElement('beforeend', Ed1.render.th(config.i18n.colType, 'entity_type'));
       head.insertAdjacentElement('beforeend', Ed1.render.th(config.i18n.colStatus, 'post_status'));
       Ed1.tables['ed1recent'].insertAdjacentElement('beforeend', head);
@@ -639,7 +639,7 @@ class Ed1 {
       Ed1.tables['ed1result'].setAttribute('id', 'ed1result');
       head = document.createElement('tr');
       head.insertAdjacentElement('beforeend', Ed1.render.th(config.i18n.colPages, 'count', 'DESC'));
-      
+
       head.insertAdjacentElement('beforeend', Ed1.render.th(config.i18n.colAlert, 'result_key'));
       Ed1.tables['ed1result'].insertAdjacentElement('beforeend', head);
       Ed1.tables['ed1result'].append(Ed1.render.loadingRow(head.children.length));
@@ -708,8 +708,6 @@ class Ed1 {
           let pageCount = Ed1.render.td(result['count']);
           pageCount.classList.add('numeric');
           row.insertAdjacentElement('beforeend', pageCount);
-
-          
 
           let keyName = labelFor(result['result_key'], result['result_name']);
 
@@ -784,8 +782,6 @@ class Ed1 {
           pageCount.classList.add('numeric');
           row.insertAdjacentElement('beforeend', pageCount);
 
-          
-
           let type = Ed1.render.td(result['entity_type'], false, Ed1.buildUrl({ type: result['entity_type'] }));
           row.insertAdjacentElement('beforeend', type);
 
@@ -793,7 +789,6 @@ class Ed1 {
             Ed1.render.td(prettyStatus(result['post_status']), false, Ed1.buildUrl({ post_status: result['post_status'] }))
             : Ed1.render.td(statusLabel('publish'), false, Ed1.buildUrl({ post_status: 'publish' }));
           row.insertAdjacentElement('beforeend', post_status);
-
 
           Ed1.tables['ed1recent'].insertAdjacentElement('beforeend', row);
         });
@@ -830,8 +825,6 @@ class Ed1 {
           let pageCount = Ed1.render.td(result['page_total']);
           pageCount.classList.add('numeric');
           row.insertAdjacentElement('beforeend', pageCount);
-
-          
 
           let pageLink = Ed1.render.td(result['page_title'], false, result['page_url'], result['pid']);
           row.insertAdjacentElement('beforeend', pageLink);
@@ -942,9 +935,7 @@ class Ed1 {
           });
         }
 
-
       }
-
 
       if (announce) {
         Ed1.announce(pluralize(config.i18n.results, post.length));
@@ -1051,7 +1042,6 @@ class Ed1 {
       Ed1.render.ed1dismiss(post[0], post[1], announce);
     };
 
-
     /**
      * User Interactions.
      */
@@ -1071,7 +1061,6 @@ class Ed1 {
       el.classList.add(sort === 'ASC' ? 'ascending' : 'descending');
     };
   }
-
 
 }
 

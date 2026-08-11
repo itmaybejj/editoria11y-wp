@@ -4,7 +4,7 @@
  *
  * Plugin Name:       Editoria11y Accessibility Checker
  * Plugin URI:        https://wordpress.org/plugins/editoria11y-accessibility-checker/
- * Version:           3.0.0
+ * Version:           3.0.1
  * Requires PHP:      7.4
  * Requires at least: 6.0
  * Tested up to:      7.0
@@ -317,7 +317,6 @@ if ( ! function_exists( 'ed11ycsa' ) ) {
 			// Restrict the SDK's network-admin pages to super-admins and
 			// pin the "Activate License" modal to all-sites mode so very
 			// large multisites are not enumerated row-by-row in the DOM.
-
 		}
 
 		return $ed11ycsa;
@@ -390,7 +389,6 @@ add_action( \Editoria11y\Installer::REHASH_CRON_HOOK, array( '\\Editoria11y\\Ins
 // above: if the worker class file fails to autoload (corrupted vendor
 // tree, partial deploy) we want WP-Cron to keep running for everything
 // else on the site rather than fatal at plugin file-load.
-
 
 // Register the network-defaults backfill worker + site-creation seeder.
 // Free-build-safe — the seeder writes both the free and the CSA options

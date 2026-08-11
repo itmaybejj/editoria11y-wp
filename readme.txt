@@ -1,7 +1,7 @@
 === Editoria11y Accessibility Checker ===
 Contributors: itmaybejj, partyka
 Tags: accessibility checker, automated testing, quality assurance, SEO
-Stable tag: 3.0.0
+Stable tag: 3.0.1
 Tested up to: 7.0
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -192,6 +192,9 @@ New feature development comes through by grants from academic institutions and c
 
 == Changelog ==
 
+= 3.0.1 =
+* Allows dismissing certain manual checks site-wide (PDF alternatives, video captioning and developer tests outside the content area).
+
 = 3.0.0 =
 * Adds many new content editor tests and translations.
 * Adds robust multisite configuration management, both for pushing and overriding settings across a network and for setting defaults for newly created sites.
@@ -201,6 +204,9 @@ New feature development comes through by grants from academic institutions and c
 * Add hooks for modifying CSV exports.
 
 == Upgrade Notice ==
+
+= 3.0.1 =
+Adds column for whether an alert was found in the content area of the page.
 
 = 3.0.0 =
 The database upgrades itself the first time an administrator visits each site's dashboard; dismissal records are re-keyed by a background job (a progress notice shows until it finishes). On multisite, each site upgrades on its own first admin visit. Supporters switching to the CSA build: network-activate it (the free build deactivates automatically), then activate your license under Network Admin, Settings, Editoria11y License.

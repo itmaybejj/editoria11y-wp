@@ -529,9 +529,6 @@ class SettingsPage {
 	 */
 	public static function register_sections_and_fields() {
 
-		// Assigned inside the preprocessor gate because every use below is
-		// also gated — the free build must not carry an unused variable.
-
 		add_settings_section(
 			'ed11y_getting_started',
 			__( 'Getting started', 'editoria11y' ),
@@ -641,7 +638,6 @@ class SettingsPage {
 					</form>
 					<?php ConditionalFields::print_script(); ?>
 				</div><!-- .post-body-content -->
-
 
 				</div><!-- .editoria11y-settings -->
 				<br class="clear">

@@ -7,7 +7,6 @@ import {
   ed11yApplyOptionTranslations as ed11ySharedOptionTranslations,
 } from './editoria11y-option-translations.js';
 
-
 // Build the dual-language dictionary the bundled library consumes.
 //
 // The checker reads ONE flat string table (Lang.langStrings) for both the
@@ -43,22 +42,12 @@ const ed11yLang = ed11yBuildLang(ed11yUiLang, ed11yContentLang);
 Lang.addI18n(ed11yLang.strings);
 Lang.testNames = { ...(Lang.testNames || {}), ...(ed11yUiLang.testNames || {}) };
 
-
-
-
-
-
-
-
-
 // Shared translation layer (see editoria11y-option-translations.js).
 // Front-end binding: autodetect a checkRoot fallback when the admin
 // configured none. Exported for the unit suite.
 export function ed11yApplyOptionTranslations(options) {
   ed11ySharedOptionTranslations(options, { autodetectCheckRoot: true });
 }
-
-
 
 let ed11yOptions = {};
 let ed11yResetID = false;
@@ -92,6 +81,18 @@ function ed11yWpImageIdFromClass(classAttr) {
   }
   return null;
 }
+
+// Tests whose warnings may be dismissed "on all pages" (a global dismissal /
+// okAll). Ported from the Drupal sync's `okTests` allowlist
+// (editoria11ySync.js). The match is a substring test, so `BTN` covers
+// BTN_EMPTY / BTN_ROLE_IN_NAME, `LABELS` covers every LABELS_* variant, etc.
+// Only site-furniture warnings that recur identically across pages belong
+// here — content-specific problems should be fixed per page, not silenced
+// site-wide, so they never get the button.
+//
+// Gated with the okAll UI it serves: the free build has no site-wide button,
+// so the constant + predicate strip too (the unit suite duplicates the helper
+// rather than importing it, so gating the source doesn't cost coverage).
 
 // Notify the parent crawler that this iframe's scan completed (or was
 // skipped for a benign reason — password form, missing config, etc.).
@@ -154,30 +155,65 @@ function ed11ySync() {
     });
   };
 
+  // Build the results-report payload from the library's live result set.
+  //
+  // Counts are the DISPLAYED (okAll-adjusted) counts: items marked OK — a
+  // per-page `ok` or a site-wide `okAll` — are excluded, so a page's stored
+  // total already reflects its global dismissals. Because okAll is cross-page,
+  // pages that adjust down while it's active can't restore themselves on a
+  // reset without re-scanning; the server does that from the okAll mapping
+  // below (see ApiDismissals reset). `hide` is a personal visibility toggle,
+  // not a "this is fine" judgement, so hidden items still count.
+  //
+  // Each result is bucketed content vs. developer by `outsideContentRoots`
+  // (page furniture the editor can't reach from the content region), mirroring
+  // Drupal's `element.closest(contentSyncRoot)` split, so the dashboard's
+  // content/dev columns — and a later okAll reset — land in the right bucket.
   let extractResults = function () {
     let results = {};
     let dismissals = [];
-    let total = 0;
-    State.results.forEach(result => {
-      let testName = result.test;
-      if (result.dismissalStatus !== 'ok') {
-        // log all items not marked as OK
-        if (results[testName]) {
-          results[testName] = parseInt(results[testName]) + 1;
-          total++;
-        } else {
-          results[testName] = 1;
-          total++;
+    let contentTotal = 0;
+    let devTotal = 0;
+    // okAll elements present on this page, tagged with their bucket, so the
+    // server can refresh the per-page global-dismissal mapping a reset needs
+    // to know which pages (and buckets) to restore.
+    let okAllApplied = [];
+    State.results.forEach((result) => {
+      const testKey = result.test;
+      const testName = (Lang.testNames && Lang.testNames[testKey]) || testKey;
+      // outsideContentRoots is set by the library's dev/content split; absent
+      // (free / non-CSA) everything is content, which is the correct default.
+      const inContent = result.outsideContentRoots ? 0 : 1;
+
+      // Count everything except items marked OK (per-page `ok` or site-wide
+      // `okAll`); `hide` still counts.
+      if (result.dismissalStatus !== 'ok' && result.dismissalStatus !== 'okAll') {
+        if (!results[testKey]) {
+          results[testKey] = { content_count: 0, dev_count: 0, result_name: testName };
         }
+        results[testKey].content_count += inContent;
+        results[testKey].dev_count += 1 - inContent;
+        contentTotal += inContent;
+        devTotal += 1 - inContent;
       }
-      if (result.dismissalStatus !== 'false') {
-        let insert = [testName, result.dismissalKey];
-        dismissals.push(
-          insert
-        );
+
+      // The dismiss key lives on `result.dismiss` (the library's pepper-hashed
+      // digest) — the previous `result.dismissalKey` was always undefined, so
+      // the server's stale-refresh matched nothing. Using `dismiss` also makes
+      // element_ids agree with what the dismiss endpoint stored.
+      if (result.dismissalStatus === 'ok' || result.dismissalStatus === 'hide') {
+        // Refresh existing page-scoped rows (keeps them off the stale sweep).
+        dismissals.push([testKey, result.dismiss]);
+      } else if (result.dismissalStatus === 'okAll') {
+        okAllApplied.push({
+          result_key: testKey,
+          element_id: result.dismiss,
+          result_name: testName,
+          in_content: inContent,
+        });
       }
     });
-    return [results, dismissals, total];
+    return { results, dismissals, contentTotal, devTotal, okAllApplied };
   };
 
   let url = State.option.currentPage;
@@ -198,10 +234,15 @@ function ed11ySync() {
       let data = {
         page_title: ed11yOptions.title,
         post_id: ed11yOptions.post_id ? ed11yOptions.post_id : 0,
-        page_count: results[2],
+        // page_count is the content bucket (ed11y_urls.page_total); dev_count
+        // the developer bucket (ed11y_urls.dev_total).
+        page_count: results.contentTotal,
+        dev_count: results.devTotal,
         entity_type: ed11yOptions.entity_type, // node or false
-        results: results[0],
-        dismissals: results[1],
+        results: results.results,
+        dismissals: results.dismissals,
+        // Per-page global-dismissal mapping (empty unless CSA okAll is in play).
+        okAllApplied: results.okAllApplied,
         page_url: url,
         created: 0,
         pid: ed11yResetID ? parseInt(ed11yResetID) : -1,
@@ -216,13 +257,18 @@ function ed11ySync() {
 
   let resetResults = function () {
     window.setTimeout(function () {
-      let results = {};
+      // Explicit empties: this path clears a route that should have no
+      // results (arrived from the dashboard via ?ed1ref). The old positional
+      // `results[0..2]` reads were always undefined; the server defaulted
+      // them, but sending real empties is clearer and shape-stable.
       let data = {
         page_title: ed11yOptions.title,
-        page_count: results[2],
+        page_count: 0,
+        dev_count: 0,
         entity_type: ed11yOptions.entity_type, // node or false
-        results: results[0],
-        dismissals: results[1],
+        results: {},
+        dismissals: [],
+        okAllApplied: [],
         page_url: url,
         created: 0,
         pid: ed11yResetID ? parseInt(ed11yResetID) : -1,
@@ -243,6 +289,12 @@ function ed11ySync() {
 
   let sendDismissal = function (detail) {
     if (detail) {
+      let dismissalStatus = detail.dismissAction; // ok, hide or reset
+      // Buckets a global dismissal (content vs. page furniture) so a later
+      // reset restores each affected page's count into the correct column.
+      // Always 1 (content) for non-global dismissals, where the server ignores it.
+      let inContent = 1;
+
       let data = {
         // Reuse the truncated `url` from the results sender: the column is
         // varchar(190), and a dismissal keyed on the full URL while the
@@ -252,9 +304,9 @@ function ed11ySync() {
         entity_type: ed11yOptions.entity_type,
         page_count: UI.totalCount,
         result_key: detail.dismissTest, // which test is sending a result
-        element_id: detail.dismissKey, // some recognizable attribute of the item marked
-        // Todo MVP: okAll.
-        dismissal_status: detail.dismissAction, // ok, ignore or reset
+        element_id: detail.dismissKey, // the library's pepper-hashed dismiss digest
+        dismissal_status: dismissalStatus, // ok, okAll, hide or reset
+        in_content: inContent,
         post_id: ed11yOptions.post_id ? ed11yOptions.post_id : 0,
       };
       postData('dismiss', data);
@@ -335,7 +387,6 @@ const ed11yInit = async function () {
 
     // CSA: build splitConfiguration + enable dev/contrast/readability
     // plugins when the per-page blob set profile. No-op otherwise.
-    
 
     if (window.location.href.indexOf('preview=true') > -1) {
       ed11yOptions['alertMode'] = 'assertive';
@@ -437,7 +488,6 @@ const ed11yInit = async function () {
       }
       e.detail.tip.dataset.alreadyDecorated = 'true';
     });
-
 
     window.ed11y = new Ed11y(ed11yOptions);
     // Expose the library's State / UI / Lang namespaces alongside the

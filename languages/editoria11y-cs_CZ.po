@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: editoria11y 3.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/editoria11y\n"
-"POT-Creation-Date: 2026-08-05T19:54:53-04:00\n"
+"POT-Creation-Date: 2026-08-10T21:11:15-04:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Language-Team: Editoria11y\n"
 "Language: cs\n"
@@ -36,15 +36,15 @@ msgstr "Princeton University, WDS"
 msgid "https://editoria11y.com"
 msgstr "https://editoria11y.com"
 
-#: editoria11y.php:58
+#: editoria11y.php:131
 msgid "Editoria11y is missing its vendored dependencies. Run \"composer install\" inside the plugin directory or reinstall the plugin from a complete release archive."
 msgstr "Editoria11y postrádá své závislosti dodávané s pluginem. Spusťte příkaz „composer install“ v adresáři pluginu nebo plugin přeinstalujte z úplného archivu vydání."
 
-#: editoria11y.php:321
+#: editoria11y.php:399
 msgid "Every five minutes (Editoria11y rehash)"
 msgstr "Každých pět minut (Editoria11y přepočet)"
 
-#: editoria11y.php:327
+#: editoria11y.php:405
 msgid "Every fifteen minutes (Editoria11y license watchdog)"
 msgstr "Každých patnáct minut (Editoria11y kontrola licence)"
 
@@ -274,7 +274,7 @@ msgstr "Ano"
 msgid "n/a"
 msgstr "n/a"
 
-#: src/Admin/Dashboard.php:175 src/functions.php:1607
+#: src/Admin/Dashboard.php:175 src/functions.php:1795
 msgid "Empty button-style link"
 msgstr "Prázdný odkaz ve stylu tlačítka"
 
@@ -300,6 +300,10 @@ msgstr "%d výsledek"
 msgid "%d results"
 msgstr "%d výsledků"
 
+#: src/CoActivationGuard.php:139
+msgid "A duplicate copy of Editoria11y Accessibility Checker (the free version) was deactivated here: Editoria11y CSA is already active and provides the same checks."
+msgstr "Duplicitní kopie pluginu Editoria11y – kontrola přístupnosti (bezplatná verze) zde byla deaktivována: Editoria11y CSA je již aktivní a poskytuje stejné kontroly."
+
 #: src/Controller/ApiCrawler.php:122
 msgid "The crawler is a premium feature."
 msgstr "Prohledávač je prémiová funkce."
@@ -312,11 +316,11 @@ msgstr "Aktualizace databáze Editoria11y nebyla dokončena; prohledávač je po
 msgid "Results not recorded"
 msgstr "Výsledky nebyly zaznamenány"
 
-#: src/Controller/ApiDismissals.php:480 src/Controller/ApiResults.php:857
+#: src/Controller/ApiDismissals.php:572 src/Controller/ApiResults.php:925
 msgid "Editoria11y database update did not complete; writes are paused until an administrator retries the update."
 msgstr "Aktualizace databáze Editoria11y nebyla dokončena; zápisy jsou pozastaveny, dokud správce aktualizaci nezopakuje."
 
-#: src/Controller/ApiDismissals.php:505 src/Controller/ApiResults.php:882
+#: src/Controller/ApiDismissals.php:597 src/Controller/ApiResults.php:950
 msgid "Editoria11y database update did not complete; the dashboard is paused until an administrator retries the update."
 msgstr "Aktualizace databáze Editoria11y nebyla dokončena; přehled je pozastaven, dokud správce aktualizaci nezopakuje."
 
@@ -1070,7 +1074,7 @@ msgstr "Přiřazení testů a rolí"
 msgid "Editoria11y license"
 msgstr "Editoria11y – licence"
 
-#: src/Form/NetworkLicensePage.php:83 src/FreemiusAccessControl.php:281
+#: src/Form/NetworkLicensePage.php:83 src/FreemiusAccessControl.php:283
 msgid "Only network administrators can manage the Editoria11y license."
 msgstr "Licenci Editoria11y mohou spravovat pouze správci sítě."
 
@@ -1211,43 +1215,43 @@ msgstr "Zrušeno"
 msgid "Errors"
 msgstr "Chyby"
 
-#: src/Form/NetworkLicenseWorker.php:171
+#: src/Form/NetworkLicenseWorker.php:392
 msgid "License key is required."
 msgstr "Licenční klíč je povinný."
 
-#: src/Form/NetworkLicenseWorker.php:179 src/Form/NetworkLicenseWorker.php:231
+#: src/Form/NetworkLicenseWorker.php:400 src/Form/NetworkLicenseWorker.php:456
 msgid "An activation run is already in progress."
 msgstr "Aktivace již probíhá."
 
-#: src/Form/NetworkLicenseWorker.php:299
+#: src/Form/NetworkLicenseWorker.php:528
 msgid "No previous errors to retry."
 msgstr "Nejsou žádné předchozí chyby k opakování."
 
-#: src/Form/NetworkLicenseWorker.php:309
+#: src/Form/NetworkLicenseWorker.php:538
 msgid "License key is no longer stored. Start a new activation."
 msgstr "Licenční klíč již není uložen. Zahajte novou aktivaci."
 
-#: src/Form/NetworkLicenseWorker.php:397
+#: src/Form/NetworkLicenseWorker.php:626
 msgid "Freemius SDK wrapper unavailable."
 msgstr "Wrapper Freemius SDK není dostupný."
 
-#: src/Form/NetworkLicenseWorker.php:519
+#: src/Form/NetworkLicenseWorker.php:803
 msgid "SDK _deactivate_license() method unavailable."
 msgstr "Metoda SDK _deactivate_license() není dostupná."
 
-#: src/Form/NetworkLicenseWorker.php:569
+#: src/Form/NetworkLicenseWorker.php:853
 msgid "Deactivation API call did not clear the install license."
 msgstr "Volání API pro deaktivaci nevymazalo licenci instalace."
 
-#: src/Form/NetworkLicenseWorker.php:659
+#: src/Form/NetworkLicenseWorker.php:947
 msgid "No valid sites in batch."
 msgstr "V dávce nejsou žádné platné weby."
 
-#: src/Form/NetworkLicenseWorker.php:765
+#: src/Form/NetworkLicenseWorker.php:1053
 msgid "Activation API returned an unspecified error."
 msgstr "Aktivační API vrátilo nespecifikovanou chybu."
 
-#: src/Form/NetworkLicenseWorker.php:767
+#: src/Form/NetworkLicenseWorker.php:1055
 msgid "Install record not created after API call."
 msgstr "Záznam instalace nebyl vytvořen po volání API."
 
@@ -1325,27 +1329,27 @@ msgstr "Šíření výchozích nastavení sítě selhalo."
 msgid "Network defaults propagation idle."
 msgstr "Šíření výchozích nastavení sítě je nečinné."
 
-#: src/Form/SettingsContext.php:181
+#: src/Form/SettingsContext.php:214
 msgid "Managed at the network level"
 msgstr "Spravováno na úrovni sítě"
 
-#: src/Form/SettingsContext.php:250 src/Form/SettingsContext.php:285
+#: src/Form/SettingsContext.php:283 src/Form/SettingsContext.php:318
 msgid "— No network default —"
 msgstr "— Bez výchozí hodnoty sítě —"
 
-#: src/Form/SettingsContext.php:251 src/Form/SettingsContext.php:286
+#: src/Form/SettingsContext.php:284 src/Form/SettingsContext.php:319
 msgid "Default for new sites"
 msgstr "Výchozí pro nové weby"
 
-#: src/Form/SettingsContext.php:252 src/Form/SettingsContext.php:287
+#: src/Form/SettingsContext.php:285 src/Form/SettingsContext.php:320
 msgid "Default for all sites (skip custom values)"
 msgstr "Výchozí pro všechny weby (přeskočit vlastní hodnoty)"
 
-#: src/Form/SettingsContext.php:253 src/Form/SettingsContext.php:288
+#: src/Form/SettingsContext.php:286 src/Form/SettingsContext.php:321
 msgid "Override for all sites (delete custom values)"
 msgstr "Přepsat pro všechny weby (odstranit vlastní hodnoty)"
 
-#: src/Form/SettingsContext.php:293
+#: src/Form/SettingsContext.php:326
 msgid "Propagation"
 msgstr "Šíření"
 
@@ -1448,7 +1452,7 @@ msgid ""
 "If Editoria11y is flagging things editors cannot fix, e.g., theme-generated \"read more\" links or social media widgets,\n"
 "\t\t\t\tprovide CSS selectors for elements you would like it to ignore. Be specific, e.g. <code>.read-more a, .wp-block-post-excerpt__more-link, #comments h3</code>"
 msgstr ""
-"Pokud Editoria11y označuje věci, které editoři nemohou opravit, např. tématem generované odkazy „číst dál\" nebo widgety sociálních sítí,\n"
+"Pokud Editoria11y označuje věci, které editoři nemohou opravit, např. tématem generované odkazy „číst dál“ nebo widgety sociálních sítí,\n"
 "\t\t\t\tzadejte CSS selektory prvků, které má ignorovat. Buďte konkrétní, např. <code>.read-more a, .wp-block-post-excerpt__more-link, #comments h3</code>"
 
 #: src/Form/SettingsFields.php:376
@@ -1549,275 +1553,275 @@ msgstr "Vypnuto"
 msgid "(Part of CSA suite)"
 msgstr "(Součást sady CSA)"
 
-#: src/Form/SettingsFields.php:882
+#: src/Form/SettingsFields.php:881
 msgid "Remind the editor that these linked documents need a manual check"
 msgstr "Připomenout editorovi, že tyto propojené dokumenty vyžadují ruční kontrolu"
 
-#: src/Form/SettingsFields.php:883
+#: src/Form/SettingsFields.php:882
 msgid "Add or remove filetypes. Set to \"false\" to disable the test altogether. Providing any value will override the default."
 msgstr "Přidejte nebo odeberte typy souborů. Nastavte na „false“ pro úplné zakázání testu. Zadání jakékoli hodnoty přepíše výchozí nastavení."
 
-#: src/Form/SettingsFields.php:887
+#: src/Form/SettingsFields.php:886
 msgid "Remove elements that match these selectors before testing link text"
 msgstr "Odstraňte prvky odpovídající těmto selektorům před testováním textu odkazu"
 
-#: src/Form/SettingsFields.php:888
+#: src/Form/SettingsFields.php:887
 msgid "Provide a CSS selector for elements your themes or plugins programmatically add to links (usually external or open-in-new-window markers), so they can be ignored when the link text is checked for the \"link has no text\" and \"link text is not meaningful\" tests."
 msgstr "Zadejte CSS selektor pro prvky, které vaše motivy nebo pluginy programově přidávají k odkazům (obvykle označení externích odkazů nebo odkazů otevírajících se v novém okně), aby mohly být ignorovány při kontrole textu odkazu v testech „odkaz nemá text“ a „text odkazu není smysluplný“."
 
-#: src/Form/SettingsFields.php:892
+#: src/Form/SettingsFields.php:891
 msgid "Remove these strings before testing link text"
 msgstr "Odstraňte tyto řetězce před testováním textu odkazu"
 
-#: src/Form/SettingsFields.php:893
+#: src/Form/SettingsFields.php:892
 msgid "Provide a pipe-separated (\"|\") list of phrases your themes or plugins programmatically add to links to hint a purpose (external, mail, phone, open-in-new-window), so they can be ignored when the link text is checked for the \"link has no text\" and \"link text is not meaningful\" tests; e.g.: (link is external)|(link sends email)."
 msgstr "Zadejte seznam frází oddělených svislítkem („|“), které vaše motivy nebo pluginy programově přidávají k odkazům jako nápovědu účelu (externí, e-mail, telefon, otevřít v novém okně), aby mohly být ignorovány při kontrole textu odkazu v testech „odkaz nemá text“ a „text odkazu není smysluplný“; např.: (odkaz je externí)|(odkaz odesílá e-mail)."
 
-#: src/Form/SettingsFields.php:897
+#: src/Form/SettingsFields.php:896
 msgid "Strings in links that indicate new tabs"
 msgstr "Řetězce v odkazech signalizující nové záložky"
 
-#: src/Form/SettingsFields.php:898
+#: src/Form/SettingsFields.php:897
 msgid "Provide a pipe-separated list of phrases your site uses to warn users a link opens in a new tab; e.g.: new tab|new window|external."
 msgstr "Zadejte seznam frází oddělených svislítkem, které váš web používá k varování uživatelů, že odkaz se otevírá na nové záložce; např.: new tab|new window|external."
 
-#: src/Form/SettingsFields.php:906
+#: src/Form/SettingsFields.php:905
 msgid "Embeds flagged as needing manual review"
 msgstr "Vložené objekty označené jako vyžadující ruční kontrolu"
 
-#: src/Form/SettingsFields.php:907
+#: src/Form/SettingsFields.php:906
 msgid "Added to the built-in detection list (Looker/Data Studio, Tableau, Power BI, Qlik). Provide a comma-separated list of domains or URL fragments. To stop flagging visualizations entirely, disable that test above."
 msgstr "Přidáno k vestavěnému seznamu detekce (Looker/Data Studio, Tableau, Power BI, Qlik). Zadejte seznam domén nebo částí URL oddělených čárkami. Chcete-li zcela zastavit označování vizualizací, zakažte výše uvedený test."
 
-#: src/Form/SettingsFields.php:912
+#: src/Form/SettingsFields.php:911
 msgid "Videos flagged as needing a manual check for captions"
 msgstr "Videa označená jako vyžadující ruční kontrolu titulků"
 
-#: src/Form/SettingsFields.php:913
+#: src/Form/SettingsFields.php:912
 msgid "Added to the built-in detection list (YouTube, Vimeo, Panopto, Wistia, Dailymotion, Brightcove, Vidyard and generic video URLs). Provide a comma-separated list of domains or URL fragments, e.g. yuja.com. To stop flagging videos entirely, disable that test above."
 msgstr "Přidáno k vestavěnému seznamu detekce (YouTube, Vimeo, Panopto, Wistia, Dailymotion, Brightcove, Vidyard a obecné URL adresy videí). Zadejte seznam domén nebo částí URL oddělených čárkami, např. yuja.com. Chcete-li zcela zastavit označování videí, zakažte výše uvedený test."
 
-#: src/Form/SettingsFields.php:918
+#: src/Form/SettingsFields.php:917
 msgid "Audio flagged as needing a manual check for transcripts"
 msgstr "Zvukové nahrávky označené jako vyžadující ruční kontrolu přepisů"
 
-#: src/Form/SettingsFields.php:919
+#: src/Form/SettingsFields.php:918
 msgid "Added to the built-in detection list (SoundCloud, Simplecast, Podbean, Buzzsprout, Spotify, Apple Podcasts and other major hosts). Provide a comma-separated list of domains or URL fragments. To stop flagging audio entirely, disable that test above."
 msgstr "Přidáno k vestavěnému seznamu detekce (SoundCloud, Simplecast, Podbean, Buzzsprout, Spotify, Apple Podcasts a další velké hostingy). Zadejte seznam domén nebo částí URL oddělených čárkami. Chcete-li zcela zastavit označování zvukových záznamů, zakažte výše uvedený test."
 
-#: src/Form/SettingsFields.php:924
+#: src/Form/SettingsFields.php:923
 msgid "Remind editor that content in these embeds needs manual review"
 msgstr "Připomenout editorovi, že obsah v těchto vložených objektech vyžaduje ruční kontrolu"
 
-#: src/Form/SettingsFields.php:925
+#: src/Form/SettingsFields.php:924
 msgid "Provide a comma-separated list of selectors you wish to flag for the editor, e.g.: .my-embedded-feed, #my-social-link-block."
 msgstr "Zadejte čárkami oddělený seznam selektorů, které chcete označit pro editora, např.: .my-embedded-feed, #my-social-link-block."
 
-#: src/Form/SettingsFields.php:937
+#: src/Form/SettingsFields.php:936
 msgid "Do not check contrast for these elements"
 msgstr "Nekontrolovat kontrast pro tyto prvky"
 
-#: src/Form/SettingsFields.php:950
+#: src/Form/SettingsFields.php:949
 msgid "Provide a comma-separated list of selectors for elements to ignore for all users."
 msgstr "Zadejte čárkami oddělený seznam selektorů prvků, které mají být ignorovány pro všechny uživatele."
 
-#: src/Form/SettingsFields.php:980
+#: src/Form/SettingsFields.php:978
 msgid "Assertiveness"
 msgstr "Razantnost"
 
-#: src/Form/SettingsFields.php:982
+#: src/Form/SettingsFields.php:980
 msgid "Checker mode for content roles"
 msgstr "Režim kontroly pro role obsahu"
 
-#: src/Form/SettingsFields.php:990
+#: src/Form/SettingsFields.php:988
 msgid "Checker mode for developer roles"
 msgstr "Režim kontroly pro role vývojářů"
 
-#: src/Form/SettingsFields.php:998
+#: src/Form/SettingsFields.php:996
 msgid "Checker mode inside editor"
 msgstr "Režim kontroly uvnitř editoru"
 
-#: src/Form/SettingsFields.php:1004
+#: src/Form/SettingsFields.php:1002
 msgid "Theme and plugin compatibility"
 msgstr "Kompatibilita motivu a pluginů"
 
-#: src/Form/SettingsFields.php:1006
+#: src/Form/SettingsFields.php:1004
 msgid "Editoria11y theme"
 msgstr "Motiv Editoria11y"
 
-#: src/Form/SettingsFields.php:1011
+#: src/Form/SettingsFields.php:1009
 msgid "Pin panel to"
 msgstr "Ukotvit panel k"
 
-#: src/Form/SettingsFields.php:1017
+#: src/Form/SettingsFields.php:1015
 msgid "Right"
 msgstr "Vpravo"
 
-#: src/Form/SettingsFields.php:1018
+#: src/Form/SettingsFields.php:1016
 msgid "Left"
 msgstr "Vlevo"
 
-#: src/Form/SettingsFields.php:1024
+#: src/Form/SettingsFields.php:1022
 msgid "Shift panel position if it overlaps these elements"
 msgstr "Posunout panel, pokud překrývá tyto prvky"
 
-#: src/Form/SettingsFields.php:1025
+#: src/Form/SettingsFields.php:1023
 msgid "Comma-separated selectors for competing widgets, e.g. .interface-interface-skeleton__sidebar."
 msgstr "Čárkami oddělené selektory pro konkurující widgety, např. .interface-interface-skeleton__sidebar."
 
-#: src/Form/SettingsFields.php:1030
+#: src/Form/SettingsFields.php:1028
 msgid "Do not check on pages with these elements"
 msgstr "Nekontrolovat na stránkách s těmito prvky"
 
-#: src/Form/SettingsFields.php:1034
+#: src/Form/SettingsFields.php:1032
 msgid "JS injected custom rules"
 msgstr "Vlastní pravidla vložená přes JS"
 
-#: src/Form/SettingsFields.php:1040
+#: src/Form/SettingsFields.php:1038
 msgid "Don't show edit links on tips in these containers"
 msgstr "Nezobrazovat odkazy pro úpravy v tipech uvnitř těchto kontejnerů"
 
-#: src/Form/SettingsFields.php:1041
+#: src/Form/SettingsFields.php:1039
 msgid "Provide a comma-separated list of page sections where edit links should not show. To hide the links everywhere, set this field to an asterisk (*)."
 msgstr "Zadejte čárkami oddělený seznam sekcí stránky, kde se nemají zobrazovat odkazy pro úpravy. Chcete-li je skrýt všude, nastavte toto pole na hvězdičku (*)."
 
-#: src/Form/SettingsFields.php:1060
+#: src/Form/SettingsFields.php:1058
 msgid "Handling tips on hidden content"
 msgstr "Zpracování tipů na skrytém obsahu"
 
-#: src/Form/SettingsFields.php:1062
+#: src/Form/SettingsFields.php:1060
 msgid "Warn users if elements might not be visible when jumping to tips"
 msgstr "Varovat uživatele, pokud prvky nemusí být viditelné při přechodu na tipy"
 
-#: src/Form/SettingsFields.php:1069
+#: src/Form/SettingsFields.php:1067
 msgid "Elements with overflow hidden"
 msgstr "Prvky se skrytým přetečením"
 
-#: src/Form/SettingsFields.php:1070
+#: src/Form/SettingsFields.php:1068
 msgid "Sometimes buttons get drawn and visually truncated outside the bounds of a positioned element. Provide a selector list."
 msgstr "Tlačítka jsou někdy vykreslována a vizuálně ořezávána mimo hranice pozicovaného prvku. Zadejte seznam selektorů."
 
-#: src/Form/SettingsFields.php:1075
+#: src/Form/SettingsFields.php:1073
 msgid "Theme JS will handle revealing hidden tooltips inside these containers"
 msgstr "JS motivu zajistí zobrazení skrytých nástrojových tipů uvnitř těchto kontejnerů"
 
-#: src/Form/SettingsFields.php:1076
+#: src/Form/SettingsFields.php:1074
 msgid "Editoria11y detects hidden tooltips and warns the user when they try to jump to them from the panel. For elements on this list, Editoria11y will dispatch a JS event instead of a warning, so custom JS in your theme can first reveal the hidden tip (e.g., open an accordion or tab panel)."
 msgstr "Editoria11y detekuje skryté nástrojové tipy a varuje uživatele, když se z panelu pokusí na ně přejít. U prvků na tomto seznamu Editoria11y místo varování odešle JS událost, aby vlastní JS ve vašem motivu mohl nejprve odhalit skrytý tip (např. otevřít harmoniku nebo záložkový panel)."
 
-#: src/Form/SettingsFields.php:1087
+#: src/Form/SettingsFields.php:1085
 msgid "Detecting dynamic and shadow content"
 msgstr "Detekce dynamického a shadow obsahu"
 
-#: src/Form/SettingsFields.php:1090
+#: src/Form/SettingsFields.php:1088
 msgid "Dynamically refresh if new content appears"
 msgstr "Dynamicky obnovit při výskytu nového obsahu"
 
-#: src/Form/SettingsFields.php:1096
+#: src/Form/SettingsFields.php:1094
 msgid "Watch for changes anywhere on the page"
 msgstr "Sledovat změny kdekoli na stránce"
 
-#: src/Form/SettingsFields.php:1097
+#: src/Form/SettingsFields.php:1095
 msgid "Only watch for changes to content containers present on load"
 msgstr "Sledovat pouze změny kontejnerů obsahu přítomných při načtení"
 
-#: src/Form/SettingsFields.php:1098
+#: src/Form/SettingsFields.php:1096
 msgid "Do not watch for changes"
 msgstr "Nesledovat změny"
 
-#: src/Form/SettingsFields.php:1101
+#: src/Form/SettingsFields.php:1099
 msgid "Set to \"anywhere\" if changes are being missed; set to \"do not watch\" if you notice performance issues."
 msgstr "Nastavte na „kdekoli“, pokud jsou přehlíženy změny; nastavte na „nesledovat“, pokud zaznamenáte problémy s výkonem."
 
-#: src/Form/SettingsFields.php:1105
+#: src/Form/SettingsFields.php:1103
 msgid "Check inside these specific Web components"
 msgstr "Kontrolovat uvnitř těchto konkrétních webových komponent"
 
-#: src/Form/SettingsFields.php:1106
+#: src/Form/SettingsFields.php:1104
 msgid "Provide selectors for elements with shadow DOM you want tested. E.g.: my-fancy-accordion-widget, my-magical-slideshow."
 msgstr "Zadejte selektory pro prvky se shadow DOM, které chcete testovat. Např.: my-fancy-accordion-widget, my-magical-slideshow."
 
-#: src/Form/SettingsFields.php:1110
+#: src/Form/SettingsFields.php:1108
 msgid "Auto-detect any Web components"
 msgstr "Automaticky detekovat webové komponenty"
 
-#: src/Form/SettingsFields.php:1111
+#: src/Form/SettingsFields.php:1109
 msgid "This is easier to configure than specifying components, but may slow test runs on very complicated pages."
 msgstr "Je to snadnější na konfiguraci než zadávání jednotlivých komponent, ale může zpomalit běh testů na velmi složitých stránkách."
 
-#: src/Form/SettingsFields.php:1122
+#: src/Form/SettingsFields.php:1120
 msgid "Syncing results to reports"
 msgstr "Synchronizace výsledků se zprávami"
 
-#: src/Form/SettingsFields.php:1139
+#: src/Form/SettingsFields.php:1137
 msgid "Only admins can view reports"
 msgstr "Zprávy mohou zobrazovat pouze správci"
 
-#: src/Form/SettingsFields.php:1144
+#: src/Form/SettingsFields.php:1142
 msgid "By default both admins and editors can view reports."
 msgstr "Výchozím nastavením je, že zprávy mohou zobrazovat správci i editoři."
 
-#: src/Form/SettingsFields.php:1157
+#: src/Form/SettingsFields.php:1155
 msgid "Hide reports shortcut on toggle"
 msgstr "Skrýt zkratku ke zprávám na přepínači"
 
-#: src/Form/SettingsFields.php:1164
+#: src/Form/SettingsFields.php:1162
 msgid "Reports will still be available on the WordPress admin dashboard."
 msgstr "Zprávy budou stále dostupné v administrátorském přehledu WordPress."
 
-#: src/Form/SettingsFields.php:1174
+#: src/Form/SettingsFields.php:1172
 msgid "Remove redundant base url from URLs"
 msgstr "Odebrat nadbytečnou základní URL z adres URL"
 
-#: src/Form/SettingsFields.php:1186
+#: src/Form/SettingsFields.php:1184
 msgid "Provide base URL (\"/mysite\") if your site is installed in a subdirectory. Subdirectories tend to get duplicated (/mysite/mysite/mypage) and throw errors from the API."
 msgstr "Zadejte základní URL („/mysite“), pokud je váš web nainstalován v podadresáři. Podadresáře mají tendenci se duplikovat (/mysite/mysite/mypage) a způsobovat chyby API."
 
-#: src/Form/SettingsFields.php:1191
+#: src/Form/SettingsFields.php:1189
 msgid "Preserve query parameters"
 msgstr "Zachovat parametry dotazu"
 
-#: src/Form/SettingsFields.php:1192
+#: src/Form/SettingsFields.php:1190
 msgid "The dashboard ignores most parameters: results for both /news?f=1 and /news?f=2 will show up as just /news. Provide a comma-separated list of parameters that are meaningful and should appear as separate pages in results."
 msgstr "Přehled ignoruje většinu parametrů: výsledky pro /news?f=1 i /news?f=2 se zobrazí pouze jako /news. Zadejte čárkami oddělený seznam parametrů, které jsou smysluplné a mají se ve výsledcích zobrazovat jako samostatné stránky."
 
-#: src/Form/SettingsFields.php:1196
+#: src/Form/SettingsFields.php:1194
 msgid "Disable sync altogether"
 msgstr "Zcela zakázat synchronizaci"
 
-#: src/Form/SettingsFields.php:1197
+#: src/Form/SettingsFields.php:1195
 msgid "Syncing test results is required for the issue dashboard, dismissal dashboard, and \"mark OK\" buttons."
 msgstr "Synchronizace výsledků testů je vyžadována pro přehled problémů, přehled zamítnutí a tlačítka „označit OK“."
 
-#: src/Form/SettingsFields.php:1208
+#: src/Form/SettingsFields.php:1206
 msgid "Heading outline position of editable content"
 msgstr "Pozice osnovy nadpisů editovatelného obsahu"
 
-#: src/Form/SettingsFields.php:1210
+#: src/Form/SettingsFields.php:1208
 msgid "To check headings while editing, Editoria11y needs to know what the first heading level should be in each editable field. Body fields should generally be at the H2 level."
 msgstr "Aby mohl Editoria11y kontrolovat nadpisy při editaci, potřebuje vědět, jaká by měla být první úroveň nadpisu v každém editovatelném poli. Pole těla by obecně měla být na úrovni H2."
 
-#: src/Form/SettingsFields.php:1215
+#: src/Form/SettingsFields.php:1213
 msgid "H2 level content (body content)"
 msgstr "Obsah úrovně H2 (obsah těla)"
 
-#: src/Form/SettingsFields.php:1216
+#: src/Form/SettingsFields.php:1214
 msgid "Body fields are preceded by an H1 (the post or page title), so their highest heading level should be H2."
 msgstr "Pole těla jsou uvozena nadpisem H1 (název příspěvku nebo stránky), takže jejich nejvyšší úroveň nadpisu by měla být H2."
 
-#: src/Form/SettingsFields.php:1220
+#: src/Form/SettingsFields.php:1218
 msgid "H3 level content (blocks or widgets with separate titles)"
 msgstr "Obsah úrovně H3 (bloky nebo widgety s vlastními nadpisy)"
 
-#: src/Form/SettingsFields.php:1221
+#: src/Form/SettingsFields.php:1219
 msgid "The highest heading level should be H3."
 msgstr "Nejvyšší úroveň nadpisu by měla být H3."
 
-#: src/Form/SettingsFields.php:1225
+#: src/Form/SettingsFields.php:1223
 msgid "H4 level content (deeply nested blocks or widgets)"
 msgstr "Obsah úrovně H4 (hluboce vnořené bloky nebo widgety)"
 
-#: src/Form/SettingsFields.php:1226
+#: src/Form/SettingsFields.php:1224
 msgid "The highest heading level should be H4."
 msgstr "Nejvyšší úroveň nadpisu by měla být H4."
 
@@ -1864,81 +1868,81 @@ msgstr "Nastavení"
 msgid "License & Account"
 msgstr "Licence a účet"
 
-#: src/Form/SettingsPage.php:550
+#: src/Form/SettingsPage.php:548
 msgid "Getting started"
 msgstr "Začínáme"
 
-#: src/Form/SettingsPage.php:559
+#: src/Form/SettingsPage.php:557
 msgid "Modify content tests"
 msgstr "Upravit testy obsahu"
 
-#: src/Form/SettingsPage.php:565 src/Form/SettingsPage.php:579
+#: src/Form/SettingsPage.php:563 src/Form/SettingsPage.php:577
 msgid "Tests by group"
 msgstr "Testy podle skupiny"
 
-#: src/Form/SettingsPage.php:573
+#: src/Form/SettingsPage.php:571
 msgid "Modify template tests"
 msgstr "Upravit testy šablon"
 
-#: src/Form/SettingsPage.php:590
+#: src/Form/SettingsPage.php:588
 msgid "Custom rules (CSA)"
 msgstr "Vlastní pravidla (CSA)"
 
-#: src/Form/SettingsPage.php:605
+#: src/Form/SettingsPage.php:603
 msgid "Parts of the page to test"
 msgstr "Části stránky ke kontrole"
 
-#: src/Form/SettingsPage.php:613
+#: src/Form/SettingsPage.php:611
 msgid "Do not check for any errors inside these elements"
 msgstr "Nekontrolovat žádné chyby uvnitř těchto prvků"
 
-#: src/Form/SettingsPage.php:624
+#: src/Form/SettingsPage.php:622
 msgid "Page regions with user-editable content"
 msgstr "Oblasti stránky s uživatelsky editovatelným obsahem"
 
-#: src/Form/SettingsPage.php:634
+#: src/Form/SettingsPage.php:632
 msgid "Do not check for content errors inside these elements"
 msgstr "Nekontrolovat chyby obsahu uvnitř těchto prvků"
 
-#: src/Form/SettingsPage.php:637
+#: src/Form/SettingsPage.php:635
 msgid "Errors in these elements should only be shown to developers"
 msgstr "Chyby v těchto prvcích by měly být zobrazovány pouze vývojářům"
 
-#: src/Form/SettingsPage.php:653
+#: src/Form/SettingsPage.php:651
 msgid "Roles that will see developer alerts"
 msgstr "Role, které uvidí vývojářská upozornění"
 
-#: src/Form/SettingsPage.php:668
+#: src/Form/SettingsPage.php:666
 msgid "Advanced settings"
 msgstr "Pokročilá nastavení"
 
-#: src/Form/SettingsPage.php:686
+#: src/Form/SettingsPage.php:684
 msgid "Editoria11y Settings"
 msgstr "Nastavení Editoria11y"
 
-#: src/Form/SettingsPage.php:701
+#: src/Form/SettingsPage.php:699
 msgid "Save Settings"
 msgstr "Uložit nastavení"
 
-#: src/FreemiusAccessControl.php:220
+#: src/FreemiusAccessControl.php:222
 msgid "unknown"
 msgstr "neznámý"
 
 #. translators: 1: loaded SDK version, 2: highest tested SDK version
-#: src/FreemiusAccessControl.php:225
+#: src/FreemiusAccessControl.php:227
 #, php-format
 msgid "Editoria11y CSA: the loaded Freemius SDK (version %1$s) is newer than the highest tested version (%2$s). Another Freemius-using plugin on this site has bundled a newer SDK build. The network license activation page may not behave as expected; review release notes or contact support if you hit issues."
 msgstr "Editoria11y CSA: načtené Freemius SDK (verze %1$s) je novější než nejvýše testovaná verze (%2$s). Jiný plugin využívající Freemius na tomto webu obsahuje novější sestavení SDK. Stránka aktivace síťové licence nemusí fungovat podle očekávání; pokud narazíte na problémy, prostudujte poznámky k vydání nebo kontaktujte podporu."
 
-#: src/FreemiusAccessControl.php:501
+#: src/FreemiusAccessControl.php:503
 msgid "Editoria11y network licenses are activated from a dedicated page that walks every site in the network in cron-driven batches. This avoids the SDK's 1,000-site limit and keeps the page responsive on large multisites."
 msgstr "Síťové licence Editoria11y se aktivují z vyhrazené stránky, která postupně zpracovává každý web v síti v dávkách řízených cronem. Díky tomu se obchází limit SDK pro 1 000 webů a stránka zůstává responzivní i na rozsáhlých multisites."
 
-#: src/FreemiusAccessControl.php:507
+#: src/FreemiusAccessControl.php:509
 msgid "Open Editoria11y license page"
 msgstr "Otevřít stránku licence Editoria11y"
 
-#: src/FreemiusAccessControl.php:563
+#: src/FreemiusAccessControl.php:565
 msgid "Per-site license rows are not shown to keep this page responsive on large networks. The license you choose below applies to every site in the network. To activate or deactivate on individual sites, visit each site's per-site Settings → Editoria11y → License & Account."
 msgstr "Řádky licencí pro jednotlivé weby se nezobrazují, aby tato stránka zůstala responzivní na velkých sítích. Licence, kterou zvolíte níže, platí pro každý web v síti. Chcete-li ji aktivovat nebo deaktivovat pro konkrétní weby, navštivte nastavení každého webu: Nastavení → Editoria11y → Licence a účet."
 
@@ -2013,15 +2017,19 @@ msgstr "nižší (nebo vyšší!) úrovně podpory"
 msgid "This is a <strong>contribute what you can</strong> \"farmshare\" model. The Editoria11y LLC site has options for %s, options to contribute as a coder or tester instead, and options for cross-platform and unlimited-site licenses."
 msgstr "Jde o model ve stylu <strong>přispějte, jak můžete</strong>. Web Editoria11y LLC nabízí možnosti pro %s, možnosti přispívat jako vývojář nebo tester, a možnosti mezplatformních licencí a licencí pro neomezený počet webů."
 
-#: src/functions.php:1608
+#: src/functions.php:234
+msgid "Network Super Admin"
+msgstr "Super administrátor sítě"
+
+#: src/functions.php:1796
 msgid "Empty link"
 msgstr "Prázdný odkaz"
 
-#: src/functions.php:1609
+#: src/functions.php:1797
 msgid "The button style link is missing its URL."
 msgstr "Odkazu ve stylu tlačítka chybí adresa URL."
 
-#: src/functions.php:1610
+#: src/functions.php:1798
 msgid "Edit Media"
 msgstr "Upravit médium"
 

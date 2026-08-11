@@ -33,8 +33,13 @@
  * |                        | immediately runs the 2.1 hardening pass from here.            |
  * | 2.1-failed             | Mid-migrate_to_2_1() hardening run. Sticky until retry, but   |
  * |                        | NOT disabling: the v3 shape is intact and functional.         |
- * | 2.1                    | Terminal: hardening pass applied (user column width, unique   |
- * |                        | page_url). The check_tables() hot-path short-circuit.         |
+ * | 2.1                    | Hardening pass applied (user column width, unique page_url).  |
+ * |                        | Transient — check_tables() runs the 2.2 column add from here. |
+ * | 2.2-failed             | Mid-migrate_to_2_2() in_content ADD COLUMN. Sticky until      |
+ * |                        | retry, NOT disabling for reads — but dismissal INSERTs        |
+ * |                        | reference the column and error until the retry lands.         |
+ * | 2.2                    | Terminal: dismissals carry in_content (okAll content/dev      |
+ * |                        | bucket). The check_tables() hot-path short-circuit.           |
  *
  * The '-failed' markers are written BEFORE the destructive step and only
  * flipped to the success value AFTER it completes, so any partial DDL leaves
@@ -295,6 +300,7 @@ class Installer {
 			updated datetime DEFAULT current_timestamp NOT NULL,
 			stale tinyint(1) NOT NULL default '0',
 			stale_date datetime DEFAULT NULL,
+			in_content tinyint(1) NOT NULL default 1,
 			PRIMARY KEY (id),
 			KEY pid_result_key_element_id (pid, result_key, element_id),
 			KEY user (user),
@@ -482,18 +488,20 @@ class Installer {
 		// Hot path: already at the hardened v3 terminal shape — no lock
 		// needed, no work needed. Note that '1.4' is NOT terminal here: it
 		// indicates the schema is structurally complete but the v3
-		// result_key translation may not have run, and '2.0' pre-dates the
-		// 2.1 hardening pass — both fall through to the ladder below.
-		if ( '2.1' === $version ) {
+		// result_key translation may not have run, '2.0' pre-dates the
+		// 2.1 hardening pass, and '2.1' pre-dates the 2.2 in_content
+		// column — all fall through to the ladder below.
+		if ( '2.2' === $version ) {
 			return true;
 		}
 
 		// Sticky -failed states. 1.2/1.3-failed mean the column shape is unknown
-		// (refuse writes); 2.0-failed means only the type narrow is pending and
-		// 2.1-failed means only the hardening pass is pending — in both of those
-		// the schema is functional and we can return true.
+		// (refuse writes); 2.0-failed means only the type narrow is pending,
+		// 2.1-failed means only the hardening pass is pending, and 2.2-failed
+		// means only the in_content column add is pending — in those three the
+		// schema is functional and we can return true.
 		if ( '-failed' === substr( $version, -7 ) ) {
-			return in_array( $version, array( '2.0-failed', '2.1-failed' ), true );
+			return in_array( $version, array( '2.0-failed', '2.1-failed', '2.2-failed' ), true );
 		}
 
 		// '2.0-migrating' is also functional; the cron / inline UI handles the rest.
@@ -513,7 +521,7 @@ class Installer {
 			// Another request holds the lock; treat the schema as functional
 			// for this request — the holder is doing the work. If they fail,
 			// their -failed marker becomes visible to the next request.
-			return '1.3' === $version || '2.0-narrow-pending' === $version || '1.4' === $version || '2.0' === $version;
+			return '1.3' === $version || '2.0-narrow-pending' === $version || '1.4' === $version || '2.0' === $version || '2.1' === $version;
 		}
 
 		try {
@@ -608,6 +616,19 @@ class Installer {
 				update_option( 'editoria11y_db_version', '2.1-failed' );
 				if ( self::migrate_to_2_1() ) {
 					update_option( 'editoria11y_db_version', '2.1' );
+					$version = '2.1';
+				}
+			}
+
+			// 2.1 -> 2.2: add the dismissals in_content column (okAll
+			// content/dev bucket). Shipped 2.1 sites already ran the 1.3
+			// ADD COLUMN pass, so this column needs its own step — it can't
+			// ride migrate_to_1_3(). A failure is sticky (2.2-failed) but not
+			// disabling for reads; the migration panel surfaces Retry.
+			if ( '2.1' === $version ) {
+				update_option( 'editoria11y_db_version', '2.2-failed' );
+				if ( self::migrate_to_2_2() ) {
+					update_option( 'editoria11y_db_version', '2.2' );
 				}
 			}
 
@@ -643,8 +664,9 @@ class Installer {
 		// translation pass is the next thing check_tables() will do, but it
 		// doesn't block reads/writes.
 		// '2.1-failed' means only the hardening pass (column width / unique
-		// key) is pending — the v3 shape is intact, so writers stay live.
-		if ( in_array( $version, array( '1.4', '2.0', '2.1', '2.1-failed' ), true ) ) {
+		// key) is pending, and '2.2-failed' only the in_content column add —
+		// the v3 shape is intact in both, so writers stay live.
+		if ( in_array( $version, array( '1.4', '2.0', '2.1', '2.1-failed', '2.2', '2.2-failed' ), true ) ) {
 			return 'hashed-only';
 		}
 		if ( in_array( $version, array( '1.3', '2.0-migrating', '2.0-narrow-pending', '2.0-failed' ), true ) ) {
@@ -1013,6 +1035,29 @@ class Installer {
 	}
 
 	/**
+	 * Add the dismissals in_content column: content (1) vs. developer (0)
+	 * bucket for `okAll` rows, so the dashboard subtracts a global dismissal
+	 * from the right column and a reset restores the right one. Defaults to
+	 * 1 (content): harmless for the `ok`/`hide` rows that ignore it.
+	 *
+	 * Fresh installs get the column from create_database(); this step exists
+	 * for sites that shipped at 2.1, whose migrate_to_1_3() ADD COLUMN pass
+	 * has already run and will never run again. Idempotent per column, same
+	 * as the other ALTER steps.
+	 */
+	public static function migrate_to_2_2(): bool {
+		global $wpdb;
+		$dismissals = $wpdb->prefix . 'ed11y_dismissals';
+
+		if ( in_array( 'in_content', self::table_columns( $dismissals ), true ) ) {
+			return true;
+		}
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery, PluginCheck.Security.DirectDB.UnescapedDBParameter -- table name is $wpdb->prefix.literal; migration-time DDL gated by check_tables().
+		return false !== $wpdb->query( "ALTER TABLE $dismissals ADD COLUMN in_content tinyint(1) NOT NULL default 1" );
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery, PluginCheck.Security.DirectDB.UnescapedDBParameter
+	}
+
+	/**
 	 * Clear a -failed marker by stepping back to the most recent good state, then
 	 * re-run check_tables(). Called by the admin "Retry migration" button.
 	 */
@@ -1029,6 +1074,9 @@ class Installer {
 				// 2.1-failed: only the hardening pass failed; the v3 shape
 				// is intact. Roll back to 2.0 so check_tables() re-runs it.
 				'2.1-failed' => '2.0',
+				// 2.2-failed: only the in_content column add failed. Roll
+				// back to 2.1 so check_tables() re-runs it.
+				'2.2-failed' => '2.1',
 			);
 			update_option( 'editoria11y_db_version', $rollback[ $version ] ?? '' );
 		}

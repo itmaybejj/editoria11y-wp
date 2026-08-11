@@ -36,7 +36,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Plugin {
 
 	/** Library version; used as cache buster for enqueued assets. */
-	const VERSION = '3.0.0-alpha3';
+	const VERSION = '3.0.1';
 
 	/**
 	 * Wires plugins_loaded callbacks in dependency order.
@@ -101,7 +101,6 @@ class Plugin {
 				// file is stripped from the free build, so the
 				// preprocessor gate keeps the reference out of the free
 				// shell.
-
 			}
 
 			$migration_panel = new MigrationPanel();
