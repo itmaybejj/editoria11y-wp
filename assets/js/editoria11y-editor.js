@@ -219,6 +219,9 @@ if (!ed11yInit.varDiv) {
       TABLES_INVALID_HEADERS_REF: tableExempt,
       TABLES_SEMANTIC_HEADING: tableInnerExempt,
       TABLES_EMPTY_HEADING: tableInnerExempt,
+	  LABEL_IN_NAME: '.has-visible-prompt *',
+	  CONTRAST_ERROR: '.has-visible-prompt *',
+	  LABELS_MISSING_LABEL: '[contenteditable]',
     };
     ed11yInit.options.ignoreContentOutsideRoots = true;
     ed11yInit.options['ignoreAriaOnElements'] = 'h1,h2,h3,h4,h5,h6,.wp-element-button,.block-editor-rich-text__editable,.wp-block-table';

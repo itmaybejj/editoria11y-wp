@@ -259,7 +259,10 @@
 		"desync",
 		"powerbi",
 		"mojibake",
-		"undebounced"
+		"undebounced",
+		"WPML",
+		"wpml",
+		"dismisser"
 	],
 	"flagWords": [],
 	"allowCompoundWords": true

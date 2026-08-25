@@ -13,8 +13,7 @@ import {
 // panel/tip UI *and* the content-detection ruleset (stopword lists, the
 // "click here" set, suspicious-alt words). We want those two halves in
 // different languages: UI in the editor's locale, ruleset in the locale of
-// the content being scanned — so an English-speaking editor reviewing
-// Spanish content still catches Spanish "haga clic aquí" links.
+// the content being scanned.
 //
 // PHP enqueues two packs (editoria11y-lang = UI locale, editoria11y-lang-content
 // = content locale). Each pack exports `{ strings, testNames, ruleset }`,
