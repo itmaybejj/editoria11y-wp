@@ -574,7 +574,6 @@ if (!ed11yInit.varDiv) {
     // placeholder so the `:not(...)` selector is still valid CSS.
     const ignoreSel = ed11yInit.options['containerIgnore'] || ed11yInit.options['ignoreElements'] || ':not(*)';
     const iframes = document.querySelectorAll(`.mce-edit-area iframe:not(${ignoreSel})`);
-
     let readyCount = 0;
     const iframesReady = async function () {
       const ready = Array.from(iframes).every((frame) => typeof frame.contentWindow?.document === 'object');
@@ -693,11 +692,11 @@ if (!ed11yInit.varDiv) {
       ed11yInit.ed11yBlockOuterInit();
     } else if (
       // Classic post content using TinyMCE — not plugin fields (e.g. ACF Rich Text Editor) on the same screen.
+	  // Todo: allow for running on both at once.
       document.querySelector('#wp-content-wrap .mce-edit-area iframe, #content_ifr') &&
       window.innerWidth > 600
     ) {
       ed11yInit.editorType = 'mce';
-      console.log('classic editor detected');
       ed11yInit.ed11yCanSync = !window.location.href.includes('-new.php');
       ed11yInit.ed11yOuterClassicInit();
     } else if (ed11yInit.ed11yReadyCount < 60) {
