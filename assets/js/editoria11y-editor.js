@@ -691,7 +691,11 @@ if (!ed11yInit.varDiv) {
       ed11yInit.editorType = 'block';
       ed11yInit.ed11yCanSync = !window.location.href.includes('-new.php');
       ed11yInit.ed11yBlockOuterInit();
-    } else if (document.querySelector('.mce-edit-area iframe') && window.innerWidth > 600) {
+    } else if (
+      // Classic post content using TinyMCE — not plugin fields (e.g. ACF Rich Text Editor) on the same screen.
+      document.querySelector('#wp-content-wrap .mce-edit-area iframe, #content_ifr') &&
+      window.innerWidth > 600
+    ) {
       ed11yInit.editorType = 'mce';
       console.log('classic editor detected');
       ed11yInit.ed11yCanSync = !window.location.href.includes('-new.php');
