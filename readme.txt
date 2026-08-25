@@ -1,8 +1,8 @@
 === Editoria11y Accessibility Checker ===
 Contributors: itmaybejj, partyka
 Tags: accessibility checker, automated testing, quality assurance, SEO
-Stable tag: 3.0.1
-Tested up to: 7.0
+Stable tag: 3.0.2
+Tested up to: 7.1
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -191,6 +191,9 @@ New feature development comes through by grants from academic institutions and c
 4. Checker set to dark theme, asking if the whole sentence needs to be in caps lock.
 
 == Changelog ==
+
+= 3.0.2 =
+* Fixes conflict where an ACF TinyMCE field would "steal" the checker observer from the main post body field.
 
 = 3.0.1 =
 * Allows dismissing certain manual checks site-wide (PDF alternatives, video captioning and developer tests outside the content area).
