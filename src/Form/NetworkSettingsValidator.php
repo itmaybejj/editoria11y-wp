@@ -161,14 +161,60 @@ class NetworkSettingsValidator {
 	 * @return array{values: array<string,mixed>, modes: array<string,string>}
 	 */
 	public static function mirror_main_tests_off( array $free_blob, array $posted ): array {
-		$state_post = isset( $posted['network_tests_state'] ) && is_array( $posted['network_tests_state'] )
-			? $posted['network_tests_state']
-			: null;
-		if ( null === $state_post ) {
+		if ( ! self::is_csa_mode_post( $posted ) ) {
 			return $free_blob;
 		}
-		$free_blob['values']['tests_off'] = TestStateNormalizer::from_csa_post( $state_post )['main_off'];
+		$free_blob['values']['tests_off'] = TestStateNormalizer::from_csa_post( $posted['network_tests_state'] )['main_off'];
 		return $free_blob;
+	}
+
+	/**
+	 * Whether the POST came from the CSA-mode rendering of the network form.
+	 *
+	 * The CSA-only fields (developer scan area, roles, developer
+	 * assertiveness, contrast ignore) and the 3-way test selects are all
+	 * registered behind the same `ed11y_is_csa_active()` gate, so the
+	 * `network_tests_state` array is present exactly when the CSA fields
+	 * were on the page. The free build never renders any of them.
+	 *
+	 * @param array<string,mixed> $posted Raw POST.
+	 */
+	public static function is_csa_mode_post( array $posted ): bool {
+		return isset( $posted['network_tests_state'] ) && is_array( $posted['network_tests_state'] );
+	}
+
+	/**
+	 * Keep the stored CSA blob when the form that was saved never rendered
+	 * the CSA fields.
+	 *
+	 * The network blobs are authored from scratch on every save, which is
+	 * right for a form that showed every field — but a free-mode render
+	 * (free build, or a CSA build whose license is not active on the
+	 * network admin's blog) shows none of the CSA fields, so an
+	 * unconditional write would wipe every CSA default and per-key lock
+	 * the super-admin authored while licensed. The one CSA entry that
+	 * free-mode form DOES render is the tests + roles bundle dropdown, so
+	 * its mode is taken from the new blob.
+	 *
+	 * @param array{values: array<string,mixed>, modes: array<string,string>} $old_csa  Previous CSA storage.
+	 * @param array{values: array<string,mixed>, modes: array<string,string>} $csa_blob Output of validate_csa().
+	 * @param array<string,mixed>                                             $posted   Raw POST.
+	 * @return array{values: array<string,mixed>, modes: array<string,string>}
+	 */
+	public static function keep_csa_storage_for_free_form( array $old_csa, array $csa_blob, array $posted ): array {
+		if ( self::is_csa_mode_post( $posted ) ) {
+			return $csa_blob;
+		}
+		$bundle_key = SettingsValidator::BUNDLE_LOCK_TESTS_AND_ROLES;
+		$modes      = $old_csa['modes'];
+		unset( $modes[ $bundle_key ] );
+		if ( isset( $csa_blob['modes'][ $bundle_key ] ) ) {
+			$modes[ $bundle_key ] = $csa_blob['modes'][ $bundle_key ];
+		}
+		return array(
+			'values' => $old_csa['values'],
+			'modes'  => $modes,
+		);
 	}
 
 	/**
