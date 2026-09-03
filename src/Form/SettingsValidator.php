@@ -160,94 +160,12 @@ class SettingsValidator {
 	}
 
 	/**
-	 * Apply CSA-mode test routing + dev-mode field sanitize, and side-
-	 * effect-write `ed11y_csa_plugin_settings`.
-	 *
-	 * Returns the updated main settings array (with `tests_off`
-	 * populated). CSA-specific `csa_settings` sub-array is consumed but
-	 * dropped from the returned array — `validate()` unsets it after
-	 * this returns regardless.
-	 *
-	 * @param array $settings Sanitized main settings, pre-routing.
-	 * @return array Same array with `tests_off` set.
-	 *
-	 * @SuppressWarnings(PHPMD.CyclomaticComplexity) Sequential input-shape guards (non-form / bundle-locked / full form); flattening would hide the state web.
-	 * @SuppressWarnings(PHPMD.UnusedPrivateMethod) The only call site sits inside an `is__premium_only()` gate; the free build strips the caller but keeps this method.
-	 */
-	private static function apply_csa_routing( array $settings ): array {
-		$has_state = isset( $settings['tests_state'] ) && is_array( $settings['tests_state'] );
-		$has_csa   = isset( $settings['csa_settings'] ) && is_array( $settings['csa_settings'] );
-
-		// Neither UI sub-array present → this is not a form save (it is the
-		// validator's own output on a double-sanitize, or a third-party
-		// `update_option()` call). Routing from an empty state used to empty
-		// all four test CSVs and reset the CSA blob to defaults; preserve
-		// the incoming/stored values and skip the side-effect write instead,
-		// so validate() is idempotent.
-		if ( ! $has_state && ! $has_csa ) {
-			if ( ! array_key_exists( 'tests_off', $settings ) ) {
-				$settings['tests_off'] = ed11y_get_raw_setting( 'tests_off' );
-			}
-			return $settings;
-		}
-
-		if ( $has_state ) {
-			$routed                = TestStateNormalizer::from_csa_post( $settings['tests_state'] );
-			$settings['tests_off'] = $routed['main_off'];
-			$csa_tests             = array(
-				'tests_off'     => $routed['csa_off'],
-				'tests_content' => $routed['csa_content'],
-				'tests_dev'     => $routed['csa_dev'],
-			);
-		} else {
-			// Bundle-locked form: the 3-way selects render disabled, so a
-			// legitimate save posts `csa_settings` but no `tests_state`.
-			// Leave the stored CSVs alone (the merge below preserves the
-			// existing blob values; enforce_network_csa_locks re-coerces the
-			// bundle-governed keys regardless).
-			if ( ! array_key_exists( 'tests_off', $settings ) ) {
-				$settings['tests_off'] = ed11y_get_raw_setting( 'tests_off' );
-			}
-			$csa_tests = array();
-		}
-
-		// `csa_settings` is the form's CSA dev-mode sub-array. A forged
-		// POST that includes it while CSA is INACTIVE never reaches this
-		// branch, so free-mode submits can't sneak past the gate.
-		$csa_post = $has_csa ? $settings['csa_settings'] : array();
-
-		$csa_storage = $csa_tests + array(
-			'dev_check_root'    => FieldSanitizer::sanitize_csa( 'dev_check_root', $csa_post['dev_check_root'] ?? '' ),
-			'specify_root'      => FieldSanitizer::sanitize_csa( 'specify_root', $csa_post['specify_root'] ?? '' ),
-			'always_ignore'     => FieldSanitizer::sanitize_csa( 'always_ignore', $csa_post['always_ignore'] ?? '' ),
-			'roles'             => RoleNormalizer::normalize( $csa_post['roles'] ?? array() ),
-			'dev_assertiveness' => FieldSanitizer::sanitize_csa( 'dev_assertiveness', $csa_post['dev_assertiveness'] ?? '' ),
-			'contrast_ignore'   => FieldSanitizer::sanitize_csa( 'contrast_ignore', $csa_post['contrast_ignore'] ?? '' ),
-		);
-
-		// Side-effect write — matches Drupal's `submitForm()`. The cache-bust
-		// hook on the CSA option fires automatically; one logical save can
-		// produce two version bumps, harmless because every browser fetches
-		// the fresh static payload exactly once either way.
-		$existing_csa = get_option( 'ed11y_csa_plugin_settings', array() );
-		if ( ! is_array( $existing_csa ) ) {
-			$existing_csa = array();
-		}
-		$merged_csa = array_merge( $existing_csa, $csa_storage );
-		$merged_csa = self::enforce_network_csa_locks( $merged_csa );
-
-		update_option( 'ed11y_csa_plugin_settings', $merged_csa );
-
-		return $settings;
-	}
-
-	/**
 	 * Coerce any locked-at-network keys back to their network-default value.
 	 *
 	 * Operates on the main-option array (the value WordPress is about to
 	 * write to `ed11y_plugin_settings`). CSA option locks are applied
-	 * separately in {@see enforce_network_csa_locks()} so the two option
-	 * lifecycles stay independent.
+	 * separately in {@see enforce_network_csa_locks__premium_only()} so
+	 * the two option lifecycles stay independent.
 	 *
 	 * @param array $settings Post-sanitize main settings.
 	 * @return array Same array with locked keys overwritten.
@@ -277,46 +195,5 @@ class SettingsValidator {
 			$settings['tests_off'] = $network['values']['tests_off'] ?? '';
 		}
 		return $settings;
-	}
-
-	/**
-	 * Coerce locked CSA keys back to their network-default values.
-	 *
-	 * Includes the bundle lock {@see BUNDLE_LOCK_TESTS_AND_ROLES}: when
-	 * set, coerces every key in {@see BUNDLE_LOCK_TESTS_AND_ROLES_KEYS}
-	 * to the network value as a unit, regardless of whether the bundle
-	 * key itself has a value (it is a synthetic lock with no own value).
-	 *
-	 * @param array $merged_csa Post-merge CSA settings about to be written.
-	 * @return array Same array with locked keys overwritten.
-	 */
-	private static function enforce_network_csa_locks( array $merged_csa ): array {
-		$network = ed11y_get_network_default_csa_settings_storage();
-		if ( empty( $network['modes'] ) ) {
-			return $merged_csa;
-		}
-
-		// Bundle lock first — covers tests + roles as one unit.
-		if ( ( $network['modes'][ self::BUNDLE_LOCK_TESTS_AND_ROLES ] ?? null ) === 'lock' ) {
-			foreach ( self::BUNDLE_LOCK_TESTS_AND_ROLES_KEYS as $csa_key ) {
-				// Empty network value still coerces under the bundle —
-				// the super-admin's "everyone gets the default set" is a
-				// valid configuration.
-				$merged_csa[ $csa_key ] = $network['values'][ $csa_key ] ?? '';
-			}
-		}
-
-		// Per-key locks (direct + subordinated). Iterate the sanitize
-		// registry so a key whose only lock is subordinated still gets
-		// coerced — the storage's `locked` map alone would miss it.
-		foreach ( FieldSanitizer::csa_keys() as $csa_key ) {
-			$effective = ed11y_effective_network_csa_lock( $csa_key );
-			if ( ! $effective['locked'] ) {
-				continue;
-			}
-			$merged_csa[ $csa_key ] = $effective['value'];
-		}
-
-		return $merged_csa;
 	}
 }

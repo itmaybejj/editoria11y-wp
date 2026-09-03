@@ -121,8 +121,13 @@ class Installer {
 	 * is network-activated; subsites still rely on the lazy check_tables()
 	 * calls in the runtime read paths (and in MigrationPanel) to seed their
 	 * own schema on first admin/editor request.
+	 *
+	 * On multisite, first collapses any duplicate Freemius `fs_accounts`
+	 * rows in wp_sitemeta (see NetworkOptionIntegrity) so activation on an
+	 * already-damaged network does not stall rewriting every copy.
 	 */
 	public static function activate(): void {
+		NetworkOptionIntegrity::repair_on_activate();
 		self::check_tables();
 	}
 
