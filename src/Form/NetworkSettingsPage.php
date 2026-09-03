@@ -520,17 +520,11 @@ class NetworkSettingsPage {
 		// can strip the premium-gated call sites from the free build —
 		// the strip script only removes the if-block form.
 		$old_free = ed11y_get_network_default_settings_storage();
-		$old_csa  = array(
-			'values' => array(),
-			'modes'  => array(),
-		);
+		$old_csa  = ed11y_get_network_default_csa_settings_storage();
 
 		$free_blob = NetworkSettingsValidator::validate_free( (array) $post );
-
-		$csa_blob = array(
-			'values' => array(),
-			'modes'  => array(),
-		);
+		$csa_blob  = NetworkSettingsValidator::validate_csa( (array) $post );
+		$free_blob = NetworkSettingsValidator::mirror_main_tests_off( $free_blob, (array) $post );
 
 		// Orphan validation: reject the save outright when a value changed
 		// but the matching propagation-mode dropdown is "No network
@@ -563,17 +557,26 @@ class NetworkSettingsPage {
 		}
 
 		update_site_option( 'ed11y_network_default_settings', $free_blob );
+		update_site_option( 'ed11y_network_default_csa_settings', $csa_blob );
 
 		// Queue the backfill — only `'all'`-mode keys whose value/mode
 		// actually changed end up in the dirty set. No-op when nothing
 		// changed.
 		try {
 			$main_dirty = NetworkDefaultsWorker::diff_dirty_keys( $old_free, $new_free_norm );
-			$csa_dirty  = array();
+			$csa_dirty  = NetworkDefaultsWorker::diff_dirty_keys( $old_csa, $new_csa_norm );
 
 			// Cross-blob bundle expansion: tests_off has destinations in
 			// both blobs, so it cannot be diffed by the per-blob walks
 			// above (the bundle mode lives only in CSA modes).
+			$bundle_dirty = NetworkDefaultsWorker::diff_bundle_dirty_keys(
+				$old_free,
+				$new_free_norm,
+				$old_csa,
+				$new_csa_norm
+			);
+			$main_dirty   = array_merge( $main_dirty, $bundle_dirty['main'] );
+			$csa_dirty    = array_merge( $csa_dirty, $bundle_dirty['csa'] );
 
 			NetworkDefaultsWorker::enqueue( $main_dirty, $csa_dirty );
 		} catch ( \Throwable $e ) {
