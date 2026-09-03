@@ -33,6 +33,7 @@ return array(
     'Editoria11y\\FreemiusOverrides' => $baseDir . '/src/FreemiusOverrides.php',
     'Editoria11y\\FreemiusPricingPage' => $baseDir . '/src/FreemiusPricingPage.php',
     'Editoria11y\\Installer' => $baseDir . '/src/Installer.php',
+    'Editoria11y\\NetworkOptionIntegrity' => $baseDir . '/src/NetworkOptionIntegrity.php',
     'Editoria11y\\Plugin' => $baseDir . '/src/Plugin.php',
     'Editoria11y\\TestNames' => $baseDir . '/src/TestNames.php',
     'Editoria11y\\UpdateHelpers' => $baseDir . '/src/UpdateHelpers.php',

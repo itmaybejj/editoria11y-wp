@@ -1,7 +1,7 @@
 === Editoria11y Accessibility Checker ===
 Contributors: itmaybejj, partyka
 Tags: accessibility checker, automated testing, quality assurance, SEO
-Stable tag: 3.0.2
+Stable tag: 3.0.3
 Tested up to: 7.1
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -191,6 +191,11 @@ New feature development comes through by grants from academic institutions and c
 4. Checker set to dark theme, asking if the whole sentence needs to be in caps lock.
 
 == Changelog ==
+
+= 3.0.3 =
+* Temporary workaround for WP core bug that can cause duplicate fs_accounts rows.
+* Add more WP block placeholder selectors to avoid alerting on interface components while editing.
+* Fallback compatibility for Safari 16.
 
 = 3.0.2 =
 * Fixes conflict where an ACF TinyMCE field would "steal" the checker observer from the main post body field.

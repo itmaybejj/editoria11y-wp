@@ -4,7 +4,7 @@
  *
  * Plugin Name:       Editoria11y Accessibility Checker
  * Plugin URI:        https://wordpress.org/plugins/editoria11y-accessibility-checker/
- * Version:           3.0.2
+ * Version:           3.0.3
  * Requires PHP:      7.4
  * Requires at least: 6.0
  * Tested up to:      7.1
@@ -152,6 +152,22 @@ if ( ! defined( 'ED11Y_BASE' ) ) {
 	define( 'ED11Y_BASE', plugin_basename( __FILE__ ) );
 	define( 'ED11Y_SRC', trailingslashit( plugin_dir_path( __FILE__ ) . 'src/' ) );
 	define( 'ED11Y_ASSETS', trailingslashit( plugin_dir_url( __FILE__ ) . 'assets/' ) );
+}
+
+/*
+ * Multisite guard for the SDK's network `fs_accounts` option.
+ *
+ * Registered BEFORE fs_dynamic_init() below so its read watcher is in
+ * place for the SDK's very first get_site_option('fs_accounts'). Both
+ * builds: the free build bundles the same SDK. See NetworkOptionIntegrity
+ * for the WordPress-core defect (blind INSERT into wp_sitemeta after a
+ * failed read) this closes.
+ */
+try {
+	\Editoria11y\NetworkOptionIntegrity::register();
+} catch ( \Throwable $e ) {
+	// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- one-shot diagnostic, gated by the catch arm above.
+	error_log( '[Editoria11y] NetworkOptionIntegrity::register() failed: ' . $e->getMessage() );
 }
 
 if ( ! function_exists( 'ed11ycsa' ) ) {

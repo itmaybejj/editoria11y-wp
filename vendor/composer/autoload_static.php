@@ -52,6 +52,7 @@ class ComposerStaticInit36cef893ec8edd1d2c416c66b742feb2
         'Editoria11y\\FreemiusOverrides' => __DIR__ . '/../..' . '/src/FreemiusOverrides.php',
         'Editoria11y\\FreemiusPricingPage' => __DIR__ . '/../..' . '/src/FreemiusPricingPage.php',
         'Editoria11y\\Installer' => __DIR__ . '/../..' . '/src/Installer.php',
+        'Editoria11y\\NetworkOptionIntegrity' => __DIR__ . '/../..' . '/src/NetworkOptionIntegrity.php',
         'Editoria11y\\Plugin' => __DIR__ . '/../..' . '/src/Plugin.php',
         'Editoria11y\\TestNames' => __DIR__ . '/../..' . '/src/TestNames.php',
         'Editoria11y\\UpdateHelpers' => __DIR__ . '/../..' . '/src/UpdateHelpers.php',
