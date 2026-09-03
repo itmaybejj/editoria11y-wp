@@ -492,6 +492,10 @@ final class NetworkDefaultsWorker {
 			if ( $old_value === $new_value ) {
 				continue;
 			}
+			// Prevent errors saving when new settings are being added and some defaults are still present.
+			if ( ! array_key_exists( $key, $old_main['values'] ) && $new_value === ed11y_get_default_options( $key ) ) {
+				continue;
+			}
 			$mode = $new_main['modes'][ $key ] ?? null;
 			if ( in_array( $mode, $propagating, true ) ) {
 				continue;
@@ -513,6 +517,10 @@ final class NetworkDefaultsWorker {
 			}
 			$old_value = $old_csa['values'][ $key ] ?? null;
 			if ( $old_value === $new_value ) {
+				continue;
+			}
+			// Prevent errors saving when new settings are being added and some defaults are still present.
+			if ( ! array_key_exists( $key, $old_csa['values'] ) && $new_value === ed11y_get_csa_default_options( $key ) ) {
 				continue;
 			}
 			$mode = $new_csa['modes'][ $key ] ?? null;
