@@ -1268,8 +1268,8 @@ msgid "Custom rules"
 msgstr "Tinkintosios taisyklės"
 
 #: src/Form/NetworkSettingsPage.php:140
-msgid "Heads up: \"Default for all sites\" and \"Override for all sites\" overwrite a site's current value whenever that value is still an Editoria11y default or a previous network default — including a per-site value that happens to match a default. Sites where an admin has chosen a different value are left untouched. \"Default for new sites\" only affects sites created from now on."
-msgstr "Atkreipkite dėmesį: parinktys „Numatytoji visoms svetainėms“ ir „Perrašyti visoms svetainėms“ perrašo svetainės esamą reikšmę, kai ta reikšmė tebėra „Editoria11y“ numatytoji arba ankstesnė tinklo numatytoji reikšmė — įskaitant atskiros svetainės reikšmę, kuri sutampa su numatytąja. Svetainės, kuriose administratorius pasirinko kitą reikšmę, paliekamos nepakeistos. „Numatytoji naujoms svetainėms“ turi įtakos tik svetainėms, kurios bus sukurtos nuo šiol."
+msgid "Heads up: \"Default for all sites\" and \"Override for all sites\" overwrite a site's current value whenever that value is still an Editoria11y default or a previous network default — including a per-site value that happens to match a default."
+msgstr "Atkreipkite dėmesį: parinktys „Numatytoji visoms svetainėms“ ir „Perrašyti visoms svetainėms“ perrašo svetainės esamą reikšmę, kai ta reikšmė tebėra „Editoria11y“ numatytoji arba ankstesnė tinklo numatytoji reikšmė — įskaitant atskiros svetainės reikšmę, kuri sutampa su numatytąja."
 
 #: src/Form/NetworkSettingsPage.php:176
 msgid "Editoria11y default or locked network settings"

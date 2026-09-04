@@ -46,19 +46,25 @@ defined( 'ABSPATH' ) || exit;
  *     - Reset cursor to 0 so already-visited sites get re-walked under the
  *       updated payload.
  *
- *   Why coalesce rather than a sequential queue: the multi-old approach
- *   handles the "admin made a typo, saves the correct value mid-run"
- *   cancellation case much more gracefully. With a sequential queue, the
- *   bad value reaches every site before the corrective job starts; with
- *   multi-old + cursor reset, only the already-visited prefix experiences
- *   the bad value, and the rest of the network skips it entirely because
- *   the `site_value === new_value` short-circuit in apply_dirty_to_option
- *   silently skips writes for sites already on the latest target.
+ *   The multi-old approach handles the "admin made a typo, saves a new
+ *   value mid-run" cancellation case gracefully; both values update.
  *
- *   Cap on the olds trail: 20 entries per key. Beyond that we drop the
- *   oldest — pathological "admin clicks save 20 times during a 50k-site
- *   backfill" territory; bounding the option size matters more than
- *   recovering from the 21st save.
+ * Durable history trail:
+ *   A run's `olds[]` only accumulates while that run is in flight, and
+ *   a small network finishes a run in one tick — so on its own the
+ *   in-run trail is one entry deep, and any site that misses a single
+ *   link (a value edited under "new sites only", a save that never
+ *   ran, an archived site) would look customized forever. The save
+ *   handler therefore also records every network value a key has ever
+ *   held ({@see record_history()}) in `ed11y_network_defaults_history`,
+ *   regardless of mode, and {@see enqueue()} folds that history into
+ *   each dirty key's `olds` for fresh runs and coalesces alike. A site
+ *   is "still tracking the network" if it holds ANY value the network
+ *   ever published for that key — which is what the network settings
+ *   page promises ({@see NetworkSettingsPage::propagation_help_text()}).
+ *
+ *   Cap on both trails: MAX_OLDS_PER_KEY entries per key, oldest
+ *   dropped first.
  *
  * Concurrency / state model:
  *   - State lives in a single network option `ed11y_network_defaults_backfill_state`.
@@ -97,6 +103,14 @@ final class NetworkDefaultsWorker {
 	/** Network option key storing the worker state machine. */
 	const OPTION_KEY = 'ed11y_network_defaults_backfill_state';
 
+	/**
+	 * Network option key storing the durable per-key trail of every value
+	 * the network has published. Deliberately separate from OPTION_KEY:
+	 * the run state is transient and {@see reset()} discards it; the
+	 * history must outlive every run or the orphaning bug returns.
+	 */
+	const HISTORY_OPTION_KEY = 'ed11y_network_defaults_history';
+
 	/** WP-Cron hook the backfill tick is registered against. */
 	const CRON_HOOK = 'ed11y_network_defaults_backfill';
 
@@ -109,7 +123,7 @@ final class NetworkDefaultsWorker {
 	/** Maximum per-blog errors retained in the state ring buffer. */
 	const MAX_ERRORS = 50;
 
-	/** Maximum length of the per-key `olds` trail. */
+	/** Maximum length of the per-key `olds` trail and of the durable history trail. */
 	const MAX_OLDS_PER_KEY = 20;
 
 	/** Default minimum seconds between ticks. */
@@ -123,6 +137,9 @@ final class NetworkDefaultsWorker {
 
 	/** CSA-option name (per-site CSA settings). */
 	const CSA_OPTION = 'ed11y_csa_plugin_settings';
+
+	/** Modes under which a network value reaches sites. */
+	const PROPAGATING_MODES = array( 'new', 'all', 'lock' );
 
 	/**
 	 * Register cron hook + site-creation hook. Called from editoria11y.php at
@@ -186,13 +203,10 @@ final class NetworkDefaultsWorker {
 	 */
 	public static function seed_current_blog(): void {
 		$main_storage = ed11y_get_network_default_settings_storage();
-		$csa_storage  = array(
-			'values' => array(),
-			'modes'  => array(),
-		);
-		if ( self::csa_active() ) {
-			$csa_storage = ed11y_get_network_default_csa_settings_storage();
-		}
+		// Read in BOTH builds: the bundle mode lives in the CSA blob but
+		// governs the main blob's `tests_off`, which the free build's
+		// network form authors (and propagates) too.
+		$csa_storage = ed11y_get_network_default_csa_settings_storage();
 
 		$seed_main = self::seed_values_for_storage( $main_storage );
 		$seed_csa  = self::csa_active()
@@ -201,12 +215,12 @@ final class NetworkDefaultsWorker {
 
 		// Cross-blob bundle expansion: tests_off has a destination in
 		// BOTH blobs (the routed-main and routed-csa values differ — see
-		// {@see TestStateNormalizer::from_csa_post()}). The bundle mode
-		// itself is read from the CSA blob.
+		// {@see TestStateNormalizer::from_csa_post()}). The main half
+		// seeds regardless of build; the CSA half only when CSA exists.
+		$bundle_seed = self::seed_bundle_for_storages( $main_storage, $csa_storage );
+		$seed_main   = array_merge( $seed_main, $bundle_seed['main'] );
 		if ( self::csa_active() ) {
-			$bundle_seed = self::seed_bundle_for_storages( $main_storage, $csa_storage );
-			$seed_main   = array_merge( $seed_main, $bundle_seed['main'] );
-			$seed_csa    = array_merge( $seed_csa, $bundle_seed['csa'] );
+			$seed_csa = array_merge( $seed_csa, $bundle_seed['csa'] );
 		}
 
 		if ( empty( $seed_main ) && empty( $seed_csa ) ) {
@@ -438,6 +452,17 @@ final class NetworkDefaultsWorker {
 	 * itself surfaces as a single orphan entry (using its dropdown label)
 	 * rather than four duplicates.
 	 *
+	 * Default-valued keys are never orphans. Selects and radios have no
+	 * blank option, so an untouched network form posts the hardcoded
+	 * default for every choice field on every save; and a stored value
+	 * equal to the default with no mode IS the "no network default"
+	 * state — nothing is stranded by saving it. Without this exemption a
+	 * fresh network could never save the page at all, and an inert value
+	 * could never be set back to the default without choosing a mode.
+	 * The bundle applies the same rule against what an untouched CSA-mode
+	 * form posts ({@see TestStateNormalizer::default_csa_routing()} and
+	 * the default roles, compared as a set).
+	 *
 	 * Returns a list of human-readable labels for the offending keys, in
 	 * the order they were detected.
 	 *
@@ -446,91 +471,132 @@ final class NetworkDefaultsWorker {
 	 * @param array{values: array<string,mixed>, modes: array<string,string>} $old_csa  Previous CSA storage.
 	 * @param array{values: array<string,mixed>, modes: array<string,string>} $new_csa  New CSA storage.
 	 * @return array<int,string>
-	 *
-	 * @SuppressWarnings(PHPMD.CyclomaticComplexity) Bundle branch + two per-blob loops with mode + value-change gates; flattening would obscure the read.
 	 */
 	public static function detect_orphan_changed_keys( array $old_main, array $new_main, array $old_csa, array $new_csa ): array {
-		$bundle_key          = SettingsValidator::BUNDLE_LOCK_TESTS_AND_ROLES;
-		$bundle_keys         = SettingsValidator::BUNDLE_LOCK_TESTS_AND_ROLES_KEYS;
-		$propagating         = array( 'new', 'all', 'lock' );
-		$orphans             = array();
-		$new_bundle_mode     = $new_csa['modes'][ $bundle_key ] ?? null;
-		$bundle_unconfigured = ! in_array( $new_bundle_mode, $propagating, true );
+		$bundle_key  = SettingsValidator::BUNDLE_LOCK_TESTS_AND_ROLES;
+		$bundle_keys = SettingsValidator::BUNDLE_LOCK_TESTS_AND_ROLES_KEYS;
+		$orphans     = array();
 
-		if ( $bundle_unconfigured ) {
-			$bundle_changed = false;
-			$main_off_old   = $old_main['values']['tests_off'] ?? null;
-			$main_off_new   = $new_main['values']['tests_off'] ?? null;
-			if ( $main_off_old !== $main_off_new && '' !== $main_off_new && null !== $main_off_new ) {
-				$bundle_changed = true;
-			}
-			if ( ! $bundle_changed ) {
-				foreach ( $bundle_keys as $key ) {
-					$csa_old = $old_csa['values'][ $key ] ?? null;
-					$csa_new = $new_csa['values'][ $key ] ?? null;
-					if ( $csa_old !== $csa_new && '' !== $csa_new && null !== $csa_new ) {
-						$bundle_changed = true;
-						break;
-					}
-				}
-			}
-			if ( $bundle_changed ) {
-				$orphans[] = __( 'Tests + roles assignment', 'editoria11y' );
-			}
+		$new_bundle_mode = $new_csa['modes'][ $bundle_key ] ?? null;
+		if (
+			! in_array( $new_bundle_mode, self::PROPAGATING_MODES, true )
+			&& self::bundle_values_changed( $old_main, $new_main, $old_csa, $new_csa )
+		) {
+			$orphans[] = __( 'Tests + roles assignment', 'editoria11y' );
 		}
 
-		// Main-blob per-key orphan check (skip bundle-governed keys —
-		// covered by the bundle branch above).
-		foreach ( $new_main['values'] as $key => $new_value ) {
-			if ( in_array( $key, $bundle_keys, true ) ) {
-				continue;
-			}
-			if ( '' === $new_value || null === $new_value ) {
-				continue;
-			}
-			$old_value = $old_main['values'][ $key ] ?? null;
-			if ( $old_value === $new_value ) {
-				continue;
-			}
-			// Prevent errors saving when new settings are being added and some defaults are still present.
-			if ( ! array_key_exists( $key, $old_main['values'] ) && $new_value === ed11y_get_default_options( $key ) ) {
-				continue;
-			}
-			$mode = $new_main['modes'][ $key ] ?? null;
-			if ( in_array( $mode, $propagating, true ) ) {
-				continue;
-			}
-			$orphans[] = (string) $key;
-		}
-
-		// CSA-blob per-key orphan check (skip the bundle key + governed
-		// keys).
-		foreach ( $new_csa['values'] as $key => $new_value ) {
-			if ( $key === $bundle_key ) {
-				continue;
-			}
-			if ( in_array( $key, $bundle_keys, true ) ) {
-				continue;
-			}
-			if ( '' === $new_value || null === $new_value ) {
-				continue;
-			}
-			$old_value = $old_csa['values'][ $key ] ?? null;
-			if ( $old_value === $new_value ) {
-				continue;
-			}
-			// Prevent errors saving when new settings are being added and some defaults are still present.
-			if ( ! array_key_exists( $key, $old_csa['values'] ) && $new_value === ed11y_get_csa_default_options( $key ) ) {
-				continue;
-			}
-			$mode = $new_csa['modes'][ $key ] ?? null;
-			if ( in_array( $mode, $propagating, true ) ) {
-				continue;
-			}
-			$orphans[] = (string) $key;
-		}
+		// Per-key checks skip the bundle-governed keys (covered above) and,
+		// on the CSA side, the synthetic bundle key itself.
+		$main_defaults = ed11y_get_default_options();
+		$csa_defaults  = ed11y_get_csa_default_options();
+		$orphans       = array_merge(
+			$orphans,
+			self::orphan_keys_in_blob(
+				$old_main,
+				$new_main,
+				is_array( $main_defaults ) ? $main_defaults : array(),
+				$bundle_keys
+			),
+			self::orphan_keys_in_blob(
+				$old_csa,
+				$new_csa,
+				is_array( $csa_defaults ) ? $csa_defaults : array(),
+				array_merge( array( $bundle_key ), $bundle_keys )
+			)
+		);
 
 		return array_values( array_unique( $orphans ) );
+	}
+
+	/**
+	 * Per-blob half of {@see detect_orphan_changed_keys()}: keys whose
+	 * non-empty, non-default value changed while their mode does not
+	 * propagate.
+	 *
+	 * @param array{values: array<string,mixed>, modes: array<string,string>} $old_blob  Previous blob storage.
+	 * @param array{values: array<string,mixed>, modes: array<string,string>} $new_blob  New blob storage.
+	 * @param array<string,mixed>                                             $defaults  Hardcoded defaults for this blob.
+	 * @param array<int,string>                                               $skip_keys Keys governed elsewhere.
+	 * @return array<int,string>
+	 *
+	 * @SuppressWarnings(PHPMD.CyclomaticComplexity) Single loop of sequential continue gates; flattening would obscure the read.
+	 */
+	private static function orphan_keys_in_blob( array $old_blob, array $new_blob, array $defaults, array $skip_keys ): array {
+		$orphans = array();
+		foreach ( $new_blob['values'] as $key => $new_value ) {
+			if ( in_array( $key, $skip_keys, true ) ) {
+				continue;
+			}
+			if ( '' === $new_value || null === $new_value ) {
+				continue;
+			}
+			$old_value = $old_blob['values'][ $key ] ?? null;
+			if ( $old_value === $new_value ) {
+				continue;
+			}
+			$mode = $new_blob['modes'][ $key ] ?? null;
+			if ( in_array( $mode, self::PROPAGATING_MODES, true ) ) {
+				continue;
+			}
+			if ( array_key_exists( $key, $defaults ) && $defaults[ $key ] === $new_value ) {
+				continue;
+			}
+			$orphans[] = (string) $key;
+		}
+		return $orphans;
+	}
+
+	/**
+	 * Whether any bundle-governed value changed to something other than
+	 * empty or what an untouched CSA-mode form posts.
+	 *
+	 * @param array{values: array<string,mixed>, modes: array<string,string>} $old_main Previous main storage.
+	 * @param array{values: array<string,mixed>, modes: array<string,string>} $new_main New main storage.
+	 * @param array{values: array<string,mixed>, modes: array<string,string>} $old_csa  Previous CSA storage.
+	 * @param array{values: array<string,mixed>, modes: array<string,string>} $new_csa  New CSA storage.
+	 */
+	private static function bundle_values_changed( array $old_main, array $new_main, array $old_csa, array $new_csa ): bool {
+		$main_off_old = $old_main['values']['tests_off'] ?? null;
+		$main_off_new = $new_main['values']['tests_off'] ?? null;
+		if ( $main_off_old !== $main_off_new && '' !== $main_off_new && null !== $main_off_new ) {
+			return true;
+		}
+		foreach ( SettingsValidator::BUNDLE_LOCK_TESTS_AND_ROLES_KEYS as $key ) {
+			$csa_old = $old_csa['values'][ $key ] ?? null;
+			$csa_new = $new_csa['values'][ $key ] ?? null;
+			if ( $csa_old === $csa_new || '' === $csa_new || null === $csa_new ) {
+				continue;
+			}
+			if ( self::is_untouched_bundle_value( $key, $csa_new ) ) {
+				continue;
+			}
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Whether a posted CSA bundle value is exactly what the untouched
+	 * form posts for that key.
+	 *
+	 * @param string $key   One of the bundle-governed CSA keys.
+	 * @param mixed  $value Sanitized posted value.
+	 */
+	private static function is_untouched_bundle_value( string $key, $value ): bool {
+		if ( 'roles' === $key ) {
+			$default_roles = ed11y_get_csa_default_options( 'roles' );
+			return is_string( $default_roles ) && RoleNormalizer::same_set( (string) $value, $default_roles );
+		}
+		$routing_keys = array(
+			'tests_off'     => 'csa_off',
+			'tests_content' => 'csa_content',
+			'tests_dev'     => 'csa_dev',
+		);
+		if ( ! isset( $routing_keys[ $key ] ) ) {
+			return false;
+		}
+		$routing = TestStateNormalizer::default_csa_routing();
+		return $routing[ $routing_keys[ $key ] ] === $value;
 	}
 
 	/**
@@ -664,6 +730,11 @@ final class NetworkDefaultsWorker {
 	 *     the updated payload. (Sites already on the latest value short-
 	 *     circuit in apply_dirty_to_option, so the re-walk is cheap.)
 	 *
+	 * In both branches every dirty key's `olds` is merged with the
+	 * durable history for that key ({@see record_history()}), so the
+	 * "still tracking" check covers every value the network ever
+	 * published — not just the one the previous save overwrote.
+	 *
 	 * @param array<string, array{old:mixed,new:mixed}> $main_dirty Dirty main-option keys.
 	 * @param array<string, array{old:mixed,new:mixed}> $csa_dirty  Dirty CSA-option keys.
 	 */
@@ -671,11 +742,12 @@ final class NetworkDefaultsWorker {
 		if ( empty( $main_dirty ) && empty( $csa_dirty ) ) {
 			return;
 		}
-		$state = self::get_state();
+		$state   = self::get_state();
+		$history = self::get_history();
 
 		if ( 'running' === $state['status'] ) {
-			$state['main_dirty'] = self::coalesce_dirty( (array) $state['main_dirty'], $main_dirty );
-			$state['csa_dirty']  = self::coalesce_dirty( (array) $state['csa_dirty'], $csa_dirty );
+			$state['main_dirty'] = self::coalesce_dirty( (array) $state['main_dirty'], $main_dirty, $history['main'] );
+			$state['csa_dirty']  = self::coalesce_dirty( (array) $state['csa_dirty'], $csa_dirty, $history['csa'] );
 			// Refresh hardcoded snapshots so any concurrent code change is
 			// reflected on the re-walk; cheap and correct.
 			$state['main_hardcoded'] = self::hardcoded_main_defaults();
@@ -689,8 +761,8 @@ final class NetworkDefaultsWorker {
 		// Fresh run.
 		$state                   = self::default_state();
 		$state['status']         = 'running';
-		$state['main_dirty']     = self::seed_olds_trail( $main_dirty );
-		$state['csa_dirty']      = self::seed_olds_trail( $csa_dirty );
+		$state['main_dirty']     = self::seed_olds_trail( $main_dirty, $history['main'] );
+		$state['csa_dirty']      = self::seed_olds_trail( $csa_dirty, $history['csa'] );
 		$state['main_hardcoded'] = self::hardcoded_main_defaults();
 		$state['csa_hardcoded']  = self::hardcoded_csa_defaults();
 		$state                   = self::reset_walk_progress( $state );
@@ -707,21 +779,53 @@ final class NetworkDefaultsWorker {
 	 * olds trail is never just `[null]` — the "site value is absent"
 	 * branch of apply_dirty_to_option already covers that case.
 	 *
-	 * @param array<string, array{old:mixed,new:mixed,force?:bool}> $dirty Save-handler input.
+	 * @param array<string, array{old:mixed,new:mixed,force?:bool}> $dirty   Save-handler input.
+	 * @param array<string, array<int,mixed>>                       $history Durable per-key trail for this blob.
 	 * @return array<string, array{olds:array<int,mixed>, new:mixed, force:bool}>
 	 */
-	private static function seed_olds_trail( array $dirty ): array {
+	private static function seed_olds_trail( array $dirty, array $history ): array {
 		$out = array();
 		foreach ( $dirty as $key => $entry ) {
 			$old         = $entry['old'] ?? null;
 			$new         = $entry['new'] ?? null;
 			$out[ $key ] = array(
-				'olds'  => ( null === $old ) ? array() : array( $old ),
+				'olds'  => self::fold_history_into_olds(
+					( null === $old ) ? array() : array( $old ),
+					$history[ $key ] ?? array(),
+					$new
+				),
 				'new'   => $new,
 				'force' => ! empty( $entry['force'] ),
 			);
 		}
 		return $out;
+	}
+
+	/**
+	 * Union a key's in-run `olds` with its durable history, minus the
+	 * value now being published, capped at MAX_OLDS_PER_KEY (oldest
+	 * history first so the cap drops the least recent values).
+	 *
+	 * The `new` value is excluded only for tidiness — a site already on
+	 * it short-circuits in {@see apply_dirty_to_option()} regardless.
+	 *
+	 * @param array<int,mixed> $olds      Trail built from the save-handler `old` values.
+	 * @param array<int,mixed> $history   Every value the network has stored for this key.
+	 * @param mixed            $new_value Value being published.
+	 * @return array<int,mixed>
+	 */
+	private static function fold_history_into_olds( array $olds, array $history, $new_value ): array {
+		$merged = array();
+		foreach ( array_merge( $history, $olds ) as $value ) {
+			if ( null === $value || $value === $new_value || in_array( $value, $merged, true ) ) {
+				continue;
+			}
+			$merged[] = $value;
+		}
+		if ( count( $merged ) > self::MAX_OLDS_PER_KEY ) {
+			$merged = array_slice( $merged, -self::MAX_OLDS_PER_KEY );
+		}
+		return array_values( $merged );
 	}
 
 	/**
@@ -735,40 +839,169 @@ final class NetworkDefaultsWorker {
 	 *   - Else: add a fresh entry with the incoming `old` as the sole
 	 *     olds element.
 	 *
+	 * Either way the result is merged with the key's durable history via
+	 * {@see fold_history_into_olds()}.
+	 *
 	 * @param array<string, array{olds:array<int,mixed>, new:mixed, force:bool}> $existing Running job's dirty map.
 	 * @param array<string, array{old:mixed,new:mixed,force?:bool}>              $incoming New save's dirty map.
+	 * @param array<string, array<int,mixed>>                                    $history  Durable per-key trail for this blob.
 	 * @return array<string, array{olds:array<int,mixed>, new:mixed, force:bool}>
 	 */
-	private static function coalesce_dirty( array $existing, array $incoming ): array {
+	private static function coalesce_dirty( array $existing, array $incoming, array $history ): array {
 		foreach ( $incoming as $key => $entry ) {
 			$incoming_old   = $entry['old'] ?? null;
 			$incoming_new   = $entry['new'] ?? null;
 			$incoming_force = ! empty( $entry['force'] );
+			$key_history    = $history[ $key ] ?? array();
 			if ( ! isset( $existing[ $key ] ) ) {
 				$existing[ $key ] = array(
-					'olds'  => ( null === $incoming_old ) ? array() : array( $incoming_old ),
+					'olds'  => self::fold_history_into_olds(
+						( null === $incoming_old ) ? array() : array( $incoming_old ),
+						$key_history,
+						$incoming_new
+					),
 					'new'   => $incoming_new,
 					'force' => $incoming_force,
 				);
 				continue;
 			}
 			$olds = is_array( $existing[ $key ]['olds'] ?? null ) ? $existing[ $key ]['olds'] : array();
-			if ( null !== $incoming_old && ! in_array( $incoming_old, $olds, true ) ) {
+			if ( null !== $incoming_old ) {
 				$olds[] = $incoming_old;
-			}
-			if ( count( $olds ) > self::MAX_OLDS_PER_KEY ) {
-				$olds = array_slice( $olds, -self::MAX_OLDS_PER_KEY );
 			}
 			// Lock supersedes once latched — a mid-run incoming lock save
 			// upgrades the in-flight run to force-write for that key.
 			$existing_force   = ! empty( $existing[ $key ]['force'] );
 			$existing[ $key ] = array(
-				'olds'  => array_values( $olds ),
+				'olds'  => self::fold_history_into_olds( $olds, $key_history, $incoming_new ),
 				'new'   => $incoming_new,
 				'force' => $existing_force || $incoming_force,
 			);
 		}
 		return $existing;
+	}
+
+	/* ===== Durable history trail ===== */
+
+	/**
+	 * Record every network value that changed in this save into the
+	 * durable per-key history — old and new, for both blobs, regardless
+	 * of propagation mode.
+	 *
+	 * Called by {@see NetworkSettingsPage::save_from_post()} after the new
+	 * blobs are written and before {@see enqueue()}. Mode is deliberately
+	 * ignored: a value published under "new sites only" was still seeded
+	 * into the sites created while it stood, and a value later switched to
+	 * "all" must recognize those sites as tracking the network.
+	 *
+	 * Both the old and the new value are recorded so the trail is
+	 * "every value ever stored" even when recording began mid-life (the
+	 * first save after upgrading from a build without a history records
+	 * the value sites are currently on).
+	 *
+	 * Absent keys (`null`) are never recorded — the "site value is absent"
+	 * branch of {@see apply_dirty_to_option()} already covers that case.
+	 * An empty string IS recorded: an empty network value is what an
+	 * unset default looks like in storage, and a site holding `''` reads
+	 * back as the hardcoded default, which the overwrite rule treats as
+	 * "still tracking".
+	 *
+	 * @param array{values: array<string,mixed>, modes: array<string,string>} $old_main Previous main storage.
+	 * @param array{values: array<string,mixed>, modes: array<string,string>} $new_main New main storage.
+	 * @param array{values: array<string,mixed>, modes: array<string,string>} $old_csa  Previous CSA storage.
+	 * @param array{values: array<string,mixed>, modes: array<string,string>} $new_csa  New CSA storage.
+	 */
+	public static function record_history( array $old_main, array $new_main, array $old_csa, array $new_csa ): void {
+		$history = self::get_history();
+		$main    = self::append_history_for_blob( $history['main'], $old_main, $new_main );
+		$csa     = self::append_history_for_blob( $history['csa'], $old_csa, $new_csa );
+		if ( $main === $history['main'] && $csa === $history['csa'] ) {
+			return;
+		}
+		update_site_option(
+			self::HISTORY_OPTION_KEY,
+			array(
+				'main' => $main,
+				'csa'  => $csa,
+			)
+		);
+	}
+
+	/**
+	 * Per-blob half of {@see record_history()}: for each key whose value
+	 * differs between the two blobs, append the old then the new value to
+	 * that key's trail (de-duplicated, capped at MAX_OLDS_PER_KEY, oldest
+	 * dropped first).
+	 *
+	 * @param array<string, array<int,mixed>>                                 $trail    Existing per-key trail for this blob.
+	 * @param array{values: array<string,mixed>, modes: array<string,string>} $old_blob Previous blob storage.
+	 * @param array{values: array<string,mixed>, modes: array<string,string>} $new_blob New blob storage.
+	 * @return array<string, array<int,mixed>>
+	 */
+	private static function append_history_for_blob( array $trail, array $old_blob, array $new_blob ): array {
+		$old_values = is_array( $old_blob['values'] ?? null ) ? $old_blob['values'] : array();
+		$new_values = is_array( $new_blob['values'] ?? null ) ? $new_blob['values'] : array();
+		$keys       = array_unique( array_merge( array_keys( $old_values ), array_keys( $new_values ) ) );
+		foreach ( $keys as $key ) {
+			$old = $old_values[ $key ] ?? null;
+			$new = $new_values[ $key ] ?? null;
+			if ( $old === $new ) {
+				continue;
+			}
+			$values = $trail[ $key ] ?? array();
+			foreach ( array( $old, $new ) as $value ) {
+				if ( null === $value ) {
+					continue;
+				}
+				// Re-publishing a value already in the trail moves it to
+				// the "most recent" end so the cap never evicts it first.
+				$position = array_search( $value, $values, true );
+				if ( false !== $position ) {
+					array_splice( $values, (int) $position, 1 );
+				}
+				$values[] = $value;
+			}
+			if ( count( $values ) > self::MAX_OLDS_PER_KEY ) {
+				$values = array_slice( $values, -self::MAX_OLDS_PER_KEY );
+			}
+			$trail[ $key ] = array_values( $values );
+		}
+		return $trail;
+	}
+
+	/**
+	 * Read the durable history, validated to the canonical
+	 * `{main: key => list, csa: key => list}` shape.
+	 *
+	 * Corrupt or partial storage (a manual edit, a non-array subkey, a
+	 * non-list trail) falls back to empty rather than fataling the save
+	 * path — losing the trail degrades to the pre-history behavior, which
+	 * is strictly better than a broken network settings page.
+	 *
+	 * @return array{main: array<string, array<int,mixed>>, csa: array<string, array<int,mixed>>}
+	 */
+	public static function get_history(): array {
+		$raw = get_site_option( self::HISTORY_OPTION_KEY, null );
+		$out = array(
+			'main' => array(),
+			'csa'  => array(),
+		);
+		if ( ! is_array( $raw ) ) {
+			return $out;
+		}
+		foreach ( array( 'main', 'csa' ) as $blob ) {
+			$trail = $raw[ $blob ] ?? null;
+			if ( ! is_array( $trail ) ) {
+				continue;
+			}
+			foreach ( $trail as $key => $values ) {
+				if ( ! is_string( $key ) || ! is_array( $values ) ) {
+					continue;
+				}
+				$out[ $blob ][ $key ] = array_values( $values );
+			}
+		}
+		return $out;
 	}
 
 	/**

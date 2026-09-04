@@ -1268,8 +1268,8 @@ msgid "Custom rules"
 msgstr "Egyéni szabályok"
 
 #: src/Form/NetworkSettingsPage.php:140
-msgid "Heads up: \"Default for all sites\" and \"Override for all sites\" overwrite a site's current value whenever that value is still an Editoria11y default or a previous network default — including a per-site value that happens to match a default. Sites where an admin has chosen a different value are left untouched. \"Default for new sites\" only affects sites created from now on."
-msgstr "Figyelem: az „Alapértelmezés minden webhelyhez” és a „Felülírás minden webhelyen” felülírja egy webhely aktuális értékét, amennyiben az érték még mindig egy Editoria11y-alapérték vagy egy korábbi hálózati alapérték — ideértve azt is, ha egy webhelyspecifikus érték véletlenül megegyezik egy alapértékkel. Azok a webhelyek, ahol egy adminisztrátor eltérő értéket választott, érintetlenül maradnak. Az „Alapértelmezés az új webhelyekhez” csak az ezt követően létrehozott webhelyekre vonatkozik."
+msgid "Heads up: \"Default for all sites\" and \"Override for all sites\" overwrite a site's current value whenever that value is still an Editoria11y default or a previous network default — including a per-site value that happens to match a default."
+msgstr "Figyelem: az „Alapértelmezés minden webhelyhez” és a „Felülírás minden webhelyen” felülírja egy webhely aktuális értékét, amennyiben az érték még mindig egy Editoria11y-alapérték vagy egy korábbi hálózati alapérték — ideértve azt is, ha egy webhelyspecifikus érték véletlenül megegyezik egy alapértékkel."
 
 #: src/Form/NetworkSettingsPage.php:176
 msgid "Editoria11y default or locked network settings"

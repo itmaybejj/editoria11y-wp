@@ -181,6 +181,7 @@ class Installer {
 		delete_site_option( 'ed11y_network_custom_rules' );
 		delete_site_option( 'ed11ycsa_network_license_state' );
 		delete_site_option( 'ed11y_network_defaults_backfill_state' );
+		delete_site_option( 'ed11y_network_defaults_history' );
 		// Pre-3.0 builds cached the payload in a (network-scoped) site
 		// transient; clear that legacy key too.
 		delete_site_transient( 'editoria11y_settings' );

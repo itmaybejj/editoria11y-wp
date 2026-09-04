@@ -1268,8 +1268,8 @@ msgid "Custom rules"
 msgstr "Regras personalizadas"
 
 #: src/Form/NetworkSettingsPage.php:140
-msgid "Heads up: \"Default for all sites\" and \"Override for all sites\" overwrite a site's current value whenever that value is still an Editoria11y default or a previous network default — including a per-site value that happens to match a default. Sites where an admin has chosen a different value are left untouched. \"Default for new sites\" only affects sites created from now on."
-msgstr "Atenção: “Predefinição para todos os sites” e “Substituir em todos os sites” substituem o valor atual de um site sempre que esse valor ainda corresponda a uma predefinição do Editoria11y ou a uma predefinição de rede anterior — incluindo um valor por site que coincida com uma predefinição. Os sites onde um administrador tenha escolhido um valor diferente permanecem inalterados. “Predefinição para novos sites” só afeta sites criados a partir de agora."
+msgid "Heads up: \"Default for all sites\" and \"Override for all sites\" overwrite a site's current value whenever that value is still an Editoria11y default or a previous network default — including a per-site value that happens to match a default."
+msgstr "Atenção: “Predefinição para todos os sites” e “Substituir em todos os sites” substituem o valor atual de um site sempre que esse valor ainda corresponda a uma predefinição do Editoria11y ou a uma predefinição de rede anterior — incluindo um valor por site que coincida com uma predefinição."
 
 #: src/Form/NetworkSettingsPage.php:176
 msgid "Editoria11y default or locked network settings"

@@ -71,6 +71,28 @@ final class TestStateNormalizer {
 	}
 
 	/**
+	 * The four CSV strings an UNTOUCHED CSA-mode form posts.
+	 *
+	 * The 3-way selects have no blank option, so a never-authored form
+	 * still posts a state for every test: the renderer's default routing
+	 * (content tests → everyone, everything else → developers). Callers
+	 * that need to tell "the admin routed tests" apart from "the form
+	 * posted its defaults" — the network orphan gate in
+	 * {@see NetworkDefaultsWorker::detect_orphan_changed_keys()} — compare
+	 * against this instead of the stored defaults, which are all empty.
+	 *
+	 * @return array{main_off:string, csa_off:string, csa_content:string, csa_dev:string}
+	 */
+	public static function default_csa_routing(): array {
+		$content_tests = TestNames::content_tests();
+		$state         = array();
+		foreach ( array_keys( TestNames::core_names() ) as $key ) {
+			$state[ $key ] = in_array( $key, $content_tests, true ) ? 'everyone' : 'developers';
+		}
+		return self::from_csa_post( $state );
+	}
+
+	/**
 	 * Convert a free-mode `tests_enabled` POST into the main `tests_off` CSV.
 	 *
 	 * Inverted-polarity semantics: checked = enabled, unchecked = in
