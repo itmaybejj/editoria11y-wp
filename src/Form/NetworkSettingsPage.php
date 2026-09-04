@@ -126,16 +126,22 @@ class NetworkSettingsPage {
 	 *
 	 * The backfill decides whether a site is "still tracking the network"
 	 * by VALUE EQUALITY — it overwrites a site's stored value when that
-	 * value is absent, equals a previous network default, or equals the
-	 * hardcoded Editoria11y default (see
+	 * value is absent, equals ANY previous network default (the worker's
+	 * durable history — {@see NetworkDefaultsWorker::record_history()}),
+	 * or equals the hardcoded Editoria11y default (see
 	 * {@see NetworkDefaultsWorker::apply_dirty_to_option()}). A per-site
 	 * value that coincides with a default is therefore replaced. We do not
 	 * track per-site "locally-owned" intent, so this surface warns admins
 	 * of the overwrite rule rather than silently applying it.
+	 *
+	 * Deliberately says nothing about customized sites being "left
+	 * untouched": that is true for "Default for all sites" but not for
+	 * "Override for all sites", which force-writes and overlays at read
+	 * time regardless of the site's value.
 	 */
 	public static function propagation_help_text(): string {
 		return __(
-			'Heads up: "Default for all sites" and "Override for all sites" overwrite a site\'s current value whenever that value is still an Editoria11y default or a previous network default — including a per-site value that happens to match a default. Sites where an admin has chosen a different value are left untouched. "Default for new sites" only affects sites created from now on.',
+			'Heads up: "Default for all sites" and "Override for all sites" overwrite a site\'s current value whenever that value is still an Editoria11y default or a previous network default — including a per-site value that happens to match a default.',
 			'editoria11y'
 		);
 	}
@@ -550,9 +556,14 @@ class NetworkSettingsPage {
 	 * Backfill: before writing the new network blobs, we snapshot the
 	 * previous storage so {@see NetworkDefaultsWorker::diff_dirty_keys()}
 	 * can compute which `'all'`-mode keys changed and which previous values
-	 * an existing site might still be tracking. The worker uses both
-	 * (previous network value AND hardcoded default) when deciding whether
-	 * to overwrite a per-site stored value — see the worker class docblock.
+	 * an existing site might still be tracking. Every changed value is
+	 * also recorded in the worker's durable history
+	 * ({@see NetworkDefaultsWorker::record_history()}) — mode-agnostic, so
+	 * a value published under "new sites only" is still recognized once
+	 * the key is later switched to "all". The worker uses all three
+	 * (any previous network value, the durable history, AND the hardcoded
+	 * default) when deciding whether to overwrite a per-site stored value
+	 * — see the worker class docblock.
 	 *
 	 * Split out of {@see handle_save()} so the pipeline can be exercised
 	 * without nonce / redirect / exit plumbing.
@@ -609,6 +620,10 @@ class NetworkSettingsPage {
 		$main_dirty = array();
 		$csa_dirty  = array();
 		try {
+			// Record BEFORE diffing so the history is intact even if the
+			// diff / enqueue below throws — the next save will still see
+			// every value the network has held.
+			NetworkDefaultsWorker::record_history( $old_free, $new_free_norm, $old_csa, $new_csa_norm );
 			$main_dirty = NetworkDefaultsWorker::diff_dirty_keys( $old_free, $new_free_norm );
 			$csa_dirty  = NetworkDefaultsWorker::diff_dirty_keys( $old_csa, $new_csa_norm );
 			// Cross-blob bundle expansion: tests_off has destinations in

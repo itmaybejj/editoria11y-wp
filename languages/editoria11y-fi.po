@@ -1268,8 +1268,8 @@ msgid "Custom rules"
 msgstr "Mukautetut säännöt"
 
 #: src/Form/NetworkSettingsPage.php:140
-msgid "Heads up: \"Default for all sites\" and \"Override for all sites\" overwrite a site's current value whenever that value is still an Editoria11y default or a previous network default — including a per-site value that happens to match a default. Sites where an admin has chosen a different value are left untouched. \"Default for new sites\" only affects sites created from now on."
-msgstr "Huomio: \"Oletus kaikille sivustoille\" ja \"Ylikirjoita kaikille sivustoille\" korvaavat sivuston nykyisen arvon aina, kun arvo on edelleen Editoria11y:n oletus tai aiempi verkon oletus — mukaan lukien sivustokohtainen arvo, joka sattuu vastaamaan oletusta. Sivustot, joilla ylläpitäjä on valinnut toisen arvon, jätetään koskemattomiksi. \"Oletus uusille sivustoille\" vaikuttaa vain tästä eteenpäin luotuihin sivustoihin."
+msgid "Heads up: \"Default for all sites\" and \"Override for all sites\" overwrite a site's current value whenever that value is still an Editoria11y default or a previous network default — including a per-site value that happens to match a default."
+msgstr "Huomio: \"Oletus kaikille sivustoille\" ja \"Ylikirjoita kaikille sivustoille\" korvaavat sivuston nykyisen arvon aina, kun arvo on edelleen Editoria11y:n oletus tai aiempi verkon oletus — mukaan lukien sivustokohtainen arvo, joka sattuu vastaamaan oletusta."
 
 #: src/Form/NetworkSettingsPage.php:176
 msgid "Editoria11y default or locked network settings"

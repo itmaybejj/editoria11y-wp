@@ -49,7 +49,22 @@ defined( 'ABSPATH' ) || exit;
  *   The multi-old approach handles the "admin made a typo, saves a new
  *   value mid-run" cancellation case gracefully; both values update.
  *
- *   Cap on the olds trail: 20 entries per key.
+ * Durable history trail:
+ *   A run's `olds[]` only accumulates while that run is in flight, and
+ *   a small network finishes a run in one tick — so on its own the
+ *   in-run trail is one entry deep, and any site that misses a single
+ *   link (a value edited under "new sites only", a save that never
+ *   ran, an archived site) would look customized forever. The save
+ *   handler therefore also records every network value a key has ever
+ *   held ({@see record_history()}) in `ed11y_network_defaults_history`,
+ *   regardless of mode, and {@see enqueue()} folds that history into
+ *   each dirty key's `olds` for fresh runs and coalesces alike. A site
+ *   is "still tracking the network" if it holds ANY value the network
+ *   ever published for that key — which is what the network settings
+ *   page promises ({@see NetworkSettingsPage::propagation_help_text()}).
+ *
+ *   Cap on both trails: MAX_OLDS_PER_KEY entries per key, oldest
+ *   dropped first.
  *
  * Concurrency / state model:
  *   - State lives in a single network option `ed11y_network_defaults_backfill_state`.
@@ -88,6 +103,14 @@ final class NetworkDefaultsWorker {
 	/** Network option key storing the worker state machine. */
 	const OPTION_KEY = 'ed11y_network_defaults_backfill_state';
 
+	/**
+	 * Network option key storing the durable per-key trail of every value
+	 * the network has published. Deliberately separate from OPTION_KEY:
+	 * the run state is transient and {@see reset()} discards it; the
+	 * history must outlive every run or the orphaning bug returns.
+	 */
+	const HISTORY_OPTION_KEY = 'ed11y_network_defaults_history';
+
 	/** WP-Cron hook the backfill tick is registered against. */
 	const CRON_HOOK = 'ed11y_network_defaults_backfill';
 
@@ -100,7 +123,7 @@ final class NetworkDefaultsWorker {
 	/** Maximum per-blog errors retained in the state ring buffer. */
 	const MAX_ERRORS = 50;
 
-	/** Maximum length of the per-key `olds` trail. */
+	/** Maximum length of the per-key `olds` trail and of the durable history trail. */
 	const MAX_OLDS_PER_KEY = 20;
 
 	/** Default minimum seconds between ticks. */
@@ -707,6 +730,11 @@ final class NetworkDefaultsWorker {
 	 *     the updated payload. (Sites already on the latest value short-
 	 *     circuit in apply_dirty_to_option, so the re-walk is cheap.)
 	 *
+	 * In both branches every dirty key's `olds` is merged with the
+	 * durable history for that key ({@see record_history()}), so the
+	 * "still tracking" check covers every value the network ever
+	 * published — not just the one the previous save overwrote.
+	 *
 	 * @param array<string, array{old:mixed,new:mixed}> $main_dirty Dirty main-option keys.
 	 * @param array<string, array{old:mixed,new:mixed}> $csa_dirty  Dirty CSA-option keys.
 	 */
@@ -714,11 +742,12 @@ final class NetworkDefaultsWorker {
 		if ( empty( $main_dirty ) && empty( $csa_dirty ) ) {
 			return;
 		}
-		$state = self::get_state();
+		$state   = self::get_state();
+		$history = self::get_history();
 
 		if ( 'running' === $state['status'] ) {
-			$state['main_dirty'] = self::coalesce_dirty( (array) $state['main_dirty'], $main_dirty );
-			$state['csa_dirty']  = self::coalesce_dirty( (array) $state['csa_dirty'], $csa_dirty );
+			$state['main_dirty'] = self::coalesce_dirty( (array) $state['main_dirty'], $main_dirty, $history['main'] );
+			$state['csa_dirty']  = self::coalesce_dirty( (array) $state['csa_dirty'], $csa_dirty, $history['csa'] );
 			// Refresh hardcoded snapshots so any concurrent code change is
 			// reflected on the re-walk; cheap and correct.
 			$state['main_hardcoded'] = self::hardcoded_main_defaults();
@@ -732,8 +761,8 @@ final class NetworkDefaultsWorker {
 		// Fresh run.
 		$state                   = self::default_state();
 		$state['status']         = 'running';
-		$state['main_dirty']     = self::seed_olds_trail( $main_dirty );
-		$state['csa_dirty']      = self::seed_olds_trail( $csa_dirty );
+		$state['main_dirty']     = self::seed_olds_trail( $main_dirty, $history['main'] );
+		$state['csa_dirty']      = self::seed_olds_trail( $csa_dirty, $history['csa'] );
 		$state['main_hardcoded'] = self::hardcoded_main_defaults();
 		$state['csa_hardcoded']  = self::hardcoded_csa_defaults();
 		$state                   = self::reset_walk_progress( $state );
@@ -750,21 +779,53 @@ final class NetworkDefaultsWorker {
 	 * olds trail is never just `[null]` — the "site value is absent"
 	 * branch of apply_dirty_to_option already covers that case.
 	 *
-	 * @param array<string, array{old:mixed,new:mixed,force?:bool}> $dirty Save-handler input.
+	 * @param array<string, array{old:mixed,new:mixed,force?:bool}> $dirty   Save-handler input.
+	 * @param array<string, array<int,mixed>>                       $history Durable per-key trail for this blob.
 	 * @return array<string, array{olds:array<int,mixed>, new:mixed, force:bool}>
 	 */
-	private static function seed_olds_trail( array $dirty ): array {
+	private static function seed_olds_trail( array $dirty, array $history ): array {
 		$out = array();
 		foreach ( $dirty as $key => $entry ) {
 			$old         = $entry['old'] ?? null;
 			$new         = $entry['new'] ?? null;
 			$out[ $key ] = array(
-				'olds'  => ( null === $old ) ? array() : array( $old ),
+				'olds'  => self::fold_history_into_olds(
+					( null === $old ) ? array() : array( $old ),
+					$history[ $key ] ?? array(),
+					$new
+				),
 				'new'   => $new,
 				'force' => ! empty( $entry['force'] ),
 			);
 		}
 		return $out;
+	}
+
+	/**
+	 * Union a key's in-run `olds` with its durable history, minus the
+	 * value now being published, capped at MAX_OLDS_PER_KEY (oldest
+	 * history first so the cap drops the least recent values).
+	 *
+	 * The `new` value is excluded only for tidiness — a site already on
+	 * it short-circuits in {@see apply_dirty_to_option()} regardless.
+	 *
+	 * @param array<int,mixed> $olds      Trail built from the save-handler `old` values.
+	 * @param array<int,mixed> $history   Every value the network has stored for this key.
+	 * @param mixed            $new_value Value being published.
+	 * @return array<int,mixed>
+	 */
+	private static function fold_history_into_olds( array $olds, array $history, $new_value ): array {
+		$merged = array();
+		foreach ( array_merge( $history, $olds ) as $value ) {
+			if ( null === $value || $value === $new_value || in_array( $value, $merged, true ) ) {
+				continue;
+			}
+			$merged[] = $value;
+		}
+		if ( count( $merged ) > self::MAX_OLDS_PER_KEY ) {
+			$merged = array_slice( $merged, -self::MAX_OLDS_PER_KEY );
+		}
+		return array_values( $merged );
 	}
 
 	/**
@@ -778,40 +839,169 @@ final class NetworkDefaultsWorker {
 	 *   - Else: add a fresh entry with the incoming `old` as the sole
 	 *     olds element.
 	 *
+	 * Either way the result is merged with the key's durable history via
+	 * {@see fold_history_into_olds()}.
+	 *
 	 * @param array<string, array{olds:array<int,mixed>, new:mixed, force:bool}> $existing Running job's dirty map.
 	 * @param array<string, array{old:mixed,new:mixed,force?:bool}>              $incoming New save's dirty map.
+	 * @param array<string, array<int,mixed>>                                    $history  Durable per-key trail for this blob.
 	 * @return array<string, array{olds:array<int,mixed>, new:mixed, force:bool}>
 	 */
-	private static function coalesce_dirty( array $existing, array $incoming ): array {
+	private static function coalesce_dirty( array $existing, array $incoming, array $history ): array {
 		foreach ( $incoming as $key => $entry ) {
 			$incoming_old   = $entry['old'] ?? null;
 			$incoming_new   = $entry['new'] ?? null;
 			$incoming_force = ! empty( $entry['force'] );
+			$key_history    = $history[ $key ] ?? array();
 			if ( ! isset( $existing[ $key ] ) ) {
 				$existing[ $key ] = array(
-					'olds'  => ( null === $incoming_old ) ? array() : array( $incoming_old ),
+					'olds'  => self::fold_history_into_olds(
+						( null === $incoming_old ) ? array() : array( $incoming_old ),
+						$key_history,
+						$incoming_new
+					),
 					'new'   => $incoming_new,
 					'force' => $incoming_force,
 				);
 				continue;
 			}
 			$olds = is_array( $existing[ $key ]['olds'] ?? null ) ? $existing[ $key ]['olds'] : array();
-			if ( null !== $incoming_old && ! in_array( $incoming_old, $olds, true ) ) {
+			if ( null !== $incoming_old ) {
 				$olds[] = $incoming_old;
-			}
-			if ( count( $olds ) > self::MAX_OLDS_PER_KEY ) {
-				$olds = array_slice( $olds, -self::MAX_OLDS_PER_KEY );
 			}
 			// Lock supersedes once latched — a mid-run incoming lock save
 			// upgrades the in-flight run to force-write for that key.
 			$existing_force   = ! empty( $existing[ $key ]['force'] );
 			$existing[ $key ] = array(
-				'olds'  => array_values( $olds ),
+				'olds'  => self::fold_history_into_olds( $olds, $key_history, $incoming_new ),
 				'new'   => $incoming_new,
 				'force' => $existing_force || $incoming_force,
 			);
 		}
 		return $existing;
+	}
+
+	/* ===== Durable history trail ===== */
+
+	/**
+	 * Record every network value that changed in this save into the
+	 * durable per-key history — old and new, for both blobs, regardless
+	 * of propagation mode.
+	 *
+	 * Called by {@see NetworkSettingsPage::save_from_post()} after the new
+	 * blobs are written and before {@see enqueue()}. Mode is deliberately
+	 * ignored: a value published under "new sites only" was still seeded
+	 * into the sites created while it stood, and a value later switched to
+	 * "all" must recognize those sites as tracking the network.
+	 *
+	 * Both the old and the new value are recorded so the trail is
+	 * "every value ever stored" even when recording began mid-life (the
+	 * first save after upgrading from a build without a history records
+	 * the value sites are currently on).
+	 *
+	 * Absent keys (`null`) are never recorded — the "site value is absent"
+	 * branch of {@see apply_dirty_to_option()} already covers that case.
+	 * An empty string IS recorded: an empty network value is what an
+	 * unset default looks like in storage, and a site holding `''` reads
+	 * back as the hardcoded default, which the overwrite rule treats as
+	 * "still tracking".
+	 *
+	 * @param array{values: array<string,mixed>, modes: array<string,string>} $old_main Previous main storage.
+	 * @param array{values: array<string,mixed>, modes: array<string,string>} $new_main New main storage.
+	 * @param array{values: array<string,mixed>, modes: array<string,string>} $old_csa  Previous CSA storage.
+	 * @param array{values: array<string,mixed>, modes: array<string,string>} $new_csa  New CSA storage.
+	 */
+	public static function record_history( array $old_main, array $new_main, array $old_csa, array $new_csa ): void {
+		$history = self::get_history();
+		$main    = self::append_history_for_blob( $history['main'], $old_main, $new_main );
+		$csa     = self::append_history_for_blob( $history['csa'], $old_csa, $new_csa );
+		if ( $main === $history['main'] && $csa === $history['csa'] ) {
+			return;
+		}
+		update_site_option(
+			self::HISTORY_OPTION_KEY,
+			array(
+				'main' => $main,
+				'csa'  => $csa,
+			)
+		);
+	}
+
+	/**
+	 * Per-blob half of {@see record_history()}: for each key whose value
+	 * differs between the two blobs, append the old then the new value to
+	 * that key's trail (de-duplicated, capped at MAX_OLDS_PER_KEY, oldest
+	 * dropped first).
+	 *
+	 * @param array<string, array<int,mixed>>                                 $trail    Existing per-key trail for this blob.
+	 * @param array{values: array<string,mixed>, modes: array<string,string>} $old_blob Previous blob storage.
+	 * @param array{values: array<string,mixed>, modes: array<string,string>} $new_blob New blob storage.
+	 * @return array<string, array<int,mixed>>
+	 */
+	private static function append_history_for_blob( array $trail, array $old_blob, array $new_blob ): array {
+		$old_values = is_array( $old_blob['values'] ?? null ) ? $old_blob['values'] : array();
+		$new_values = is_array( $new_blob['values'] ?? null ) ? $new_blob['values'] : array();
+		$keys       = array_unique( array_merge( array_keys( $old_values ), array_keys( $new_values ) ) );
+		foreach ( $keys as $key ) {
+			$old = $old_values[ $key ] ?? null;
+			$new = $new_values[ $key ] ?? null;
+			if ( $old === $new ) {
+				continue;
+			}
+			$values = $trail[ $key ] ?? array();
+			foreach ( array( $old, $new ) as $value ) {
+				if ( null === $value ) {
+					continue;
+				}
+				// Re-publishing a value already in the trail moves it to
+				// the "most recent" end so the cap never evicts it first.
+				$position = array_search( $value, $values, true );
+				if ( false !== $position ) {
+					array_splice( $values, (int) $position, 1 );
+				}
+				$values[] = $value;
+			}
+			if ( count( $values ) > self::MAX_OLDS_PER_KEY ) {
+				$values = array_slice( $values, -self::MAX_OLDS_PER_KEY );
+			}
+			$trail[ $key ] = array_values( $values );
+		}
+		return $trail;
+	}
+
+	/**
+	 * Read the durable history, validated to the canonical
+	 * `{main: key => list, csa: key => list}` shape.
+	 *
+	 * Corrupt or partial storage (a manual edit, a non-array subkey, a
+	 * non-list trail) falls back to empty rather than fataling the save
+	 * path — losing the trail degrades to the pre-history behavior, which
+	 * is strictly better than a broken network settings page.
+	 *
+	 * @return array{main: array<string, array<int,mixed>>, csa: array<string, array<int,mixed>>}
+	 */
+	public static function get_history(): array {
+		$raw = get_site_option( self::HISTORY_OPTION_KEY, null );
+		$out = array(
+			'main' => array(),
+			'csa'  => array(),
+		);
+		if ( ! is_array( $raw ) ) {
+			return $out;
+		}
+		foreach ( array( 'main', 'csa' ) as $blob ) {
+			$trail = $raw[ $blob ] ?? null;
+			if ( ! is_array( $trail ) ) {
+				continue;
+			}
+			foreach ( $trail as $key => $values ) {
+				if ( ! is_string( $key ) || ! is_array( $values ) ) {
+					continue;
+				}
+				$out[ $blob ][ $key ] = array_values( $values );
+			}
+		}
+		return $out;
 	}
 
 	/**

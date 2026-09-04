@@ -1268,8 +1268,8 @@ msgid "Custom rules"
 msgstr "Reguły niestandardowe"
 
 #: src/Form/NetworkSettingsPage.php:140
-msgid "Heads up: \"Default for all sites\" and \"Override for all sites\" overwrite a site's current value whenever that value is still an Editoria11y default or a previous network default — including a per-site value that happens to match a default. Sites where an admin has chosen a different value are left untouched. \"Default for new sites\" only affects sites created from now on."
-msgstr "Uwaga: opcje „Domyślne dla wszystkich witryn” i „Nadpisz dla wszystkich witryn” nadpisują bieżącą wartość witryny, jeśli ta wartość wciąż odpowiada wartości domyślnej Editoria11y lub poprzedniej wartości domyślnej sieci — w tym wartość witryny, która akurat zgadza się z wartością domyślną. Witryny, w których administrator wybrał inną wartość, pozostają nietknięte. Opcja „Domyślne dla nowych witryn” wpływa tylko na witryny utworzone od teraz."
+msgid "Heads up: \"Default for all sites\" and \"Override for all sites\" overwrite a site's current value whenever that value is still an Editoria11y default or a previous network default — including a per-site value that happens to match a default."
+msgstr "Uwaga: opcje „Domyślne dla wszystkich witryn” i „Nadpisz dla wszystkich witryn” nadpisują bieżącą wartość witryny, jeśli ta wartość wciąż odpowiada wartości domyślnej Editoria11y lub poprzedniej wartości domyślnej sieci — w tym wartość witryny, która akurat zgadza się z wartością domyślną."
 
 #: src/Form/NetworkSettingsPage.php:176
 msgid "Editoria11y default or locked network settings"

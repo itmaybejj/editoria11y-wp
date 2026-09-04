@@ -1268,8 +1268,8 @@ msgid "Custom rules"
 msgstr "Kohandatud reeglid"
 
 #: src/Form/NetworkSettingsPage.php:140
-msgid "Heads up: \"Default for all sites\" and \"Override for all sites\" overwrite a site's current value whenever that value is still an Editoria11y default or a previous network default — including a per-site value that happens to match a default. Sites where an admin has chosen a different value are left untouched. \"Default for new sites\" only affects sites created from now on."
-msgstr "Tähelepanu: „Vaikimisi kõikidele saitidele“ ja „Kirjuta üle kõikidel saitidel“ kirjutavad üle saidi praeguse väärtuse alati, kui see väärtus on endiselt Editoria11y vaikeväärtus või varasem võrgu vaikeväärtus — sealhulgas saidipõhine väärtus, mis juhtumisi ühtib vaikeväärtusega. Saidid, kus administraator on valinud teistsuguse väärtuse, jäetakse puutumata. „Vaikimisi uutele saitidele“ mõjutab ainult sellest hetkest alates loodavaid saite."
+msgid "Heads up: \"Default for all sites\" and \"Override for all sites\" overwrite a site's current value whenever that value is still an Editoria11y default or a previous network default — including a per-site value that happens to match a default."
+msgstr "Tähelepanu: „Vaikimisi kõikidele saitidele“ ja „Kirjuta üle kõikidel saitidel“ kirjutavad üle saidi praeguse väärtuse alati, kui see väärtus on endiselt Editoria11y vaikeväärtus või varasem võrgu vaikeväärtus — sealhulgas saidipõhine väärtus, mis juhtumisi ühtib vaikeväärtusega."
 
 #: src/Form/NetworkSettingsPage.php:176
 msgid "Editoria11y default or locked network settings"
