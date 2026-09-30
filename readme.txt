@@ -1,7 +1,7 @@
 === Editoria11y Accessibility Checker ===
 Contributors: itmaybejj, partyka
 Tags: accessibility checker, automated testing, quality assurance, SEO
-Stable tag: 3.0.5
+Stable tag: 3.0.6
 Tested up to: 7.1
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -192,8 +192,8 @@ New feature development comes through by grants from academic institutions and c
 
 == Changelog ==
 
-= 3.0.5 =
-* Attempts to address performance and deadlocks in the 3.x update cron for multisites with hundreds of blogs.
+= 3.0.5-3.0.6 =
+* Address deadlocks in the 3.x update cron for multisites with hundreds of blogs and third-party cron managers.
 
 = 3.0.4 =
 * Fixes [incorrect validation on the multi-site network admin page](https://github.com/itmaybejj/editoria11y-wp/pull/59) that could prevent saving new settings.
