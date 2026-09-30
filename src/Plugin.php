@@ -36,7 +36,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Plugin {
 
 	/** Library version; used as cache buster for enqueued assets. */
-	const VERSION = '3.0.5';
+	const VERSION = '3.0.6';
 
 	/**
 	 * Wires plugins_loaded callbacks in dependency order.
