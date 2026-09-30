@@ -1693,11 +1693,21 @@ class Installer {
 		}
 	}
 
-	/** Drain every queued rehash event. Idempotent. */
+	/**
+	 * Drain every queued rehash event in one pass. Idempotent.
+	 *
+	 * Deliberately NOT a `while ( wp_next_scheduled() ) { wp_unschedule_event() }`
+	 * loop: that retry-forever shape has no progress guarantee, and it hung a
+	 * large-multisite production site — wp_unschedule_event() returns false
+	 * whenever update_option('cron') fails or a `pre_unschedule_event` cron
+	 * backend (Cavalcade et al.) refuses the event, while wp_next_scheduled()
+	 * keeps reporting it, so the loop span forever inside the rehash worker's
+	 * advisory lock immediately after the version option reached '2.0'.
+	 * wp_unschedule_hook() clears every queued event for the hook in a single
+	 * _set_cron_array() write and cannot loop.
+	 */
 	public static function unschedule_rehash(): void {
-		while ( $timestamp = wp_next_scheduled( self::REHASH_CRON_HOOK ) ) { // phpcs:ignore
-			wp_unschedule_event( $timestamp, self::REHASH_CRON_HOOK );
-		}
+		wp_unschedule_hook( self::REHASH_CRON_HOOK );
 	}
 
 	/** WP-Cron callback: process one batch. */

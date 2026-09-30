@@ -1370,15 +1370,15 @@ final class NetworkDefaultsWorker {
 		wp_schedule_single_event( time() + max( 0, $delay_seconds ), self::CRON_HOOK );
 	}
 
-	/** Drain any queued tick events. Idempotent. */
+	/**
+	 * Drain any queued tick events in one pass. Idempotent.
+	 *
+	 * Single wp_unschedule_hook() call, never a retry loop — see the
+	 * Installer::unschedule_rehash() docblock for the production hang the
+	 * `while ( wp_next_scheduled() )` shape caused.
+	 */
 	public static function unschedule(): void {
-		while ( true ) {
-			$timestamp = wp_next_scheduled( self::CRON_HOOK );
-			if ( ! $timestamp ) {
-				break;
-			}
-			wp_unschedule_event( $timestamp, self::CRON_HOOK );
-		}
+		wp_unschedule_hook( self::CRON_HOOK );
 	}
 
 	/**
