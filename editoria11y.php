@@ -4,7 +4,7 @@
  *
  * Plugin Name:       Editoria11y Accessibility Checker
  * Plugin URI:        https://wordpress.org/plugins/editoria11y-accessibility-checker/
- * Version:           3.0.6
+ * Version:           3.0.7
  * Requires PHP:      7.4
  * Requires at least: 6.0
  * Tested up to:      7.1
@@ -285,6 +285,10 @@ if ( ! function_exists( 'ed11ycsa' ) ) {
 
 			// Throttle the SDK's opt-in nag to once per login.
 			\Editoria11y\FreemiusOptInNag::apply( $ed11ycsa );
+
+			// Show the SDK's trial promotion once per install / version
+			// update instead of on every admin page until dismissed.
+			\Editoria11y\FreemiusTrialNotice::apply( $ed11ycsa );
 
 			// Send SDK redirects aimed at the phantom
 			// `network/options-general.php` parent (a file that does not
