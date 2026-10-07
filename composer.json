@@ -66,6 +66,18 @@
             "npx --no-install playwright test"
         ]
     },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "freemius-sdk-prerelease",
+            "options": {
+                "symlink": false,
+                "versions": {
+                    "freemius/wordpress-sdk": "2.13.5"
+                }
+            }
+        }
+    ],
     "require": {
         "freemius/wordpress-sdk": "^2.13"
     },

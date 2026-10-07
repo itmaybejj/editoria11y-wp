@@ -1,7 +1,7 @@
 === Editoria11y Accessibility Checker ===
 Contributors: itmaybejj, partyka
 Tags: accessibility checker, automated testing, quality assurance, SEO
-Stable tag: 3.0.6
+Stable tag: 3.0.7
 Tested up to: 7.1
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -191,6 +191,10 @@ New feature development comes through by grants from academic institutions and c
 4. Checker set to dark theme, asking if the whole sentence needs to be in caps lock.
 
 == Changelog ==
+
+= 3.0.7 =
+* Fix for "Errors in these elements should only be shown to developers" setting not being applied in CSA features.
+* Corrections in the French and Spanish translations
 
 = 3.0.5-3.0.6 =
 * Address deadlocks in the 3.x update cron for multisites with hundreds of blogs and third-party cron managers.
