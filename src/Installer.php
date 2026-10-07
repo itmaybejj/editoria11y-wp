@@ -286,6 +286,7 @@ class Installer {
 		delete_option( self::REHASH_LOCK_OPTION );
 		delete_option( 'ed11y_got_post_ids' );
 		delete_option( 'ed11y_disabled_network_rules' );
+		delete_option( \Editoria11y\FreemiusTrialNotice::OPTION );
 		delete_transient( 'editoria11y_settings' );
 	}
 

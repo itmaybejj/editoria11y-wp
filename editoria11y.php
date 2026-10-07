@@ -286,6 +286,10 @@ if ( ! function_exists( 'ed11ycsa' ) ) {
 			// Throttle the SDK's opt-in nag to once per login.
 			\Editoria11y\FreemiusOptInNag::apply( $ed11ycsa );
 
+			// Show the SDK's trial promotion once per install / version
+			// update instead of on every admin page until dismissed.
+			\Editoria11y\FreemiusTrialNotice::apply( $ed11ycsa );
+
 			// Send SDK redirects aimed at the phantom
 			// `network/options-general.php` parent (a file that does not
 			// exist in network admin) to the plugin's real network page —
