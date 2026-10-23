@@ -23,6 +23,7 @@
 # Development tooling — kept for contributors/CI, stripped from the shipped plugin.
 /composer.json export-ignore
 /package.json export-ignore
+/package-lock.json export-ignore
 /phpcs.xml.dist export-ignore
 /phpmd.xml export-ignore
 /phpmd.baseline.xml export-ignore

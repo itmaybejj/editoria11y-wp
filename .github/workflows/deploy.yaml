@@ -7,11 +7,13 @@ jobs:
   tag:
     name: New release
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # attach the zip to the GitHub release
     steps:
       - name: Install Subversion
         run: sudo apt-get update && sudo apt-get install -y subversion
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v7
       - name: WordPress Plugin Deploy
         id: deploy
         uses: 10up/action-wordpress-plugin-deploy@stable
@@ -22,8 +24,7 @@ jobs:
           SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
           SLUG: editoria11y-accessibility-checker
       - name: Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v3
         if: startsWith(github.ref, 'refs/tags/')
         with:
-          files: |
-            ${{ github.event.repository.name }}.zip
+          files: ${{ steps.deploy.outputs.zip-path }}
