@@ -51,6 +51,78 @@ export function ed11yApplyOptionTranslations(options) {
   ed11ySharedOptionTranslations(options, { autodetectCheckRoot: false });
 }
 
+// The Block Editor canvas replaces an image's empty alt with a visible
+// placeholder sentence (core/image edit.js, `defaultedAlt`), so without
+// this the checker grades WordPress's own placeholder as real alt text.
+// These are the four msgids core uses. Resolving them through wp.i18n in
+// the 'default' domain returns the same translation the editor rendered
+// (core or Gutenberg-plugin JSON, user locale) with no PHP round-trip.
+const WP_IMAGE_ALT_PLACEHOLDERS = [
+  'This image has been marked as decorative; its file name is %s',
+  'This image has been marked as decorative.',
+  'This image has an empty alt attribute; its file name is %s',
+  'This image has an empty alt attribute',
+];
+
+// sprintf tokens WordPress templates use: `%s`, positional `%1$s`, and the
+// `%%` literal-percent escape.
+const WP_SPRINTF_TOKEN = /(%(?:\d+\$)?s|%%)/;
+
+// Same set the library strips from the alt before matching
+// (stripBidiControls in sa11y-js/utils/utils.js); RTL translations may carry
+// these around the placeholder, so the compiled pattern must not require them.
+const BIDI_CONTROLS = /[؜‎‏‪-‮⁦-⁩]/g;
+
+const escapeRegExp = (text) => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+// Compile one WordPress sprintf template into a full-match RegExp: the
+// filename may fall anywhere in a translation (azb glues a suffix to it; another
+// locale may lead with it), which a start-of-string prefix cannot express.
+function ed11yTemplateToRegExp(template) {
+  const source = template
+    .replace(BIDI_CONTROLS, '')
+    .split(WP_SPRINTF_TOKEN)
+    .map((part, index) => {
+      if (index % 2 === 0) {
+        return escapeRegExp(part);
+      }
+      return part === '%%' ? '%' : '.+';
+    })
+    .join('');
+  return new RegExp(`^${source}$`, 'i');
+}
+
+// Returns an array, not a CSV string: the library splits string input on
+// commas, which a translation may contain (azb does). Templates without a
+// filename stay plain strings, which the library prefix-matches; `%s`
+// templates become RegExp entries, matched whole. English msgids are kept
+// as a fallback for when wp.i18n is absent (Classic Editor screens) or a
+// string is untranslated.
+export function ed11yBlockImageAltPlaceholders(i18n = window.wp?.i18n) {
+  const translate = typeof i18n?.__ === 'function'
+    ? (msgid) => i18n.__(msgid, 'default')
+    : (msgid) => msgid;
+  const literals = new Set();
+  const patterns = new Map();
+  WP_IMAGE_ALT_PLACEHOLDERS.forEach((msgid) => {
+    // Core only runs the filename msgids through sprintf(); a `%` in any
+    // other translation reaches the alt verbatim.
+    const isTemplate = WP_SPRINTF_TOKEN.test(msgid);
+    [msgid, translate(msgid)].forEach((text) => {
+      if (typeof text !== 'string' || !text.trim()) {
+        return;
+      }
+      if (isTemplate) {
+        const pattern = ed11yTemplateToRegExp(text);
+        patterns.set(pattern.source, pattern);
+      } else {
+        literals.add(text.replace(BIDI_CONTROLS, ''));
+      }
+    });
+  });
+  return [...literals, ...patterns.values()];
+}
+
 // Translate user-configured H2/H3/H4 selectors (live_h2/h3/h4 in PHP
 // storage; liveH2/H3/H4 in the static config emit) into the library's
 // `initialHeadingLevel` shape:
@@ -225,7 +297,7 @@ if (!ed11yInit.varDiv) {
     };
     ed11yInit.options.ignoreContentOutsideRoots = true;
     ed11yInit.options['ignoreAriaOnElements'] = 'h1,h2,h3,h4,h5,h6,.wp-element-button,.block-editor-rich-text__editable,.wp-block-table';
-    ed11yInit.options['altPlaceholder'] = 'This image has an empty alt attribute;';
+    ed11yInit.options['altPlaceholder'] = ed11yBlockImageAltPlaceholders();
 
     // WordPress does not render empty post titles, so we don't need to flag them.
 
