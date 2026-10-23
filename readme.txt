@@ -193,7 +193,7 @@ New feature development comes through by grants from academic institutions and c
 == Changelog ==
 
 = 3.0.8 =
-* Fix for a false positive in the editor on image blocks when the image has been marked decorative.
+* Fix for a false positive in the editor for filenames in alt text on image blocks when the image has been marked decorative. Note that the current version still asks for confirmation that an image is actually decorative inside the editor, but not in the frontend: WordPress marks decorative images with role="none," which this checker accepts as equivalent to "Mark OK." We may add config to override this behavior in either direction (never ask, always ask) in the future; submit a feature request if you want either option.
 * Suppresses free trial offer notifications on admin pages that are not "owned" by Editoria11y. Old notifications may still "stick" until dismissed; if any reappear elsewhere in the admin interface, please file a bug report.
 
 = 3.0.7 =
