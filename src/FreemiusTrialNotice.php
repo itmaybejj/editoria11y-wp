@@ -2,32 +2,39 @@
 /**
  * Limit the Freemius trial promotion ("If you like Editoria11y …, consider
  * supporting its development; start with a 30-day free trial …") to one
- * display per site per plugin version.
+ * display per site per plugin version, on the plugin's settings and
+ * report screens.
  *
  * The SDK adds that promotion (`Freemius::_add_trial_notice()`) as a
  * STICKY notice with id `trial_promotion`: once added it renders on
  * every admin page until an admin clicks its dismiss X, and the SDK
- * re-adds it every 30 days after that. The premium build never reaches
- * it (`is_premium()` short-circuits the method outside WP_FS__DEV_MODE),
- * so in practice this governs the free build — the class is registered
- * in both builds and must not be premium-gated.
+ * re-adds it every 30 days after that. While the sticky exists,
+ * `is_in_trial_promotion()` also badges the plugin's menu item on every
+ * admin page and relabels "Upgrade" as "Start Trial". The premium build
+ * never reaches it (`is_premium()` short-circuits the method outside
+ * WP_FS__DEV_MODE), so in practice this governs the free build — the
+ * class is registered in both builds and must not be premium-gated.
  *
  * Mechanism:
  *
- *   - `show_trial` (checked in `_add_trial_notice()` on admin_init)
- *     returns false once this site has already shown the promotion for
- *     the running Plugin::VERSION, so the SDK never re-adds it on its
- *     30-day cadence. Install and every version change reset the gate.
  *   - `show_first_trial_after_n_sec` / `reshow_trial_after_every_n_sec`
- *     are zeroed: the version gate replaces the SDK's own timers, so the
- *     promotion appears on the first admin page after install / update
- *     instead of 24 hours or 30 days later.
- *   - `show_admin_notice` lets the promotion render, then records the
- *     version and removes the sticky. Recording at render time (not at
- *     add time) means an admin request that never prints notices — a
- *     redirect, a screen that suppresses them — doesn't consume the one
- *     showing. Removal happens mid-render, which is safe: the notice
- *     manager iterates a copy of its notice array.
+ *     (read only inside `_add_trial_notice()` on admin_init) return 0
+ *     when the promotion may be added — on a plugin screen, not yet
+ *     shown for the running Plugin::VERSION — so it appears immediately
+ *     instead of 24 hours / 30 days later. Otherwise they return
+ *     PHP_INT_MAX, which fails both SDK timer checks and skips the add.
+ *     The gate deliberately does NOT use `show_trial`: the SDK account
+ *     page and Form\SettingsPage read that filter to decide whether to
+ *     show their Free Trial links, which must stay visible.
+ *   - `show_admin_notice` renders the promotion only on a plugin screen,
+ *     then records the version and removes the sticky. Recording at
+ *     render time (not at add time) means an admin request that never
+ *     prints notices — a redirect, a screen that suppresses them —
+ *     doesn't consume the one showing. Removal happens mid-render, which
+ *     is safe: the notice manager iterates a copy of its notice array.
+ *     Because add and render are gated on the same screens, the sticky
+ *     is normally added and removed within one request, so the menu
+ *     badge never lingers.
  *
  * Per-site option, matching the SDK's per-site sticky storage; on a
  * network-active install each delegated subsite shows it once.
@@ -40,7 +47,7 @@ namespace Editoria11y;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Once-per-version gate for the Freemius trial promotion.
+ * Once-per-version, plugin-screens-only gate for the Freemius trial promotion.
  */
 final class FreemiusTrialNotice {
 
@@ -68,29 +75,50 @@ final class FreemiusTrialNotice {
 	 */
 	public static function apply( \Freemius $ed11ycsa ): void {
 		self::$sdk = $ed11ycsa;
-		$ed11ycsa->add_filter( 'show_trial', array( __CLASS__, 'filter_show_trial' ) );
-		$ed11ycsa->add_filter( 'show_first_trial_after_n_sec', '__return_zero' );
-		$ed11ycsa->add_filter( 'reshow_trial_after_every_n_sec', '__return_zero' );
+		$ed11ycsa->add_filter( 'show_first_trial_after_n_sec', array( __CLASS__, 'filter_trial_delay' ) );
+		$ed11ycsa->add_filter( 'reshow_trial_after_every_n_sec', array( __CLASS__, 'filter_trial_delay' ) );
 		$ed11ycsa->add_filter( 'show_admin_notice', array( __CLASS__, 'filter_show_admin_notice' ), 10, 2 );
 	}
 
 	/**
-	 * Freemius `show_trial` filter: allow the SDK to add the promotion
-	 * only if it hasn't been shown for the running plugin version.
+	 * Admin page slugs (`?page=`) the promotion may appear on: the
+	 * settings page and the accessibility report dashboard.
 	 *
-	 * @param bool $show Whether the SDK would otherwise show the promotion.
-	 * @return bool
+	 * Only screens that exist in the free build are listed — the premium
+	 * build never reaches the promotion. The Custom Rules / Crawler pages
+	 * are premium-only, and referencing their classes (or
+	 * FreemiusMenu::MENU_SLUG) here would fatal in the free build, where
+	 * the strip removes those files.
+	 *
+	 * @return string[]
 	 */
-	public static function filter_show_trial( $show ) {
-		return $show && ! self::shown_for_current_version();
+	private static function plugin_page_slugs(): array {
+		return array(
+			'ed11y',        // Form\SettingsPage.
+			'editoria11y',  // Admin\Dashboard.
+		);
+	}
+
+	/**
+	 * Freemius `show_first_trial_after_n_sec` and
+	 * `reshow_trial_after_every_n_sec` filter.
+	 *
+	 * @param int $seconds The SDK's default delay (ignored).
+	 * @return int 0 to let the SDK add the promotion now; PHP_INT_MAX to skip it.
+	 *
+	 * @SuppressWarnings(PHPMD.UnusedFormalParameter) Filter signature; the gate replaces the SDK's timers outright.
+	 */
+	public static function filter_trial_delay( $seconds ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found -- filter signature; the gate replaces the SDK's timers outright.
+		return ( self::is_plugin_screen() && ! self::shown_for_current_version() ) ? 0 : PHP_INT_MAX;
 	}
 
 	/**
 	 * Freemius `show_admin_notice` filter.
 	 *
-	 * Passes every other notice through unchanged. For the trial
-	 * promotion, lets this render through, then marks the version as
-	 * shown and removes the sticky so later page loads don't repeat it.
+	 * Passes every other notice through unchanged. The trial promotion
+	 * is held back off the plugin's screens; on them it renders, then
+	 * the version is marked as shown and the sticky removed so later
+	 * page loads don't repeat it.
 	 *
 	 * @param bool                $show Whether the SDK would otherwise render this notice.
 	 * @param array<string,mixed> $msg  Notice descriptor (see FS_Admin_Notice_Manager).
@@ -101,6 +129,10 @@ final class FreemiusTrialNotice {
 			return $show;
 		}
 
+		if ( ! self::is_plugin_screen() ) {
+			return false;
+		}
+
 		update_option( self::OPTION, Plugin::VERSION );
 
 		if ( null !== self::$sdk ) {
@@ -108,6 +140,19 @@ final class FreemiusTrialNotice {
 		}
 
 		return $show;
+	}
+
+	/**
+	 * Whether the current admin request is one of the plugin's screens.
+	 *
+	 * Reads `?page=` rather than get_current_screen() because the add
+	 * runs on admin_init, before the screen is set up.
+	 */
+	private static function is_plugin_screen(): bool {
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only check on a navigational query var; no state change here.
+		$page = isset( $_GET['page'] ) ? sanitize_key( wp_unslash( $_GET['page'] ) ) : '';
+
+		return '' !== $page && in_array( $page, self::plugin_page_slugs(), true );
 	}
 
 	/**
