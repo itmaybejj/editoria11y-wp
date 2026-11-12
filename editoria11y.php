@@ -4,9 +4,9 @@
  *
  * Plugin Name:       Editoria11y Accessibility Checker
  * Plugin URI:        https://wordpress.org/plugins/editoria11y-accessibility-checker/
- * Version:           3.0.8
+ * Version:           3.0.2
  * Requires PHP:      7.4
- * Requires at least: 6.0
+ * Requires at least: 6.5
  * Tested up to:      7.1
  * Author:            Princeton University, WDS
  * Author URI:        https://editoria11y.com
@@ -155,19 +155,28 @@ if ( ! defined( 'ED11Y_BASE' ) ) {
 }
 
 /*
- * Multisite guard for the SDK's network `fs_accounts` option.
+ * Freemius SDK compatibility guard.
  *
- * Registered BEFORE fs_dynamic_init() below so its read watcher is in
- * place for the SDK's very first get_site_option('fs_accounts'). Both
- * builds: the free build bundles the same SDK. See NetworkOptionIntegrity
- * for the WordPress-core defect (blind INSERT into wp_sitemeta after a
- * failed read) this closes.
+ * The SDK's start.php (run by the vendor/autoload.php require above) skips
+ * loading our bundled SDK whenever a class named `Freemius` already exists.
+ * Partial stand-ins under that name (nulled plugins, "disable Freemius"
+ * mu-plugins) pass that check, and the first SDK method they lack fatals
+ * every admin request, network/plugins.php included. Stop booting instead
+ * and tell admins which file declared the class. See FreemiusSdkGuard.
+ *
+ * Checked only when this file is about to define ed11ycsa() and call
+ * fs_dynamic_init(): the PHPUnit bootstrap pre-defines ed11ycsa() with a
+ * stub and never loads the SDK.
+ *
+ * The deactivation hook is still registered so deactivating the plugin
+ * during the conflict unschedules its cron events. The activation hook is
+ * not: Installer::check_tables() also runs lazily once the plugin boots,
+ * and running it here could reach premium-gated helpers that call
+ * ed11ycsa(), which does not exist on this path.
  */
-try {
-	\Editoria11y\NetworkOptionIntegrity::register();
-} catch ( \Throwable $e ) {
-	// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- one-shot diagnostic, gated by the catch arm above.
-	error_log( '[Editoria11y] NetworkOptionIntegrity::register() failed: ' . $e->getMessage() );
+if ( ! function_exists( 'ed11ycsa' ) && ! \Editoria11y\FreemiusSdkGuard::check() ) {
+	register_deactivation_hook( __FILE__, array( '\\Editoria11y\\Installer', 'deactivate' ) );
+	return;
 }
 
 if ( ! function_exists( 'ed11ycsa' ) ) {
@@ -285,11 +294,6 @@ if ( ! function_exists( 'ed11ycsa' ) ) {
 
 			// Throttle the SDK's opt-in nag to once per login.
 			\Editoria11y\FreemiusOptInNag::apply( $ed11ycsa );
-
-			// Show the SDK's trial promotion once per install / version,
-			// only on the plugin's own screens, instead of on every admin
-			// page until dismissed.
-			\Editoria11y\FreemiusTrialNotice::apply( $ed11ycsa );
 
 			// Send SDK redirects aimed at the phantom
 			// `network/options-general.php` parent (a file that does not

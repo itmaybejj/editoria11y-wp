@@ -147,7 +147,7 @@ function ed11y_get_default_options( string $option = '' ) {
  * only", not "ignore nothing at all".
  */
 function ed11y_container_ignore_baseline(): string {
-	return '#wpadminbar *, #comments *, .wp-block-post-comments *, img.avatar, .components-placeholder *';
+	return '#wpadminbar *, #comments *, .wp-block-post-comments *, img.avatar';
 }
 
 /**
@@ -286,7 +286,7 @@ function ed11y_effective_network_csa_lock( string $key ): array {
 	// each of its four governed CSA keys is locked as a unit even with an
 	// empty stored value — the super-admin's "everyone gets the network
 	// default set" is a valid configuration. Mirrors the save-time
-	// coercion in {@see \Editoria11y\Form\SettingsValidator::enforce_network_csa_locks__premium_only()}.
+	// coercion in {@see \Editoria11y\Form\SettingsValidator::enforce_network_csa_locks()}.
 	if (
 		in_array( $key, \Editoria11y\Form\SettingsValidator::BUNDLE_LOCK_TESTS_AND_ROLES_KEYS, true )
 		&& ed11y_is_bundle_locked()
@@ -328,7 +328,7 @@ function ed11y_effective_network_csa_lock( string $key ): array {
  *
  * @SuppressWarnings(PHPMD.UnusedFormalParameter) `$key` is read only in the premium body; the free build strips it but must keep the shared signature.
  */
-function ed11y_get_csa_setting( string $key ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found -- `$key` is read only in the premium body; the free build strips that branch.
+function ed11y_get_csa_setting( string $key ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter -- used in the premium-only body; the free build strips it.
 
 	return null;
 }
@@ -344,7 +344,7 @@ function ed11y_get_csa_setting( string $key ) { // phpcs:ignore Generic.CodeAnal
  *
  * @SuppressWarnings(PHPMD.UnusedFormalParameter) `$key` is read only in the premium body; the free build strips it but must keep the shared signature.
  */
-function ed11y_get_csa_raw_setting( string $key ): string { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found -- `$key` is read only in the premium body; the free build strips that branch.
+function ed11y_get_csa_raw_setting( string $key ): string { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter -- used in the premium-only body; the free build strips it.
 
 	return '';
 }
@@ -940,11 +940,12 @@ function ed11y_get_global_dismissals(): array {
 	// surface. Suppress wpdb errors for this query so a missing table
 	// degrades to an empty result set instead.
 	$previous = $wpdb->suppress_errors();
-	// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery, PluginCheck.Security.DirectDB.UnescapedDBParameter -- $dtable is $wpdb->prefix.'ed11y_dismissals' (literal); no user input in WHERE.
-	$rows = $wpdb->get_results(
-		"SELECT result_key, element_id FROM {$dtable} WHERE dismissal_status = 'okAll';"
+	$rows     = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery -- custom-table read; result is cached upstream in the static config payload.
+		$wpdb->prepare(
+			"SELECT result_key, element_id FROM %i WHERE dismissal_status = 'okAll';",
+			$dtable
+		)
 	);
-	// phpcs:enable
 	$wpdb->suppress_errors( $previous );
 
 	if ( ! is_array( $rows ) ) {
@@ -1033,28 +1034,30 @@ function ed11y_get_page_dismissals( int $user_id, string $current_page, int $pos
 
 	// Read-only — see the matching comment in ed11y_get_global_dismissals().
 	$previous = $wpdb->suppress_errors();
-	// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery, PluginCheck.Security.DirectDB.UnescapedDBParameter -- table names interpolated from $wpdb->prefix; user input passed via $wpdb->prepare().
+	// phpcs:disable WordPress.DB.DirectDatabaseQuery -- custom-table read; per-user, per-page result, so caching buys nothing.
 	$rows = $wpdb->get_results(
 		$wpdb->prepare(
-			"SELECT {$dtable}.result_key, {$dtable}.element_id, {$dtable}.dismissal_status
-			FROM {$dtable}
-			INNER JOIN {$utable} ON {$utable}.pid = {$dtable}.pid
+			"SELECT d.result_key, d.element_id, d.dismissal_status
+			FROM %i AS d
+			INNER JOIN %i AS u ON u.pid = d.pid
 			WHERE (
-				{$utable}.page_url = %s
+				u.page_url = %s
 				OR (
 					0 < %d
-					AND {$utable}.post_id = %d
+					AND u.post_id = %d
 				)
 			)
 			AND (
-				{$dtable}.dismissal_status = 'ok'
+				d.dismissal_status = 'ok'
 				OR (
-					{$dtable}.dismissal_status = 'hide'
-					AND {$dtable}.user = %d
+					d.dismissal_status = 'hide'
+					AND d.user = %d
 				)
 			)
 			;",
 			array(
+				$dtable,
+				$utable,
 				$current_page,
 				$post_id,
 				$post_id,
@@ -1062,7 +1065,7 @@ function ed11y_get_page_dismissals( int $user_id, string $current_page, int $pos
 			)
 		)
 	);
-	// phpcs:enable
+	// phpcs:enable WordPress.DB.DirectDatabaseQuery
 	$wpdb->suppress_errors( $previous );
 
 	if ( ! is_array( $rows ) ) {
@@ -1787,8 +1790,9 @@ add_filter( 'wp_get_attachment_image_attributes', 'ed11y_add_attachment_id_on_im
  * @return string
  */
 function ed11y_old_slug_redirect_url_filter( $link ) {
-	if ( isset( $_GET['ed1ref'] ) && isset( $_REQUEST['_wpnonce'] ) && wp_verify_nonce( $_REQUEST['_wpnonce'], 'ed1ref' ) ) { // phpcs:ignore
-		$link = add_query_arg( 'ed1ref', intval( $_GET['ed1ref'] ), $link ); // phpcs:ignore
+	$nonce = isset( $_REQUEST['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['_wpnonce'] ) ) : '';
+	if ( $nonce && isset( $_GET['ed1ref'] ) && wp_verify_nonce( $nonce, 'ed1ref' ) ) {
+		$link = add_query_arg( 'ed1ref', absint( $_GET['ed1ref'] ), $link );
 	}
 	return $link;
 }

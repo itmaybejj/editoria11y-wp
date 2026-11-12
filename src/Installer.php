@@ -19,23 +19,15 @@
  * |                        | translating result_key (v2 camelCase → v3 UPPER_SNAKE) and    |
  * |                        | re-hashing element_id against the new key.                    |
  * | 2.0-narrow-pending     | Cursor reached MAX(id); ready for the element_id column       |
- * |                        | narrow. Transient inside the rehash worker (the walk hands    |
- * |                        | straight off to the narrow step) — only observable when the   |
- * |                        | worker died between the two, and then the cron re-drives it.  |
- * |                        | check_tables() never narrows from a page load.                |
- * | 2.0-failed             | MODIFY element_id char(64) failed, OR the straggler stall     |
- * |                        | detector tripped (same stuck rows after two full walks).      |
- * |                        | Schema is functional but column is wide; sticky until retry.  |
+ * |                        | narrow.                                                       |
+ * | 2.0-failed             | MODIFY element_id char(64) failed. Schema is functional but   |
+ * |                        | column is wide; sticky until retry.                           |
  * | 1.4                    | Legacy alias for "all migration steps complete." Pre-v3 sites |
  * |                        | that completed the original WP plugin's 1.2 → 1.4 migration   |
  * |                        | before the v3 result_key translation landed; treated as a     |
  * |                        | transient state — check_tables() pushes it through a one-shot |
  * |                        | key-translation pass and advances to 2.0. Fresh installs and  |
  * |                        | newly-completed migrations skip 1.4 entirely.                 |
- * | 1.4-rehashing,         | Legacy in-flight markers from the previously shipped 1.2→1.4  |
- * | 1.4-rehash-complete,   | rehash line, seen when this build lands on a site mid-drain.  |
- * | 1.4-failed             | check_tables() maps all three onto '2.0-migrating' with the   |
- * |                        | cursor reset — the walk repairs every population they leave.  |
  * | 2.0                    | v3 data shape: hashed element_ids, UPPER_SNAKE result_keys,   |
  * |                        | aligned with the bundled JS library. Transient — check_tables |
  * |                        | immediately runs the 2.1 hardening pass from here.            |
@@ -74,64 +66,16 @@ class Installer {
 
 	/**
 	 * Batch size for the dismissal element_id rehash worker. Each batch is
-	 * REHASH_BATCH_SIZE indexed single-row autocommit UPDATEs inside
-	 * WP-Cron's loopback request — off the visitor path — so the sizing
-	 * question is drain time, not page performance: 1000 rows every 5
-	 * minutes clears a 100k-row dismissals table in ~8 hours (the old
-	 * 250/15-minute pairing took over 4 days). On multisite the AGGREGATE
-	 * load is bounded by the network concurrency slots below, not by this
-	 * number — shrinking the batch does not reduce how many sites hit the
-	 * database at once.
+	 * REHASH_BATCH_SIZE indexed single-row UPDATEs inside WP-Cron's
+	 * loopback request — off the visitor path — so the sizing question is
+	 * drain time, not page performance: 1000 rows every 5 minutes clears a
+	 * 100k-row dismissals table in ~8 hours (the old 250/15-minute pairing
+	 * took over 4 days).
 	 */
 	const REHASH_BATCH_SIZE = 1000;
 
 	/** Cron action name for the rehash worker. */
 	const REHASH_CRON_HOOK = 'editoria11y_rehash_dismissals';
-
-	/**
-	 * Per-site advisory lock row for the rehash worker, stored in the
-	 * blog's own options table. A DB row (not wp_cache) because on stock
-	 * WP without a persistent object-cache drop-in `wp_cache_add()` is
-	 * request-local — it "succeeds" in every request and locks nothing.
-	 */
-	const REHASH_LOCK_OPTION = 'editoria11y_rehash_lock';
-
-	/**
-	 * Seconds before a held rehash/narrow lock is treated as abandoned
-	 * (worker killed mid-batch) and eligible for takeover. Must stay
-	 * comfortably ABOVE the worst-case batch + narrow duration on a loaded
-	 * server — a TTL shorter than a batch lets a second worker into the
-	 * same cursor window, and the resulting row-lock contention makes
-	 * batches slower, which causes more overlap (the failure mode a 40k-
-	 * site multisite reported against the old 60-second cache lock).
-	 */
-	const REHASH_LOCK_TTL = 900;
-
-	/**
-	 * Attempts before a row whose UPDATE/DELETE keeps failing (e.g. a
-	 * recurring deadlock victim) is parked and walked past. Parked rows
-	 * surface later in the narrow pre-flight straggler count.
-	 */
-	const REHASH_MAX_ROW_RETRIES = 3;
-
-	/**
-	 * Option-name prefix for the network-wide concurrency slots, stored in
-	 * the MAIN site's options table (the one table every site of the
-	 * network can reach with an atomic unique-key insert — wp_sitemeta has
-	 * no unique meta_key index, so it cannot provide test-and-set).
-	 */
-	const REHASH_NETWORK_SLOT_PREFIX = 'editoria11y_rehash_slot_';
-
-	/**
-	 * Default number of sites allowed to run a rehash batch (or the narrow
-	 * DDL) concurrently across the whole network. Per-site batches are
-	 * cheap — single-row primary-key autocommit UPDATEs — but a large
-	 * multisite runs one worker per site, and the database server pays the
-	 * AGGREGATE (redo log, binlog, buffer pool). Filterable via
-	 * `editoria11y_rehash_network_concurrency` for hosts that want a
-	 * different ceiling.
-	 */
-	const REHASH_NETWORK_SLOTS = 2;
 
 	/**
 	 * Custom cron schedule slug registered in cron_schedules (a true five
@@ -177,13 +121,8 @@ class Installer {
 	 * is network-activated; subsites still rely on the lazy check_tables()
 	 * calls in the runtime read paths (and in MigrationPanel) to seed their
 	 * own schema on first admin/editor request.
-	 *
-	 * On multisite, first collapses any duplicate Freemius `fs_accounts`
-	 * rows in wp_sitemeta (see NetworkOptionIntegrity) so activation on an
-	 * already-damaged network does not stall rewriting every copy.
 	 */
 	public static function activate(): void {
-		NetworkOptionIntegrity::repair_on_activate();
 		self::check_tables();
 	}
 
@@ -237,25 +176,9 @@ class Installer {
 		delete_site_option( 'ed11y_network_custom_rules' );
 		delete_site_option( 'ed11ycsa_network_license_state' );
 		delete_site_option( 'ed11y_network_defaults_backfill_state' );
-		delete_site_option( 'ed11y_network_defaults_history' );
 		// Pre-3.0 builds cached the payload in a (network-scoped) site
 		// transient; clear that legacy key too.
 		delete_site_transient( 'editoria11y_settings' );
-
-		// Network rehash-concurrency slot rows live in the main site's
-		// options table and are written with raw SQL (never through the
-		// option API), so they're removed the same way. The LIKE pattern
-		// tolerates a concurrency filter having raised the slot count.
-		global $wpdb;
-		$base_options = $wpdb->base_prefix . 'options';
-		// phpcs:disable WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- one-shot uninstall cleanup of raw-written lock rows; table name is $wpdb->base_prefix.literal.
-		$wpdb->query(
-			$wpdb->prepare(
-				"DELETE FROM {$base_options} WHERE option_name LIKE %s",
-				$wpdb->esc_like( self::REHASH_NETWORK_SLOT_PREFIX ) . '%'
-			)
-		);
-		// phpcs:enable WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
 	}
 
 	/**
@@ -266,9 +189,10 @@ class Installer {
 	private static function uninstall_current_blog(): void {
 		global $wpdb;
 
-		$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}ed11y_dismissals" ); // phpcs:ignore
-		$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}ed11y_results" ); // phpcs:ignore
-		$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}ed11y_urls" ); // phpcs:ignore
+		// Children first: results and dismissals FK-reference urls.
+		foreach ( array( 'ed11y_dismissals', 'ed11y_results', 'ed11y_urls' ) as $table ) {
+			$wpdb->query( $wpdb->prepare( 'DROP TABLE IF EXISTS %i', $wpdb->prefix . $table ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery -- uninstall DDL; WP has no API for dropping plugin tables.
+		}
 
 		delete_option( 'ed11y_plugin_settings' );
 		// CSA-side options shipped with the v3 settings split. Always
@@ -281,12 +205,8 @@ class Installer {
 		delete_option( 'editoria11y_db_version' );
 		delete_option( 'editoria11y_id_pepper' );
 		delete_option( 'editoria11y_rehash_cursor' );
-		delete_option( 'editoria11y_rehash_retry' );
-		delete_option( 'editoria11y_rehash_stragglers' );
-		delete_option( self::REHASH_LOCK_OPTION );
 		delete_option( 'ed11y_got_post_ids' );
 		delete_option( 'ed11y_disabled_network_rules' );
-		delete_option( \Editoria11y\FreemiusTrialNotice::OPTION );
 		delete_transient( 'editoria11y_settings' );
 	}
 
@@ -406,22 +326,18 @@ class Installer {
 		// Kept verbatim from the old code path — sites still on v1.0 hit this on
 		// the way through. Use column-existence rather than column count so future
 		// schema additions don't accidentally re-trigger the ALTER.
-		$has_post_id = false;
-		foreach ( $wpdb->get_results( "DESC $table_urls", ARRAY_A ) as $col ) { // phpcs:ignore
-			if ( 'post_id' === $col['Field'] ) {
-				$has_post_id = true;
-				break;
-			}
-		}
-		// phpcs:disable WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnquotedComplexPlaceholder, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Schema-mutation block. Table identifiers come from $wpdb->prefix . literals (never user input), placeholders %1s are intentional for identifiers (not values), the cache is irrelevant for one-shot DDL, and the path is gated by check_tables() so duplicate schema work is prevented above this scope.
-		if ( ! $has_post_id ) {
+		if ( ! in_array( 'post_id', self::table_columns( $table_urls ), true ) ) {
+			// phpcs:disable WordPress.DB.DirectDatabaseQuery -- one-shot schema DDL gated by check_tables(); caching is irrelevant.
 			$wpdb->query(
-				"ALTER TABLE $table_urls
-				ADD post_id int(9) unsigned NOT NULL default 0,
-				DROP PRIMARY KEY, ADD PRIMARY KEY pid ( pid ),
-				ADD KEY post_id (post_id)
-				;"
+				$wpdb->prepare(
+					'ALTER TABLE %i
+					ADD post_id int(9) unsigned NOT NULL default 0,
+					DROP PRIMARY KEY, ADD PRIMARY KEY pid ( pid ),
+					ADD KEY post_id (post_id)',
+					$table_urls
+				)
 			);
+			// phpcs:enable WordPress.DB.DirectDatabaseQuery
 		}
 
 		// Replace any pre-existing (auto-named) pid foreign keys with the
@@ -429,7 +345,6 @@ class Installer {
 		// can't reliably produce.
 		self::ensure_pid_foreign_key( $table_results, $table_urls, $wpdb->prefix . 'ed11y_results_pid' );
 		self::ensure_pid_foreign_key( $table_dismissals, $table_urls, $wpdb->prefix . 'ed11y_dismissal_pid' );
-		// phpcs:enable WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnquotedComplexPlaceholder, PluginCheck.Security.DirectDB.UnescapedDBParameter
 		return true;
 	}
 
@@ -451,8 +366,8 @@ class Installer {
 	 */
 	private static function ensure_pid_foreign_key( string $child_table, string $parent_table, string $constraint_name ): void {
 		global $wpdb;
-		// phpcs:disable WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnquotedComplexPlaceholder, PluginCheck.Security.DirectDB.UnescapedDBParameter -- One-shot DDL; identifiers are $wpdb->prefix . literals; %1s placeholders are intentional for identifiers.
-		$row = $wpdb->get_row( "SHOW CREATE TABLE $child_table" );
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery -- One-shot schema DDL gated by check_tables(); caching is irrelevant.
+		$row = $wpdb->get_row( $wpdb->prepare( 'SHOW CREATE TABLE %i', $child_table ) );
 		if ( ! $row ) {
 			return;
 		}
@@ -472,12 +387,12 @@ class Installer {
 		if ( null !== $existing ) {
 			$wpdb->last_error = '';
 			$wpdb->query(
-				$wpdb->prepare( "ALTER TABLE $child_table DROP FOREIGN KEY %1s", array( $existing ) )
+				$wpdb->prepare( 'ALTER TABLE %i DROP FOREIGN KEY %i', $child_table, $existing )
 			);
 			if ( '' !== $wpdb->last_error ) {
 				$wpdb->last_error = '';
 				$wpdb->query(
-					$wpdb->prepare( "ALTER TABLE $child_table DROP CONSTRAINT %1s", array( $existing ) )
+					$wpdb->prepare( 'ALTER TABLE %i DROP CONSTRAINT %i', $child_table, $existing )
 				);
 			}
 			if ( '' !== $wpdb->last_error ) {
@@ -490,12 +405,14 @@ class Installer {
 
 		$wpdb->query(
 			$wpdb->prepare(
-				"ALTER TABLE $child_table ADD CONSTRAINT %1s FOREIGN KEY(pid) REFERENCES $parent_table (pid) ON DELETE CASCADE",
-				array( $constraint_name )
+				'ALTER TABLE %i ADD CONSTRAINT %i FOREIGN KEY(pid) REFERENCES %i (pid) ON DELETE CASCADE',
+				$child_table,
+				$constraint_name,
+				$parent_table
 			)
 		);
 		$wpdb->suppress_errors( $suppress );
-		// phpcs:enable WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnquotedComplexPlaceholder, PluginCheck.Security.DirectDB.UnescapedDBParameter
+		// phpcs:enable WordPress.DB.DirectDatabaseQuery
 	}
 
 	/**
@@ -518,10 +435,7 @@ class Installer {
 			'ed11y_dismissals' => array( 'result_name', 'stale_date' ),
 		);
 		foreach ( $required as $table => $columns ) {
-			$existing = array();
-			foreach ( $wpdb->get_results( "DESC {$wpdb->prefix}{$table}", ARRAY_A ) as $col ) { // phpcs:ignore
-				$existing[] = $col['Field'];
-			}
+			$existing = self::table_columns( $wpdb->prefix . $table );
 			foreach ( $columns as $column ) {
 				if ( ! in_array( $column, $existing, true ) ) {
 					return false;
@@ -576,29 +490,6 @@ class Installer {
 			return true;
 		}
 
-		// Legacy in-flight markers from the previously shipped 1.2 → 1.4
-		// rehash line (pre-v3 state names). Without this mapping an
-		// upgraded-mid-drain site wedges: '1.4-rehashing' and
-		// '1.4-rehash-complete' have no ladder rung (schema_state() reads
-		// 'pre-v3' forever), and '1.4-failed' falls into the -failed branch
-		// below un-whitelisted, refusing writes on a site the old build
-		// treated as functional. All three map onto the v3 cursor walk,
-		// which idempotently repairs every population they can leave
-		// behind: rows hashed under the old recipe get the key-only
-		// translation, raw rows get the full rehash, and the narrow
-		// re-runs at the end (giving the '1.4-failed' ALTER one fresh
-		// attempt under the new worker before its circuit breaker can
-		// re-trip as '2.0-failed').
-		if ( in_array( $version, array( '1.4-rehashing', '1.4-rehash-complete', '1.4-failed' ), true ) ) {
-			// Restart the walk from id 0: rows below the legacy cursor are
-			// hashed but still carry camelCase result_keys, and only the
-			// walk translates them.
-			delete_option( 'editoria11y_rehash_cursor' );
-			update_option( 'editoria11y_db_version', '2.0-migrating' );
-			self::schedule_rehash();
-			return true;
-		}
-
 		// Sticky -failed states. 1.2/1.3-failed mean the column shape is unknown
 		// (refuse writes); 2.0-failed means only the type narrow is pending,
 		// 2.1-failed means only the hardening pass is pending, and 2.2-failed
@@ -608,14 +499,8 @@ class Installer {
 			return in_array( $version, array( '2.0-failed', '2.1-failed', '2.2-failed' ), true );
 		}
 
-		// '2.0-migrating' and '2.0-narrow-pending' are both functional; the
-		// cron / inline UI handles the rest. The narrow step (full-scan
-		// pre-flight + table-copy ALTER) deliberately does NOT run here:
-		// check_tables() fires on editor page loads, and a table-copy ALTER
-		// launched from a page request parks a metadata lock that queues
-		// every other query on the dismissals table behind it. The locked,
-		// network-throttled rehash worker runs the narrow instead.
-		if ( '2.0-migrating' === $version || '2.0-narrow-pending' === $version ) {
+		// '2.0-migrating' is also functional; the cron / inline UI handles the rest.
+		if ( '2.0-migrating' === $version ) {
 			// Re-arm the background drain if it isn't queued (cheap no-op
 			// otherwise). deactivate() unschedules the cron, and nothing on
 			// the reactivation path rescheduled it — a deactivate/reactivate
@@ -631,7 +516,7 @@ class Installer {
 			// Another request holds the lock; treat the schema as functional
 			// for this request — the holder is doing the work. If they fail,
 			// their -failed marker becomes visible to the next request.
-			return '1.3' === $version || '1.4' === $version || '2.0' === $version || '2.1' === $version;
+			return '1.3' === $version || '2.0-narrow-pending' === $version || '1.4' === $version || '2.0' === $version || '2.1' === $version;
 		}
 
 		try {
@@ -690,6 +575,18 @@ class Installer {
 				self::schedule_rehash();
 				update_option( 'editoria11y_db_version', '2.0-migrating' );
 				$version = '2.0-migrating';
+			}
+
+			// 2.0-narrow-pending -> 2.0: pre-flight + ALTER MODIFY.
+			if ( '2.0-narrow-pending' === $version ) {
+				update_option( 'editoria11y_db_version', '2.0-failed' );
+				if ( self::narrow_element_id() ) {
+					update_option( 'editoria11y_db_version', '2.0' );
+					self::unschedule_rehash();
+					$version = '2.0';
+				}
+				// On failure, narrow_element_id() either left '2.0-failed' (real
+				// ALTER error — sticky) or rolled back to '2.0-migrating'.
 			}
 
 			// Legacy 1.4: pre-v3-translation site that completed the original
@@ -767,12 +664,7 @@ class Installer {
 		if ( in_array( $version, array( '1.4', '2.0', '2.1', '2.1-failed', '2.2', '2.2-failed' ), true ) ) {
 			return 'hashed-only';
 		}
-		// The legacy 1.4-line in-flight markers are 'dual' too: element_ids
-		// are mixed raw/hashed, and check_tables() maps them onto the
-		// '2.0-migrating' walk on its next call. Listing them here keeps a
-		// schema_state() read that races ahead of that mapping from
-		// refusing writes ('1.4-failed') or reporting 'pre-v3'.
-		if ( in_array( $version, array( '1.3', '2.0-migrating', '2.0-narrow-pending', '2.0-failed', '1.4-rehashing', '1.4-rehash-complete', '1.4-failed' ), true ) ) {
+		if ( in_array( $version, array( '1.3', '2.0-migrating', '2.0-narrow-pending', '2.0-failed' ), true ) ) {
 			return 'dual';
 		}
 		return 'pre-v3';
@@ -917,8 +809,11 @@ class Installer {
 			if ( empty( $clauses ) ) {
 				continue;
 			}
-			$sql = "ALTER TABLE $table " . implode( ', ', $clauses );
-			if ( false === $wpdb->query( $sql ) ) { // phpcs:ignore
+			// The ADD COLUMN clauses are fixed literals from $alters above
+			// (no user input, no `%`), so concatenating them into the
+			// prepared template is safe; the table goes through %i.
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- one-shot migration DDL; clauses are literal column definitions.
+			if ( false === $wpdb->query( $wpdb->prepare( 'ALTER TABLE %i ' . implode( ', ', $clauses ), $table ) ) ) {
 				return false;
 			}
 		}
@@ -930,7 +825,7 @@ class Installer {
 		// since the value is a 64-char hex hash).
 		$indexes = self::table_indexes( $dismissals );
 		if ( ! in_array( 'pid_result_key_element_id', $indexes, true ) ) {
-			$wpdb->query( "ALTER TABLE $dismissals ADD INDEX pid_result_key_element_id (pid, result_key, element_id(64))" ); // phpcs:ignore
+			$wpdb->query( $wpdb->prepare( 'ALTER TABLE %i ADD INDEX pid_result_key_element_id (pid, result_key, element_id(64))', $dismissals ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery -- one-shot migration DDL.
 		}
 		// Drop the now-redundant single-column indexes the composite supersedes.
 		// The original schema named the pid index "page_url" by mistake; tolerate
@@ -938,7 +833,7 @@ class Installer {
 		// of this same migration and is now redundant.
 		foreach ( array( 'page_url', 'pid', 'element_id' ) as $stale_index ) {
 			if ( in_array( $stale_index, $indexes, true ) ) {
-				$wpdb->query( "ALTER TABLE $dismissals DROP INDEX $stale_index" ); // phpcs:ignore
+				$wpdb->query( $wpdb->prepare( 'ALTER TABLE %i DROP INDEX %i', $dismissals, $stale_index ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery -- one-shot migration DDL.
 			}
 		}
 
@@ -1002,7 +897,7 @@ class Installer {
 			add_option( 'editoria11y_id_pepper', $pepper, '', 'yes' );
 			return $pepper;
 		}
-		$wpdb->update( // phpcs:ignore
+		$wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- update_option() can't flip only the autoload flag on an unchanged value.
 			$wpdb->options,
 			array( 'autoload' => 'yes' ),
 			array( 'option_name' => 'editoria11y_id_pepper' )
@@ -1014,57 +909,33 @@ class Installer {
 	/**
 	 * Pre-flight gate, then ALTER MODIFY element_id char(64).
 	 *
-	 * Called only from run_narrow_step() — inside the rehash worker's
-	 * lock/throttle, never from a page-load path (the pre-flight is a full
-	 * table scan; the ALTER is a table-copy rebuild).
-	 *
-	 * Returns true on success. On pre-flight failure (stragglers exist)
-	 * rolls the version back to '2.0-migrating' with the cursor parked
-	 * just below the first straggler and returns false — unless the same
-	 * straggler count already survived a full walk, in which case the
-	 * caller's sticky '2.0-failed' marker is left in place (stall
-	 * circuit-breaker). On actual ALTER failure leaves '2.0-failed' and
+	 * Returns true on success. On pre-flight failure (stragglers exist) rolls
+	 * the version back to '2.0-migrating' and returns false; on actual ALTER
+	 * failure leaves '2.0-failed' (the caller wrote it before this call) and
 	 * returns false.
 	 */
 	public static function narrow_element_id(): bool {
 		global $wpdb;
 		$dtable = $wpdb->prefix . 'ed11y_dismissals';
 
-		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery, PluginCheck.Security.DirectDB.UnescapedDBParameter -- $dtable is $wpdb->prefix.literal; pre-flight COUNT and the ALTER MODIFY are worker-time DDL gated by the rehash lock so caching is irrelevant.
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery -- pre-flight COUNT and the ALTER MODIFY are migration-time DDL gated by check_tables(), so caching is irrelevant.
 		$bad = (int) $wpdb->get_var(
-			"SELECT COUNT(*) FROM $dtable
-			WHERE CHAR_LENGTH(element_id) <> 64
-				OR element_id NOT REGEXP '^[0-9a-f]{64}$'"
+			$wpdb->prepare(
+				"SELECT COUNT(*) FROM %i
+				WHERE CHAR_LENGTH(element_id) <> 64
+					OR element_id NOT REGEXP '^[0-9a-f]{64}$'",
+				$dtable
+			)
 		);
 		if ( $bad > 0 ) {
-			$previous = get_option( 'editoria11y_rehash_stragglers', false );
-			if ( false !== $previous && (int) $previous === $bad ) {
-				// The exact same straggler count survived two full walks —
-				// these are parked rows another walk cannot fix. Leave the
-				// caller's sticky '2.0-failed' marker (schema stays
-				// functional, column stays wide) and let the migration
-				// panel surface the count with a Retry control instead of
-				// re-walking the table forever.
-				return false;
-			}
-			update_option( 'editoria11y_rehash_stragglers', $bad, false );
-			// Re-open the walk AT the first straggler, not id 0 — every id
-			// below it has already been verified hashed, and on a large
-			// table the difference is days of pointless cursor batches.
-			$restart = (int) $wpdb->get_var(
-				"SELECT IFNULL(MIN(id), 1) - 1 FROM $dtable
-				WHERE CHAR_LENGTH(element_id) <> 64
-					OR element_id NOT REGEXP '^[0-9a-f]{64}$'"
-			);
-			update_option( 'editoria11y_rehash_cursor', max( 0, $restart ), false );
 			update_option( 'editoria11y_db_version', '2.0-migrating' );
 			self::schedule_rehash();
 			return false;
 		}
 
 		// CHARACTER SET ascii matches what fresh installs get from create_database().
-		$result = $wpdb->query( "ALTER TABLE $dtable MODIFY element_id char(64) CHARACTER SET ascii NOT NULL DEFAULT ''" );
-		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery, PluginCheck.Security.DirectDB.UnescapedDBParameter
+		$result = $wpdb->query( $wpdb->prepare( "ALTER TABLE %i MODIFY element_id char(64) CHARACTER SET ascii NOT NULL DEFAULT ''", $dtable ) );
+		// phpcs:enable WordPress.DB.DirectDatabaseQuery
 		return false !== $result;
 	}
 
@@ -1115,14 +986,14 @@ class Installer {
 	private static function migrate_to_2_1_body( string $utable, string $dtable ): bool {
 		global $wpdb;
 
-		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery, PluginCheck.Security.DirectDB.UnescapedDBParameter -- table names are $wpdb->prefix.literal; migration-time DDL gated by check_tables().
-		$user_column = $wpdb->get_row( "SHOW COLUMNS FROM $dtable LIKE 'user'", ARRAY_A );
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery -- migration-time DDL gated by check_tables(); caching is irrelevant.
+		$user_column = $wpdb->get_row( $wpdb->prepare( 'SHOW COLUMNS FROM %i WHERE Field = %s', $dtable, 'user' ), ARRAY_A );
 		if ( ! is_array( $user_column ) ) {
 			return false;
 		}
 		if ( false === stripos( (string) ( $user_column['Type'] ?? '' ), 'bigint' ) ) {
 			$wpdb->last_error = '';
-			$wpdb->query( "ALTER TABLE $dtable MODIFY user bigint(20) unsigned NOT NULL" );
+			$wpdb->query( $wpdb->prepare( 'ALTER TABLE %i MODIFY user bigint(20) unsigned NOT NULL', $dtable ) );
 			if ( '' !== $wpdb->last_error ) {
 				return false;
 			}
@@ -1130,7 +1001,7 @@ class Installer {
 
 		$already_unique = false;
 		$has_plain_key  = false;
-		foreach ( (array) $wpdb->get_results( "SHOW INDEX FROM $utable", ARRAY_A ) as $index ) {
+		foreach ( (array) $wpdb->get_results( $wpdb->prepare( 'SHOW INDEX FROM %i', $utable ), ARRAY_A ) as $index ) {
 			if ( 'page_url' === ( $index['Key_name'] ?? '' ) ) {
 				if ( '0' === (string) $index['Non_unique'] ) {
 					$already_unique = true;
@@ -1145,22 +1016,26 @@ class Installer {
 
 		$wpdb->last_error = '';
 		$wpdb->query(
-			"DELETE older FROM $utable AS older
-			INNER JOIN $utable AS newer
-				ON older.page_url = newer.page_url AND older.pid < newer.pid"
+			$wpdb->prepare(
+				'DELETE older FROM %i AS older
+				INNER JOIN %i AS newer
+					ON older.page_url = newer.page_url AND older.pid < newer.pid',
+				$utable,
+				$utable
+			)
 		);
 		if ( '' !== $wpdb->last_error ) {
 			return false;
 		}
 
 		if ( $has_plain_key ) {
-			$wpdb->query( "ALTER TABLE $utable DROP KEY page_url" );
+			$wpdb->query( $wpdb->prepare( 'ALTER TABLE %i DROP KEY page_url', $utable ) );
 			if ( '' !== $wpdb->last_error ) {
 				return false;
 			}
 		}
-		$wpdb->query( "ALTER TABLE $utable ADD UNIQUE KEY page_url (page_url)" );
-		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery, PluginCheck.Security.DirectDB.UnescapedDBParameter
+		$wpdb->query( $wpdb->prepare( 'ALTER TABLE %i ADD UNIQUE KEY page_url (page_url)', $utable ) );
+		// phpcs:enable WordPress.DB.DirectDatabaseQuery
 		return '' === $wpdb->last_error;
 	}
 
@@ -1182,9 +1057,8 @@ class Installer {
 		if ( in_array( 'in_content', self::table_columns( $dismissals ), true ) ) {
 			return true;
 		}
-		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery, PluginCheck.Security.DirectDB.UnescapedDBParameter -- table name is $wpdb->prefix.literal; migration-time DDL gated by check_tables().
-		return false !== $wpdb->query( "ALTER TABLE $dismissals ADD COLUMN in_content tinyint(1) NOT NULL default 1" );
-		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery, PluginCheck.Security.DirectDB.UnescapedDBParameter
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery -- migration-time DDL gated by check_tables().
+		return false !== $wpdb->query( $wpdb->prepare( 'ALTER TABLE %i ADD COLUMN in_content tinyint(1) NOT NULL default 1', $dismissals ) );
 	}
 
 	/**
@@ -1194,11 +1068,6 @@ class Installer {
 	public static function retry_migration(): bool {
 		$version = (string) get_option( 'editoria11y_db_version', '' );
 		if ( '-failed' === substr( $version, -7 ) ) {
-			// Reset the rehash worker's failure bookkeeping so a retry
-			// gets fresh straggler cycles and fresh per-row attempts
-			// (otherwise the stall detector would trip again immediately).
-			delete_option( 'editoria11y_rehash_stragglers' );
-			delete_option( 'editoria11y_rehash_retry' );
 			$rollback = array(
 				'1.2-failed' => '',
 				'1.3-failed' => '1.2',
@@ -1219,163 +1088,6 @@ class Installer {
 	}
 
 	// ------------------------------------------------------------------
-	// Advisory locks (cross-request, DB-backed)
-	// ------------------------------------------------------------------
-
-	/**
-	 * Atomically acquire a named advisory lock row in an options-shaped
-	 * table. Returns the holder token on success, null when the lock is
-	 * held by a live worker.
-	 *
-	 * Raw SQL on purpose, for two reasons the option API cannot satisfy:
-	 *
-	 *   1. Atomicity. `add_option()` runs INSERT ... ON DUPLICATE KEY
-	 *      UPDATE, which silently OVERWRITES a concurrently-held lock (see
-	 *      the ensure_pepper() note on the same hazard). The options
-	 *      table's UNIQUE option_name key makes INSERT IGNORE a true
-	 *      test-and-set: exactly one contender sees 1 affected row.
-	 *   2. Cache coherency. alloptions/notoptions caches are per-request
-	 *      on stock WP and per-blog under a persistent drop-in; a lock
-	 *      read through them can be stale. These rows are never touched
-	 *      through get_option()/update_option().
-	 *
-	 * Stale takeover: the token embeds the acquisition timestamp. A row
-	 * older than REHASH_LOCK_TTL belongs to a worker that died mid-batch;
-	 * takeover is DELETE-by-exact-value followed by a fresh INSERT IGNORE,
-	 * so when several contenders race the takeover, at most one wins.
-	 *
-	 * @param string $table Fully-prefixed options table to lock in.
-	 * @param string $name  Lock row option_name.
-	 * @return string|null Holder token, or null when not acquired.
-	 */
-	private static function acquire_advisory_lock( string $table, string $name ): ?string {
-		global $wpdb;
-		$token = time() . ':' . bin2hex( random_bytes( 8 ) );
-
-		// phpcs:disable WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- $table is $wpdb->prefix/base_prefix . 'options'; the lock must bypass the option caches (see docblock).
-		$inserted = $wpdb->query(
-			$wpdb->prepare(
-				"INSERT IGNORE INTO {$table} (option_name, option_value, autoload) VALUES (%s, %s, 'no')",
-				$name,
-				$token
-			)
-		);
-		if ( 1 === $inserted ) {
-			return $token;
-		}
-
-		// Row exists: held, or abandoned by a killed worker.
-		$current = $wpdb->get_var(
-			$wpdb->prepare( "SELECT option_value FROM {$table} WHERE option_name = %s", $name )
-		);
-		if ( null === $current || (int) $current > time() - self::REHASH_LOCK_TTL ) {
-			// Live holder (or released between our INSERT and SELECT —
-			// the next tick will get it).
-			return null;
-		}
-		$wpdb->query(
-			$wpdb->prepare( "DELETE FROM {$table} WHERE option_name = %s AND option_value = %s", $name, $current )
-		);
-		$inserted = $wpdb->query(
-			$wpdb->prepare(
-				"INSERT IGNORE INTO {$table} (option_name, option_value, autoload) VALUES (%s, %s, 'no')",
-				$name,
-				$token
-			)
-		);
-		// phpcs:enable WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
-		return 1 === $inserted ? $token : null;
-	}
-
-	/**
-	 * Release an advisory lock — only when we still hold it (exact token
-	 * match), so a worker that overran the TTL cannot free its successor's
-	 * lock.
-	 *
-	 * @param string $table Fully-prefixed options table the lock lives in.
-	 * @param string $name  Lock row option_name.
-	 * @param string $token Token returned by acquire_advisory_lock().
-	 */
-	private static function release_advisory_lock( string $table, string $name, string $token ): void {
-		global $wpdb;
-		// phpcs:disable WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- see acquire_advisory_lock().
-		$wpdb->query(
-			$wpdb->prepare( "DELETE FROM {$table} WHERE option_name = %s AND option_value = %s", $name, $token )
-		);
-		// phpcs:enable WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
-	}
-
-	/**
-	 * Acquire this site's rehash worker lock (current blog's options
-	 * table, so the scope is per-site on multisite).
-	 *
-	 * @return string|null Holder token, or null when another worker is live.
-	 */
-	public static function acquire_rehash_lock(): ?string {
-		global $wpdb;
-		return self::acquire_advisory_lock( $wpdb->options, self::REHASH_LOCK_OPTION );
-	}
-
-	/**
-	 * Release this site's rehash worker lock.
-	 *
-	 * @param string $token Token from acquire_rehash_lock().
-	 */
-	public static function release_rehash_lock( string $token ): void {
-		global $wpdb;
-		self::release_advisory_lock( $wpdb->options, self::REHASH_LOCK_OPTION, $token );
-	}
-
-	/**
-	 * Claim one of the network-wide rehash concurrency slots.
-	 *
-	 * Slots live in the main site's options table (reachable from every
-	 * blog via $wpdb->base_prefix, with the unique option_name key the
-	 * atomic acquire needs). The starting slot is randomized so thousands
-	 * of sites waking on the same cron boundary don't all hammer slot 0.
-	 *
-	 * Callable on single-site too (base_prefix === prefix there), but the
-	 * worker only consults it under is_multisite().
-	 *
-	 * @return array|null array{name: string, token: string} or null when
-	 *                    every slot is held.
-	 */
-	public static function acquire_network_slot(): ?array {
-		global $wpdb;
-		$table = $wpdb->base_prefix . 'options';
-
-		/**
-		 * Filters how many sites may run a rehash batch (or the element_id
-		 * narrow DDL) concurrently across the network.
-		 *
-		 * @param int $slots Defaults to Installer::REHASH_NETWORK_SLOTS.
-		 */
-		$slots  = max( 1, (int) apply_filters( 'editoria11y_rehash_network_concurrency', self::REHASH_NETWORK_SLOTS ) );
-		$offset = wp_rand( 0, $slots - 1 );
-		for ( $i = 0; $i < $slots; $i++ ) {
-			$name  = self::REHASH_NETWORK_SLOT_PREFIX . ( ( $offset + $i ) % $slots );
-			$token = self::acquire_advisory_lock( $table, $name );
-			if ( null !== $token ) {
-				return array(
-					'name'  => $name,
-					'token' => $token,
-				);
-			}
-		}
-		return null;
-	}
-
-	/**
-	 * Release a network concurrency slot.
-	 *
-	 * @param array $slot array{name: string, token: string} from acquire_network_slot().
-	 */
-	public static function release_network_slot( array $slot ): void {
-		global $wpdb;
-		self::release_advisory_lock( $wpdb->base_prefix . 'options', (string) $slot['name'], (string) $slot['token'] );
-	}
-
-	// ------------------------------------------------------------------
 	// Rehash worker
 	// ------------------------------------------------------------------
 
@@ -1393,74 +1105,47 @@ class Installer {
 	 * progress survives restarts, and the SELECT becomes an indexed range
 	 * scan bounded by LIMIT — O(batch_size) regardless of table size.
 	 *
-	 * Concurrency, two layers:
+	 * Concurrency: cron and admin-AJAX can both invoke this. We take a short
+	 * cache-backed lock to keep two workers from re-processing the same window
+	 * (the UPDATEs themselves are idempotent — same input gives same hash —
+	 * but the wasted I/O on a busy site is worth avoiding).
 	 *
-	 *   1. Per-site: a DB-backed advisory lock (see acquire_rehash_lock)
-	 *      keeps cron and admin-AJAX from processing the same cursor
-	 *      window. The UPDATEs are idempotent, but overlapping workers
-	 *      contend on the same row locks and deadlock each other.
-	 *   2. Network-wide (multisite): the worker must also claim one of
-	 *      REHASH_NETWORK_SLOTS concurrency slots. Without the throttle, a
-	 *      network update puts thousands of sites into the drain at once
-	 *      and every 5-minute cron sweep fires thousands of concurrent
-	 *      batches at one database server. A site that misses a slot
-	 *      simply skips the tick; its recurring event retries in 5 min.
-	 *
-	 * When the cursor reaches the table's MAX(id), the worker runs the
-	 * narrow step (pre-flight + ALTER) itself, in this same locked,
-	 * throttled context — never from a page-load check_tables() call.
+	 * When the cursor reaches the table's MAX(id), this advances the version to
+	 * 2.0-narrow-pending and unschedules the cron. The next check_tables()
+	 * call runs the narrow.
 	 */
 	public static function rehash_batch(): array {
-		$token = self::acquire_rehash_lock();
-		if ( null === $token ) {
-			// Another worker is live on this site; report no progress.
+		if ( ! wp_cache_add( 'ed11y_rehash_lock', 1, 'editoria11y', 60 ) ) {
+			// Another worker holds the lock; report no progress this tick.
 			return array(
 				'processed' => 0,
 				'remaining' => self::rehash_remaining_estimate(),
 			);
 		}
-		$slot = null;
-		if ( is_multisite() ) {
-			$slot = self::acquire_network_slot();
-			if ( null === $slot ) {
-				// Network concurrency ceiling reached; skip this tick.
-				self::release_rehash_lock( $token );
-				return array(
-					'processed' => 0,
-					'remaining' => self::rehash_remaining_estimate(),
-				);
-			}
-		}
 
 		try {
 			return self::rehash_batch_locked();
 		} finally {
-			if ( null !== $slot ) {
-				self::release_network_slot( $slot );
-			}
-			self::release_rehash_lock( $token );
+			wp_cache_delete( 'ed11y_rehash_lock', 'editoria11y' );
 		}
 	}
 
 	/**
-	 * Inner rehash worker — assumes the caller holds the rehash lock (and,
-	 * on multisite, a network concurrency slot).
+	 * Inner rehash worker — assumes the caller holds ed11y_rehash_lock.
 	 */
 	private static function rehash_batch_locked(): array {
 		global $wpdb;
-		$dtable  = $wpdb->prefix . 'ed11y_dismissals';
-		$version = (string) get_option( 'editoria11y_db_version', '' );
+		$dtable    = $wpdb->prefix . 'ed11y_dismissals';
+		$cursor    = (int) get_option( 'editoria11y_rehash_cursor', 0 );
+		$max_id    = self::max_dismissal_id( $dtable );
+		$processed = 0;
 
-		// Crash recovery / explicit retry: the walk already finished but
-		// the narrow step didn't complete. Run it here, in the locked
-		// worker context.
-		if ( '2.0-narrow-pending' === $version ) {
-			return self::run_narrow_step();
-		}
-		if ( '2.0-migrating' !== $version ) {
-			// Stray cron event on a site that is not mid-drain (already
-			// terminal, or wearing a sticky -failed marker). Walking the
-			// table would be pure wasted I/O; drop the recurring event.
+		if ( $cursor >= $max_id ) {
+			// All ids walked. Mark complete and clean up cursor + cron.
+			delete_option( 'editoria11y_rehash_cursor' );
+			if ( '2.0-migrating' === (string) get_option( 'editoria11y_db_version', '' ) ) {
+				update_option( 'editoria11y_db_version', '2.0-narrow-pending' );
+			}
 			self::unschedule_rehash();
 			return array(
 				'processed' => 0,
@@ -1468,36 +1153,20 @@ class Installer {
 			);
 		}
 
-		$cursor    = (int) get_option( 'editoria11y_rehash_cursor', 0 );
-		$max_id    = (int) $wpdb->get_var( "SELECT IFNULL(MAX(id), 0) FROM $dtable" ); // phpcs:ignore
-		$processed = 0;
-
-		if ( $cursor >= $max_id ) {
-			// All ids walked; hand off to the narrow step.
-			delete_option( 'editoria11y_rehash_cursor' );
-			update_option( 'editoria11y_db_version', '2.0-narrow-pending' );
-			return self::run_narrow_step();
-		}
-
 		// Indexed range scan — O(batch_size) regardless of table size.
-		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery, PluginCheck.Security.DirectDB.UnescapedDBParameter -- $dtable is $wpdb->prefix.'ed11y_dismissals' (literal, not user input); migration query needs to bypass object cache to drive forward state.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery -- migration cursor walk must bypass the object cache to drive forward state.
 		$rows = $wpdb->get_results(
 			$wpdb->prepare(
-				"SELECT id, result_key, element_id FROM $dtable WHERE id > %d ORDER BY id ASC LIMIT %d",
+				'SELECT id, result_key, element_id FROM %i WHERE id > %d ORDER BY id ASC LIMIT %d',
+				$dtable,
 				$cursor,
 				(int) self::REHASH_BATCH_SIZE
 			)
 		);
-		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery, PluginCheck.Security.DirectDB.UnescapedDBParameter
 
-		// $last_id tracks the last row this batch is DONE with (updated,
-		// deleted, skipped-as-clean, or parked after repeated failures).
-		// A row whose write fails under the retry cap stops the batch with
-		// the cursor still BEFORE it, so the next tick retries the row
-		// instead of walking past work that never happened.
 		$last_id = $cursor;
 		foreach ( $rows as $row ) {
-			$row_id      = (int) $row->id;
+			$last_id     = (int) $row->id;
 			$current_key = (string) $row->result_key;
 			$current_id  = (string) $row->element_id;
 			// Lowercase-only, matching the narrow pre-flight's
@@ -1518,147 +1187,62 @@ class Installer {
 			// removed entirely. The corresponding ed11y_results rows are
 			// dropped in translate_results_keys().
 			if ( in_array( $new_key, self::DROP_KEYS, true ) ) {
-				$result = $wpdb->delete( $dtable, array( 'id' => $row_id ), array( '%d' ) ); // phpcs:ignore
-			} elseif ( $is_hashed ) {
-				// Already-hashed row: can't rehash element_id (the raw
-				// input is gone), but the result_key still needs the v3
-				// translation if it changed. Update the key column only.
-				if ( $new_key === $current_key ) {
-					$last_id = $row_id;
-					continue;
-				}
-				$result = $wpdb->update( // phpcs:ignore
-					$dtable,
-					array( 'result_key' => $new_key ),
-					array( 'id' => $row_id ),
-					array( '%s' ),
-					array( '%d' )
-				);
-			} else {
-				// Raw element_id: hash against the NEW key so the digest
-				// matches what the v3 JS library will compute at lookup
-				// time. Update key and element_id in one row write.
-				$result = $wpdb->update( // phpcs:ignore
-					$dtable,
-					array(
-						'result_key' => $new_key,
-						'element_id' => ed11y_hash_element_id( $new_key, $current_id ),
-					),
-					array( 'id' => $row_id ),
-					array( '%s', '%s' ),
-					array( '%d' )
-				);
-			}
-
-			if ( false === $result ) {
-				// Killed statement (deadlock victim, lock-wait timeout, …).
-				// The old code advanced the cursor past silent failures;
-				// the narrow pre-flight then found the straggler and
-				// restarted the whole walk from id 0 — an unbounded
-				// re-walk cycle under sustained contention.
-				if ( ! self::record_row_failure( $row_id ) ) {
-					// Under the retry cap: end the batch with the cursor
-					// still before this row so the next tick retries it.
-					break;
-				}
-				// Poison row: REHASH_MAX_ROW_RETRIES attempts spent. Park
-				// it (walk past); the narrow pre-flight will count it and
-				// the stall detector surfaces it to the admin instead of
-				// re-walking forever.
-			} else {
+				$wpdb->delete( $dtable, array( 'id' => $last_id ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery -- migration row write on a custom table.
 				++$processed;
+				continue;
 			}
-			$last_id = $row_id;
+
+			// Already-hashed row: can't rehash element_id (the raw input is
+			// gone), but the result_key still needs the v3 translation if
+			// it changed. Update the key column only.
+			if ( $is_hashed ) {
+				if ( $new_key !== $current_key ) {
+					$wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery -- migration row write on a custom table.
+						$dtable,
+						array( 'result_key' => $new_key ),
+						array( 'id' => $last_id ),
+						array( '%s' ),
+						array( '%d' )
+					);
+					++$processed;
+				}
+				continue;
+			}
+
+			// Raw element_id: hash against the NEW key so the digest matches
+			// what the v3 JS library will compute at lookup time. Update key
+			// and element_id in one row write.
+			$hashed = ed11y_hash_element_id( $new_key, $current_id );
+			$wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery -- migration row write on a custom table.
+				$dtable,
+				array(
+					'result_key' => $new_key,
+					'element_id' => $hashed,
+				),
+				array( 'id' => $last_id ),
+				array( '%s', '%s' ),
+				array( '%d' )
+			);
+			++$processed;
 		}
 
-		if ( $last_id > $cursor ) {
-			update_option( 'editoria11y_rehash_cursor', $last_id, false );
-		}
+		update_option( 'editoria11y_rehash_cursor', $last_id, false );
 
 		if ( $last_id >= $max_id ) {
 			delete_option( 'editoria11y_rehash_cursor' );
-			update_option( 'editoria11y_db_version', '2.0-narrow-pending' );
-			return self::run_narrow_step( $processed );
-		}
-
-		return array(
-			'processed' => $processed,
-			'remaining' => max( 0, $max_id - $last_id ),
-		);
-	}
-
-	/**
-	 * Bump the consecutive-failure counter for a row whose write failed.
-	 *
-	 * @param int $row_id Failing dismissals row id.
-	 * @return bool True when the row has exhausted REHASH_MAX_ROW_RETRIES
-	 *              and should be parked (walked past); false while retries
-	 *              remain.
-	 */
-	private static function record_row_failure( int $row_id ): bool {
-		$stored = explode( ':', (string) get_option( 'editoria11y_rehash_retry', '' ) );
-		$count  = ( (int) $stored[0] === $row_id ) ? (int) ( $stored[1] ?? 0 ) : 0;
-		++$count;
-		if ( $count >= self::REHASH_MAX_ROW_RETRIES ) {
-			delete_option( 'editoria11y_rehash_retry' );
-			return true;
-		}
-		update_option( 'editoria11y_rehash_retry', $row_id . ':' . $count, false );
-		return false;
-	}
-
-	/**
-	 * Narrow step driver: pre-flight straggler scan + ALTER MODIFY, run
-	 * from the locked background worker (cron tick or the settings-page
-	 * AJAX stepper) — never from a page-load check_tables() call, because
-	 * the pre-flight is a full table scan and the ALTER is a table-copy
-	 * rebuild whose metadata lock can queue every other query on the
-	 * table behind a stalled request.
-	 *
-	 * Assumes the caller holds the rehash lock and that the version is
-	 * '2.0-narrow-pending'. Outcomes:
-	 *
-	 *   - success        → '2.0', worker state cleaned up, cron dropped.
-	 *   - fresh stragglers → narrow_element_id() rolled back to
-	 *     '2.0-migrating' with the cursor parked just below the first
-	 *     straggler; the cron stays armed and the walk resumes there.
-	 *   - stall / ALTER error → sticky '2.0-failed', cron dropped; the
-	 *     migration panel surfaces Retry (retry_migration() re-opens the
-	 *     cycle).
-	 *
-	 * @param int $processed Rows processed by the batch that led here,
-	 *                       passed through to the caller's report.
-	 */
-	private static function run_narrow_step( int $processed = 0 ): array {
-		update_option( 'editoria11y_db_version', '2.0-failed' );
-		if ( self::narrow_element_id() ) {
-			update_option( 'editoria11y_db_version', '2.0' );
-			delete_option( 'editoria11y_rehash_cursor' );
-			delete_option( 'editoria11y_rehash_stragglers' );
-			delete_option( 'editoria11y_rehash_retry' );
+			if ( '2.0-migrating' === (string) get_option( 'editoria11y_db_version', '' ) ) {
+				update_option( 'editoria11y_db_version', '2.0-narrow-pending' );
+			}
 			self::unschedule_rehash();
 			return array(
 				'processed' => $processed,
 				'remaining' => 0,
 			);
 		}
-		if ( '2.0-migrating' === (string) get_option( 'editoria11y_db_version', '' ) ) {
-			// Pre-flight found a fresh straggler cycle and re-opened the
-			// walk; the cron is re-armed and the cursor sits just below
-			// the first straggler.
-			return array(
-				'processed' => $processed,
-				'remaining' => self::rehash_remaining_estimate(),
-			);
-		}
-		// Sticky '2.0-failed': a real ALTER error, or the stall detector
-		// tripped (same stragglers after two full walks). Retrying every
-		// five minutes would defeat the circuit breaker — drop the cron
-		// and wait for an explicit retry_migration().
-		self::unschedule_rehash();
+
 		return array(
 			'processed' => $processed,
-			'remaining' => 0,
+			'remaining' => max( 0, $max_id - $last_id ),
 		);
 	}
 
@@ -1671,55 +1255,41 @@ class Installer {
 		global $wpdb;
 		$dtable = $wpdb->prefix . 'ed11y_dismissals';
 		$cursor = (int) get_option( 'editoria11y_rehash_cursor', 0 );
-		$max_id = (int) $wpdb->get_var( "SELECT IFNULL(MAX(id), 0) FROM $dtable" ); // phpcs:ignore
-		return max( 0, $max_id - $cursor );
+		return max( 0, self::max_dismissal_id( $dtable ) - $cursor );
+	}
+
+	/**
+	 * Highest dismissal row id (0 when empty); the rehash cursor's end mark.
+	 *
+	 * @param string $dtable Fully prefixed dismissals table name.
+	 */
+	private static function max_dismissal_id( string $dtable ): int {
+		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery -- cursor end mark must be read live, not from the object cache.
+		return (int) $wpdb->get_var( $wpdb->prepare( 'SELECT IFNULL(MAX(id), 0) FROM %i', $dtable ) );
 	}
 
 	// ------------------------------------------------------------------
 	// Cron lifecycle
 	// ------------------------------------------------------------------
 
-	/**
-	 * Register a recurring rehash cron event if one isn't already queued.
-	 *
-	 * The first fire is jittered: a network-wide plugin update marches
-	 * thousands of sites into '2.0-migrating' within the same cron sweep,
-	 * and a fixed `time() + 60` start phase-locks every one of them onto
-	 * the same five-minute boundaries forever. The random offset spreads
-	 * the recurring fires across the interval.
-	 */
+	/** Register a recurring rehash cron event if one isn't already queued. */
 	public static function schedule_rehash(): void {
 		if ( ! wp_next_scheduled( self::REHASH_CRON_HOOK ) ) {
-			wp_schedule_event( time() + 60 + wp_rand( 0, 240 ), self::REHASH_CRON_SCHEDULE, self::REHASH_CRON_HOOK );
+			wp_schedule_event( time() + 60, self::REHASH_CRON_SCHEDULE, self::REHASH_CRON_HOOK );
 		}
 	}
 
-	/**
-	 * Drain every queued rehash event in one pass. Idempotent.
-	 *
-	 * Deliberately NOT a `while ( wp_next_scheduled() ) { wp_unschedule_event() }`
-	 * loop: that retry-forever shape has no progress guarantee, and it hung a
-	 * large-multisite production site — wp_unschedule_event() returns false
-	 * whenever update_option('cron') fails or a `pre_unschedule_event` cron
-	 * backend (Cavalcade et al.) refuses the event, while wp_next_scheduled()
-	 * keeps reporting it, so the loop span forever inside the rehash worker's
-	 * advisory lock immediately after the version option reached '2.0'.
-	 * wp_unschedule_hook() clears every queued event for the hook in a single
-	 * _set_cron_array() write and cannot loop.
-	 */
+	/** Drain every queued rehash event. Idempotent. */
 	public static function unschedule_rehash(): void {
-		wp_unschedule_hook( self::REHASH_CRON_HOOK );
+		while ( $timestamp = wp_next_scheduled( self::REHASH_CRON_HOOK ) ) { // phpcs:ignore Generic.CodeAnalysis.AssignmentInCondition -- intentional drain loop.
+			wp_unschedule_event( $timestamp, self::REHASH_CRON_HOOK );
+		}
 	}
 
 	/** WP-Cron callback: process one batch. */
 	public static function run_rehash_cron(): void {
 		self::rehash_batch();
-		// A completed narrow lands at '2.0'; finish the (cheap) 2.1/2.2
-		// hardening ladder right here so cron-only sites — subsites no
-		// admin ever visits — still reach the terminal version.
-		if ( '2.0' === (string) get_option( 'editoria11y_db_version', '' ) ) {
-			self::check_tables();
-		}
 	}
 
 	// ------------------------------------------------------------------
@@ -1791,15 +1361,15 @@ class Installer {
 		$map   = UpdateHelpers::old_keys();
 
 		foreach ( $map as $old_key => $new_key ) {
-			// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery, PluginCheck.Security.DirectDB.UnescapedDBParameter -- $table is $wpdb->prefix.literal; placeholders carry the user-facing values.
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery -- one-shot migration batch UPDATE.
 			$result = $wpdb->query(
 				$wpdb->prepare(
-					"UPDATE {$table} SET result_key = %s WHERE result_key = %s",
+					'UPDATE %i SET result_key = %s WHERE result_key = %s',
+					$table,
 					$new_key,
 					$old_key
 				)
 			);
-			// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery, PluginCheck.Security.DirectDB.UnescapedDBParameter
 			if ( false === $result ) {
 				return false;
 			}
@@ -1808,11 +1378,10 @@ class Installer {
 		// Drop the rows whose translated key falls into the not migrate-able
 		// set; matching dismissals are deleted in the cursor walk.
 		foreach ( self::DROP_KEYS as $drop_key ) {
-			// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery, PluginCheck.Security.DirectDB.UnescapedDBParameter
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery -- one-shot migration batch DELETE.
 			$wpdb->query(
-				$wpdb->prepare( "DELETE FROM {$table} WHERE result_key = %s", $drop_key )
+				$wpdb->prepare( 'DELETE FROM %i WHERE result_key = %s', $table, $drop_key )
 			);
-			// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery, PluginCheck.Security.DirectDB.UnescapedDBParameter
 		}
 		return true;
 	}
@@ -1838,23 +1407,22 @@ class Installer {
 		$map   = UpdateHelpers::old_keys();
 
 		foreach ( $map as $old_key => $new_key ) {
-			// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery, PluginCheck.Security.DirectDB.UnescapedDBParameter
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery -- one-shot migration batch UPDATE.
 			$wpdb->query(
 				$wpdb->prepare(
-					"UPDATE {$table} SET result_key = %s WHERE result_key = %s",
+					'UPDATE %i SET result_key = %s WHERE result_key = %s',
+					$table,
 					$new_key,
 					$old_key
 				)
 			);
-			// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery, PluginCheck.Security.DirectDB.UnescapedDBParameter
 		}
 
 		foreach ( self::DROP_KEYS as $drop_key ) {
-			// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery, PluginCheck.Security.DirectDB.UnescapedDBParameter
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery -- one-shot migration batch DELETE.
 			$wpdb->query(
-				$wpdb->prepare( "DELETE FROM {$table} WHERE result_key = %s", $drop_key )
+				$wpdb->prepare( 'DELETE FROM %i WHERE result_key = %s', $table, $drop_key )
 			);
-			// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery, PluginCheck.Security.DirectDB.UnescapedDBParameter
 		}
 	}
 
@@ -1870,7 +1438,7 @@ class Installer {
 	private static function table_columns( string $table ): array {
 		global $wpdb;
 		$names = array();
-		foreach ( $wpdb->get_results( "DESC $table", ARRAY_A ) as $col ) { // phpcs:ignore
+		foreach ( $wpdb->get_results( $wpdb->prepare( 'DESC %i', $table ), ARRAY_A ) as $col ) { // phpcs:ignore WordPress.DB.DirectDatabaseQuery -- schema introspection must read live.
 			$names[] = $col['Field'];
 		}
 		return $names;
@@ -1884,7 +1452,7 @@ class Installer {
 	private static function table_indexes( string $table ): array {
 		global $wpdb;
 		$names = array();
-		foreach ( $wpdb->get_results( "SHOW INDEX FROM $table", ARRAY_A ) as $idx ) { // phpcs:ignore
+		foreach ( $wpdb->get_results( $wpdb->prepare( 'SHOW INDEX FROM %i', $table ), ARRAY_A ) as $idx ) { // phpcs:ignore WordPress.DB.DirectDatabaseQuery -- schema introspection must read live.
 			$names[ $idx['Key_name'] ] = true;
 		}
 		return array_keys( $names );
