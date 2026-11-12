@@ -1268,8 +1268,8 @@ msgid "Custom rules"
 msgstr "カスタムルール"
 
 #: src/Form/NetworkSettingsPage.php:140
-msgid "Heads up: \"Default for all sites\" and \"Override for all sites\" overwrite a site's current value whenever that value is still an Editoria11y default or a previous network default — including a per-site value that happens to match a default."
-msgstr "注意：「すべてのサイトのデフォルト」および「すべてのサイトを上書き」は、現在の値が Editoria11y のデフォルト値または以前のネットワークデフォルトのままである場合（デフォルト値と偶然一致するサイト単位の値も含む）、サイトの現在の値を上書きします。"
+msgid "Heads up: \"Default for all sites\" and \"Override for all sites\" overwrite a site's current value whenever that value is still an Editoria11y default or a previous network default — including a per-site value that happens to match a default. Sites where an admin has chosen a different value are left untouched. \"Default for new sites\" only affects sites created from now on."
+msgstr "注意：「すべてのサイトのデフォルト」および「すべてのサイトを上書き」は、現在の値が Editoria11y のデフォルト値または以前のネットワークデフォルトのままである場合（デフォルト値と偶然一致するサイト単位の値も含む）、サイトの現在の値を上書きします。管理者が別の値を選択済みのサイトは変更されません。「新しいサイトのデフォルト」は今後作成されるサイトにのみ影響します。"
 
 #: src/Form/NetworkSettingsPage.php:176
 msgid "Editoria11y default or locked network settings"
@@ -1577,7 +1577,7 @@ msgstr "新しいタブで開くことを示す文字列"
 
 #: src/Form/SettingsFields.php:897
 msgid "Provide a pipe-separated list of phrases your site uses to warn users a link opens in a new tab; e.g.: new tab|new window|external."
-msgstr "リンクが新しいタブで開くことをユーザーに警告するために使用するフレーズを、パイプ区切りで指定します。例：new tab|new window|external。"
+msgstr "リンクが新しいタブで開くことをユーザーに警告するために使用するフレーズを、パイプ区切りで指定します。例：新しいタブ|別ウィンドウ|外部サイト。"
 
 #: src/Form/SettingsFields.php:905
 msgid "Embeds flagged as needing manual review"
@@ -1725,7 +1725,7 @@ msgstr "変更を監視しない"
 
 #: src/Form/SettingsFields.php:1099
 msgid "Set to \"anywhere\" if changes are being missed; set to \"do not watch\" if you notice performance issues."
-msgstr "変更が検出されない場合は「anywhere」を、パフォーマンス問題に気付いた場合は「do not watch」を選択してください。"
+msgstr "変更が検出されない場合は「ページ内のどこであっても変更を監視する」を、パフォーマンス問題に気付いた場合は「変更を監視しない」を選択してください。"
 
 #: src/Form/SettingsFields.php:1103
 msgid "Check inside these specific Web components"

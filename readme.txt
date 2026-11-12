@@ -1,7 +1,7 @@
 === Editoria11y Accessibility Checker ===
 Contributors: itmaybejj, partyka
 Tags: accessibility checker, automated testing, quality assurance, SEO
-Stable tag: 3.0.8
+Stable tag: 3.0.2
 Tested up to: 7.1
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -192,25 +192,6 @@ New feature development comes through by grants from academic institutions and c
 
 == Changelog ==
 
-= 3.0.8 =
-* Fix for a false positive in the editor for filenames in alt text on image blocks when the image has been marked decorative. Note that the current version still asks for confirmation that an image is actually decorative inside the editor, but not in the frontend: WordPress marks decorative images with role="none," which this checker accepts as equivalent to "Mark OK." We may add config to override this behavior in either direction (never ask, always ask) in the future; submit a feature request if you want either option.
-* Suppresses free trial offer notifications on admin pages that are not "owned" by Editoria11y. Old notifications may still "stick" until dismissed; if any reappear elsewhere in the admin interface, please file a bug report.
-
-= 3.0.7 =
-* Fix for "Errors in these elements should only be shown to developers" setting not being applied in CSA features.
-* Corrections in the French and Spanish translations.
-
-= 3.0.5-3.0.6 =
-* Address deadlocks in the 3.x update cron for multisites with hundreds of blogs and third-party cron managers.
-
-= 3.0.4 =
-* Fixes [incorrect validation on the multi-site network admin page](https://github.com/itmaybejj/editoria11y-wp/pull/59) that could prevent saving new settings.
-
-= 3.0.3 =
-* Temporary workaround for WP core bug that can cause duplicate fs_accounts rows.
-* Add more WP block placeholder selectors to avoid alerting on interface components while editing.
-* Fallback compatibility for Safari 16.
-
 = 3.0.2 =
 * Fixes conflict where an ACF TinyMCE field would "steal" the checker observer from the main post body field.
 
@@ -227,14 +208,11 @@ New feature development comes through by grants from academic institutions and c
 
 == Upgrade Notice ==
 
-= 3.0.8 =
-3.0.7 included a security update to a vendor dependency, and 3.0.8 suppresses annoying trial offer notices.
-
 = 3.0.1 =
 Adds column for whether an alert was found in the content area of the page.
 
 = 3.0.0 =
-The database upgrades itself the first time an administrator visits each site's dashboard; dismissal records are re-keyed by a background job (a progress notice shows until it finishes). On multisite, each site upgrades on its own first admin visit. Supporters switching to the CSA build: network-activate it (the free build deactivates automatically), then activate your license under Network Admin, Settings, Editoria11y License.
+The database upgrades itself the first time an administrator visits each site's dashboard; dismissal records are re-keyed by a background job (a progress notice shows until it finishes).
 
 = 2.1.0 =
 As-you-type checking is now compatible with both the block and classic editors.

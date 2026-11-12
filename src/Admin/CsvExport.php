@@ -137,9 +137,8 @@ class CsvExport {
 		$test_name = TestNames::core_names();
 
 		global $wpdb;
-		$utable     = $wpdb->prefix . 'ed11y_urls';
-		$rtable     = $wpdb->prefix . 'ed11y_results';
-		$post_table = $wpdb->prefix . 'posts';
+		$utable = $wpdb->prefix . 'ed11y_urls';
+		$rtable = $wpdb->prefix . 'ed11y_results';
 
 		// UTF-8 BOM: Excel misreads unmarked UTF-8 CSVs as ANSI, turning
 		// non-ASCII page titles into mojibake.
@@ -184,31 +183,33 @@ class CsvExport {
 		$offset      = 0;
 
 		do {
-			// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery -- table names are $wpdb->prefix.literal; complex join, batched read.
-			$data = $wpdb->get_results(
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery -- custom-table join, batched streaming read; caching would only bloat memory.
+			$data       = $wpdb->get_results(
 				$wpdb->prepare(
-					"SELECT
-					{$rtable}.result_key,
-					{$rtable}.result_count,
-					{$utable}.pid,
-					{$utable}.page_url,
-					{$utable}.page_title,
-					{$utable}.entity_type,
-					{$utable}.page_total,
-					{$utable}.post_id,
-					{$post_table}.post_author,
-					{$post_table}.post_status,
-					{$rtable}.created as created
-					FROM {$rtable}
-					LEFT JOIN {$utable} ON {$utable}.pid={$rtable}.pid
-					LEFT JOIN {$post_table} ON {$utable}.post_id={$post_table}.ID
-					ORDER BY page_url ASC, {$rtable}.pid ASC, {$rtable}.result_key ASC
-					LIMIT %d OFFSET %d;",
+					'SELECT
+					r.result_key,
+					r.result_count,
+					u.pid,
+					u.page_url,
+					u.page_title,
+					u.entity_type,
+					u.page_total,
+					u.post_id,
+					p.post_author,
+					p.post_status,
+					r.created AS created
+					FROM %i AS r
+					LEFT JOIN %i AS u ON u.pid = r.pid
+					LEFT JOIN %i AS p ON u.post_id = p.ID
+					ORDER BY u.page_url ASC, r.pid ASC, r.result_key ASC
+					LIMIT %d OFFSET %d',
+					$rtable,
+					$utable,
+					$wpdb->posts,
 					self::EXPORT_BATCH,
 					$offset
 				)
 			);
-			// phpcs:enable
 			$batch_size = count( $data );
 			$offset    += $batch_size;
 

@@ -1,7 +1,17 @@
 {
 	"version": "0.2",
 	"language": "en",
-	"dictionaries": ["en_US", "softwareTerms", "html", "css", "fonts", "node", "npm", "php", "typescript"],
+	"dictionaries": [
+		"en_US",
+		"softwareTerms",
+		"html",
+		"css",
+		"fonts",
+		"node",
+		"npm",
+		"php",
+		"typescript"
+	],
 	"ignorePaths": [
 		"vendor/**",
 		"node_modules/**",
@@ -21,9 +31,6 @@
 		"Vidyard",
 		"ed11y",
 		"ed11ycsa",
-		"haga",
-		"clic",
-		"aquí",
 		"editoria11y",
 		"itmaybejj",
 		"stati",
@@ -265,7 +272,10 @@
 		"undebounced",
 		"WPML",
 		"wpml",
-		"dismisser"
+		"dismisser",
+		"haga",
+		"click",
+		"aquí"
 	],
 	"flagWords": [],
 	"allowCompoundWords": true

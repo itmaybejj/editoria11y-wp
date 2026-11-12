@@ -67,7 +67,7 @@
         ]
     },
     "require": {
-        "freemius/wordpress-sdk": "2.13.5"
+        "freemius/wordpress-sdk": "^2.13"
     },
     "require-dev": {
         "dealerdirect/phpcodesniffer-composer-installer": "^1.0",
