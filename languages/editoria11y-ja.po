@@ -1577,7 +1577,7 @@ msgstr "新しいタブで開くことを示す文字列"
 
 #: src/Form/SettingsFields.php:897
 msgid "Provide a pipe-separated list of phrases your site uses to warn users a link opens in a new tab; e.g.: new tab|new window|external."
-msgstr "リンクが新しいタブで開くことをユーザーに警告するために使用するフレーズを、パイプ区切りで指定します。例：new tab|new window|external。"
+msgstr "リンクが新しいタブで開くことをユーザーに警告するために使用するフレーズを、パイプ区切りで指定します。例：新しいタブ|別ウィンドウ|外部サイト。"
 
 #: src/Form/SettingsFields.php:905
 msgid "Embeds flagged as needing manual review"
@@ -1725,7 +1725,7 @@ msgstr "変更を監視しない"
 
 #: src/Form/SettingsFields.php:1099
 msgid "Set to \"anywhere\" if changes are being missed; set to \"do not watch\" if you notice performance issues."
-msgstr "変更が検出されない場合は「anywhere」を、パフォーマンス問題に気付いた場合は「do not watch」を選択してください。"
+msgstr "変更が検出されない場合は「ページ内のどこであっても変更を監視する」を、パフォーマンス問題に気付いた場合は「変更を監視しない」を選択してください。"
 
 #: src/Form/SettingsFields.php:1103
 msgid "Check inside these specific Web components"

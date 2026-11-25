@@ -28,8 +28,8 @@
 	<arg name="extensions" value="php"/>
 
 	<!-- Inherit WordPress and minimum-supported-WP version (matches the
-	     plugin header's "Requires at least: 6.0"). -->
-	<config name="minimum_supported_wp_version" value="6.0"/>
+	     plugin header's "Requires at least: 6.5"). -->
+	<config name="minimum_supported_wp_version" value="6.5"/>
 
 	<rule ref="WordPress"/>
 

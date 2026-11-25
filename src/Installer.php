@@ -266,9 +266,10 @@ class Installer {
 	private static function uninstall_current_blog(): void {
 		global $wpdb;
 
-		$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}ed11y_dismissals" ); // phpcs:ignore
-		$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}ed11y_results" ); // phpcs:ignore
-		$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}ed11y_urls" ); // phpcs:ignore
+		// Children first: results and dismissals FK-reference urls.
+		foreach ( array( 'ed11y_dismissals', 'ed11y_results', 'ed11y_urls' ) as $table ) {
+			$wpdb->query( $wpdb->prepare( 'DROP TABLE IF EXISTS %i', $wpdb->prefix . $table ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery -- uninstall DDL; WP has no API for dropping plugin tables.
+		}
 
 		delete_option( 'ed11y_plugin_settings' );
 		// CSA-side options shipped with the v3 settings split. Always
@@ -406,22 +407,18 @@ class Installer {
 		// Kept verbatim from the old code path — sites still on v1.0 hit this on
 		// the way through. Use column-existence rather than column count so future
 		// schema additions don't accidentally re-trigger the ALTER.
-		$has_post_id = false;
-		foreach ( $wpdb->get_results( "DESC $table_urls", ARRAY_A ) as $col ) { // phpcs:ignore
-			if ( 'post_id' === $col['Field'] ) {
-				$has_post_id = true;
-				break;
-			}
-		}
-		// phpcs:disable WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnquotedComplexPlaceholder, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Schema-mutation block. Table identifiers come from $wpdb->prefix . literals (never user input), placeholders %1s are intentional for identifiers (not values), the cache is irrelevant for one-shot DDL, and the path is gated by check_tables() so duplicate schema work is prevented above this scope.
-		if ( ! $has_post_id ) {
+		if ( ! in_array( 'post_id', self::table_columns( $table_urls ), true ) ) {
+			// phpcs:disable WordPress.DB.DirectDatabaseQuery -- one-shot schema DDL gated by check_tables(); caching is irrelevant.
 			$wpdb->query(
-				"ALTER TABLE $table_urls
-				ADD post_id int(9) unsigned NOT NULL default 0,
-				DROP PRIMARY KEY, ADD PRIMARY KEY pid ( pid ),
-				ADD KEY post_id (post_id)
-				;"
+				$wpdb->prepare(
+					'ALTER TABLE %i
+					ADD post_id int(9) unsigned NOT NULL default 0,
+					DROP PRIMARY KEY, ADD PRIMARY KEY pid ( pid ),
+					ADD KEY post_id (post_id)',
+					$table_urls
+				)
 			);
+			// phpcs:enable WordPress.DB.DirectDatabaseQuery
 		}
 
 		// Replace any pre-existing (auto-named) pid foreign keys with the
@@ -429,7 +426,6 @@ class Installer {
 		// can't reliably produce.
 		self::ensure_pid_foreign_key( $table_results, $table_urls, $wpdb->prefix . 'ed11y_results_pid' );
 		self::ensure_pid_foreign_key( $table_dismissals, $table_urls, $wpdb->prefix . 'ed11y_dismissal_pid' );
-		// phpcs:enable WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnquotedComplexPlaceholder, PluginCheck.Security.DirectDB.UnescapedDBParameter
 		return true;
 	}
 
@@ -451,8 +447,8 @@ class Installer {
 	 */
 	private static function ensure_pid_foreign_key( string $child_table, string $parent_table, string $constraint_name ): void {
 		global $wpdb;
-		// phpcs:disable WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnquotedComplexPlaceholder, PluginCheck.Security.DirectDB.UnescapedDBParameter -- One-shot DDL; identifiers are $wpdb->prefix . literals; %1s placeholders are intentional for identifiers.
-		$row = $wpdb->get_row( "SHOW CREATE TABLE $child_table" );
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery -- One-shot schema DDL gated by check_tables(); caching is irrelevant.
+		$row = $wpdb->get_row( $wpdb->prepare( 'SHOW CREATE TABLE %i', $child_table ) );
 		if ( ! $row ) {
 			return;
 		}
@@ -472,12 +468,12 @@ class Installer {
 		if ( null !== $existing ) {
 			$wpdb->last_error = '';
 			$wpdb->query(
-				$wpdb->prepare( "ALTER TABLE $child_table DROP FOREIGN KEY %1s", array( $existing ) )
+				$wpdb->prepare( 'ALTER TABLE %i DROP FOREIGN KEY %i', $child_table, $existing )
 			);
 			if ( '' !== $wpdb->last_error ) {
 				$wpdb->last_error = '';
 				$wpdb->query(
-					$wpdb->prepare( "ALTER TABLE $child_table DROP CONSTRAINT %1s", array( $existing ) )
+					$wpdb->prepare( 'ALTER TABLE %i DROP CONSTRAINT %i', $child_table, $existing )
 				);
 			}
 			if ( '' !== $wpdb->last_error ) {
@@ -490,12 +486,14 @@ class Installer {
 
 		$wpdb->query(
 			$wpdb->prepare(
-				"ALTER TABLE $child_table ADD CONSTRAINT %1s FOREIGN KEY(pid) REFERENCES $parent_table (pid) ON DELETE CASCADE",
-				array( $constraint_name )
+				'ALTER TABLE %i ADD CONSTRAINT %i FOREIGN KEY(pid) REFERENCES %i (pid) ON DELETE CASCADE',
+				$child_table,
+				$constraint_name,
+				$parent_table
 			)
 		);
 		$wpdb->suppress_errors( $suppress );
-		// phpcs:enable WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnquotedComplexPlaceholder, PluginCheck.Security.DirectDB.UnescapedDBParameter
+		// phpcs:enable WordPress.DB.DirectDatabaseQuery
 	}
 
 	/**
@@ -518,10 +516,7 @@ class Installer {
 			'ed11y_dismissals' => array( 'result_name', 'stale_date' ),
 		);
 		foreach ( $required as $table => $columns ) {
-			$existing = array();
-			foreach ( $wpdb->get_results( "DESC {$wpdb->prefix}{$table}", ARRAY_A ) as $col ) { // phpcs:ignore
-				$existing[] = $col['Field'];
-			}
+			$existing = self::table_columns( $wpdb->prefix . $table );
 			foreach ( $columns as $column ) {
 				if ( ! in_array( $column, $existing, true ) ) {
 					return false;
@@ -917,8 +912,11 @@ class Installer {
 			if ( empty( $clauses ) ) {
 				continue;
 			}
-			$sql = "ALTER TABLE $table " . implode( ', ', $clauses );
-			if ( false === $wpdb->query( $sql ) ) { // phpcs:ignore
+			// The ADD COLUMN clauses are fixed literals from $alters above
+			// (no user input, no `%`), so concatenating them into the
+			// prepared template is safe; the table goes through %i.
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- one-shot migration DDL; clauses are literal column definitions.
+			if ( false === $wpdb->query( $wpdb->prepare( 'ALTER TABLE %i ' . implode( ', ', $clauses ), $table ) ) ) {
 				return false;
 			}
 		}
@@ -930,7 +928,7 @@ class Installer {
 		// since the value is a 64-char hex hash).
 		$indexes = self::table_indexes( $dismissals );
 		if ( ! in_array( 'pid_result_key_element_id', $indexes, true ) ) {
-			$wpdb->query( "ALTER TABLE $dismissals ADD INDEX pid_result_key_element_id (pid, result_key, element_id(64))" ); // phpcs:ignore
+			$wpdb->query( $wpdb->prepare( 'ALTER TABLE %i ADD INDEX pid_result_key_element_id (pid, result_key, element_id(64))', $dismissals ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery -- one-shot migration DDL.
 		}
 		// Drop the now-redundant single-column indexes the composite supersedes.
 		// The original schema named the pid index "page_url" by mistake; tolerate
@@ -938,7 +936,7 @@ class Installer {
 		// of this same migration and is now redundant.
 		foreach ( array( 'page_url', 'pid', 'element_id' ) as $stale_index ) {
 			if ( in_array( $stale_index, $indexes, true ) ) {
-				$wpdb->query( "ALTER TABLE $dismissals DROP INDEX $stale_index" ); // phpcs:ignore
+				$wpdb->query( $wpdb->prepare( 'ALTER TABLE %i DROP INDEX %i', $dismissals, $stale_index ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery -- one-shot migration DDL.
 			}
 		}
 
@@ -1002,7 +1000,7 @@ class Installer {
 			add_option( 'editoria11y_id_pepper', $pepper, '', 'yes' );
 			return $pepper;
 		}
-		$wpdb->update( // phpcs:ignore
+		$wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- update_option() can't flip only the autoload flag on an unchanged value.
 			$wpdb->options,
 			array( 'autoload' => 'yes' ),
 			array( 'option_name' => 'editoria11y_id_pepper' )
@@ -1030,11 +1028,14 @@ class Installer {
 		global $wpdb;
 		$dtable = $wpdb->prefix . 'ed11y_dismissals';
 
-		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery, PluginCheck.Security.DirectDB.UnescapedDBParameter -- $dtable is $wpdb->prefix.literal; pre-flight COUNT and the ALTER MODIFY are worker-time DDL gated by the rehash lock so caching is irrelevant.
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery -- pre-flight COUNT, straggler restart lookup and the ALTER MODIFY are worker-time DDL gated by the rehash lock, so caching is irrelevant.
 		$bad = (int) $wpdb->get_var(
-			"SELECT COUNT(*) FROM $dtable
-			WHERE CHAR_LENGTH(element_id) <> 64
-				OR element_id NOT REGEXP '^[0-9a-f]{64}$'"
+			$wpdb->prepare(
+				"SELECT COUNT(*) FROM %i
+				WHERE CHAR_LENGTH(element_id) <> 64
+					OR element_id NOT REGEXP '^[0-9a-f]{64}$'",
+				$dtable
+			)
 		);
 		if ( $bad > 0 ) {
 			$previous = get_option( 'editoria11y_rehash_stragglers', false );
@@ -1052,9 +1053,12 @@ class Installer {
 			// below it has already been verified hashed, and on a large
 			// table the difference is days of pointless cursor batches.
 			$restart = (int) $wpdb->get_var(
-				"SELECT IFNULL(MIN(id), 1) - 1 FROM $dtable
-				WHERE CHAR_LENGTH(element_id) <> 64
-					OR element_id NOT REGEXP '^[0-9a-f]{64}$'"
+				$wpdb->prepare(
+					"SELECT IFNULL(MIN(id), 1) - 1 FROM %i
+					WHERE CHAR_LENGTH(element_id) <> 64
+						OR element_id NOT REGEXP '^[0-9a-f]{64}$'",
+					$dtable
+				)
 			);
 			update_option( 'editoria11y_rehash_cursor', max( 0, $restart ), false );
 			update_option( 'editoria11y_db_version', '2.0-migrating' );
@@ -1063,8 +1067,8 @@ class Installer {
 		}
 
 		// CHARACTER SET ascii matches what fresh installs get from create_database().
-		$result = $wpdb->query( "ALTER TABLE $dtable MODIFY element_id char(64) CHARACTER SET ascii NOT NULL DEFAULT ''" );
-		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery, PluginCheck.Security.DirectDB.UnescapedDBParameter
+		$result = $wpdb->query( $wpdb->prepare( "ALTER TABLE %i MODIFY element_id char(64) CHARACTER SET ascii NOT NULL DEFAULT ''", $dtable ) );
+		// phpcs:enable WordPress.DB.DirectDatabaseQuery
 		return false !== $result;
 	}
 
@@ -1115,14 +1119,14 @@ class Installer {
 	private static function migrate_to_2_1_body( string $utable, string $dtable ): bool {
 		global $wpdb;
 
-		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery, PluginCheck.Security.DirectDB.UnescapedDBParameter -- table names are $wpdb->prefix.literal; migration-time DDL gated by check_tables().
-		$user_column = $wpdb->get_row( "SHOW COLUMNS FROM $dtable LIKE 'user'", ARRAY_A );
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery -- migration-time DDL gated by check_tables(); caching is irrelevant.
+		$user_column = $wpdb->get_row( $wpdb->prepare( 'SHOW COLUMNS FROM %i WHERE Field = %s', $dtable, 'user' ), ARRAY_A );
 		if ( ! is_array( $user_column ) ) {
 			return false;
 		}
 		if ( false === stripos( (string) ( $user_column['Type'] ?? '' ), 'bigint' ) ) {
 			$wpdb->last_error = '';
-			$wpdb->query( "ALTER TABLE $dtable MODIFY user bigint(20) unsigned NOT NULL" );
+			$wpdb->query( $wpdb->prepare( 'ALTER TABLE %i MODIFY user bigint(20) unsigned NOT NULL', $dtable ) );
 			if ( '' !== $wpdb->last_error ) {
 				return false;
 			}
@@ -1130,7 +1134,7 @@ class Installer {
 
 		$already_unique = false;
 		$has_plain_key  = false;
-		foreach ( (array) $wpdb->get_results( "SHOW INDEX FROM $utable", ARRAY_A ) as $index ) {
+		foreach ( (array) $wpdb->get_results( $wpdb->prepare( 'SHOW INDEX FROM %i', $utable ), ARRAY_A ) as $index ) {
 			if ( 'page_url' === ( $index['Key_name'] ?? '' ) ) {
 				if ( '0' === (string) $index['Non_unique'] ) {
 					$already_unique = true;
@@ -1145,22 +1149,26 @@ class Installer {
 
 		$wpdb->last_error = '';
 		$wpdb->query(
-			"DELETE older FROM $utable AS older
-			INNER JOIN $utable AS newer
-				ON older.page_url = newer.page_url AND older.pid < newer.pid"
+			$wpdb->prepare(
+				'DELETE older FROM %i AS older
+				INNER JOIN %i AS newer
+					ON older.page_url = newer.page_url AND older.pid < newer.pid',
+				$utable,
+				$utable
+			)
 		);
 		if ( '' !== $wpdb->last_error ) {
 			return false;
 		}
 
 		if ( $has_plain_key ) {
-			$wpdb->query( "ALTER TABLE $utable DROP KEY page_url" );
+			$wpdb->query( $wpdb->prepare( 'ALTER TABLE %i DROP KEY page_url', $utable ) );
 			if ( '' !== $wpdb->last_error ) {
 				return false;
 			}
 		}
-		$wpdb->query( "ALTER TABLE $utable ADD UNIQUE KEY page_url (page_url)" );
-		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery, PluginCheck.Security.DirectDB.UnescapedDBParameter
+		$wpdb->query( $wpdb->prepare( 'ALTER TABLE %i ADD UNIQUE KEY page_url (page_url)', $utable ) );
+		// phpcs:enable WordPress.DB.DirectDatabaseQuery
 		return '' === $wpdb->last_error;
 	}
 
@@ -1182,9 +1190,8 @@ class Installer {
 		if ( in_array( 'in_content', self::table_columns( $dismissals ), true ) ) {
 			return true;
 		}
-		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery, PluginCheck.Security.DirectDB.UnescapedDBParameter -- table name is $wpdb->prefix.literal; migration-time DDL gated by check_tables().
-		return false !== $wpdb->query( "ALTER TABLE $dismissals ADD COLUMN in_content tinyint(1) NOT NULL default 1" );
-		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery, PluginCheck.Security.DirectDB.UnescapedDBParameter
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery -- migration-time DDL gated by check_tables().
+		return false !== $wpdb->query( $wpdb->prepare( 'ALTER TABLE %i ADD COLUMN in_content tinyint(1) NOT NULL default 1', $dismissals ) );
 	}
 
 	/**
@@ -1469,7 +1476,7 @@ class Installer {
 		}
 
 		$cursor    = (int) get_option( 'editoria11y_rehash_cursor', 0 );
-		$max_id    = (int) $wpdb->get_var( "SELECT IFNULL(MAX(id), 0) FROM $dtable" ); // phpcs:ignore
+		$max_id    = self::max_dismissal_id( $dtable );
 		$processed = 0;
 
 		if ( $cursor >= $max_id ) {
@@ -1480,15 +1487,15 @@ class Installer {
 		}
 
 		// Indexed range scan — O(batch_size) regardless of table size.
-		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery, PluginCheck.Security.DirectDB.UnescapedDBParameter -- $dtable is $wpdb->prefix.'ed11y_dismissals' (literal, not user input); migration query needs to bypass object cache to drive forward state.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery -- migration cursor walk must bypass the object cache to drive forward state.
 		$rows = $wpdb->get_results(
 			$wpdb->prepare(
-				"SELECT id, result_key, element_id FROM $dtable WHERE id > %d ORDER BY id ASC LIMIT %d",
+				'SELECT id, result_key, element_id FROM %i WHERE id > %d ORDER BY id ASC LIMIT %d',
+				$dtable,
 				$cursor,
 				(int) self::REHASH_BATCH_SIZE
 			)
 		);
-		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery, PluginCheck.Security.DirectDB.UnescapedDBParameter
 
 		// $last_id tracks the last row this batch is DONE with (updated,
 		// deleted, skipped-as-clean, or parked after repeated failures).
@@ -1518,7 +1525,7 @@ class Installer {
 			// removed entirely. The corresponding ed11y_results rows are
 			// dropped in translate_results_keys().
 			if ( in_array( $new_key, self::DROP_KEYS, true ) ) {
-				$result = $wpdb->delete( $dtable, array( 'id' => $row_id ), array( '%d' ) ); // phpcs:ignore
+				$result = $wpdb->delete( $dtable, array( 'id' => $row_id ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery -- migration row write on a custom table.
 			} elseif ( $is_hashed ) {
 				// Already-hashed row: can't rehash element_id (the raw
 				// input is gone), but the result_key still needs the v3
@@ -1527,7 +1534,7 @@ class Installer {
 					$last_id = $row_id;
 					continue;
 				}
-				$result = $wpdb->update( // phpcs:ignore
+				$result = $wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery -- migration row write on a custom table.
 					$dtable,
 					array( 'result_key' => $new_key ),
 					array( 'id' => $row_id ),
@@ -1538,7 +1545,7 @@ class Installer {
 				// Raw element_id: hash against the NEW key so the digest
 				// matches what the v3 JS library will compute at lookup
 				// time. Update key and element_id in one row write.
-				$result = $wpdb->update( // phpcs:ignore
+				$result = $wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery -- migration row write on a custom table.
 					$dtable,
 					array(
 						'result_key' => $new_key,
@@ -1671,8 +1678,18 @@ class Installer {
 		global $wpdb;
 		$dtable = $wpdb->prefix . 'ed11y_dismissals';
 		$cursor = (int) get_option( 'editoria11y_rehash_cursor', 0 );
-		$max_id = (int) $wpdb->get_var( "SELECT IFNULL(MAX(id), 0) FROM $dtable" ); // phpcs:ignore
-		return max( 0, $max_id - $cursor );
+		return max( 0, self::max_dismissal_id( $dtable ) - $cursor );
+	}
+
+	/**
+	 * Highest dismissal row id (0 when empty); the rehash cursor's end mark.
+	 *
+	 * @param string $dtable Fully prefixed dismissals table name.
+	 */
+	private static function max_dismissal_id( string $dtable ): int {
+		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery -- cursor end mark must be read live, not from the object cache.
+		return (int) $wpdb->get_var( $wpdb->prepare( 'SELECT IFNULL(MAX(id), 0) FROM %i', $dtable ) );
 	}
 
 	// ------------------------------------------------------------------
@@ -1791,15 +1808,15 @@ class Installer {
 		$map   = UpdateHelpers::old_keys();
 
 		foreach ( $map as $old_key => $new_key ) {
-			// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery, PluginCheck.Security.DirectDB.UnescapedDBParameter -- $table is $wpdb->prefix.literal; placeholders carry the user-facing values.
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery -- one-shot migration batch UPDATE.
 			$result = $wpdb->query(
 				$wpdb->prepare(
-					"UPDATE {$table} SET result_key = %s WHERE result_key = %s",
+					'UPDATE %i SET result_key = %s WHERE result_key = %s',
+					$table,
 					$new_key,
 					$old_key
 				)
 			);
-			// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery, PluginCheck.Security.DirectDB.UnescapedDBParameter
 			if ( false === $result ) {
 				return false;
 			}
@@ -1808,11 +1825,10 @@ class Installer {
 		// Drop the rows whose translated key falls into the not migrate-able
 		// set; matching dismissals are deleted in the cursor walk.
 		foreach ( self::DROP_KEYS as $drop_key ) {
-			// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery, PluginCheck.Security.DirectDB.UnescapedDBParameter
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery -- one-shot migration batch DELETE.
 			$wpdb->query(
-				$wpdb->prepare( "DELETE FROM {$table} WHERE result_key = %s", $drop_key )
+				$wpdb->prepare( 'DELETE FROM %i WHERE result_key = %s', $table, $drop_key )
 			);
-			// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery, PluginCheck.Security.DirectDB.UnescapedDBParameter
 		}
 		return true;
 	}
@@ -1838,23 +1854,22 @@ class Installer {
 		$map   = UpdateHelpers::old_keys();
 
 		foreach ( $map as $old_key => $new_key ) {
-			// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery, PluginCheck.Security.DirectDB.UnescapedDBParameter
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery -- one-shot migration batch UPDATE.
 			$wpdb->query(
 				$wpdb->prepare(
-					"UPDATE {$table} SET result_key = %s WHERE result_key = %s",
+					'UPDATE %i SET result_key = %s WHERE result_key = %s',
+					$table,
 					$new_key,
 					$old_key
 				)
 			);
-			// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery, PluginCheck.Security.DirectDB.UnescapedDBParameter
 		}
 
 		foreach ( self::DROP_KEYS as $drop_key ) {
-			// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery, PluginCheck.Security.DirectDB.UnescapedDBParameter
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery -- one-shot migration batch DELETE.
 			$wpdb->query(
-				$wpdb->prepare( "DELETE FROM {$table} WHERE result_key = %s", $drop_key )
+				$wpdb->prepare( 'DELETE FROM %i WHERE result_key = %s', $table, $drop_key )
 			);
-			// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery, PluginCheck.Security.DirectDB.UnescapedDBParameter
 		}
 	}
 
@@ -1870,7 +1885,7 @@ class Installer {
 	private static function table_columns( string $table ): array {
 		global $wpdb;
 		$names = array();
-		foreach ( $wpdb->get_results( "DESC $table", ARRAY_A ) as $col ) { // phpcs:ignore
+		foreach ( $wpdb->get_results( $wpdb->prepare( 'DESC %i', $table ), ARRAY_A ) as $col ) { // phpcs:ignore WordPress.DB.DirectDatabaseQuery -- schema introspection must read live.
 			$names[] = $col['Field'];
 		}
 		return $names;
@@ -1884,7 +1899,7 @@ class Installer {
 	private static function table_indexes( string $table ): array {
 		global $wpdb;
 		$names = array();
-		foreach ( $wpdb->get_results( "SHOW INDEX FROM $table", ARRAY_A ) as $idx ) { // phpcs:ignore
+		foreach ( $wpdb->get_results( $wpdb->prepare( 'SHOW INDEX FROM %i', $table ), ARRAY_A ) as $idx ) { // phpcs:ignore WordPress.DB.DirectDatabaseQuery -- schema introspection must read live.
 			$names[ $idx['Key_name'] ] = true;
 		}
 		return array_keys( $names );

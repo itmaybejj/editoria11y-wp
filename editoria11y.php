@@ -4,9 +4,9 @@
  *
  * Plugin Name:       Editoria11y Accessibility Checker
  * Plugin URI:        https://wordpress.org/plugins/editoria11y-accessibility-checker/
- * Version:           3.0.8
+ * Version:           3.0.9
  * Requires PHP:      7.4
- * Requires at least: 6.0
+ * Requires at least: 6.5
  * Tested up to:      7.1
  * Author:            Princeton University, WDS
  * Author URI:        https://editoria11y.com
@@ -168,6 +168,31 @@ try {
 } catch ( \Throwable $e ) {
 	// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- one-shot diagnostic, gated by the catch arm above.
 	error_log( '[Editoria11y] NetworkOptionIntegrity::register() failed: ' . $e->getMessage() );
+}
+
+/*
+ * Freemius SDK compatibility guard.
+ *
+ * The SDK's start.php (run by the vendor/autoload.php require above) skips
+ * loading our bundled SDK whenever a class named `Freemius` already exists.
+ * Partial stand-ins under that name (nulled plugins, "disable Freemius"
+ * mu-plugins) pass that check, and the first SDK method they lack fatals
+ * every admin request, network/plugins.php included. Stop booting instead
+ * and tell admins which file declared the class. See FreemiusSdkGuard.
+ *
+ * Checked only when this file is about to define ed11ycsa() and call
+ * fs_dynamic_init(): the PHPUnit bootstrap pre-defines ed11ycsa() with a
+ * stub and never loads the SDK.
+ *
+ * The deactivation hook is still registered so deactivating the plugin
+ * during the conflict unschedules its cron events. The activation hook is
+ * not: Installer::check_tables() also runs lazily once the plugin boots,
+ * and running it here could reach premium-gated helpers that call
+ * ed11ycsa(), which does not exist on this path.
+ */
+if ( ! function_exists( 'ed11ycsa' ) && ! \Editoria11y\FreemiusSdkGuard::check() ) {
+	register_deactivation_hook( __FILE__, array( '\\Editoria11y\\Installer', 'deactivate' ) );
+	return;
 }
 
 if ( ! function_exists( 'ed11ycsa' ) ) {

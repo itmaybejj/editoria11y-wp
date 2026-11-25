@@ -32,6 +32,7 @@ return array(
     'Editoria11y\\FreemiusOptInNag' => $baseDir . '/src/FreemiusOptInNag.php',
     'Editoria11y\\FreemiusOverrides' => $baseDir . '/src/FreemiusOverrides.php',
     'Editoria11y\\FreemiusPricingPage' => $baseDir . '/src/FreemiusPricingPage.php',
+    'Editoria11y\\FreemiusSdkGuard' => $baseDir . '/src/FreemiusSdkGuard.php',
     'Editoria11y\\FreemiusTrialNotice' => $baseDir . '/src/FreemiusTrialNotice.php',
     'Editoria11y\\Installer' => $baseDir . '/src/Installer.php',
     'Editoria11y\\NetworkOptionIntegrity' => $baseDir . '/src/NetworkOptionIntegrity.php',

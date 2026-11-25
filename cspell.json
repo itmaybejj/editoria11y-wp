@@ -1,7 +1,17 @@
 {
 	"version": "0.2",
 	"language": "en",
-	"dictionaries": ["en_US", "softwareTerms", "html", "css", "fonts", "node", "npm", "php", "typescript"],
+	"dictionaries": [
+		"en_US",
+		"softwareTerms",
+		"html",
+		"css",
+		"fonts",
+		"node",
+		"npm",
+		"php",
+		"typescript"
+	],
 	"ignorePaths": [
 		"vendor/**",
 		"node_modules/**",
@@ -265,7 +275,10 @@
 		"undebounced",
 		"WPML",
 		"wpml",
-		"dismisser"
+		"dismisser",
+		"haga",
+		"click",
+		"aquí"
 	],
 	"flagWords": [],
 	"allowCompoundWords": true

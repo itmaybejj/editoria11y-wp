@@ -1299,17 +1299,18 @@ final class NetworkDefaultsWorker {
 			return array();
 		}
 		global $wpdb;
-		// phpcs:disable WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- $wpdb->blogs is a literal; cache irrelevant for cursor advance.
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery -- WP_Site_Query has no "blog_id > N" predicate; cache irrelevant for cursor advance.
 		$rows = $wpdb->get_col(
 			$wpdb->prepare(
-				"SELECT blog_id FROM {$wpdb->blogs}
+				"SELECT blog_id FROM %i
 				WHERE blog_id > %d AND archived = '0' AND spam = '0' AND deleted = '0'
 				ORDER BY blog_id ASC LIMIT %d",
+				$wpdb->blogs,
 				$cursor,
 				$limit
 			)
 		);
-		// phpcs:enable
+		// phpcs:enable WordPress.DB.DirectDatabaseQuery
 		return array_map( 'intval', is_array( $rows ) ? $rows : array() );
 	}
 
@@ -1323,15 +1324,16 @@ final class NetworkDefaultsWorker {
 			return 0;
 		}
 		global $wpdb;
-		// phpcs:disable WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery -- see next_batch(); same cursor scan, counted.
 		return (int) $wpdb->get_var(
 			$wpdb->prepare(
-				"SELECT COUNT(*) FROM {$wpdb->blogs}
+				"SELECT COUNT(*) FROM %i
 				WHERE blog_id > %d AND archived = '0' AND spam = '0' AND deleted = '0'",
+				$wpdb->blogs,
 				$cursor
 			)
 		);
-		// phpcs:enable
+		// phpcs:enable WordPress.DB.DirectDatabaseQuery
 	}
 
 	/**

@@ -114,6 +114,9 @@ class ApiDismissals extends WP_REST_Controller {
 		}
 		$now = gmdate( 'Y-m-d H:i:s' );
 		global $wpdb;
+		$utable = $wpdb->prefix . 'ed11y_urls';
+		$rtable = $wpdb->prefix . 'ed11y_results';
+		$dtable = $wpdb->prefix . 'ed11y_dismissals';
 
 		// Get Page ID so we can avoid complex joins in subsequent queries.
 		$pid = $this->get_dismissal_pid( $results );
@@ -174,40 +177,40 @@ class ApiDismissals extends WP_REST_Controller {
 			// and a re-crawl reconciles the rare mid-sequence failure.
 
 			// Page (ed11y_urls) content/dev totals.
-			$wpdb->query( // phpcs:ignore
+			$wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery -- custom-table write; no WP API.
 				$wpdb->prepare(
-					"UPDATE {$wpdb->prefix}ed11y_urls u
+					"UPDATE %i u
 					INNER JOIN (
 						SELECT pid,
 							SUM( in_content = 1 ) AS content_count,
 							SUM( in_content = 0 ) AS dev_count
-						FROM {$wpdb->prefix}ed11y_dismissals
+						FROM %i
 						WHERE result_key = %s AND element_id = %s
 							AND dismissal_status = 'okAll' AND stale = 0
 						GROUP BY pid
 					) m ON m.pid = u.pid
 					SET u.page_total = u.page_total + m.content_count,
 						u.dev_total  = u.dev_total + m.dev_count;",
-					array( $result_key, $element_id )
+					array( $utable, $dtable, $result_key, $element_id )
 				)
 			);
 
 			// Per-test (ed11y_results) counts for the pages that still exist.
-			$wpdb->query( // phpcs:ignore
+			$wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery -- custom-table write; no WP API.
 				$wpdb->prepare(
-					"UPDATE {$wpdb->prefix}ed11y_results r
+					"UPDATE %i r
 					INNER JOIN (
 						SELECT pid,
 							SUM( in_content = 1 ) AS content_count,
 							SUM( in_content = 0 ) AS dev_count
-						FROM {$wpdb->prefix}ed11y_dismissals
+						FROM %i
 						WHERE result_key = %s AND element_id = %s
 							AND dismissal_status = 'okAll' AND stale = 0
 						GROUP BY pid
 					) m ON m.pid = r.pid AND r.result_key = %s
 					SET r.result_count = r.result_count + m.content_count,
 						r.dev_count    = r.dev_count + m.dev_count;",
-					array( $result_key, $element_id, $result_key )
+					array( $rtable, $dtable, $result_key, $element_id, $result_key )
 				)
 			);
 
@@ -216,45 +219,46 @@ class ApiDismissals extends WP_REST_Controller {
 			// them fresh so the "issues by type" totals restore too. result_name
 			// rides the mapping; a mechanical (user 0) row may carry '', which
 			// the next scan of the page corrects.
-			$wpdb->query( // phpcs:ignore
+			$wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery -- custom-table write; no WP API.
 				$wpdb->prepare(
-					"INSERT INTO {$wpdb->prefix}ed11y_results
+					"INSERT INTO %i
 						(pid, result_key, result_count, dev_count, result_name, created, updated)
 					SELECT d.pid, %s,
 						SUM( d.in_content = 1 ),
 						SUM( d.in_content = 0 ),
 						MAX( d.result_name ),
 						%s, %s
-					FROM {$wpdb->prefix}ed11y_dismissals d
+					FROM %i d
 					WHERE d.result_key = %s AND d.element_id = %s
 						AND d.dismissal_status = 'okAll' AND d.stale = 0
 						AND NOT EXISTS (
-							SELECT 1 FROM {$wpdb->prefix}ed11y_results r
+							SELECT 1 FROM %i r
 							WHERE r.pid = d.pid AND r.result_key = %s
 						)
 					GROUP BY d.pid;",
-					array( $result_key, $now, $now, $result_key, $element_id, $result_key )
+					array( $rtable, $result_key, $now, $now, $dtable, $result_key, $element_id, $rtable, $result_key )
 				)
 			);
 
 			// Now clear the element everywhere: the origin row plus every
 			// per-page mapping row the report path stored.
-			$okall_deleted = (int) $wpdb->query( // phpcs:ignore
+			$okall_deleted = (int) $wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery -- custom-table write; no WP API.
 				$wpdb->prepare(
-					"DELETE FROM {$wpdb->prefix}ed11y_dismissals
+					"DELETE FROM %i
 					WHERE result_key = %s
 					AND element_id = %s
 					AND dismissal_status = 'okAll';",
 					array(
+						$dtable,
 						$result_key,
 						$element_id,
 					)
 				)
 			);
 
-			$other_deleted = (int) $wpdb->query( // phpcs:ignore
+			$other_deleted = (int) $wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery -- custom-table write; no WP API.
 				$wpdb->prepare(
-					"DELETE FROM {$wpdb->prefix}ed11y_dismissals
+					"DELETE FROM %i
 					WHERE pid = %d
 					AND result_key = %s
 					AND element_id = %s
@@ -266,6 +270,7 @@ class ApiDismissals extends WP_REST_Controller {
 						)
 					);",
 					array(
+						$dtable,
 						$pid,
 						$result_key,
 						$element_id,
@@ -281,9 +286,9 @@ class ApiDismissals extends WP_REST_Controller {
 			return $okall_deleted + $other_deleted;
 		}
 
-		$response = $wpdb->query( // phpcs:ignore
+		$response = $wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery -- custom-table write; no WP API.
 			$wpdb->prepare(
-				"INSERT INTO {$wpdb->prefix}ed11y_dismissals
+				'INSERT INTO %i
 					(pid,
 					result_key,
 					user,
@@ -295,8 +300,9 @@ class ApiDismissals extends WP_REST_Controller {
 					stale,
 					in_content)
 				VALUES (%s, %s, %d, %s, %s, %s, %s, %s, %d, %d)
-					;",
+					;',
 				array(
+					$dtable,
 					$pid,
 					$result_key,
 					wp_get_current_user()->ID,
@@ -358,7 +364,7 @@ class ApiDismissals extends WP_REST_Controller {
 		$direction   = 'ASC' === $params['direction'] ? 'ASC' : 'DESC';
 		$order_by    = ! empty( $params['sort'] ) && $validate->sort( $params['sort'] ) ? $params['sort'] : false;
 		$entity_type = ! empty( $params['entity_type'] ) && $validate->entity_type( $params['entity_type'] ) ? $params['entity_type'] : false;
-		$result_key  = ! empty( $params['result_key'] ) && 'false' !== $params['result_key'] ? esc_sql( $params['result_key'] ) : false;
+		$result_key  = ! empty( $params['result_key'] ) && 'false' !== $params['result_key'] ? (string) $params['result_key'] : false;
 		$dismissor   = is_numeric( $params['dismissor'] ) ? intval( $params['dismissor'] ) : false;
 		$utable      = $wpdb->prefix . 'ed11y_urls';
 		$dtable      = $wpdb->prefix . 'ed11y_dismissals';
@@ -372,65 +378,77 @@ class ApiDismissals extends WP_REST_Controller {
 		$dismiss_sorts = array( 'pid', 'page_url', 'page_title', 'entity_type', 'user', 'result_key', 'result_name', 'dismissal_status', 'created', 'stale' );
 		$order_by      = $order_by && in_array( $order_by, $dismiss_sorts, true ) ? $order_by : 'created';
 
-		// Build where clause based on sanitized params.
+		// Build where clause based on sanitized params. Fragments carry only
+		// placeholders and the fixed table aliases `d` / `u`; the values ride
+		// in $where_args and go through $wpdb->prepare() with the rest.
 		//
 		// Always hide the mechanical per-page okAll mapping rows (user 0) the
 		// report path writes so the dashboard can restore counts on a reset —
 		// they are not human dismissals and would otherwise flood the list with
 		// one entry per page. The origin okAll row (a real dismisser, user > 0)
 		// still shows. Every filter below AND-appends to this base.
-		$where = "WHERE NOT ( {$dtable}.dismissal_status = 'okAll' AND {$dtable}.user = 0 )";
+		$where      = "WHERE NOT ( d.dismissal_status = 'okAll' AND d.user = 0 )";
+		$where_args = array();
 		if ( $result_key ) {
 			// Filtering by test name.
-			$where .= " AND {$dtable}.result_key = '{$result_key}'";
+			$where       .= ' AND d.result_key = %s';
+			$where_args[] = $result_key;
 		}
 		if ( $entity_type ) {
 			// Filtering by entity type.
-			$where .= " AND {$utable}.entity_type = '{$entity_type}'";
+			$where       .= ' AND u.entity_type = %s';
+			$where_args[] = $entity_type;
 		}
 
 		if ( 0 < $dismissor ) {
 			// Filtering by author ID number, which has been cast to integer.
-			$where .= " AND {$dtable}.user = '{$dismissor}'";
+			$where       .= ' AND d.user = %d';
+			$where_args[] = $dismissor;
 		}
 
-		if ( in_array( $order_by, array( 'page_title', 'page_url', 'entity_type' ), true ) ) {
-			$order_by = "{$utable}.{$order_by}";
-		} else {
-			$order_by = "{$dtable}.{$order_by}";
-		}
+		// Qualify the sort column with its table alias, both as identifiers.
+		$order_alias = in_array( $order_by, array( 'page_title', 'page_url', 'entity_type' ), true ) ? 'u' : 'd';
 
-		// phpcs:disable
+		// $where is assembled above from placeholder-only literals and
+		// $direction is the whitelisted ASC/DESC keyword; neither can be a
+		// placeholder. Everything else is prepared.
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber, WordPress.DB.DirectDatabaseQuery, PluginCheck.Security.DirectDB.UnescapedDBParameter -- see above; args are array_merge()d (sniff cannot count them); grouped dashboard report over custom tables.
 		$data = $wpdb->get_results(
-			"SELECT
-					{$utable}.pid,
-					{$utable}.page_url,
-					{$utable}.page_title,
-					{$utable}.entity_type,
-					{$dtable}.user,
-					{$dtable}.result_key,
-					{$dtable}.result_name,
-					{$dtable}.dismissal_status,
-					MAX({$dtable}.created) AS created,
-					{$dtable}.stale,
-					MAX({$dtable}.stale_date) AS stale_date
-					FROM {$dtable}
-					LEFT JOIN {$utable} ON ({$dtable}.pid={$utable}.pid)
+			$wpdb->prepare(
+				"SELECT
+					u.pid,
+					u.page_url,
+					u.page_title,
+					u.entity_type,
+					d.user,
+					d.result_key,
+					d.result_name,
+					d.dismissal_status,
+					MAX(d.created) AS created,
+					d.stale,
+					MAX(d.stale_date) AS stale_date
+					FROM %i AS d
+					LEFT JOIN %i AS u ON (d.pid = u.pid)
 					{$where}
 					GROUP BY
-					{$utable}.pid,
-					{$utable}.page_url,
-					{$utable}.page_title,
-					{$utable}.entity_type,
-					{$dtable}.user,
-					{$dtable}.result_key,
-					{$dtable}.result_name,
-					{$dtable}.dismissal_status,
-					{$dtable}.stale
-					ORDER BY {$order_by} {$direction}
-					LIMIT {$count}
-					OFFSET {$offset}
-					;"
+					u.pid,
+					u.page_url,
+					u.page_title,
+					u.entity_type,
+					d.user,
+					d.result_key,
+					d.result_name,
+					d.dismissal_status,
+					d.stale
+					ORDER BY %i.%i {$direction}
+					LIMIT %d
+					OFFSET %d",
+				array_merge(
+					array( $dtable, $utable ),
+					$where_args,
+					array( $order_alias, $order_by, $count, $offset )
+				)
+			)
 		);
 
 		// COUNT(*) over the grouped set as a derived table: the previous
@@ -438,29 +456,35 @@ class ApiDismissals extends WP_REST_Controller {
 		// $wpdb->num_rows, which scaled with the whole dismissals table on
 		// every request.
 		$rowcount = (int) $wpdb->get_var(
-			"SELECT COUNT(*) FROM (
+			$wpdb->prepare(
+				"SELECT COUNT(*) FROM (
 					SELECT 1
-					FROM {$dtable}
-					INNER JOIN {$utable} ON ({$dtable}.pid={$utable}.pid)
+					FROM %i AS d
+					INNER JOIN %i AS u ON (d.pid = u.pid)
 					{$where}
 					GROUP BY
-					{$utable}.pid,
-					{$dtable}.user,
-					{$dtable}.result_key,
-					{$dtable}.dismissal_status,
-					{$dtable}.stale
-					) AS grouped_dismissals
-					;"
+					u.pid,
+					d.user,
+					d.result_key,
+					d.dismissal_status,
+					d.stale
+					) AS grouped_dismissals",
+				array_merge( array( $dtable, $utable ), $where_args )
+			)
 		);
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber, WordPress.DB.DirectDatabaseQuery, PluginCheck.Security.DirectDB.UnescapedDBParameter
 
 		// Get user display names. An empty `include` array would make
 		// WP_User_Query drop the filter and return EVERY user, so only
 		// query when the page of rows actually references dismissers.
 		$users    = array();
-		$user_ids = [];
+		$user_ids = array();
 		foreach ( $data as $value ) {
-			if ( $value->user && !in_array($value->user, $user_ids ) )
+			// $wpdb returns every column as a string, so strict comparison
+			// dedupes consistently.
+			if ( $value->user && ! in_array( $value->user, $user_ids, true ) ) {
 				$user_ids[] = $value->user;
+			}
 		}
 		if ( ! empty( $user_ids ) ) {
 			$user_query = new WP_User_Query(
@@ -472,10 +496,9 @@ class ApiDismissals extends WP_REST_Controller {
 					),
 				)
 			);
-			$users = $user_query->get_results();
+			$users      = $user_query->get_results();
 		}
 
-		// phpcs:enable
 		return new WP_REST_Response( array( $data, $rowcount, $users ), 200 );
 	}
 
@@ -492,15 +515,17 @@ class ApiDismissals extends WP_REST_Controller {
 			return false;
 		}
 		global $wpdb;
+		$utable = $wpdb->prefix . 'ed11y_urls';
 		// Initialize $pid up front; on PHP 8 the post_id===0 path otherwise
 		// hits "Undefined variable" before the first empty($pid) check.
 		$pid = null;
 		if ( $post_id > 0 ) {
-			$pid = $wpdb->get_var( // phpcs:ignore
+			$pid = $wpdb->get_var( // phpcs:ignore WordPress.DB.DirectDatabaseQuery -- custom-table lookup; no WP API.
 				$wpdb->prepare(
-					"SELECT pid FROM {$wpdb->prefix}ed11y_urls
-				WHERE post_id=%s;",
+					'SELECT pid FROM %i
+				WHERE post_id=%s;',
 					array(
+						$utable,
 						$post_id,
 					)
 				)
@@ -513,12 +538,12 @@ class ApiDismissals extends WP_REST_Controller {
 		// guard stays on the INSERT branch below to prevent an infinite
 		// loop if the INSERT itself fails.
 		if ( empty( $pid ) ) {
-			global $wpdb;
-			$pid = $wpdb->get_var( // phpcs:ignore
+			$pid = $wpdb->get_var( // phpcs:ignore WordPress.DB.DirectDatabaseQuery -- custom-table lookup; no WP API.
 				$wpdb->prepare(
-					"SELECT pid FROM {$wpdb->prefix}ed11y_urls
-				WHERE page_url=%s;",
+					'SELECT pid FROM %i
+				WHERE page_url=%s;',
 					array(
+						$utable,
 						$url,
 					)
 				)
@@ -530,9 +555,9 @@ class ApiDismissals extends WP_REST_Controller {
 			// won the race folds into the existing row instead of erroring.
 			// Placeholders repeated rather than VALUES()/alias syntax — the
 			// only form both MySQL 8.4+ and MariaDB accept.
-			$wpdb->query( // phpcs:ignore
+			$wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery -- custom-table write; no WP API.
 				$wpdb->prepare(
-					"INSERT INTO {$wpdb->prefix}ed11y_urls
+					'INSERT INTO %i
 					(page_url,
 					 post_id,
 					entity_type,
@@ -541,8 +566,9 @@ class ApiDismissals extends WP_REST_Controller {
 				VALUES (%s, %d, %s, %s, %d)
 				ON DUPLICATE KEY UPDATE
 					page_title = %s,
-					page_total = %d;",
+					page_total = %d;',
 					array(
+						$utable,
 						$results['page_url'],
 						$results['post_id'],
 						$results['entity_type'],
@@ -565,7 +591,7 @@ class ApiDismissals extends WP_REST_Controller {
 	 * @param WP_REST_Request $request Full data about the request.
 	 * @return WP_Error|bool
 	 */
-	public function update_item_permissions_check( $request ) { // phpcs:ignore
+	public function update_item_permissions_check( $request ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundInExtendedClass
 		if ( 'broken' === Installer::schema_state() ) {
 			return new WP_Error(
 				'ed11y_schema_unavailable',
@@ -590,7 +616,7 @@ class ApiDismissals extends WP_REST_Controller {
 	 * @param WP_REST_Request $request Full data about the request.
 	 * @return WP_Error|bool
 	 */
-	public function read_dismissals_permissions_check( $request ) { // phpcs:ignore
+	public function read_dismissals_permissions_check( $request ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundInExtendedClass
 		if ( 'broken' === Installer::schema_state() ) {
 			return new WP_Error(
 				'ed11y_schema_unavailable',

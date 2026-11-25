@@ -1,7 +1,7 @@
 === Editoria11y Accessibility Checker ===
 Contributors: itmaybejj, partyka
 Tags: accessibility checker, automated testing, quality assurance, SEO
-Stable tag: 3.0.8
+Stable tag: 3.0.9
 Tested up to: 7.1
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -192,6 +192,11 @@ New feature development comes through by grants from academic institutions and c
 
 == Changelog ==
 
+= 3.0.9 =
+* Temporary hotfixes for bootstrapping errors on sites with competing Freemius installs or composer managed files.
+
+The next release is expected to remove the Freemius SDK entirely, but needs more testing first.
+
 = 3.0.8 =
 * Fix for a false positive in the editor for filenames in alt text on image blocks when the image has been marked decorative. Note that the current version still asks for confirmation that an image is actually decorative inside the editor, but not in the frontend: WordPress marks decorative images with role="none," which this checker accepts as equivalent to "Mark OK." We may add config to override this behavior in either direction (never ask, always ask) in the future; submit a feature request if you want either option.
 * Suppresses free trial offer notifications on admin pages that are not "owned" by Editoria11y. Old notifications may still "stick" until dismissed; if any reappear elsewhere in the admin interface, please file a bug report.
@@ -234,7 +239,7 @@ New feature development comes through by grants from academic institutions and c
 Adds column for whether an alert was found in the content area of the page.
 
 = 3.0.0 =
-The database upgrades itself the first time an administrator visits each site's dashboard; dismissal records are re-keyed by a background job (a progress notice shows until it finishes). On multisite, each site upgrades on its own first admin visit. Supporters switching to the CSA build: network-activate it (the free build deactivates automatically), then activate your license under Network Admin, Settings, Editoria11y License.
+The database upgrades itself the first time an administrator visits each site's dashboard; dismissal records are re-keyed by a background job (a progress notice shows until it finishes).
 
 = 2.1.0 =
 As-you-type checking is now compatible with both the block and classic editors.

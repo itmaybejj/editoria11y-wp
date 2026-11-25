@@ -78,6 +78,7 @@
         "wp-phpunit/wp-phpunit": "^6.0"
     },
     "config": {
+        "prepend-autoloader": false,
         "allow-plugins": {
             "dealerdirect/phpcodesniffer-composer-installer": true
         }
