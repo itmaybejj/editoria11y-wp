@@ -1268,8 +1268,8 @@ msgid "Custom rules"
 msgstr "Προσαρμοσμένοι κανόνες"
 
 #: src/Form/NetworkSettingsPage.php:140
-msgid "Heads up: \"Default for all sites\" and \"Override for all sites\" overwrite a site's current value whenever that value is still an Editoria11y default or a previous network default — including a per-site value that happens to match a default. Sites where an admin has chosen a different value are left untouched. \"Default for new sites\" only affects sites created from now on."
-msgstr "Προσοχή: οι επιλογές «Προεπιλογή για όλους τους ιστοτόπους» και «Παράκαμψη για όλους τους ιστοτόπους» αντικαθιστούν την τρέχουσα τιμή ενός ιστοτόπου όποτε αυτή η τιμή είναι ακόμη μια προεπιλογή του Editoria11y ή μια προηγούμενη προεπιλογή δικτύου — συμπεριλαμβανομένης μιας τιμής ανά ιστότοπο που συμβαίνει να ταιριάζει με μια προεπιλογή. Οι ιστότοποι όπου κάποιος διαχειριστής έχει επιλέξει διαφορετική τιμή παραμένουν ανεπηρέαστοι. Η επιλογή «Προεπιλογή για νέους ιστοτόπους» επηρεάζει μόνο τους ιστοτόπους που δημιουργούνται από εδώ και πέρα."
+msgid "Heads up: \"Default for all sites\" and \"Override for all sites\" overwrite a site's current value whenever that value is still an Editoria11y default or a previous network default — including a per-site value that happens to match a default."
+msgstr "Προσοχή: οι επιλογές «Προεπιλογή για όλους τους ιστοτόπους» και «Παράκαμψη για όλους τους ιστοτόπους» αντικαθιστούν την τρέχουσα τιμή ενός ιστοτόπου όποτε αυτή η τιμή είναι ακόμη μια προεπιλογή του Editoria11y ή μια προηγούμενη προεπιλογή δικτύου — συμπεριλαμβανομένης μιας τιμής ανά ιστότοπο που συμβαίνει να ταιριάζει με μια προεπιλογή."
 
 #: src/Form/NetworkSettingsPage.php:176
 msgid "Editoria11y default or locked network settings"

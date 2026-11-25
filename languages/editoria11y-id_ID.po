@@ -1268,8 +1268,8 @@ msgid "Custom rules"
 msgstr "Aturan kustom"
 
 #: src/Form/NetworkSettingsPage.php:140
-msgid "Heads up: \"Default for all sites\" and \"Override for all sites\" overwrite a site's current value whenever that value is still an Editoria11y default or a previous network default — including a per-site value that happens to match a default. Sites where an admin has chosen a different value are left untouched. \"Default for new sites\" only affects sites created from now on."
-msgstr "Perhatian: \"Default untuk semua situs\" dan \"Timpa untuk semua situs\" akan menimpa nilai situs saat ini apabila nilai tersebut masih berupa default Editoria11y atau default jaringan sebelumnya — termasuk nilai per situs yang kebetulan cocok dengan sebuah default. Situs yang adminnya telah memilih nilai lain tidak akan tersentuh. \"Default untuk situs baru\" hanya berlaku untuk situs yang dibuat sejak saat ini."
+msgid "Heads up: \"Default for all sites\" and \"Override for all sites\" overwrite a site's current value whenever that value is still an Editoria11y default or a previous network default — including a per-site value that happens to match a default."
+msgstr "Perhatian: \"Default untuk semua situs\" dan \"Timpa untuk semua situs\" akan menimpa nilai situs saat ini apabila nilai tersebut masih berupa default Editoria11y atau default jaringan sebelumnya — termasuk nilai per situs yang kebetulan cocok dengan sebuah default."
 
 #: src/Form/NetworkSettingsPage.php:176
 msgid "Editoria11y default or locked network settings"

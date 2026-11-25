@@ -7,7 +7,9 @@
 
 namespace Editoria11y\Form;
 
- if ( ! defined( 'ABSPATH' ) ) exit; 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * The single seam for writing already-canonical settings blobs.

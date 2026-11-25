@@ -23,11 +23,12 @@
  *   names the file that declared the class, instead of fataling.
  *
  * Keeping the lists current:
- *   {@see REQUIRED_METHODS} and {@see REQUIRED_FUNCTIONS} must cover every
- *   SDK method / function the plugin calls. Test_Editoria11y_Freemius_Sdk_Guard
- *   scans src/ and editoria11y.php for call sites and fails when a new one
- *   is missing here, and also fails when an entry here does not exist in
- *   the bundled SDK (typo / upstream rename).
+ *   {@see REQUIRED_METHODS} (plus {@see OPTIONAL_METHODS}) and
+ *   {@see REQUIRED_FUNCTIONS} must cover every SDK method / function the
+ *   plugin calls. Test_Editoria11y_Freemius_Sdk_Guard scans src/ and
+ *   editoria11y.php for call sites and fails when a new one is missing
+ *   here, and also fails when an entry here does not exist in the bundled
+ *   SDK (typo / upstream rename).
  *
  * Build scope: free-build-safe. Runs in both builds, so it must NOT be
  * listed under `@fs_premium_only` in editoria11y.php. The `__premium_only`
@@ -81,6 +82,7 @@ final class FreemiusSdkGuard {
 		'get_slug',
 		'get_trial_url',
 		'get_upgrade_url',
+		'get_user',
 		'has_addons',
 		'has_paid_plan',
 		'has_trial_plan',
@@ -99,6 +101,22 @@ final class FreemiusSdkGuard {
 		'opt_in',
 		'override_i18n',
 		'switch_to_blog',
+	);
+
+	/**
+	 * SDK methods the plugin calls only behind a `method_exists()` check,
+	 * so a missing one degrades that one feature instead of fataling.
+	 *
+	 * Deliberately NOT enforced by {@see check()}: requiring them would
+	 * switch the whole plugin off over an optional call — e.g. an upstream
+	 * rename of the underscore-internal `_sync_licenses()` in a newer SDK
+	 * that another plugin loads. Listed so the call-site scan still forces
+	 * every new SDK call to be classified as required or optional, and so
+	 * the bundled-SDK existence test still catches typos here.
+	 */
+	const OPTIONAL_METHODS = array(
+		'_sync_licenses',
+		'get_current_or_network_user',
 	);
 
 	/** How many missing names the notice lists before truncating. */

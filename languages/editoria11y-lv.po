@@ -1268,8 +1268,8 @@ msgid "Custom rules"
 msgstr "Pielāgotas kārtulas"
 
 #: src/Form/NetworkSettingsPage.php:140
-msgid "Heads up: \"Default for all sites\" and \"Override for all sites\" overwrite a site's current value whenever that value is still an Editoria11y default or a previous network default — including a per-site value that happens to match a default. Sites where an admin has chosen a different value are left untouched. \"Default for new sites\" only affects sites created from now on."
-msgstr "Ievērībai: “Noklusējums visām vietnēm” un “Pārrakstīt visām vietnēm” pārrakstīs vietnes pašreizējo vērtību, ja tā joprojām ir Editoria11y noklusējuma vērtība vai iepriekšējais tīkla noklusējums — tostarp gadījumos, kad vietnes individuālā vērtība sakrīt ar noklusējumu. Vietnes, kurās administrators ir izvēlējies citu vērtību, netiek skartas. “Noklusējums jaunajām vietnēm” ietekmē tikai vietnes, kas izveidotas no šī brīža."
+msgid "Heads up: \"Default for all sites\" and \"Override for all sites\" overwrite a site's current value whenever that value is still an Editoria11y default or a previous network default — including a per-site value that happens to match a default."
+msgstr "Ievērībai: “Noklusējums visām vietnēm” un “Pārrakstīt visām vietnēm” pārrakstīs vietnes pašreizējo vērtību, ja tā joprojām ir Editoria11y noklusējuma vērtība vai iepriekšējais tīkla noklusējums — tostarp gadījumos, kad vietnes individuālā vērtība sakrīt ar noklusējumu."
 
 #: src/Form/NetworkSettingsPage.php:176
 msgid "Editoria11y default or locked network settings"

@@ -1268,8 +1268,8 @@ msgid "Custom rules"
 msgstr "Vlastní pravidla"
 
 #: src/Form/NetworkSettingsPage.php:140
-msgid "Heads up: \"Default for all sites\" and \"Override for all sites\" overwrite a site's current value whenever that value is still an Editoria11y default or a previous network default — including a per-site value that happens to match a default. Sites where an admin has chosen a different value are left untouched. \"Default for new sites\" only affects sites created from now on."
-msgstr "Pozor: „Výchozí pro všechny weby“ a „Přepsat pro všechny weby“ přepíšou aktuální hodnotu webu vždy, když je tato hodnota stále výchozí hodnotou Editoria11y nebo předchozí výchozí hodnotou sítě – včetně hodnoty jednotlivého webu, která výchozí hodnotě jen náhodou odpovídá. Weby, na kterých správce zvolil jinou hodnotu, zůstanou nedotčeny. „Výchozí pro nové weby“ ovlivňuje pouze weby vytvořené od tohoto okamžiku."
+msgid "Heads up: \"Default for all sites\" and \"Override for all sites\" overwrite a site's current value whenever that value is still an Editoria11y default or a previous network default — including a per-site value that happens to match a default."
+msgstr "Pozor: „Výchozí pro všechny weby“ a „Přepsat pro všechny weby“ přepíšou aktuální hodnotu webu vždy, když je tato hodnota stále výchozí hodnotou Editoria11y nebo předchozí výchozí hodnotou sítě – včetně hodnoty jednotlivého webu, která výchozí hodnotě jen náhodou odpovídá."
 
 #: src/Form/NetworkSettingsPage.php:176
 msgid "Editoria11y default or locked network settings"

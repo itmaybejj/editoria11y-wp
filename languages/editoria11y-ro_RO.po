@@ -1268,8 +1268,8 @@ msgid "Custom rules"
 msgstr "Reguli personalizate"
 
 #: src/Form/NetworkSettingsPage.php:140
-msgid "Heads up: \"Default for all sites\" and \"Override for all sites\" overwrite a site's current value whenever that value is still an Editoria11y default or a previous network default — including a per-site value that happens to match a default. Sites where an admin has chosen a different value are left untouched. \"Default for new sites\" only affects sites created from now on."
-msgstr "Atenție: „Implicit pentru toate site-urile” și „Suprascris pentru toate site-urile” suprascriu valoarea curentă a unui site de fiecare dată când aceasta este încă o valoare implicită Editoria11y sau un implicit de rețea anterior — inclusiv o valoare per site care se întâmplă să corespundă cu o valoare implicită. Site-urile pe care un administrator a ales o valoare diferită sunt lăsate neschimbate. „Implicit pentru site-uri noi” afectează doar site-urile create de acum înainte."
+msgid "Heads up: \"Default for all sites\" and \"Override for all sites\" overwrite a site's current value whenever that value is still an Editoria11y default or a previous network default — including a per-site value that happens to match a default."
+msgstr "Atenție: „Implicit pentru toate site-urile” și „Suprascris pentru toate site-urile” suprascriu valoarea curentă a unui site de fiecare dată când aceasta este încă o valoare implicită Editoria11y sau un implicit de rețea anterior — inclusiv o valoare per site care se întâmplă să corespundă cu o valoare implicită."
 
 #: src/Form/NetworkSettingsPage.php:176
 msgid "Editoria11y default or locked network settings"

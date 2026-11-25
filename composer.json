@@ -67,7 +67,7 @@
         ]
     },
     "require": {
-        "freemius/wordpress-sdk": "^2.13"
+        "freemius/wordpress-sdk": "2.13.5"
     },
     "require-dev": {
         "dealerdirect/phpcodesniffer-composer-installer": "^1.0",
@@ -78,6 +78,7 @@
         "wp-phpunit/wp-phpunit": "^6.0"
     },
     "config": {
+        "prepend-autoloader": false,
         "allow-plugins": {
             "dealerdirect/phpcodesniffer-composer-installer": true
         }

@@ -1268,8 +1268,8 @@ msgid "Custom rules"
 msgstr "தனிப்பயன் விதிகள்"
 
 #: src/Form/NetworkSettingsPage.php:140
-msgid "Heads up: \"Default for all sites\" and \"Override for all sites\" overwrite a site's current value whenever that value is still an Editoria11y default or a previous network default — including a per-site value that happens to match a default. Sites where an admin has chosen a different value are left untouched. \"Default for new sites\" only affects sites created from now on."
-msgstr "கவனிக்கவும்: “அனைத்து தளங்களுக்கும் இயல்புநிலை” மற்றும் “அனைத்து தளங்களுக்கும் மேலெழுதல்” ஆகியவை, ஒரு தளத்தின் தற்போதைய மதிப்பு இன்னும் Editoria11y இயல்புநிலையாகவோ அல்லது முந்தைய நெட்வொர்க் இயல்புநிலையாகவோ இருக்கும்போது அதை மேலெழுதிவிடும் — இயல்புநிலையுடன் பொருந்திப்போகும் தள-வாரியான மதிப்பும் இதில் அடங்கும். நிர்வாகி வேறு மதிப்பைத் தேர்ந்தெடுத்துள்ள தளங்கள் தொடப்படாமல் விடப்படும். “புதிய தளங்களுக்கு இயல்புநிலை” இப்போதிலிருந்து உருவாக்கப்படும் தளங்களை மட்டுமே பாதிக்கும்."
+msgid "Heads up: \"Default for all sites\" and \"Override for all sites\" overwrite a site's current value whenever that value is still an Editoria11y default or a previous network default — including a per-site value that happens to match a default."
+msgstr "கவனிக்கவும்: “அனைத்து தளங்களுக்கும் இயல்புநிலை” மற்றும் “அனைத்து தளங்களுக்கும் மேலெழுதல்” ஆகியவை, ஒரு தளத்தின் தற்போதைய மதிப்பு இன்னும் Editoria11y இயல்புநிலையாகவோ அல்லது முந்தைய நெட்வொர்க் இயல்புநிலையாகவோ இருக்கும்போது அதை மேலெழுதிவிடும் — இயல்புநிலையுடன் பொருந்திப்போகும் தள-வாரியான மதிப்பும் இதில் அடங்கும்."
 
 #: src/Form/NetworkSettingsPage.php:176
 msgid "Editoria11y default or locked network settings"

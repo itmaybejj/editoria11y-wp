@@ -126,16 +126,22 @@ class NetworkSettingsPage {
 	 *
 	 * The backfill decides whether a site is "still tracking the network"
 	 * by VALUE EQUALITY — it overwrites a site's stored value when that
-	 * value is absent, equals a previous network default, or equals the
-	 * hardcoded Editoria11y default (see
+	 * value is absent, equals ANY previous network default (the worker's
+	 * durable history — {@see NetworkDefaultsWorker::record_history()}),
+	 * or equals the hardcoded Editoria11y default (see
 	 * {@see NetworkDefaultsWorker::apply_dirty_to_option()}). A per-site
 	 * value that coincides with a default is therefore replaced. We do not
 	 * track per-site "locally-owned" intent, so this surface warns admins
 	 * of the overwrite rule rather than silently applying it.
+	 *
+	 * Deliberately says nothing about customized sites being "left
+	 * untouched": that is true for "Default for all sites" but not for
+	 * "Override for all sites", which force-writes and overlays at read
+	 * time regardless of the site's value.
 	 */
 	public static function propagation_help_text(): string {
 		return __(
-			'Heads up: "Default for all sites" and "Override for all sites" overwrite a site\'s current value whenever that value is still an Editoria11y default or a previous network default — including a per-site value that happens to match a default. Sites where an admin has chosen a different value are left untouched. "Default for new sites" only affects sites created from now on.',
+			'Heads up: "Default for all sites" and "Override for all sites" overwrite a site\'s current value whenever that value is still an Editoria11y default or a previous network default — including a per-site value that happens to match a default.',
 			'editoria11y'
 		);
 	}
@@ -490,18 +496,9 @@ class NetworkSettingsPage {
 	/**
 	 * `admin_post_<SAVE_ACTION>` handler.
 	 *
-	 * Validates nonce + capability, then runs both validators against
-	 * the single POST (CSA branch wrapped in the preprocessor gate so it
-	 * strips from the free build). Writes both blobs and redirects.
-	 *
-	 * Backfill: before writing the new network blobs, we snapshot the
-	 * previous storage so {@see NetworkDefaultsWorker::diff_dirty_keys()}
-	 * can compute which `'all'`-mode keys changed and which previous values
-	 * an existing site might still be tracking. The worker uses both
-	 * (previous network value AND hardcoded default) when deciding whether
-	 * to overwrite a per-site stored value — see the worker class docblock.
-	 *
-	 * @SuppressWarnings(PHPMD.CyclomaticComplexity) Save → diff → enqueue is a single linear pipeline; flattening would obscure the read.
+	 * Validates nonce + capability, hands the POST to
+	 * {@see save_from_post()}, and redirects back to the page with either
+	 * the saved notice or the orphan-rejection notice.
 	 */
 	public static function handle_save(): void {
 		if ( ! current_user_can( 'manage_network_options' ) ) {
@@ -513,24 +510,84 @@ class NetworkSettingsPage {
 		$post = wp_unslash( $_POST );
 		// phpcs:enable
 
+		$result = self::save_from_post( (array) $post );
+
+		if ( ! $result['saved'] ) {
+			set_transient(
+				'ed11y_network_orphans_' . get_current_user_id(),
+				$result['orphans'],
+				MINUTE_IN_SECONDS
+			);
+			$redirect = add_query_arg(
+				array(
+					'page'    => self::SLUG,
+					'orphans' => '1',
+				),
+				network_admin_url( 'settings.php' )
+			);
+			wp_safe_redirect( $redirect );
+			exit;
+		}
+
+		$redirect = add_query_arg(
+			array(
+				'page'    => self::SLUG,
+				'updated' => '1',
+			),
+			network_admin_url( 'settings.php' )
+		);
+		wp_safe_redirect( $redirect );
+		exit;
+	}
+
+	/**
+	 * Validate, orphan-check, store, and enqueue one network-form POST.
+	 *
+	 * Runs both validators against the single POST in BOTH builds. The
+	 * CSA blob is not premium-gated here on purpose: the tests + roles
+	 * bundle dropdown renders in the free build too, and its mode lives in
+	 * the CSA blob's `modes` while governing the main blob's `tests_off`.
+	 * Gating the CSA half used to leave the free build's bundle dropdown
+	 * un-saveable and its test selection un-propagated. The CSA-only
+	 * *fields* are still absent from a free-mode render, and
+	 * {@see NetworkSettingsValidator::keep_csa_storage_for_free_form()}
+	 * keeps the previously authored CSA storage intact in that case.
+	 *
+	 * Backfill: before writing the new network blobs, we snapshot the
+	 * previous storage so {@see NetworkDefaultsWorker::diff_dirty_keys()}
+	 * can compute which `'all'`-mode keys changed and which previous values
+	 * an existing site might still be tracking. Every changed value is
+	 * also recorded in the worker's durable history
+	 * ({@see NetworkDefaultsWorker::record_history()}) — mode-agnostic, so
+	 * a value published under "new sites only" is still recognized once
+	 * the key is later switched to "all". The worker uses all three
+	 * (any previous network value, the durable history, AND the hardcoded
+	 * default) when deciding whether to overwrite a per-site stored value
+	 * — see the worker class docblock.
+	 *
+	 * Split out of {@see handle_save()} so the pipeline can be exercised
+	 * without nonce / redirect / exit plumbing.
+	 *
+	 * @param array<string,mixed> $post POST array after wp_unslash().
+	 * @return array{saved: bool, orphans: array<int,string>, main_dirty: array<string,array{old:mixed,new:mixed,force:bool}>, csa_dirty: array<string,array{old:mixed,new:mixed,force:bool}>}
+	 */
+	public static function save_from_post( array $post ): array {
 		// Snapshot previous storage BEFORE writing the new blobs. Used by
 		// the backfill worker's three-way comparison ("absent | equals old |
-		// equals hardcoded → overwrite, else preserve"). CSA branches use
-		// full if-blocks (rather than ternaries) so Freemius's preprocessor
-		// can strip the premium-gated call sites from the free build —
-		// the strip script only removes the if-block form.
+		// equals hardcoded → overwrite, else preserve").
 		$old_free = ed11y_get_network_default_settings_storage();
-		$old_csa  = array(
-			'values' => array(),
-			'modes'  => array(),
-		);
+		$old_csa  = ed11y_get_network_default_csa_settings_storage();
 
-		$free_blob = NetworkSettingsValidator::validate_free( (array) $post );
-
-		$csa_blob = array(
-			'values' => array(),
-			'modes'  => array(),
-		);
+		$free_blob = NetworkSettingsValidator::validate_free( $post );
+		$csa_blob  = NetworkSettingsValidator::validate_csa( $post );
+		// CSA-mode form: mirror "nobody" content-test routing into the
+		// main blob's tests_off, which the bundle-lock overlay and the
+		// save-time bundle coercion read (finding F4). No-op for a
+		// free-mode form.
+		$free_blob = NetworkSettingsValidator::mirror_main_tests_off( $free_blob, $post );
+		// Free-mode form: the CSA fields were never on the page, so keep
+		// what the super-admin authored while licensed (bundle mode aside).
+		$csa_blob = NetworkSettingsValidator::keep_csa_storage_for_free_form( $old_csa, $csa_blob, $post );
 
 		// Orphan validation: reject the save outright when a value changed
 		// but the matching propagation-mode dropdown is "No network
@@ -546,35 +603,40 @@ class NetworkSettingsPage {
 			$new_csa_norm
 		);
 		if ( ! empty( $orphans ) ) {
-			set_transient(
-				'ed11y_network_orphans_' . get_current_user_id(),
-				$orphans,
-				MINUTE_IN_SECONDS
+			return array(
+				'saved'      => false,
+				'orphans'    => $orphans,
+				'main_dirty' => array(),
+				'csa_dirty'  => array(),
 			);
-			$redirect = add_query_arg(
-				array(
-					'page'    => self::SLUG,
-					'orphans' => '1',
-				),
-				network_admin_url( 'settings.php' )
-			);
-			wp_safe_redirect( $redirect );
-			exit;
 		}
 
 		update_site_option( 'ed11y_network_default_settings', $free_blob );
+		update_site_option( 'ed11y_network_default_csa_settings', $csa_blob );
 
 		// Queue the backfill — only `'all'`-mode keys whose value/mode
 		// actually changed end up in the dirty set. No-op when nothing
 		// changed.
+		$main_dirty = array();
+		$csa_dirty  = array();
 		try {
+			// Record BEFORE diffing so the history is intact even if the
+			// diff / enqueue below throws — the next save will still see
+			// every value the network has held.
+			NetworkDefaultsWorker::record_history( $old_free, $new_free_norm, $old_csa, $new_csa_norm );
 			$main_dirty = NetworkDefaultsWorker::diff_dirty_keys( $old_free, $new_free_norm );
-			$csa_dirty  = array();
-
+			$csa_dirty  = NetworkDefaultsWorker::diff_dirty_keys( $old_csa, $new_csa_norm );
 			// Cross-blob bundle expansion: tests_off has destinations in
 			// both blobs, so it cannot be diffed by the per-blob walks
 			// above (the bundle mode lives only in CSA modes).
-
+			$bundle_dirty = NetworkDefaultsWorker::diff_bundle_dirty_keys(
+				$old_free,
+				$new_free_norm,
+				$old_csa,
+				$new_csa_norm
+			);
+			$main_dirty   = array_merge( $main_dirty, $bundle_dirty['main'] );
+			$csa_dirty    = array_merge( $csa_dirty, $bundle_dirty['csa'] );
 			NetworkDefaultsWorker::enqueue( $main_dirty, $csa_dirty );
 		} catch ( \Throwable $e ) {
 			// Worker / autoload failure must not block the form save —
@@ -585,14 +647,11 @@ class NetworkSettingsPage {
 			error_log( '[Editoria11y] NetworkDefaultsWorker::enqueue() threw: ' . $e->getMessage() );
 		}
 
-		$redirect = add_query_arg(
-			array(
-				'page'    => self::SLUG,
-				'updated' => '1',
-			),
-			network_admin_url( 'settings.php' )
+		return array(
+			'saved'      => true,
+			'orphans'    => array(),
+			'main_dirty' => $main_dirty,
+			'csa_dirty'  => $csa_dirty,
 		);
-		wp_safe_redirect( $redirect );
-		exit;
 	}
 }

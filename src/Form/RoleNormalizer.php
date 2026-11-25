@@ -52,4 +52,25 @@ final class RoleNormalizer {
 		$valid = array_values( array_intersect( array_keys( $input ), $known ) );
 		return implode( ',', $valid );
 	}
+
+	/**
+	 * Whether two roles CSVs name the same set of slugs, ignoring order
+	 * and duplicates.
+	 *
+	 * The checkbox group posts slugs in render order (super-admin pseudo-
+	 * role first), while the hardcoded default lists `administrator`
+	 * first — so a plain string compare reports the untouched form as a
+	 * change. Order carries no meaning for a role set.
+	 *
+	 * @param string $left  Roles CSV.
+	 * @param string $right Roles CSV.
+	 */
+	public static function same_set( string $left, string $right ): bool {
+		$to_set = static function ( string $csv ): array {
+			$slugs = array_unique( array_filter( array_map( 'trim', explode( ',', $csv ) ) ) );
+			sort( $slugs );
+			return array_values( $slugs );
+		};
+		return $to_set( $left ) === $to_set( $right );
+	}
 }

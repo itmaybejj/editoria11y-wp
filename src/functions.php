@@ -147,7 +147,7 @@ function ed11y_get_default_options( string $option = '' ) {
  * only", not "ignore nothing at all".
  */
 function ed11y_container_ignore_baseline(): string {
-	return '#wpadminbar *, #comments *, .wp-block-post-comments *, img.avatar';
+	return '#wpadminbar *, #comments *, .wp-block-post-comments *, img.avatar, .components-placeholder *';
 }
 
 /**
@@ -286,7 +286,7 @@ function ed11y_effective_network_csa_lock( string $key ): array {
 	// each of its four governed CSA keys is locked as a unit even with an
 	// empty stored value — the super-admin's "everyone gets the network
 	// default set" is a valid configuration. Mirrors the save-time
-	// coercion in {@see \Editoria11y\Form\SettingsValidator::enforce_network_csa_locks()}.
+	// coercion in {@see \Editoria11y\Form\SettingsValidator::enforce_network_csa_locks__premium_only()}.
 	if (
 		in_array( $key, \Editoria11y\Form\SettingsValidator::BUNDLE_LOCK_TESTS_AND_ROLES_KEYS, true )
 		&& ed11y_is_bundle_locked()
@@ -328,7 +328,7 @@ function ed11y_effective_network_csa_lock( string $key ): array {
  *
  * @SuppressWarnings(PHPMD.UnusedFormalParameter) `$key` is read only in the premium body; the free build strips it but must keep the shared signature.
  */
-function ed11y_get_csa_setting( string $key ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter -- used in the premium-only body; the free build strips it.
+function ed11y_get_csa_setting( string $key ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found -- `$key` is read only in the premium body; the free build strips that branch.
 
 	return null;
 }
@@ -344,7 +344,7 @@ function ed11y_get_csa_setting( string $key ) { // phpcs:ignore Generic.CodeAnal
  *
  * @SuppressWarnings(PHPMD.UnusedFormalParameter) `$key` is read only in the premium body; the free build strips it but must keep the shared signature.
  */
-function ed11y_get_csa_raw_setting( string $key ): string { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter -- used in the premium-only body; the free build strips it.
+function ed11y_get_csa_raw_setting( string $key ): string { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found -- `$key` is read only in the premium body; the free build strips that branch.
 
 	return '';
 }

@@ -124,6 +124,8 @@ class MigrationPanel {
 			'complete'    => __( 'Database update complete.', 'editoria11y' ),
 			'working'     => __( 'Working…', 'editoria11y' ),
 			'priorFailed' => __( 'A previous update attempt did not finish.', 'editoria11y' ),
+			/* translators: %d: number of dismissal records the background migration could not convert. */
+			'stalled'     => __( 'The update stopped: %d dismissal records could not be converted after repeated attempts. The checker remains fully functional. Retry to attempt them again.', 'editoria11y' ),
 			'preV3'       => __( 'A schema update is required.', 'editoria11y' ),
 			'dual'        => __( 'Background data update is in progress. Click below to drive it to completion now.', 'editoria11y' ),
 		);
@@ -187,9 +189,14 @@ class MigrationPanel {
 					// Sticky -failed marker: stop polling and hand control
 					// back to the Retry button — the server no longer
 					// auto-clears the marker on plain steps, so looping
-					// would just spin on "Working…" forever.
+					// would just spin on "Working…" forever. A straggler
+					// count means the stall circuit-breaker tripped rather
+					// than a DDL error; name the rows so the admin knows
+					// what Retry will re-attempt.
 					bar.style.display = 'none';
-					status.textContent = i18n.priorFailed;
+					status.textContent = d.stragglers > 0
+						? i18n.stalled.replace('%d', d.stragglers)
+						: i18n.priorFailed;
 					btnRun.style.display   = 'none';
 					btnRetry.style.display = '';
 					btnRetry.disabled = false;
@@ -315,6 +322,11 @@ class MigrationPanel {
 				// The JS loop stops and re-surfaces the Retry button on
 				// this flag instead of polling a wedged migration forever.
 				'failed'       => '-failed' === substr( $version, -7 ),
+				// Non-zero when the rehash stall circuit-breaker tripped:
+				// this many rows survived two full walks unconverted. The
+				// JS renders the row-count message instead of the generic
+				// failure text.
+				'stragglers'   => (int) get_option( 'editoria11y_rehash_stragglers', 0 ),
 			)
 		);
 	}

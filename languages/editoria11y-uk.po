@@ -1268,8 +1268,8 @@ msgid "Custom rules"
 msgstr "Користувацькі правила"
 
 #: src/Form/NetworkSettingsPage.php:140
-msgid "Heads up: \"Default for all sites\" and \"Override for all sites\" overwrite a site's current value whenever that value is still an Editoria11y default or a previous network default — including a per-site value that happens to match a default. Sites where an admin has chosen a different value are left untouched. \"Default for new sites\" only affects sites created from now on."
-msgstr "Зверніть увагу: «Стандарт для всіх сайтів» і «Замінити для всіх сайтів» перезаписують поточне значення сайту щоразу, коли це значення досі є стандартним значенням Editoria11y або попереднім стандартом мережі — зокрема значення окремого сайту, яке випадково збігається зі стандартним. Сайти, де адміністратор обрав інше значення, залишаються незмінними. «Стандарт для нових сайтів» впливає лише на сайти, створені надалі."
+msgid "Heads up: \"Default for all sites\" and \"Override for all sites\" overwrite a site's current value whenever that value is still an Editoria11y default or a previous network default — including a per-site value that happens to match a default."
+msgstr "Зверніть увагу: «Стандарт для всіх сайтів» і «Замінити для всіх сайтів» перезаписують поточне значення сайту щоразу, коли це значення досі є стандартним значенням Editoria11y або попереднім стандартом мережі — зокрема значення окремого сайту, яке випадково збігається зі стандартним."
 
 #: src/Form/NetworkSettingsPage.php:176
 msgid "Editoria11y default or locked network settings"

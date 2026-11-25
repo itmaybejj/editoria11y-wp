@@ -1268,8 +1268,8 @@ msgid "Custom rules"
 msgstr "カスタムルール"
 
 #: src/Form/NetworkSettingsPage.php:140
-msgid "Heads up: \"Default for all sites\" and \"Override for all sites\" overwrite a site's current value whenever that value is still an Editoria11y default or a previous network default — including a per-site value that happens to match a default. Sites where an admin has chosen a different value are left untouched. \"Default for new sites\" only affects sites created from now on."
-msgstr "注意：「すべてのサイトのデフォルト」および「すべてのサイトを上書き」は、現在の値が Editoria11y のデフォルト値または以前のネットワークデフォルトのままである場合（デフォルト値と偶然一致するサイト単位の値も含む）、サイトの現在の値を上書きします。管理者が別の値を選択済みのサイトは変更されません。「新しいサイトのデフォルト」は今後作成されるサイトにのみ影響します。"
+msgid "Heads up: \"Default for all sites\" and \"Override for all sites\" overwrite a site's current value whenever that value is still an Editoria11y default or a previous network default — including a per-site value that happens to match a default."
+msgstr "注意：「すべてのサイトのデフォルト」および「すべてのサイトを上書き」は、現在の値が Editoria11y のデフォルト値または以前のネットワークデフォルトのままである場合（デフォルト値と偶然一致するサイト単位の値も含む）、サイトの現在の値を上書きします。"
 
 #: src/Form/NetworkSettingsPage.php:176
 msgid "Editoria11y default or locked network settings"

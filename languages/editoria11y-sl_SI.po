@@ -1268,8 +1268,8 @@ msgid "Custom rules"
 msgstr "Pravila po meri"
 
 #: src/Form/NetworkSettingsPage.php:140
-msgid "Heads up: \"Default for all sites\" and \"Override for all sites\" overwrite a site's current value whenever that value is still an Editoria11y default or a previous network default — including a per-site value that happens to match a default. Sites where an admin has chosen a different value are left untouched. \"Default for new sites\" only affects sites created from now on."
-msgstr "Pozor: „Privzeto za vsa mesta“ in „Prepiši za vsa mesta“ prepišeta trenutno vrednost mesta, kadar je ta vrednost še vedno privzeta vrednost Editoria11y ali prejšnja privzeta vrednost omrežja — vključno z vrednostjo posameznega mesta, ki se po naključju ujema s privzeto vrednostjo. Mesta, kjer je skrbnik izbral drugačno vrednost, ostanejo nespremenjena. „Privzeto za nova mesta“ vpliva samo na mesta, ustvarjena od zdaj naprej."
+msgid "Heads up: \"Default for all sites\" and \"Override for all sites\" overwrite a site's current value whenever that value is still an Editoria11y default or a previous network default — including a per-site value that happens to match a default."
+msgstr "Pozor: „Privzeto za vsa mesta“ in „Prepiši za vsa mesta“ prepišeta trenutno vrednost mesta, kadar je ta vrednost še vedno privzeta vrednost Editoria11y ali prejšnja privzeta vrednost omrežja — vključno z vrednostjo posameznega mesta, ki se po naključju ujema s privzeto vrednostjo."
 
 #: src/Form/NetworkSettingsPage.php:176
 msgid "Editoria11y default or locked network settings"

@@ -165,9 +165,9 @@ final class FreemiusOverrides {
 				'note'        => 'Drops redundant adverb. Preserves %s.',
 			),
 			'you-have-x-license'                         => array(
-				'original'    => 'You have purchased a %s license.',
+				'original'    => 'You have a %s license.',
 				'replacement' => 'Your Editoria11y CSA license has been activated.',
-				'note'        => 'Body of the post-checkout sticky notice. %s drops harmlessly.',
+				'note'        => 'Sticky notice shown when a paying user is still running the free build; the SDK appends its install-the-premium-version instructions. The post-checkout usage of this key was removed in SDK 2.13.5. %s drops harmlessly.',
 			),
 			'email-verified-message'                     => array(
 				'original'    => 'Your email has been successfully verified - you are AWESOME!',

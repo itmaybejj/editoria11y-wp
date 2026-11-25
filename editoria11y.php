@@ -4,7 +4,7 @@
  *
  * Plugin Name:       Editoria11y Accessibility Checker
  * Plugin URI:        https://wordpress.org/plugins/editoria11y-accessibility-checker/
- * Version:           3.0.2
+ * Version:           3.0.9
  * Requires PHP:      7.4
  * Requires at least: 6.5
  * Tested up to:      7.1
@@ -155,6 +155,22 @@ if ( ! defined( 'ED11Y_BASE' ) ) {
 }
 
 /*
+ * Multisite guard for the SDK's network `fs_accounts` option.
+ *
+ * Registered BEFORE fs_dynamic_init() below so its read watcher is in
+ * place for the SDK's very first get_site_option('fs_accounts'). Both
+ * builds: the free build bundles the same SDK. See NetworkOptionIntegrity
+ * for the WordPress-core defect (blind INSERT into wp_sitemeta after a
+ * failed read) this closes.
+ */
+try {
+	\Editoria11y\NetworkOptionIntegrity::register();
+} catch ( \Throwable $e ) {
+	// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- one-shot diagnostic, gated by the catch arm above.
+	error_log( '[Editoria11y] NetworkOptionIntegrity::register() failed: ' . $e->getMessage() );
+}
+
+/*
  * Freemius SDK compatibility guard.
  *
  * The SDK's start.php (run by the vendor/autoload.php require above) skips
@@ -294,6 +310,11 @@ if ( ! function_exists( 'ed11ycsa' ) ) {
 
 			// Throttle the SDK's opt-in nag to once per login.
 			\Editoria11y\FreemiusOptInNag::apply( $ed11ycsa );
+
+			// Show the SDK's trial promotion once per install / version,
+			// only on the plugin's own screens, instead of on every admin
+			// page until dismissed.
+			\Editoria11y\FreemiusTrialNotice::apply( $ed11ycsa );
 
 			// Send SDK redirects aimed at the phantom
 			// `network/options-general.php` parent (a file that does not
